@@ -8,7 +8,7 @@ SET SED="%~dp0..\BuildDependencies\bin\sed.exe"
 
 cd "%SCRIPT_PATH%..\..\addons"
 
-FOR /F "tokens=*" %%S IN ('dir /B "pvr.*"') DO (
+FOR /F "tokens=*" %%S IN ('dir /B "peripheral.*"') DO (
   echo Configuring %%S
   cd "%%S\addon"
   %SED% -e "s/@OS@/wingl windx/" -e "s/@ARCHITECTURE@/x86/" addon.xml.in > addon.xml
