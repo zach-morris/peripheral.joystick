@@ -13,6 +13,7 @@ sync:
 	cat ../addons/library.xbmc.addon/libXBMC_addon.h | sed 's/#include "..\/library.xbmc.addon\/libXBMC_addon.h"/#include "libXBMC_addon.h"/' > xbmc/libXBMC_addon.h
 	cat ../addons/library.xbmc.codec/libXBMC_codec.h | sed 's/#include "..\/library.xbmc.addon\/libXBMC_addon.h"/#include "libXBMC_addon.h"/' > xbmc/libXBMC_codec.h
 	cat ../addons/library.xbmc.gui/libXBMC_gui.h | sed 's/#include "..\/library.xbmc.addon\/libXBMC_addon.h"/#include "libXBMC_addon.h"/' > xbmc/libXBMC_gui.h
+	cat ../addons/library.xbmc.pvr/libXBMC_peripheral.h | sed 's/#include "..\/library.xbmc.addon\/libXBMC_addon.h"/#include "libXBMC_addon.h"/' > xbmc/libXBMC_peripheral.h
 	cat ../addons/library.xbmc.pvr/libXBMC_pvr.h | sed 's/#include "..\/library.xbmc.addon\/libXBMC_addon.h"/#include "libXBMC_addon.h"/' > xbmc/libXBMC_pvr.h
 	cp -f ../xbmc/addons/include/xbmc_addon_cpp_dll.h          xbmc/xbmc_addon_cpp_dll.h
 	cp -f ../xbmc/addons/include/xbmc_addon_dll.h              xbmc/xbmc_addon_dll.h
@@ -21,6 +22,10 @@ sync:
 	cp -f ../xbmc/addons/include/xbmc_audioenc_types.h         xbmc/xbmc_audioenc_types.h
 	cp -f ../xbmc/addons/include/xbmc_codec_types.h            xbmc/xbmc_codec_types.h
 	cp -f ../xbmc/addons/include/xbmc_epg_types.h              xbmc/xbmc_epg_types.h
+	cp -f ../xbmc/addons/include/xbmc_peripheral_callbacks.h   xbmc/xbmc_peripheral_callbacks.h
+	cp -f ../xbmc/addons/include/xbmc_peripheral_dll.h         xbmc/xbmc_peripheral_dll.h
+	cp -f ../xbmc/addons/include/xbmc_peripheral_types.h       xbmc/xbmc_peripheral_types.h
+	cp -f ../xbmc/addons/include/xbmc_peripheral_utils.hpp     xbmc/xbmc_peripheral_utils.hpp
 	cp -f ../xbmc/addons/include/xbmc_pvr_dll.h                xbmc/xbmc_pvr_dll.h
 	cp -f ../xbmc/addons/include/xbmc_pvr_types.h              xbmc/xbmc_pvr_types.h
 	cp -f ../xbmc/addons/include/xbmc_scr_dll.h                xbmc/xbmc_scr_dll.h
