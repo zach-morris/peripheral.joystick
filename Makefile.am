@@ -17,6 +17,8 @@ sync:
 	cp -f ../xbmc/addons/include/xbmc_addon_cpp_dll.h          xbmc/xbmc_addon_cpp_dll.h
 	cp -f ../xbmc/addons/include/xbmc_addon_dll.h              xbmc/xbmc_addon_dll.h
 	cp -f ../xbmc/addons/include/xbmc_addon_types.h            xbmc/xbmc_addon_types.h
+	cp -f ../xbmc/addons/include/xbmc_audioenc_dll.h           xbmc/xbmc_audioenc_dll.h
+	cp -f ../xbmc/addons/include/xbmc_audioenc_types.h         xbmc/xbmc_audioenc_types.h
 	cp -f ../xbmc/addons/include/xbmc_codec_types.h            xbmc/xbmc_codec_types.h
 	cp -f ../xbmc/addons/include/xbmc_epg_types.h              xbmc/xbmc_epg_types.h
 	cp -f ../xbmc/addons/include/xbmc_pvr_dll.h                xbmc/xbmc_pvr_dll.h
