@@ -203,5 +203,7 @@ AC_SUBST(DATADIR)
 
 AC_CONFIG_FILES([Makefile \
                  lib/Makefile \
-                 addons/Makefile]) 
+                 addons/Makefile \
+                 addons/peripheral.joystick/Makefile \
+                 addons/peripheral.joystick/addon/addon.xml]) 
 AC_OUTPUT

@@ -1,4 +1,4 @@
-SUBDIRS =
+SUBDIRS = peripheral.joystick
 
 clean:
 	-rm -f *.zip

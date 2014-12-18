@@ -1,0 +1,195 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClInclude Include="..\..\..\..\xbmc\libXBMC_addon.h">
+      <Filter>XBMC includes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\xbmc\libXBMC_gui.h">
+      <Filter>XBMC includes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\xbmc\libXBMC_pvr.h">
+      <Filter>XBMC includes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\xbmc\old_codec_ids.h">
+      <Filter>XBMC includes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\xbmc\xbmc_addon_cpp_dll.h">
+      <Filter>XBMC includes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\xbmc\xbmc_addon_dll.h">
+      <Filter>XBMC includes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\xbmc\xbmc_addon_types.h">
+      <Filter>XBMC includes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\xbmc\xbmc_addon_utils.hpp">
+      <Filter>XBMC includes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\xbmc\xbmc_epg_types.h">
+      <Filter>XBMC includes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\xbmc\xbmc_pvr_dll.h">
+      <Filter>XBMC includes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\xbmc\xbmc_pvr_types.h">
+      <Filter>XBMC includes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\xbmc\xbmc_scr_dll.h">
+      <Filter>XBMC includes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\xbmc\xbmc_scr_types.h">
+      <Filter>XBMC includes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\xbmc\xbmc_vis_dll.h">
+      <Filter>XBMC includes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\xbmc\xbmc_vis_types.h">
+      <Filter>XBMC includes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\xbmc\avcodec.h">
+      <Filter>XBMC includes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\xbmc\DVDDemuxPacket.h">
+      <Filter>XBMC includes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\xbmc\libXBMC_peripheral.h">
+      <Filter>XBMC includes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\xbmc\libXBMC_codec.h">
+      <Filter>XBMC includes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\xbmc\xbmc_audioenc_dll.h">
+      <Filter>XBMC includes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\xbmc\xbmc_audioenc_types.h">
+      <Filter>XBMC includes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\xbmc\xbmc_codec_types.h">
+      <Filter>XBMC includes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\xbmc\xbmc_peripheral_callbacks.h">
+      <Filter>XBMC includes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\xbmc\xbmc_peripheral_dll.h">
+      <Filter>XBMC includes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\xbmc\xbmc_peripheral_types.h">
+      <Filter>XBMC includes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\xbmc\xbmc_peripheral_utils.hpp">
+      <Filter>XBMC includes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\xbmc\xbmc_stream_utils.hpp">
+      <Filter>XBMC includes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\api\xinput\JoystickXInput.h">
+      <Filter>Source Files\api\xinput</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\keymapper\KeyMapper.h">
+      <Filter>Source Files\keymapper</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\storage\frontend\DatabaseFrontend.h">
+      <Filter>Source Files\storage\frontend</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\storage\gamecontrollerdb\DatabaseGameControllerDB.h">
+      <Filter>Source Files\storage\gamecontrollerdb</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\storage\xml\DatabaseXml.h">
+      <Filter>Source Files\storage\xml</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\api\Joystick.h">
+      <Filter>Source Files\api</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\storage\Database.h">
+      <Filter>Source Files\storage</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\api\JoystickManager.h">
+      <Filter>Source Files\api</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\api\directinput\JoystickDirectInput.h">
+      <Filter>Source Files\api\directinput</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\log\Log.h">
+      <Filter>Source Files\log</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\log\LogConsole.h">
+      <Filter>Source Files\log</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\log\ILog.h">
+      <Filter>Source Files\log</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\log\LogAddon.h">
+      <Filter>Source Files\log</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="XBMC includes">
+      <UniqueIdentifier>{074c0c15-fa6a-469f-b725-32f4c3df073c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{79aa86b3-168b-460b-af1b-85c8523d4acf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\api">
+      <UniqueIdentifier>{9e52d2ff-88e8-49e3-9ac5-8b7ce61d8566}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\keymapper">
+      <UniqueIdentifier>{720e16c9-5428-4695-ba5d-105b5f021f81}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\storage">
+      <UniqueIdentifier>{1e89c341-0aa9-4722-873c-b2d95f3aeffc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\api\xinput">
+      <UniqueIdentifier>{3933bba5-3491-4f24-8c5e-19b882ff944e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\storage\frontend">
+      <UniqueIdentifier>{163f7619-18c4-4fc0-90b9-b8b6762ef992}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\storage\gamecontrollerdb">
+      <UniqueIdentifier>{63148483-3992-48ec-bfa0-33e24cdb2e40}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\storage\xml">
+      <UniqueIdentifier>{4728927e-a68f-45d7-b22c-e8bdc6152c86}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\api\directinput">
+      <UniqueIdentifier>{d114376c-fd9f-417e-96c4-b743855dec46}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\log">
+      <UniqueIdentifier>{55df545d-a671-4a5a-acfe-c7b7f89f55c4}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\src\addon.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\api\xinput\JoystickXInput.cpp">
+      <Filter>Source Files\api\xinput</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\keymapper\KeyMapper.cpp">
+      <Filter>Source Files\keymapper</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\storage\frontend\DatabaseFrontend.cpp">
+      <Filter>Source Files\storage\frontend</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\storage\gamecontrollerdb\DatabaseGameControllerDB.cpp">
+      <Filter>Source Files\storage\gamecontrollerdb</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\storage\xml\DatabaseXml.cpp">
+      <Filter>Source Files\storage\xml</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\api\JoystickManager.cpp">
+      <Filter>Source Files\api</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\api\directinput\JoystickDirectInput.cpp">
+      <Filter>Source Files\api\directinput</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\log\Log.cpp">
+      <Filter>Source Files\log</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\log\LogConsole.cpp">
+      <Filter>Source Files\log</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\log\LogAddon.cpp">
+      <Filter>Source Files\log</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>
