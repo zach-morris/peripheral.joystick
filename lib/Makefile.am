@@ -1,7 +1,15 @@
-SUBDIRS = libhts tinyxml tinyxml2 jsoncpp libdvblinkremote cppmyth $(ADDITIONAL_SUBDIRS)
+SUBDIRS = $(ADDITIONAL_SUBDIRS)
+
+all:
+	for d in $(SUBDIRS); do if test -f $$d/Makefile; then $(MAKE) -C $$d; fi; done
+
+clean:
+	-rm -f *.zip
+	for d in $(SUBDIRS); do if test -f $$d/Makefile; then $(MAKE) -C $$d clean; fi; done
 
 zip:
+	for d in $(SUBDIRS); do if test -f $$d/Makefile; then $(MAKE) -C $$d zip; fi; done
 
 install:
-
+	for d in $(SUBDIRS); do if test -f $$d/Makefile; then $(MAKE) -C $$d install; fi; done
 
