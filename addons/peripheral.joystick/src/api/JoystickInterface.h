@@ -15,31 +15,31 @@
  *  You should have received a copy of the GNU General Public License
  *  along with XBMC; see the file COPYING.  If not, see
  *  <http://www.gnu.org/licenses/>.
- *
  */
 #pragma once
 
-#include "api/Joystick.h"
-
-#include <SDL/SDL.h>
-#include <SDL/SDL_joystick.h>
+#include <vector>
 
 namespace JOYSTICK
 {
-  class CJoystickInterfaceSDL;
+  class CJoystick;
 
-  class CJoystickSDL : public CJoystick
+  class CJoystickInterface
   {
   public:
-    CJoystickSDL(SDL_Joystick* pJoystick, CJoystickInterfaceSDL* api);
-    virtual ~CJoystickSDL(void) { Deinitialize(); }
+    CJoystickInterface(const char* strName);
+    virtual ~CJoystickInterface(void) { }
 
-    virtual bool Initialize(void) { return true; }
-    virtual void Deinitialize(void) { }
+    virtual bool Initialize(void) = 0;
+    virtual void Deinitialize(void) = 0;
+    bool ScanForJoysticks(std::vector<CJoystick*>& results);
 
-    virtual bool GetEvents(std::vector<ADDON::PeripheralEvent>& events);
+    const char* Name(void) const { return m_strName; }
 
-  private:
-    SDL_Joystick* m_pJoystick;
+  protected:
+    virtual bool PerformJoystickScan(std::vector<CJoystick*>& joysticks) = 0;
+
+    const char* const        m_strName;
+    std::vector<CJoystick*>  m_joysticks;
   };
 }

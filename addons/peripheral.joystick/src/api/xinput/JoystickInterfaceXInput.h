@@ -20,27 +20,25 @@
 */
 #pragma once
 
-#include "api/Joystick.h"
+#include "api/JoystickInterface.h"
 
-#include <windows.h>
+#include <windows.h> // TODO: Remove me
 
 namespace JOYSTICK
 {
-  class CJoystickInterfaceXInput;
-
-  class CJoystickXInput : public CJoystick
+  class CJoystickInterfaceXInput : public CJoystickInterface
   {
   public:
-    CJoystickXInput(unsigned int controllerID, CJoystickInterfaceXInput* api);
-    virtual ~CJoystickXInput(void) { Deinitialize(); }
+    CJoystickInterfaceXInput(void);
+    virtual ~CJoystickInterfaceXInput(void) { Deinitialize(); }
 
     virtual bool Initialize(void) { return true;  }
     virtual void Deinitialize(void) { }
 
-    virtual bool GetEvents(std::vector<ADDON::PeripheralEvent>& events);
+    // TODO: IsXInputDevice() from JoystickDirectInput.cpp
+    static bool IsXInputDevice(const GUID* pGuidProductFromDirectInput);
 
-  private:
-    unsigned int m_controllerID;   // XInput port, in the range (0, 3)
-    DWORD        m_dwPacketNumber; // If unchanged, controller state hasn't changed (currently ignored)
+  protected:
+    virtual bool PerformJoystickScan(std::vector<CJoystick*>& joysticks);
   };
 }

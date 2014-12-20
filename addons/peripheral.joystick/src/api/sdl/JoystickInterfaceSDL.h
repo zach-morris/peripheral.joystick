@@ -19,27 +19,25 @@
  */
 #pragma once
 
-#include "api/Joystick.h"
+#include "api/JoystickInterface.h"
 
-#include <SDL/SDL.h>
-#include <SDL/SDL_joystick.h>
+#include <string>
+
+struct _SDL_Joystick;
+typedef struct _SDL_Joystick SDL_Joystick;
 
 namespace JOYSTICK
 {
-  class CJoystickInterfaceSDL;
-
-  class CJoystickSDL : public CJoystick
+  class CJoystickInterfaceSDL : public CJoystickInterface
   {
   public:
-    CJoystickSDL(SDL_Joystick* pJoystick, CJoystickInterfaceSDL* api);
-    virtual ~CJoystickSDL(void) { Deinitialize(); }
+    CJoystickInterfaceSDL(void);
+    virtual ~CJoystickInterfaceSDL(void) { Deinitialize(); }
 
     virtual bool Initialize(void) { return true; }
-    virtual void Deinitialize(void) { }
+    virtual void Deinitialize(void);
 
-    virtual bool GetEvents(std::vector<ADDON::PeripheralEvent>& events);
-
-  private:
-    SDL_Joystick* m_pJoystick;
+  protected:
+    virtual bool PerformJoystickScan(std::vector<CJoystick*>& joysticks);
   };
 }

@@ -21,19 +21,19 @@
 #include "JoystickManager.h"
 #include "Joystick.h"
 #if defined(HAVE_DIRECT_INPUT)
-  #include "directinput/JoystickDirectInput.h"
+  #include "directinput/JoystickInterfaceDirectInput.h"
 #endif
 #if defined(HAVE_XINPUT)
-  #include "xinput/JoystickXInput.h"
+  #include "xinput/JoystickInterfaceXInput.h"
 #endif
 #if defined(HAVE_LINUX_JOYSTICK)
-  #include "linux/JoystickLinux.h"
+  #include "linux/JoystickInterfaceLinux.h"
 #endif
 #if defined(HAVE_SDL)
-  #include "sdl/JoystickSDL.h"
+  #include "sdl/JoystickInterfaceSDL.h"
 #endif
+#include "log/Log.h"
 
-using namespace ADDON;
 using namespace JOYSTICK;
 using namespace PLATFORM;
 
@@ -48,59 +48,96 @@ bool CJoystickManager::Initialize(void)
   CLockObject lock(m_joystickMutex);
 
 #if defined(HAVE_DIRECT_INPUT)
-  m_joysticks.push_back(new CJoystickDirectInput);
+  m_interfaces.push_back(new CJoystickInterfaceDirectInput);
 #endif
 #if defined(HAVE_XINPUT)
-  m_joysticks.push_back(new CJoystickXInput);
+  m_interfaces.push_back(new CJoystickInterfaceXInput);
 #endif
 #if defined(HAVE_LINUX_JOYSTICK)
-  m_joysticks.push_back(new CJoystickLinux);
+  m_interfaces.push_back(new CJoystickInterfaceLinux);
 #endif
 #if defined(HAVE_SDL)
-  m_joysticks.push_back(new CJoystickSDL);
+  m_interfaces.push_back(new CJoystickInterfaceSDL);
 #endif
 
-  for (std::vector<IJoystick*>::iterator it = m_joysticks.begin(); it != m_joysticks.end(); ++it)
-    (*it)->Initialize();
+  // Initialise all known interfaces
+  for (int i = (int)m_interfaces.size() - 1; i >= 0; i--)
+  {
+    if (!m_interfaces.at(i)->Initialize())
+    {
+      esyslog("Failed to initialize interface %s", m_interfaces.at(i)->Name());
+      delete m_interfaces.at(i);
+      m_interfaces.erase(m_interfaces.begin() + i);
+    }
+  }
 
-  return !m_joysticks.empty();
+  return !m_interfaces.empty();
 }
 
 void CJoystickManager::Deinitialize(void)
 {
   CLockObject lock(m_joystickMutex);
 
-  for (std::vector<IJoystick*>::iterator it = m_joysticks.begin(); it != m_joysticks.end(); ++it)
+  for (std::vector<CJoystickInterface*>::iterator it = m_interfaces.begin(); it != m_interfaces.end(); ++it)
     delete *it;
+  m_interfaces.clear();
 
+  // TODO: Manager joysticks better
+  for (JoystickMap::iterator it = m_joysticks.begin(); it != m_joysticks.end(); ++it)
+  {
+    for (std::vector<CJoystick*>::iterator it2 = it->second.begin(); it2 != it->second.end(); ++it2)
+      delete *it2;
+  }
   m_joysticks.clear();
 }
 
-PERIPHERAL_ERROR CJoystickManager::PerformJoystickScan(std::vector<JoystickConfiguration>& joysticks)
+bool CJoystickManager::PerformJoystickScan(std::vector<CJoystick*>& joysticks)
 {
   CLockObject lock(m_joystickMutex);
 
-  for (std::vector<IJoystick*>::iterator it = m_joysticks.begin(); it != m_joysticks.end(); ++it)
-  {
-    PERIPHERAL_ERROR result = (*it)->PerformJoystickScan(joysticks);
-    if (result != PERIPHERAL_NO_ERROR)
-      return result;
-  }
-  
-  if (joysticks.empty())
-    return PERIPHERAL_ERROR_NOT_CONNECTED;
+  bool bReturn(true);
 
-  return PERIPHERAL_NO_ERROR;
+  std::vector<CJoystick*> scanResults;
+  for (std::vector<CJoystickInterface*>::iterator it = m_interfaces.begin(); it != m_interfaces.end(); ++it)
+  {
+    bReturn &= (*it)->ScanForJoysticks(scanResults);
+    joysticks.insert(joysticks.end(), scanResults.begin(), scanResults.end()); // TODO
+    m_joysticks[*it] = scanResults; // TODO: Manage joysticks better
+  }
+
+  return bReturn;
 }
 
-bool CJoystickManager::GetEvents(EventMap& events)
+CJoystick* CJoystickManager::GetJoystick(unsigned int index) const
+{
+  CLockObject lock(m_joystickMutex);
+
+  for (JoystickMap::const_iterator it = m_joysticks.begin(); it != m_joysticks.end(); ++it)
+  {
+    for (std::vector<CJoystick*>::const_iterator it2 = it->second.begin(); it2 != it->second.end(); ++it2)
+    {
+      if ((*it2)->RequestedPlayer() == index) // TODO: Use index instead of requested player number
+        return *it2;
+    }
+  }
+
+  return NULL;
+}
+
+/*!
+* @brief Get all events that have occurred since the last call to GetEvents()
+*/
+bool CJoystickManager::GetEvents(std::vector<ADDON::PeripheralEvent>& events)
 {
   CLockObject lock(m_joystickMutex);
 
   bool bResult(true);
 
-  for (std::vector<IJoystick*>::iterator it = m_joysticks.begin(); it != m_joysticks.end(); ++it)
-    bResult &= (*it)->GetEvents(events);
+  for (JoystickMap::iterator it = m_joysticks.begin(); it != m_joysticks.end(); ++it)
+  {
+    for (std::vector<CJoystick*>::iterator it2 = it->second.begin(); it2 != it->second.end(); ++it2)
+      bResult &= (*it2)->GetEvents(events);
+  }
 
   return bResult;
 }

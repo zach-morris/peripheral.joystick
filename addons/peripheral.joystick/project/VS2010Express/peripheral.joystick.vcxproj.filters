@@ -121,6 +121,21 @@
     <ClInclude Include="..\..\src\log\LogAddon.h">
       <Filter>Source Files\log</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\api\directinput\JoystickInterfaceDirectInput.h">
+      <Filter>Source Files\api\directinput</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\api\xinput\JoystickInterfaceXInput.h">
+      <Filter>Source Files\api\xinput</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\api\JoystickInterface.h">
+      <Filter>Source Files\api</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\utils\CommonMacros.h">
+      <Filter>Source Files\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\api\JoystickTypes.h">
+      <Filter>Source Files\api</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="XBMC includes">
@@ -156,6 +171,9 @@
     <Filter Include="Source Files\log">
       <UniqueIdentifier>{55df545d-a671-4a5a-acfe-c7b7f89f55c4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\utils">
+      <UniqueIdentifier>{876155f6-b324-416a-b252-e71e71f73fd0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\addon.cpp">
@@ -190,6 +208,18 @@
     </ClCompile>
     <ClCompile Include="..\..\src\log\LogAddon.cpp">
       <Filter>Source Files\log</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\api\directinput\JoystickInterfaceDirectInput.cpp">
+      <Filter>Source Files\api\directinput</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\api\xinput\JoystickInterfaceXInput.cpp">
+      <Filter>Source Files\api\xinput</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\api\Joystick.cpp">
+      <Filter>Source Files\api</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\api\JoystickInterface.cpp">
+      <Filter>Source Files\api</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

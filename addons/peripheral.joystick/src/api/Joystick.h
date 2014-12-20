@@ -20,26 +20,27 @@
 
 #include "xbmc_peripheral_utils.hpp"
 
-#include <map>
-#include <memory>
 #include <vector>
 
 namespace JOYSTICK
 {
-  typedef std::shared_ptr<ADDON::JoystickEvent> EventPtr;
-  typedef std::vector<EventPtr>                 EventVector;
-  typedef std::map<unsigned int, EventVector>   EventMap; // Joystick ID -> events
+  class CJoystickInterface;
 
-  class IJoystick
+  class CJoystick : public ADDON::Joystick
   {
   public:
-    virtual ~IJoystick(void) { }
+    CJoystick(CJoystickInterface* api);
+    virtual ~CJoystick(void) { }
+
+    bool operator==(const CJoystick& rhs) const; // TODO
+    bool operator!=(const CJoystick& rhs) const { return !operator==(rhs); }
 
     virtual bool Initialize(void) = 0;
     virtual void Deinitialize(void) = 0;
 
-    virtual PERIPHERAL_ERROR PerformJoystickScan(std::vector<ADDON::JoystickConfiguration>& joysticks) = 0;
+    virtual bool GetEvents(std::vector<ADDON::PeripheralEvent>& events) = 0;
 
-    virtual bool GetEvents(EventMap& events) = 0;
+  protected:
+    CJoystickInterface* m_api;
   };
 }

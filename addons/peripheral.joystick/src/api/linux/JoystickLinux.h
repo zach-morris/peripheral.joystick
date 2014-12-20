@@ -26,50 +26,21 @@
 
 namespace JOYSTICK
 {
-  class CJoystickLinux : public IJoystick
+  class CJoystickInterfaceLinux;
+
+  class CJoystickLinux : public CJoystick
   {
   public:
-    CJoystickLinux(void) { }
+    CJoystickLinux(int fd, const std::string& strFilename, CJoystickInterfaceLinux* api);
     virtual ~CJoystickLinux(void) { Deinitialize(); }
 
     virtual bool Initialize(void) { return true; }
     virtual void Deinitialize(void);
 
-    virtual PERIPHERAL_ERROR PerformJoystickScan(std::vector<ADDON::JoystickConfiguration>& joysticks);
-
-    virtual bool GetEvents(EventMap& events);
+    virtual bool GetEvents(std::vector<ADDON::PeripheralEvent>& events);
 
   private:
-    /**
-     * Retrieves the current button map in the given array, which must contain at
-     * least BTNMAP_SIZE elements. Returns the result of the ioctl(): negative in
-     * case of an error, 0 otherwise for kernels up to 2.6.30, the length of the
-     * array actually copied for later kernels.
-     */
-    static bool GetButtonMap(int fd, uint16_t *buttonMap);
-
-    /**
-     * Retrieves the current axis map in the given array, which must contain at
-     * least AXMAP_SIZE elements.
-     */
-    static bool GetAxisMap(int fd, uint8_t *axisMap);
-
-    /**
-     * Try a series of ioctls until one succeeds.
-     * @param fd - The fd to perform ioctl on
-     * @param ioctls - A zero-terminated list of ioctls
-     * @param buttonMap - The discovered button map
-     * @param ioctl_used - The ioctl that succeeded (untouched if false is returned)
-     */
-    static bool DetermineIoctl(int fd, const unsigned long *ioctls, uint16_t *buttonMap, unsigned long &ioctl_used);
-
-    struct LinuxJoystick
-    {
-      int            m_fd;
-      std::string    m_filename; // For debugging purposes
-      ADDON::JoystickConfiguration m_configuration;
-    };
-
-    std::vector<LinuxJoystick> m_joysticks;
+    int         m_fd;
+    std::string m_strFilename; // For debugging purposes
   };
 }

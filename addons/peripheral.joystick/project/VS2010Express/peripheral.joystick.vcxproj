@@ -39,8 +39,12 @@
     <ClInclude Include="..\..\..\..\xbmc\xbmc_vis_dll.h" />
     <ClInclude Include="..\..\..\..\xbmc\xbmc_vis_types.h" />
     <ClInclude Include="..\..\src\api\directinput\JoystickDirectInput.h" />
+    <ClInclude Include="..\..\src\api\directinput\JoystickInterfaceDirectInput.h" />
     <ClInclude Include="..\..\src\api\Joystick.h" />
+    <ClInclude Include="..\..\src\api\JoystickInterface.h" />
+    <ClInclude Include="..\..\src\api\JoystickTypes.h" />
     <ClInclude Include="..\..\src\api\JoystickManager.h" />
+    <ClInclude Include="..\..\src\api\xinput\JoystickInterfaceXInput.h" />
     <ClInclude Include="..\..\src\api\xinput\JoystickXInput.h" />
     <ClInclude Include="..\..\src\keymapper\KeyMapper.h" />
     <ClInclude Include="..\..\src\log\ILog.h" />
@@ -51,11 +55,16 @@
     <ClInclude Include="..\..\src\storage\frontend\DatabaseFrontend.h" />
     <ClInclude Include="..\..\src\storage\gamecontrollerdb\DatabaseGameControllerDB.h" />
     <ClInclude Include="..\..\src\storage\xml\DatabaseXml.h" />
+    <ClInclude Include="..\..\src\utils\CommonMacros.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\addon.cpp" />
     <ClCompile Include="..\..\src\api\directinput\JoystickDirectInput.cpp" />
+    <ClCompile Include="..\..\src\api\directinput\JoystickInterfaceDirectInput.cpp" />
+    <ClCompile Include="..\..\src\api\Joystick.cpp" />
+    <ClCompile Include="..\..\src\api\JoystickInterface.cpp" />
     <ClCompile Include="..\..\src\api\JoystickManager.cpp" />
+    <ClCompile Include="..\..\src\api\xinput\JoystickInterfaceXInput.cpp" />
     <ClCompile Include="..\..\src\api\xinput\JoystickXInput.cpp" />
     <ClCompile Include="..\..\src\keymapper\KeyMapper.cpp" />
     <ClCompile Include="..\..\src\log\Log.cpp" />

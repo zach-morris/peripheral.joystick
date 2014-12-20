@@ -19,27 +19,24 @@
  */
 #pragma once
 
-#include "api/Joystick.h"
+#if !defined(ASSERT)
+  #if defined(DEBUG) || defined(_DEBUG)
+    #include <assert.h>
+    #define ASSERT(x)  assert(x)
+  #else
+    #include "log/Log.h"
+    #define ASSERT(x)  esyslog("FAILED ASSERT in %s line %s: %s", __FILE__, __LINE__, #x)
+  #endif
+#endif
 
-#include <SDL/SDL.h>
-#include <SDL/SDL_joystick.h>
+#if !defined(SAFE_DELETE)
+  #define SAFE_DELETE(x)  do { delete (x); (x) = NULL; } while (0)
+#endif
 
-namespace JOYSTICK
-{
-  class CJoystickInterfaceSDL;
+#if !defined(SAFE_DELETE_ARRAY)
+  #define SAFE_DELETE_ARRAY(x)  do { delete[] (x); (x) = NULL; } while (0)
+#endif
 
-  class CJoystickSDL : public CJoystick
-  {
-  public:
-    CJoystickSDL(SDL_Joystick* pJoystick, CJoystickInterfaceSDL* api);
-    virtual ~CJoystickSDL(void) { Deinitialize(); }
-
-    virtual bool Initialize(void) { return true; }
-    virtual void Deinitialize(void) { }
-
-    virtual bool GetEvents(std::vector<ADDON::PeripheralEvent>& events);
-
-  private:
-    SDL_Joystick* m_pJoystick;
-  };
-}
+#if !defined(SAFE_RELEASE)
+  #define SAFE_RELEASE(p)  do { if(p) { (p)->Release(); (p)=NULL; } } while (0)
+#endif

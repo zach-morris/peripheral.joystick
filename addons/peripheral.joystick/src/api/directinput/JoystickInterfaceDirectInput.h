@@ -19,29 +19,35 @@
  */
 #pragma once
 
-#include "api/Joystick.h"
+#include "api/JoystickInterface.h"
 
 #define DIRECTINPUT_VERSION 0x0800
 #include <dinput.h>
 
+#include <vector>
+
 namespace JOYSTICK
 {
-  class CJoystickInterfaceDirectInput;
-
-  class CJoystickDirectInput : public CJoystick
+  class CJoystickInterfaceDirectInput : public CJoystickInterface
   {
   public:
-    CJoystickDirectInput(LPDIRECTINPUTDEVICE8 joystickDevice, CJoystickInterfaceDirectInput* api);
-    virtual ~CJoystickDirectInput(void) { Deinitialize(); }
+    CJoystickInterfaceDirectInput(void);
+    virtual ~CJoystickInterfaceDirectInput(void) { Deinitialize(); }
 
     virtual bool Initialize(void);
-    virtual void Deinitialize(void) { }
+    virtual void Deinitialize(void);
 
-    virtual bool GetEvents(std::vector<ADDON::PeripheralEvent>& events);
+  protected:
+    virtual bool PerformJoystickScan(std::vector<CJoystick*>& joysticks);
 
   private:
-    static BOOL CALLBACK EnumObjectsCallback(const DIDEVICEOBJECTINSTANCE *pdidoi, VOID *pContext);
+    void AddScanResult(CJoystick* joystick);
+    void ClearScanResults(void);
 
-    LPDIRECTINPUTDEVICE8 m_joystickDevice;
+    static BOOL CALLBACK EnumJoysticksCallback(const DIDEVICEINSTANCE *pdidInstance, VOID *pContext);
+    static bool IsXInputDevice(const GUID *pGuidProductFromDirectInput); // TODO: Move to XInput
+
+    LPDIRECTINPUT8          m_pDirectInput; // DirectInput handle, we hold onto it and release it when freeing resources
+    std::vector<CJoystick*> m_scanResults;
   };
 }
