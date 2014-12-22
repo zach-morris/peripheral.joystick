@@ -117,7 +117,7 @@ namespace ADDON
   public:
     JoystickButton(void) : m_id(), m_type() { }
 
-    JoystickButton(JOYSTICK_BUTTON_ID id, JOYSTICK_BUTTON_TYPE type, const std::string& strLabel)
+    JoystickButton(JOYSTICK_ID id, JOYSTICK_BUTTON_TYPE type, const std::string& strLabel)
     : m_id(id), 
       m_type(type), 
       m_strLabel(strLabel) 
@@ -131,11 +131,11 @@ namespace ADDON
     {
     }
 
-    JOYSTICK_BUTTON_ID   ID(void) const    { return m_id; }
+    JOYSTICK_ID          ID(void) const    { return m_id; }
     JOYSTICK_BUTTON_TYPE Type(void) const  { return m_type; }
     const std::string&   Label(void) const { return m_strLabel; }
 
-    void SetID(JOYSTICK_BUTTON_ID id)          { m_id = id; }
+    void SetID(JOYSTICK_ID id)                 { m_id = id; }
     void SetType(JOYSTICK_BUTTON_TYPE type)    { m_type = type; }
     void SetLabel(const std::string& strLabel) { m_strLabel = strLabel; }
 
@@ -154,50 +154,9 @@ namespace ADDON
     }
 
   private:
-    JOYSTICK_BUTTON_ID   m_id;
+    JOYSTICK_ID          m_id;
     JOYSTICK_BUTTON_TYPE m_type;
     std::string          m_strLabel;
-  };
-
-  class JoystickAnalogStick
-  {
-  public:
-    JoystickAnalogStick(void) : m_id() { }
-
-    JoystickAnalogStick(JOYSTICK_ANALOG_STICK_ID id, const std::string& strLabel)
-    : m_id(id),
-      m_strLabel(strLabel) 
-    {
-    }
-
-    JoystickAnalogStick(const JOYSTICK_ANALOG_STICK& analogStick)
-    : m_id(analogStick.id), 
-      m_strLabel(analogStick.label ? analogStick.label : "") 
-    {
-    }
-
-    JOYSTICK_ANALOG_STICK_ID ID(void) const    { return m_id; }
-    const std::string&       Label(void) const { return m_strLabel; }
-
-    void SetID(JOYSTICK_ANALOG_STICK_ID id)    { m_id = id; }
-    void SetLabel(const std::string& strLabel) { m_strLabel = strLabel; }
-
-    void ToStruct(JOYSTICK_ANALOG_STICK& analogStick)
-    {
-      analogStick.id    = m_id;
-      analogStick.label = new char[m_strLabel.size() + 1];
-
-      strcpy(analogStick.label, m_strLabel.c_str());
-    }
-
-    static void FreeStruct(JOYSTICK_ANALOG_STICK& analogStick)
-    {
-      SAFE_DELETE_ARRAY(analogStick.label);
-    }
-
-  private:
-    JOYSTICK_ANALOG_STICK_ID m_id;
-    std::string              m_strLabel;
   };
 
   class Joystick
@@ -217,12 +176,6 @@ namespace ADDON
         for (unsigned int i = 0; i < info.physical_layout.button_count; i++)
           m_buttons.push_back(JoystickButton(info.physical_layout.buttons[i]));
       }
-
-      if (info.physical_layout.analog_sticks)
-      {
-        for (unsigned int i = 0; i < info.physical_layout.analog_stick_count; i++)
-          m_analogSticks.push_back(JoystickAnalogStick(info.physical_layout.analog_sticks[i]));
-      }
     }
 
     virtual ~Joystick(void) { }
@@ -233,8 +186,7 @@ namespace ADDON
     unsigned int       HatCount(void) const        { return m_hatCount; }
     unsigned int       AxisCount(void) const       { return m_axisCount; }
 
-    const std::vector<JoystickButton>&      Buttons(void) const      { return m_buttons; }
-    const std::vector<JoystickAnalogStick>& AnalogSticks(void) const { return m_analogSticks; }
+    const std::vector<JoystickButton>& Buttons(void) const { return m_buttons; }
 
     void SetName(const std::string& strName)              { m_strName         = strName; }
     void SetRequestedPlayer(unsigned int requestedPlayer) { m_requestedPlayer = requestedPlayer; }
@@ -242,8 +194,7 @@ namespace ADDON
     void SetHatCount(unsigned int hatCount)               { m_hatCount        = hatCount; }
     void SetAxisCount(unsigned int axisCount)             { m_axisCount       = axisCount; }
 
-    std::vector<JoystickButton>&      Buttons(void)      { return m_buttons; }
-    std::vector<JoystickAnalogStick>& AnalogSticks(void) { return m_analogSticks; }
+    std::vector<JoystickButton>& Buttons(void) { return m_buttons; }
 
     void ToStruct(JOYSTICK_INFO& info)
     {
@@ -254,8 +205,6 @@ namespace ADDON
       info.virtual_layout.axis_count          = m_axisCount;
       info.physical_layout.button_count       = m_buttons.size();
       info.physical_layout.buttons            = NULL;
-      info.physical_layout.analog_stick_count = m_analogSticks.size();
-      info.physical_layout.analog_sticks      = NULL;
 
       strcpy(info.name, m_strName.c_str());
 
@@ -264,13 +213,6 @@ namespace ADDON
         info.physical_layout.buttons = new JOYSTICK_BUTTON[m_buttons.size()];
         for (unsigned int i = 0; i < m_buttons.size(); i++)
           m_buttons[i].ToStruct(info.physical_layout.buttons[i]);
-      }
-
-      if (!m_analogSticks.empty())
-      {
-        info.physical_layout.analog_sticks = new JOYSTICK_ANALOG_STICK[m_analogSticks.size()];
-        for (unsigned int i = 0; i < m_analogSticks.size(); i++)
-          m_analogSticks[i].ToStruct(info.physical_layout.analog_sticks[i]);
       }
     }
 
@@ -284,13 +226,6 @@ namespace ADDON
           JoystickButton::FreeStruct(info.physical_layout.buttons[i]);
       }
       SAFE_DELETE_ARRAY(info.physical_layout.buttons);
-
-      if (info.physical_layout.analog_sticks)
-      {
-        for (unsigned int i = 0; i < info.physical_layout.analog_stick_count; i++)
-          JoystickAnalogStick::FreeStruct(info.physical_layout.analog_sticks[i]);
-      }
-      SAFE_DELETE_ARRAY(info.physical_layout.analog_sticks);
     }
 
   private:
@@ -300,8 +235,7 @@ namespace ADDON
     unsigned int m_hatCount;
     unsigned int m_axisCount;
 
-    std::vector<JoystickButton>      m_buttons;
-    std::vector<JoystickAnalogStick> m_analogSticks;
+    std::vector<JoystickButton> m_buttons;
   };
 
   class PeripheralEvent
