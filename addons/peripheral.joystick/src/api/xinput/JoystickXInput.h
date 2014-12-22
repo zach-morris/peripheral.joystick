@@ -34,8 +34,7 @@ namespace JOYSTICK
     CJoystickXInput(unsigned int controllerID, CJoystickInterfaceXInput* api);
     virtual ~CJoystickXInput(void) { Deinitialize(); }
 
-    virtual bool Initialize(void) { return true;  }
-    virtual void Deinitialize(void) { }
+    virtual bool Initialize(void);
 
     virtual bool GetEvents(std::vector<ADDON::PeripheralEvent>& events);
 

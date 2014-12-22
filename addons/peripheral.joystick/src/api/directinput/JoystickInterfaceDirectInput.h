@@ -41,8 +41,9 @@ namespace JOYSTICK
     virtual bool PerformJoystickScan(std::vector<CJoystick*>& joysticks);
 
   private:
-    void AddScanResult(CJoystick* joystick);
-    void ClearScanResults(void);
+    void   AddScanResult(CJoystick* joystick);
+    size_t ScanResultCount(void);
+    void   ClearScanResults(void);
 
     static BOOL CALLBACK EnumJoysticksCallback(const DIDEVICEINSTANCE *pdidInstance, VOID *pContext);
     static bool IsXInputDevice(const GUID *pGuidProductFromDirectInput); // TODO: Move to XInput

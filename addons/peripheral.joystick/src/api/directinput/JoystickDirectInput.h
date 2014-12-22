@@ -31,11 +31,14 @@ namespace JOYSTICK
   class CJoystickDirectInput : public CJoystick
   {
   public:
-    CJoystickDirectInput(LPDIRECTINPUTDEVICE8 joystickDevice, CJoystickInterfaceDirectInput* api);
+    CJoystickDirectInput(LPDIRECTINPUTDEVICE8           joystickDevice, 
+                         const std::string&             strName, 
+                         unsigned int                   requestedPlayer,
+                         CJoystickInterfaceDirectInput* api);
+
     virtual ~CJoystickDirectInput(void) { Deinitialize(); }
 
     virtual bool Initialize(void);
-    virtual void Deinitialize(void) { }
 
     virtual bool GetEvents(std::vector<ADDON::PeripheralEvent>& events);
 

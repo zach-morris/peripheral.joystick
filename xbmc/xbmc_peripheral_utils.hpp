@@ -21,103 +21,111 @@
 
 #include "xbmc_peripheral_types.h"
 
+#include <cmath>
+#include <cstring>
 #include <string>
-#include <string.h>
 #include <vector>
 
+#define DIGITAL_ANALOG_THRESHOLD  0.5f // TODO
+
 #ifndef SAFE_DELETE
-  #define SAFE_DELETE(x)  do { delete x; x = NULL; } while (0)
+  #define SAFE_DELETE(x)  do { delete (x); (x) = NULL; } while (0)
 #endif
 
 #ifndef SAFE_DELETE_ARRAY
-  #define SAFE_DELETE_ARRAY(x)  do { delete[] x; x = NULL; } while (0)
+  #define SAFE_DELETE_ARRAY(x)  do { delete[] (x); (x) = NULL; } while (0)
+#endif
+
+#ifndef CONSTRAIN
+  #define CONSTRAIN(min, value, max)  ((value) < (min) ? (min) : (max) < (value) ? (max) : (value))
 #endif
 
 namespace ADDON
 {
-  class PeripheralScanResult
+  class Peripheral
   {
   public:
-    PeripheralScanResult(void) { }
-
-    PeripheralScanResult(const PERIPHERAL_SCAN_RESULT& scanResult)
-    : m_type(scanResult.type),
-      m_index(scanResult.peripheral_index),
-      m_strName(scanResult.name ? scanResult.name : ""),
-      m_vendorId(scanResult.vendor_id),
-      m_productId(scanResult.product_id)
+    Peripheral(const std::string& strName = "")
+    : m_type(PERIPHERAL_TYPE_UNKNOWN),
+      m_strName(strName),
+      m_index(0),
+      m_vendorId(0),
+      m_productId(0)
+    {
+    }
+    
+    Peripheral(PERIPHERAL_INFO& info)
+    : m_type(PERIPHERAL_TYPE_UNKNOWN),
+      m_strName(info.name ? info.name : ""),
+      m_index(info.index),
+      m_vendorId(info.vendor_id),
+      m_productId(info.product_id)
     {
     }
 
+  protected:
+    Peripheral(PERIPHERAL_TYPE type, const std::string& strName = "")
+    : m_type(type),
+      m_strName(strName),
+      m_index(0),
+      m_vendorId(0),
+      m_productId(0)
+    {
+    }
+    
+    Peripheral(PERIPHERAL_TYPE type, PERIPHERAL_INFO& info)
+    : m_type(type),
+      m_strName(info.name ? info.name : ""),
+      m_index(info.index),
+      m_vendorId(info.vendor_id),
+      m_productId(info.product_id)
+    {
+    }
+
+  public:
+    virtual ~Peripheral(void) { }
+
     PERIPHERAL_TYPE    Type(void) const      { return m_type; }
-    unsigned int       Index(void) const     { return m_index; }
     const std::string& Name(void) const      { return m_strName; }
+    unsigned int       Index(void) const     { return m_index; }
     unsigned int       VendorID(void) const  { return m_vendorId; }
     unsigned int       ProductID(void) const { return m_productId; }
 
-    void SetType(PERIPHERAL_TYPE type)        { m_type      = type; }
-    void SetIndex(unsigned int index)         { m_index     = index; }
     void SetName(const std::string& strName)  { m_strName   = strName; }
+    void SetIndex(unsigned int index)         { m_index     = index; }
     void SetVendorID(unsigned int vendorId)   { m_vendorId  = vendorId; }
     void SetProductID(unsigned int productId) { m_productId = productId; }
 
-    void ToStruct(PERIPHERAL_SCAN_RESULT& scanResult) const
+    void ToStruct(PERIPHERAL_INFO& info) const
     {
-      scanResult.type             = m_type;
-      scanResult.peripheral_index = m_index;
-      scanResult.name             = new char[m_strName.size() + 1];
-      scanResult.vendor_id        = m_vendorId;
-      scanResult.product_id       = m_productId;
+      info.type       = m_type;
+      info.name       = new char[m_strName.size() + 1];
+      info.index      = m_index;
+      info.vendor_id  = m_vendorId;
+      info.product_id = m_productId;
 
-      strcpy(scanResult.name, m_strName.c_str());
+      std::strcpy(info.name, m_strName.c_str());
     }
 
-    static void ToStructs(const std::vector<PeripheralScanResult>& results, PERIPHERAL_SCAN_RESULT** resultStructs)
+    static void FreeStruct(PERIPHERAL_INFO& info)
     {
-      if (!resultStructs)
-        return;
-
-      if (results.empty())
-      {
-        *resultStructs = NULL;
-      }
-      else
-      {
-        *resultStructs = new PERIPHERAL_SCAN_RESULT[results.size()];
-        for (unsigned int i = 0; i < results.size(); i++)
-          results.at(i).ToStruct((*resultStructs)[i]);
-      }
-    }
-
-    static void FreeStruct(PERIPHERAL_SCAN_RESULT& scanResult)
-    {
-      SAFE_DELETE_ARRAY(scanResult.name);
-    }
-
-    static void FreeStructs(unsigned int resultCount, PERIPHERAL_SCAN_RESULT* results)
-    {
-      if (results)
-      {
-        for (unsigned int i = 0; i < resultCount; i++)
-          FreeStruct(results[i]);
-      }
-      SAFE_DELETE_ARRAY(results);
+      SAFE_DELETE_ARRAY(info.name);
     }
 
   private:
-    PERIPHERAL_TYPE m_type;
-    unsigned int    m_index;
-    std::string     m_strName;
-    unsigned int    m_vendorId;
-    unsigned int    m_productId;
+    PERIPHERAL_TYPE             m_type;
+    std::string                 m_strName;
+    unsigned int                m_index;
+    unsigned int                m_vendorId;
+    unsigned int                m_productId;
   };
 
   class JoystickButton
   {
   public:
-    JoystickButton(void) : m_id(), m_type() { }
-
-    JoystickButton(JOYSTICK_ID id, JOYSTICK_BUTTON_TYPE type, const std::string& strLabel)
+    JoystickButton(JOYSTICK_ID          id       = JOYSTICK_ID(), 
+                   JOYSTICK_BUTTON_TYPE type     = JOYSTICK_BUTTON_TYPE(),
+                   const std::string&   strLabel = "")
     : m_id(id), 
       m_type(type), 
       m_strLabel(strLabel) 
@@ -139,13 +147,13 @@ namespace ADDON
     void SetType(JOYSTICK_BUTTON_TYPE type)    { m_type = type; }
     void SetLabel(const std::string& strLabel) { m_strLabel = strLabel; }
 
-    void ToStruct(JOYSTICK_BUTTON& button)
+    void ToStruct(JOYSTICK_BUTTON& button) const
     {
       button.id    = m_id;
       button.type  = m_type;
       button.label = new char[m_strLabel.size() + 1];
 
-      strcpy(button.label, m_strLabel.c_str());
+      std::strcpy(button.label, m_strLabel.c_str());
     }
 
     static void FreeStruct(JOYSTICK_BUTTON& button)
@@ -159,13 +167,20 @@ namespace ADDON
     std::string          m_strLabel;
   };
 
-  class Joystick
+  class Joystick : public Peripheral
   {
   public:
-    Joystick(void) : m_requestedPlayer(0), m_buttonCount(0), m_hatCount(0), m_axisCount(0) { }
+    Joystick(const std::string& strName = "")
+    : Peripheral(PERIPHERAL_TYPE_JOYSTICK, strName),
+      m_requestedPlayer(0),
+      m_buttonCount(0),
+      m_hatCount(0),
+      m_axisCount(0)
+    {
+    }
 
     Joystick(JOYSTICK_INFO& info)
-    : m_strName(info.name),
+    : Peripheral(PERIPHERAL_TYPE_JOYSTICK, info.peripheral_info),
       m_requestedPlayer(info.requested_player_num),
       m_buttonCount(info.virtual_layout.button_count),
       m_hatCount(info.virtual_layout.hat_count),
@@ -174,21 +189,19 @@ namespace ADDON
       if (info.physical_layout.buttons)
       {
         for (unsigned int i = 0; i < info.physical_layout.button_count; i++)
-          m_buttons.push_back(JoystickButton(info.physical_layout.buttons[i]));
+          m_buttons.push_back(info.physical_layout.buttons[i]);
       }
     }
 
     virtual ~Joystick(void) { }
 
-    const std::string& Name(void) const            { return m_strName; }
     unsigned int       RequestedPlayer(void) const { return m_requestedPlayer; }
     unsigned int       ButtonCount(void) const     { return m_buttonCount; }
     unsigned int       HatCount(void) const        { return m_hatCount; }
     unsigned int       AxisCount(void) const       { return m_axisCount; }
 
     const std::vector<JoystickButton>& Buttons(void) const { return m_buttons; }
-
-    void SetName(const std::string& strName)              { m_strName         = strName; }
+    
     void SetRequestedPlayer(unsigned int requestedPlayer) { m_requestedPlayer = requestedPlayer; }
     void SetButtonCount(unsigned int buttonCount)         { m_buttonCount     = buttonCount; }
     void SetHatCount(unsigned int hatCount)               { m_hatCount        = hatCount; }
@@ -196,17 +209,16 @@ namespace ADDON
 
     std::vector<JoystickButton>& Buttons(void) { return m_buttons; }
 
-    void ToStruct(JOYSTICK_INFO& info)
+    void ToStruct(JOYSTICK_INFO& info) const
     {
-      info.name                               = new char[m_strName.size() + 1];
+      Peripheral::ToStruct(info.peripheral_info);
+
       info.requested_player_num               = m_requestedPlayer;
       info.virtual_layout.button_count        = m_buttonCount;
       info.virtual_layout.hat_count           = m_hatCount;
       info.virtual_layout.axis_count          = m_axisCount;
       info.physical_layout.button_count       = m_buttons.size();
       info.physical_layout.buttons            = NULL;
-
-      strcpy(info.name, m_strName.c_str());
 
       if (!m_buttons.empty())
       {
@@ -218,7 +230,7 @@ namespace ADDON
 
     static void FreeStruct(JOYSTICK_INFO& info)
     {
-      SAFE_DELETE_ARRAY(info.name);
+      Peripheral::FreeStruct(info.peripheral_info);
 
       if (info.physical_layout.buttons)
       {
@@ -229,179 +241,226 @@ namespace ADDON
     }
 
   private:
-    std::string  m_strName;
-    unsigned int m_requestedPlayer;
-    unsigned int m_buttonCount;
-    unsigned int m_hatCount;
-    unsigned int m_axisCount;
-
+    unsigned int                m_requestedPlayer;
+    unsigned int                m_buttonCount;
+    unsigned int                m_hatCount;
+    unsigned int                m_axisCount;
     std::vector<JoystickButton> m_buttons;
   };
 
   class PeripheralEvent
   {
   public:
-    PeripheralEvent(void) : m_index(0), m_type(), m_data(NULL) { }
+    PeripheralEvent(JOYSTICK_EVENT_TYPE type = JOYSTICK_EVENT_TYPE_NONE, unsigned int peripheralIndex = 0)
+    : m_type(type),
+      m_peripheralIndex(peripheralIndex),
+      m_virtualIndex(0),
+      m_buttonId(), 
+      m_digitalState(), 
+      m_analogState1(),
+      m_analogState2(),
+      m_analogState3()
+    {
+    }
 
     PeripheralEvent(const PERIPHERAL_EVENT& event)
-    : m_index(event.peripheral_index),
-      m_type(event.type),
-      m_data(NULL)
+    : m_type(event.type),
+      m_peripheralIndex(event.peripheral_index),
+      m_virtualIndex(0),
+      m_buttonId(), 
+      m_digitalState(), 
+      m_analogState1(),
+      m_analogState2(),
+      m_analogState3()
     {
-      SetData(event.event_data);
-    }
-
-    ~PeripheralEvent(void) { ClearData(); }
-
-    unsigned int        PeripheralIndex(void) const { return m_index; }
-    JOYSTICK_EVENT_TYPE Type(void) const            { return m_type; }
-
-    template <typename EVENT_TYPE>
-    const EVENT_TYPE& EventAsType(void) const
-    {
-      static const EVENT_TYPE emptyEvent = { };
-      return m_data ? *static_cast<const EVENT_TYPE*>(m_data) : emptyEvent;
-    }
-
-    void ClearData(void)
-    {
-      PERIPHERAL_EVENT event = { m_index, m_type, m_data };
-      FreeStruct(event);
-    }
-
-    void SetData(void* event)
-    {
-      ClearData();
-
-      if (!event)
-        return;
-
       switch (m_type)
       {
       case JOYSTICK_EVENT_TYPE_VIRTUAL_BUTTON:
-        m_data = new JOYSTICK_EVENT_VIRTUAL_BUTTON(*static_cast<JOYSTICK_EVENT_VIRTUAL_BUTTON*>(event));
-        break;
+        m_virtualIndex = event.virtual_index;
+        SetDigitalState(event.digital_state);
       case JOYSTICK_EVENT_TYPE_VIRTUAL_HAT:
-        m_data = new JOYSTICK_EVENT_VIRTUAL_HAT(*static_cast<JOYSTICK_EVENT_VIRTUAL_HAT*>(event));
-        break;
+        m_virtualIndex = event.virtual_index;
+        SetHatState(event.hat_state);
       case JOYSTICK_EVENT_TYPE_VIRTUAL_AXIS:
-        m_data = new JOYSTICK_EVENT_VIRTUAL_AXIS(*static_cast<JOYSTICK_EVENT_VIRTUAL_AXIS*>(event));
-        break;
+        m_virtualIndex = event.virtual_index;
+        SetAnalogState(event.analog_state);
       case JOYSTICK_EVENT_TYPE_BUTTON_DIGITAL:
-        m_data = new JOYSTICK_EVENT_BUTTON_DIGITAL(*static_cast<JOYSTICK_EVENT_BUTTON_DIGITAL*>(event));
-        break;
+        m_buttonId = event.button_id;
+        SetDigitalState(event.digital_state);
       case JOYSTICK_EVENT_TYPE_BUTTON_ANALOG:
-        m_data = new JOYSTICK_EVENT_BUTTON_ANALOG(*static_cast<JOYSTICK_EVENT_BUTTON_ANALOG*>(event));
-        break;
+        m_buttonId = event.button_id;
+        SetAnalogState(event.analog_state);
       case JOYSTICK_EVENT_TYPE_ANALOG_STICK:
-        m_data = new JOYSTICK_EVENT_ANALOG_STICK(*static_cast<JOYSTICK_EVENT_ANALOG_STICK*>(event));
-        break;
+      case JOYSTICK_EVENT_TYPE_ANALOG_STICK_THRESHOLD:
+        m_buttonId = event.button_id;
+        SetAnalogStick(event.analog_stick.horiz, event.analog_stick.vert);
       case JOYSTICK_EVENT_TYPE_ACCELEROMETER:
-        m_data = new JOYSTICK_EVENT_ACCELEROMETER(*static_cast<JOYSTICK_EVENT_ACCELEROMETER*>(event));
-        break;
+        m_buttonId = event.button_id;
+        SetAccelerometer(event.accelerometer.x, event.accelerometer.y, event.accelerometer.z);
       case JOYSTICK_EVENT_TYPE_NONE:
       default:
         break;
       }
+    }
+
+    virtual ~PeripheralEvent(void) { }
+    
+    JOYSTICK_EVENT_TYPE   Type(void) const            { return m_type; }
+    unsigned int          PeripheralIndex(void) const { return m_peripheralIndex; }
+    unsigned int          VirtualIndex(void) const    { return m_virtualIndex; }
+    JOYSTICK_ID           ButtonID(void) const        { return m_buttonId; }
+    JOYSTICK_STATE_BUTTON DigitalState(void) const    { return m_digitalState; }
+    JOYSTICK_STATE_HAT    HatState(void) const        { return m_hatState; }
+    JOYSTICK_STATE_ANALOG AnalogState(void) const     { return m_analogState1; }
+    JOYSTICK_STATE_ANALOG HorizontalState(void) const { return m_analogState1; }
+    JOYSTICK_STATE_ANALOG VerticalState(void) const   { return m_analogState2; }
+    JOYSTICK_STATE_ANALOG X(void) const               { return m_analogState1; }
+    JOYSTICK_STATE_ANALOG Y(void) const               { return m_analogState2; }
+    JOYSTICK_STATE_ANALOG Z(void) const               { return m_analogState3; }
+
+    void SetType(JOYSTICK_EVENT_TYPE type)                { m_type            = type; }
+    void SetPeripheralIndex(unsigned int peripheralIndex) { m_peripheralIndex = peripheralIndex; }
+    void SetVirtualIndex(unsigned int virtualIndex)       { m_virtualIndex    = virtualIndex; }
+    void SetButtonID(JOYSTICK_ID buttonId)                { m_buttonId        = buttonId; }
+
+    void SetDigitalState(JOYSTICK_STATE_BUTTON digitalState)
+    {
+      m_digitalState = digitalState;
+      m_analogState1 = digitalState ? 1.0f : 0.0f;
+    }
+
+    void SetHatState(JOYSTICK_STATE_HAT hatState)
+    {
+      m_hatState     = hatState;
+      m_digitalState = hatState ? JOYSTICK_STATE_BUTTON_PRESSED : JOYSTICK_STATE_BUTTON_UNPRESSED;
+    }
+
+    void SetAnalogState(JOYSTICK_STATE_ANALOG analogState)
+    {
+      m_analogState1 = CONSTRAIN(-1.0f, analogState, 1.0f);
+      m_digitalState = analogState > DIGITAL_ANALOG_THRESHOLD ? JOYSTICK_STATE_BUTTON_PRESSED : JOYSTICK_STATE_BUTTON_UNPRESSED;
+    }
+
+    void SetAnalogStick(JOYSTICK_STATE_ANALOG horizontal, JOYSTICK_STATE_ANALOG vertical)
+    {
+      m_analogState1 = CONSTRAIN(-1.0f, horizontal, 1.0f);
+      m_analogState2 = CONSTRAIN(-1.0f, vertical,   1.0f);
+      m_digitalState = std::sqrt(m_analogState1 * m_analogState1 +
+                                 m_analogState2 * m_analogState2) > DIGITAL_ANALOG_THRESHOLD ? JOYSTICK_STATE_BUTTON_PRESSED : JOYSTICK_STATE_BUTTON_UNPRESSED;
+    }
+
+    void SetAccelerometer(JOYSTICK_STATE_ANALOG x, JOYSTICK_STATE_ANALOG y, JOYSTICK_STATE_ANALOG z)
+    {
+      m_analogState1 = CONSTRAIN(-1.0f, x, 1.0f);
+      m_analogState2 = CONSTRAIN(-1.0f, y, 1.0f);
+      m_analogState3 = CONSTRAIN(-1.0f, z, 1.0f);
     }
 
     void ToStruct(PERIPHERAL_EVENT& event) const
     {
-      event.peripheral_index = m_index;
       event.type             = m_type;
-      event.event_data       = NULL;
+      event.peripheral_index = m_peripheralIndex;
 
       switch (m_type)
       {
       case JOYSTICK_EVENT_TYPE_VIRTUAL_BUTTON:
-        event.event_data = new JOYSTICK_EVENT_VIRTUAL_BUTTON(EventAsType<JOYSTICK_EVENT_VIRTUAL_BUTTON>());
+        event.virtual_index = m_virtualIndex;
+        event.digital_state = m_digitalState;
         break;
       case JOYSTICK_EVENT_TYPE_VIRTUAL_HAT:
-        event.event_data = new JOYSTICK_EVENT_VIRTUAL_HAT(EventAsType<JOYSTICK_EVENT_VIRTUAL_HAT>());
+        event.virtual_index = m_virtualIndex;
+        event.hat_state     = m_hatState;
         break;
       case JOYSTICK_EVENT_TYPE_VIRTUAL_AXIS:
-        event.event_data = new JOYSTICK_EVENT_VIRTUAL_AXIS(EventAsType<JOYSTICK_EVENT_VIRTUAL_AXIS>());
+        event.virtual_index = m_virtualIndex;
+        event.analog_state  = m_analogState1;
         break;
       case JOYSTICK_EVENT_TYPE_BUTTON_DIGITAL:
-        event.event_data = new JOYSTICK_EVENT_BUTTON_DIGITAL(EventAsType<JOYSTICK_EVENT_BUTTON_DIGITAL>());
+        event.button_id     = m_buttonId;
+        event.digital_state = m_digitalState;
         break;
       case JOYSTICK_EVENT_TYPE_BUTTON_ANALOG:
-        event.event_data = new JOYSTICK_EVENT_BUTTON_ANALOG(EventAsType<JOYSTICK_EVENT_BUTTON_ANALOG>());
+        event.button_id    = m_buttonId;
+        event.analog_state = m_analogState1;
         break;
       case JOYSTICK_EVENT_TYPE_ANALOG_STICK:
-        event.event_data = new JOYSTICK_EVENT_ANALOG_STICK(EventAsType<JOYSTICK_EVENT_ANALOG_STICK>());
+      case JOYSTICK_EVENT_TYPE_ANALOG_STICK_THRESHOLD:
+        event.button_id          = m_buttonId;
+        event.analog_stick.horiz = m_analogState1;
+        event.analog_stick.vert  = m_analogState2;
         break;
       case JOYSTICK_EVENT_TYPE_ACCELEROMETER:
-        event.event_data = new JOYSTICK_EVENT_ACCELEROMETER(EventAsType<JOYSTICK_EVENT_ACCELEROMETER>());
+        event.button_id       = m_buttonId;
+        event.accelerometer.x = m_analogState1;
+        event.accelerometer.y = m_analogState2;
+        event.accelerometer.z = m_analogState3;
         break;
       case JOYSTICK_EVENT_TYPE_NONE:
       default:
         break;
-      }
-    }
-
-    static void ToStructs(const std::vector<PeripheralEvent>& events, PERIPHERAL_EVENT** eventStructs)
-    {
-      if (!eventStructs)
-        return;
-
-      if (events.empty())
-      {
-        *eventStructs = NULL;
-      }
-      else
-      {
-        *eventStructs = new PERIPHERAL_EVENT[events.size()];
-        for (unsigned int i = 0; i < events.size(); i++)
-          events.at(i).ToStruct((*eventStructs)[i]);
       }
     }
 
     static void FreeStruct(PERIPHERAL_EVENT& event)
     {
-      switch (event.type)
-      {
-        case JOYSTICK_EVENT_TYPE_VIRTUAL_BUTTON:
-          delete static_cast<JOYSTICK_EVENT_VIRTUAL_BUTTON*>(event.event_data);
-          break;
-        case JOYSTICK_EVENT_TYPE_VIRTUAL_HAT:
-          delete static_cast<JOYSTICK_EVENT_VIRTUAL_HAT*>(event.event_data);
-          break;
-        case JOYSTICK_EVENT_TYPE_VIRTUAL_AXIS:
-          delete static_cast<JOYSTICK_EVENT_VIRTUAL_AXIS*>(event.event_data);
-          break;
-        case JOYSTICK_EVENT_TYPE_BUTTON_DIGITAL:
-          delete static_cast<JOYSTICK_EVENT_BUTTON_DIGITAL*>(event.event_data);
-          break;
-        case JOYSTICK_EVENT_TYPE_BUTTON_ANALOG:
-          delete static_cast<JOYSTICK_EVENT_BUTTON_ANALOG*>(event.event_data);
-          break;
-        case JOYSTICK_EVENT_TYPE_ANALOG_STICK:
-          delete static_cast<JOYSTICK_EVENT_ANALOG_STICK*>(event.event_data);
-          break;
-        case JOYSTICK_EVENT_TYPE_ACCELEROMETER:
-          delete static_cast<JOYSTICK_EVENT_ACCELEROMETER*>(event.event_data);
-          break;
-        case JOYSTICK_EVENT_TYPE_NONE:
-        default:
-          break;
-      }
-      event.event_data = NULL;
-    }
-
-    static void FreeStructs(unsigned int eventCount, PERIPHERAL_EVENT* events)
-    {
-      if (events)
-      {
-        for (unsigned int i = 0; i < eventCount; i++)
-          FreeStruct(events[i]);
-      }
-      SAFE_DELETE_ARRAY(events);
     }
 
   private:
-    unsigned int        m_index;
-    JOYSTICK_EVENT_TYPE m_type;
-    void*               m_data;
+    JOYSTICK_EVENT_TYPE    m_type;
+    unsigned int           m_peripheralIndex;
+    unsigned int           m_virtualIndex;
+    JOYSTICK_ID            m_buttonId;
+    JOYSTICK_STATE_BUTTON  m_digitalState;
+    JOYSTICK_STATE_HAT     m_hatState;
+    JOYSTICK_STATE_ANALOG  m_analogState1;
+    JOYSTICK_STATE_ANALOG  m_analogState2;
+    JOYSTICK_STATE_ANALOG  m_analogState3;
   };
+  
+  template <class THE_CLASS, typename THE_STRUCT>
+  class PeripheralVector
+  {
+  public:
+    static void ToStructs(const std::vector<THE_CLASS>& vecObjects, THE_STRUCT*& pStructs)
+    {
+      if (vecObjects.empty())
+      {
+        pStructs = NULL;
+      }
+      else
+      {
+        pStructs = new THE_STRUCT[vecObjects.size()];
+        for (unsigned int i = 0; i < vecObjects.size(); i++)
+          vecObjects.at(i).ToStruct(pStructs[i]);
+      }
+    }
+
+    static void ToStructs(const std::vector<THE_CLASS*>& vecObjects, THE_STRUCT*& pStructs)
+    {
+      if (vecObjects.empty())
+      {
+        pStructs = NULL;
+      }
+      else
+      {
+        pStructs = new THE_STRUCT[vecObjects.size()];
+        for (unsigned int i = 0; i < vecObjects.size(); i++)
+          vecObjects.at(i)->ToStruct(pStructs[i]);
+      }
+    }
+
+    static void FreeStructs(unsigned int structCount, THE_STRUCT*& structs)
+    {
+      if (structs)
+      {
+        for (unsigned int i = 0; i < structCount; i++)
+          THE_CLASS::FreeStruct(structs[i]);
+      }
+      SAFE_DELETE_ARRAY(structs);
+    }
+  };
+
+  typedef PeripheralVector<Peripheral,      PERIPHERAL_INFO>  Peripherals;
+  typedef PeripheralVector<Joystick,        JOYSTICK_INFO>    Joysticks;
+  typedef PeripheralVector<PeripheralEvent, PERIPHERAL_EVENT> PeripheralEvents;
 }

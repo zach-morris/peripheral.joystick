@@ -21,42 +21,69 @@
 #include "JoystickDirectInput.h"
 #include "JoystickInterfaceDirectInput.h"
 #include "log/Log.h"
+#include "utils/CommonMacros.h"
+
+#ifndef min
+  #include <algorithm>
+  using std::min
+#endif
 
 using namespace JOYSTICK;
 
-#define AXIS_MIN       -32768  // minimum value for axis coordinate
-#define AXIS_MAX        32767  // maximum value for axis coordinate
-
-/* TODO
-#define MAX_AXISAMOUNT  32768
+#define AXIS_MIN     -32768  /* minimum value for axis coordinate */
+#define AXIS_MAX      32767  /* maximum value for axis coordinate */
 
 #define JOY_POV_360  JOY_POVBACKWARD * 2
 #define JOY_POV_NE   (JOY_POVFORWARD + JOY_POVRIGHT) / 2
 #define JOY_POV_SE   (JOY_POVRIGHT + JOY_POVBACKWARD) / 2
 #define JOY_POV_SW   (JOY_POVBACKWARD + JOY_POVLEFT) / 2
 #define JOY_POV_NW   (JOY_POVLEFT + JOY_POV_360) / 2
-*/
 
-CJoystickDirectInput::CJoystickDirectInput(LPDIRECTINPUTDEVICE8 joystickDevice, CJoystickInterfaceDirectInput* api)
+CJoystickDirectInput::CJoystickDirectInput(LPDIRECTINPUTDEVICE8           joystickDevice, 
+                                           const std::string&             strName, 
+                                           unsigned int                   requestedPlayer,
+                                           CJoystickInterfaceDirectInput* api)
  : CJoystick(api),
    m_joystickDevice(joystickDevice)
 {
+  SetName(strName);
+  SetRequestedPlayer(requestedPlayer);
 }
 
 bool CJoystickDirectInput::Initialize(void)
 {
+  HRESULT hr;
+
+  // Get capabilities
+  DIDEVCAPS diDevCaps;
+  diDevCaps.dwSize = sizeof(DIDEVCAPS);
+  hr = m_joystickDevice->GetCapabilities(&diDevCaps);
+  if (FAILED(hr))
+  {
+    esyslog("%s: Failed to GetCapabilities for: %s", __FUNCTION__, Name().c_str());
+    return false;
+  }
+
+  SetButtonCount(diDevCaps.dwButtons);
+  SetHatCount(diDevCaps.dwPOVs);
+  SetAxisCount(diDevCaps.dwAxes);
+
   // Initialize axes
   // Enumerate the joystick objects. The callback function enabled user
   // interface elements for objects that are found, and sets the min/max
   // values properly for discovered axes.
-  HRESULT hr = m_joystickDevice->EnumObjects(EnumObjectsCallback, m_joystickDevice, DIDFT_ALL);
+  hr = m_joystickDevice->EnumObjects(EnumObjectsCallback, m_joystickDevice, DIDFT_ALL);
   if (FAILED(hr))
   {
     esyslog("%s: Failed to enumerate objects", __FUNCTION__);
     return false;
   }
+  
+  m_stateBuffer.buttons.assign(ButtonCount(), JOYSTICK_STATE_BUTTON());
+  m_stateBuffer.hats.assign(HatCount(), JOYSTICK_STATE_HAT());
+  m_stateBuffer.axes.assign(AxisCount(), JOYSTICK_STATE_ANALOG());
 
-  return true;
+  return CJoystick::Initialize();
 }
 
 //-----------------------------------------------------------------------------
@@ -117,37 +144,41 @@ bool CJoystickDirectInput::GetEvents(std::vector<ADDON::PeripheralEvent>& events
   if (FAILED(hr))
     return false; // The device should have been acquired during the Poll()
 
-  /* TODO
-
   // Gamepad buttons
-  for (unsigned int b = 0; b < state.buttons.size(); b++)
-    state.buttons[b] = ((js.rgbButtons[b] & 0x80) ? 1 : 0);
+  std::vector<JOYSTICK_STATE_BUTTON>& buttons = m_stateBuffer.buttons;
+  for (unsigned int b = 0; b < ButtonCount(); b++)
+    buttons[b] = (js.rgbButtons[b] & 0x80) ? JOYSTICK_STATE_BUTTON_PRESSED : JOYSTICK_STATE_BUTTON_UNPRESSED;
+  GetButtonEvents(buttons, events);
+
 
   // Gamepad hats
-  for (unsigned int h = 0; h < state.hats.size(); h++)
+  std::vector<JOYSTICK_STATE_HAT>& hats = m_stateBuffer.hats;
+  for (unsigned int h = 0; h < HatCount(); h++)
   {
-    state.hats[h].Center();
-    bool bCentered = ((js.rgdwPOV[h] & 0xFFFF) == 0xFFFF);
+    hats[h] = JOYSTICK_STATE_HAT_UNPRESSED;
+
+    const bool bCentered = ((js.rgdwPOV[h] & 0xFFFF) == 0xFFFF);
     if (!bCentered)
     {
       if ((JOY_POV_NW <= js.rgdwPOV[h] && js.rgdwPOV[h] <= JOY_POV_360) || js.rgdwPOV[h] <= JOY_POV_NE)
-        state.hats[h][CJoystickHat::UP] = true;
+        hats[h] = JOYSTICK_STATE_HAT_UP;
       else if (JOY_POV_SE <= js.rgdwPOV[h] && js.rgdwPOV[h] <= JOY_POV_SW)
-        state.hats[h][CJoystickHat::DOWN] = true;
+        hats[h] = JOYSTICK_STATE_HAT_DOWN;
 
       if (JOY_POV_NE <= js.rgdwPOV[h] && js.rgdwPOV[h] <= JOY_POV_SE)
-        state.hats[h][CJoystickHat::RIGHT] = true;
+        hats[h] = (JOYSTICK_STATE_HAT)(hats[h] & JOYSTICK_STATE_HAT_RIGHT);
       else if (JOY_POV_SW <= js.rgdwPOV[h] && js.rgdwPOV[h] <= JOY_POV_NW)
-        state.hats[h][CJoystickHat::LEFT] = true;
+        hats[h] = (JOYSTICK_STATE_HAT)(hats[h] & JOYSTICK_STATE_HAT_LEFT);
     }
   }
+  GetHatEvents(hats, events);
 
   // Gamepad axes
-  long amounts[] = { js.lX, js.lY, js.lZ, js.lRx, js.lRy, js.lRz };
-  for (unsigned int a = 0; a < std::min(state.axes.size(), 6U); a++)
-    state.SetAxis(a, amounts[a], MAX_AXISAMOUNT);
+  std::vector<JOYSTICK_STATE_ANALOG>& axes = m_stateBuffer.axes;
+  const long amounts[] = { js.lX, js.lY, js.lZ, js.lRx, js.lRy, js.lRz, js.rglSlider[0], js.rglSlider[1] };
+  for (unsigned int a = 0; a < min(AxisCount(), ARRAY_SIZE(amounts)); a++)
+    axes[a] = NormalizeAxis(amounts[a], AXIS_MAX);
+  GetAxisEvents(axes, events);
 
-  */
-
-  return false;
+  return true;
 }

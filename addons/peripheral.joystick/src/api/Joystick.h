@@ -20,6 +20,7 @@
 
 #include "xbmc_peripheral_utils.hpp"
 
+#include <map>
 #include <vector>
 
 namespace JOYSTICK
@@ -32,15 +33,32 @@ namespace JOYSTICK
     CJoystick(CJoystickInterface* api);
     virtual ~CJoystick(void) { }
 
-    bool operator==(const CJoystick& rhs) const; // TODO
-    bool operator!=(const CJoystick& rhs) const { return !operator==(rhs); }
-
-    virtual bool Initialize(void) = 0;
-    virtual void Deinitialize(void) = 0;
+    virtual bool Initialize(void);
+    virtual void Deinitialize(void) { }
 
     virtual bool GetEvents(std::vector<ADDON::PeripheralEvent>& events) = 0;
 
-  protected:
-    CJoystickInterface* m_api;
+    const CJoystickInterface* API(void) const { return m_api; }
+
+  protected:    
+    void GetButtonEvents(const std::vector<JOYSTICK_STATE_BUTTON>& buttons, std::vector<ADDON::PeripheralEvent>& events);
+    void GetHatEvents(const std::vector<JOYSTICK_STATE_HAT>& hats, std::vector<ADDON::PeripheralEvent>& events);
+    void GetAxisEvents(const std::vector<JOYSTICK_STATE_ANALOG>& axes, std::vector<ADDON::PeripheralEvent>& events);
+    
+    static JOYSTICK_STATE_ANALOG NormalizeAxis(long value, long maxAxisAmount);
+
+    CJoystickInterface* const m_api;
+    
+    struct JoystickState
+    {
+      std::vector<JOYSTICK_STATE_BUTTON> buttons;
+      std::vector<JOYSTICK_STATE_HAT>    hats;
+      std::vector<JOYSTICK_STATE_ANALOG> axes;
+    };
+
+    JoystickState m_stateBuffer;
+
+  private:
+    JoystickState m_state;
   };
 }

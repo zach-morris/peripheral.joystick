@@ -22,7 +22,7 @@
 
 #include "api/JoystickInterface.h"
 
-#include <windows.h> // TODO: Remove me
+#include <windows.h> // TODO: Remove me when IsXInputDevice() is moved
 
 namespace JOYSTICK
 {
@@ -35,7 +35,7 @@ namespace JOYSTICK
     virtual bool Initialize(void) { return true;  }
     virtual void Deinitialize(void) { }
 
-    // TODO: IsXInputDevice() from JoystickDirectInput.cpp
+    // TODO: Move IsXInputDevice() to JoystickInterfaceXInput.cpp
     static bool IsXInputDevice(const GUID* pGuidProductFromDirectInput);
 
   protected:

@@ -34,7 +34,6 @@ namespace JOYSTICK
     CJoystickLinux(int fd, const std::string& strFilename, CJoystickInterfaceLinux* api);
     virtual ~CJoystickLinux(void) { Deinitialize(); }
 
-    virtual bool Initialize(void) { return true; }
     virtual void Deinitialize(void);
 
     virtual bool GetEvents(std::vector<ADDON::PeripheralEvent>& events);

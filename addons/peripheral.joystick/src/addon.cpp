@@ -32,18 +32,15 @@
 #include "xbmc_peripheral_dll.h"
 #include "xbmc_peripheral_utils.hpp"
 
-#include <string>
 #include <vector>
 
-using namespace ADDON;
 using namespace JOYSTICK;
 
 extern "C"
 {
 
-CHelper_libXBMC_addon*      FRONTEND;
-CHelper_libXBMC_peripheral* PERIPHERAL;
-CJoystickManager*           JOYSTICKS;
+ADDON::CHelper_libXBMC_addon*      FRONTEND;
+ADDON::CHelper_libXBMC_peripheral* PERIPHERAL;
 
 ADDON_STATUS ADDON_Create(void* callbacks, void* props)
 {
@@ -54,18 +51,18 @@ ADDON_STATUS ADDON_Create(void* callbacks, void* props)
 
     PERIPHERAL_PROPERTIES* peripheralProps = static_cast<PERIPHERAL_PROPERTIES*>(props);
 
-    FRONTEND = new CHelper_libXBMC_addon;
+    FRONTEND = new ADDON::CHelper_libXBMC_addon;
     if (!FRONTEND || !FRONTEND->RegisterMe(callbacks))
       throw ADDON_STATUS_PERMANENT_FAILURE;
 
-    PERIPHERAL = new CHelper_libXBMC_peripheral;
+    PERIPHERAL = new ADDON::CHelper_libXBMC_peripheral;
     if (!PERIPHERAL || !PERIPHERAL->RegisterMe(callbacks))
       throw ADDON_STATUS_PERMANENT_FAILURE;
   }
   catch (const ADDON_STATUS& status)
   {
-    SAFE_DELETE(FRONTEND);
     SAFE_DELETE(PERIPHERAL);
+    SAFE_DELETE(FRONTEND);
     return status;
   }
 
@@ -81,9 +78,9 @@ void ADDON_Stop()
 void ADDON_Destroy()
 {
   CLog::Get().SetType(SYS_LOG_TYPE_CONSOLE);
-
-  SAFE_DELETE(FRONTEND);
+  
   SAFE_DELETE(PERIPHERAL);
+  SAFE_DELETE(FRONTEND);
 }
 
 ADDON_STATUS ADDON_GetStatus()
@@ -124,7 +121,7 @@ const char* GetMinimumPeripheralAPIVersion(void)
   return PERIPHERAL_MIN_API_VERSION;
 }
 
-PERIPHERAL_ERROR GetAddonCapabilities(PERIPHERAL_CAPABILITIES *pCapabilities)
+PERIPHERAL_ERROR GetAddonCapabilities(PERIPHERAL_CAPABILITIES* pCapabilities)
 {
   if (!pCapabilities)
     return PERIPHERAL_ERROR_INVALID_PARAMETERS;
@@ -134,39 +131,28 @@ PERIPHERAL_ERROR GetAddonCapabilities(PERIPHERAL_CAPABILITIES *pCapabilities)
   return PERIPHERAL_NO_ERROR;
 }
 
-PERIPHERAL_ERROR PerformDeviceScan(unsigned int* peripheral_count, PERIPHERAL_SCAN_RESULT** scan_results)
+PERIPHERAL_ERROR PerformDeviceScan(unsigned int* peripheral_count, PERIPHERAL_INFO** scan_results)
 {
   if (!peripheral_count || !scan_results)
     return PERIPHERAL_ERROR_INVALID_PARAMETERS;
 
-  if (!JOYSTICKS)
+  std::vector<CJoystick*> joysticks;
+  if (!CJoystickManager::Get().PerformJoystickScan(joysticks))
     return PERIPHERAL_ERROR_FAILED;
 
-  std::vector<PeripheralScanResult> results;
-  std::vector<CJoystick*> joysticks;
-  if (JOYSTICKS->PerformJoystickScan(joysticks))
-  {
-    for (std::vector<CJoystick*>::const_iterator it = joysticks.begin(); it != joysticks.end(); ++it)
-    {
-      PeripheralScanResult result;
-      result.SetType(PERIPHERAL_TYPE_JOYSTICK);
-      result.SetIndex((*it)->RequestedPlayer()); // TODO: Joystick index
-      result.SetName((*it)->Name());
-      result.SetVendorID(0); // TODO
-      result.SetProductID(0); // TODO
-      results.push_back(result);
-    }
-    *peripheral_count = results.size();
-    PeripheralScanResult::ToStructs(results, scan_results);
-    return PERIPHERAL_NO_ERROR;
-  }
+  // Upcast array pointers
+  std::vector<ADDON::Peripheral*> peripherals;
+  peripherals.assign(joysticks.begin(), joysticks.end());
 
-  return PERIPHERAL_ERROR_FAILED;
+  *peripheral_count = peripherals.size();
+  ADDON::Peripherals::ToStructs(peripherals, *scan_results);
+
+  return PERIPHERAL_NO_ERROR;
 }
 
-void FreeScanResults(unsigned int peripheral_count, PERIPHERAL_SCAN_RESULT* scan_results)
+void FreeScanResults(unsigned int peripheral_count, PERIPHERAL_INFO* scan_results)
 {
-  PeripheralScanResult::FreeStructs(peripheral_count, scan_results);
+  ADDON::Peripherals::FreeStructs(peripheral_count, scan_results);
 }
 
 PERIPHERAL_ERROR GetJoystickInfo(unsigned int index, JOYSTICK_INFO* info)
@@ -176,7 +162,7 @@ PERIPHERAL_ERROR GetJoystickInfo(unsigned int index, JOYSTICK_INFO* info)
 
   CJoystick* joystick = CJoystickManager::Get().GetJoystick(index);
   if (!joystick)
-    return PERIPHERAL_ERROR_FAILED;
+    return PERIPHERAL_ERROR_NOT_CONNECTED;
 
   joystick->ToStruct(*info);
 
@@ -196,14 +182,11 @@ PERIPHERAL_ERROR GetEvents(unsigned int* event_count, PERIPHERAL_EVENT** events)
   if (!event_count || !events)
     return PERIPHERAL_ERROR_INVALID_PARAMETERS;
 
-  if (!JOYSTICKS)
-    return PERIPHERAL_ERROR_FAILED;
-
-  std::vector<PeripheralEvent> peripheralEvents;
-  if (JOYSTICKS->GetEvents(peripheralEvents))
+  std::vector<ADDON::PeripheralEvent> peripheralEvents;
+  if (CJoystickManager::Get().GetEvents(peripheralEvents))
   {
     *event_count = peripheralEvents.size();
-    PeripheralEvent::ToStructs(peripheralEvents, events);
+    ADDON::PeripheralEvents::ToStructs(peripheralEvents, *events);
     return PERIPHERAL_NO_ERROR;
   }
 
@@ -212,7 +195,7 @@ PERIPHERAL_ERROR GetEvents(unsigned int* event_count, PERIPHERAL_EVENT** events)
 
 void FreeEvents(unsigned int event_count, PERIPHERAL_EVENT* events)
 {
-  PeripheralEvent::FreeStructs(event_count, events);
+  ADDON::PeripheralEvents::FreeStructs(event_count, events);
 }
 
 PERIPHERAL_ERROR GetButtonMap(unsigned int index, JOYSTICK_BUTTON_MAP* button_map)

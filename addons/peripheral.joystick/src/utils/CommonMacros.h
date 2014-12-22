@@ -40,3 +40,11 @@
 #if !defined(SAFE_RELEASE)
   #define SAFE_RELEASE(p)  do { if(p) { (p)->Release(); (p)=NULL; } } while (0)
 #endif
+
+#ifndef CONSTRAIN
+  #define CONSTRAIN(min, value, max)  ((value) < (min) ? (min) : (max) < (value) ? (max) : (value))
+#endif
+
+#ifndef ARRAY_SIZE
+  #define ARRAY_SIZE(x)  (sizeof(x) / sizeof((x)[0]))
+#endif

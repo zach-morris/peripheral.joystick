@@ -39,7 +39,6 @@ namespace JOYSTICK
   protected:
     virtual bool PerformJoystickScan(std::vector<CJoystick*>& joysticks) = 0;
 
-    const char* const        m_strName;
-    std::vector<CJoystick*>  m_joysticks;
+    const char* const       m_strName;
   };
 }

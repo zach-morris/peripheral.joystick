@@ -75,7 +75,6 @@ bool CJoystickInterfaceDirectInput::PerformJoystickScan(std::vector<CJoystick*>&
     return false;
   }
 
-  // TODO
   joysticks.insert(joysticks.end(), m_scanResults.begin(), m_scanResults.end());
   ClearScanResults();
 
@@ -86,6 +85,11 @@ void CJoystickInterfaceDirectInput::AddScanResult(CJoystick* joystick)
 {
   joystick->SetRequestedPlayer(m_scanResults.size() + 1);
   m_scanResults.push_back(joystick);
+}
+
+size_t CJoystickInterfaceDirectInput::ScanResultCount(void)
+{
+  return m_scanResults.size();
 }
 
 void CJoystickInterfaceDirectInput::ClearScanResults(void)
@@ -102,7 +106,7 @@ BOOL CALLBACK CJoystickInterfaceDirectInput::EnumJoysticksCallback(const DIDEVIC
   // Skip verified XInput devices
   if (IsXInputDevice(&pdidInstance->guidProduct))
     return DIENUM_CONTINUE;
-
+  
   CJoystickInterfaceDirectInput* context = static_cast<CJoystickInterfaceDirectInput*>(pContext);
 
   LPDIRECTINPUTDEVICE8 pJoystick = NULL;
@@ -134,27 +138,10 @@ BOOL CALLBACK CJoystickInterfaceDirectInput::EnumJoysticksCallback(const DIDEVIC
     esyslog("%s: Failed to SetCooperativeLevel on: %s", __FUNCTION__, pdidInstance->tszProductName);
     return DIENUM_CONTINUE;
   }
+  
+  const std::string strName = pdidInstance->tszProductName ? pdidInstance->tszProductName : "";
 
-  DIDEVCAPS diDevCaps;
-  diDevCaps.dwSize = sizeof(DIDEVCAPS);
-  hr = pJoystick->GetCapabilities(&diDevCaps);
-  if (FAILED(hr))
-  {
-    esyslog("%s: Failed to GetCapabilities for: %s", __FUNCTION__, pdidInstance->tszProductName);
-    return DIENUM_CONTINUE;
-  }
-
-  isyslog("%s: Enabled Joystick: \"%s\" (DirectInput)", __FUNCTION__, pdidInstance->tszProductName);
-  isyslog("%s: Total Axes: %d Total Hats: %d Total Buttons: %d", __FUNCTION__,
-    diDevCaps.dwAxes, diDevCaps.dwPOVs, diDevCaps.dwButtons);
-
-  CJoystick* joystick = new CJoystickDirectInput(pJoystick, context);
-  joystick->SetName(pdidInstance->tszProductName ? pdidInstance->tszProductName : "");
-  joystick->SetRequestedPlayer(0); // TODO
-  joystick->SetButtonCount(diDevCaps.dwButtons);
-  joystick->SetHatCount(diDevCaps.dwPOVs);
-  joystick->SetAxisCount(diDevCaps.dwAxes);
-  context->AddScanResult(joystick);
+  context->AddScanResult(new CJoystickDirectInput(pJoystick, strName, context->ScanResultCount() + 1, context));
 
   return DIENUM_CONTINUE;
 }
