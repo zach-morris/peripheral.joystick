@@ -114,7 +114,7 @@
     <OutDir>..\..\addon\</OutDir>
     <CustomBuildAfterTargets>
     </CustomBuildAfterTargets>
-    <IncludePath>$(ProjectDir)..\..\src\;$(SolutionDir)..\..\lib\;$(SolutionDir)..\..\;$(VC_IncludePath);$(WindowsSDK_IncludePath);$(IncludePath);$(DXSDK_DIR)include</IncludePath>
+    <IncludePath>$(ProjectDir)..\..\src\;$(SolutionDir)..\..\;$(SolutionDir)..\..\lib\;$(SolutionDir)..\..\xbmc\;$(VC_IncludePath);$(WindowsSDK_IncludePath);$(DXSDK_DIR)include;$(IncludePath)</IncludePath>
     <LibraryPath>$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);$(DXSDK_DIR)lib\x86;</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -123,7 +123,7 @@
     <CustomBuildAfterTargets>
     </CustomBuildAfterTargets>
     <CustomBuildBeforeTargets />
-    <IncludePath>$(ProjectDir)..\..\src\;$(SolutionDir)..\..\lib\;$(SolutionDir)..\..\;$(VC_IncludePath);$(WindowsSDK_IncludePath);$(IncludePath);$(DXSDK_DIR)include;</IncludePath>
+    <IncludePath>$(ProjectDir)..\..\src\;$(SolutionDir)..\..\;$(SolutionDir)..\..\lib\;$(SolutionDir)..\..\xbmc\;$(VC_IncludePath);$(WindowsSDK_IncludePath);$(DXSDK_DIR)include;$(IncludePath)</IncludePath>
     <LibraryPath>$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);$(DXSDK_DIR)lib\x86;</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
