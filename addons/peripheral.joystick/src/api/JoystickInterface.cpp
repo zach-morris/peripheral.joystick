@@ -18,6 +18,7 @@
  */
 
 #include "JoystickInterface.h"
+#include "Joystick.h"
 #include "utils/CommonMacros.h"
 
 using namespace JOYSTICK;
@@ -42,4 +43,27 @@ bool CJoystickInterface::ScanForJoysticks(std::vector<CJoystick*>& results)
   }
 
   return bReturn;
+}
+
+void CJoystickInterface::AddScanResult(CJoystick* joystick)
+{
+  joystick->SetRequestedPlayer(m_scanResults.size() + 1);
+  m_scanResults.push_back(joystick);
+}
+
+size_t CJoystickInterface::ScanResultCount(void) const
+{
+  return m_scanResults.size();
+}
+
+void CJoystickInterface::GetScanResults(std::vector<CJoystick*>& joysticks) const
+{
+  joysticks.insert(joysticks.end(), m_scanResults.begin(), m_scanResults.end());
+}
+
+void CJoystickInterface::ClearScanResults(void)
+{
+  for (std::vector<CJoystick*>::iterator it = m_scanResults.begin(); it != m_scanResults.end(); ++it)
+    delete *it;
+  m_scanResults.clear();
 }

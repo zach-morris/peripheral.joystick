@@ -73,7 +73,7 @@ void CJoystickInterfaceDirectInput::Deinitialize(void)
 
 bool CJoystickInterfaceDirectInput::PerformJoystickScan(std::vector<CJoystick*>& joysticks)
 {
-  Deinitialize();
+  ClearScanResults();
 
   HRESULT hr;
 
@@ -84,7 +84,7 @@ bool CJoystickInterfaceDirectInput::PerformJoystickScan(std::vector<CJoystick*>&
     return false;
   }
 
-  joysticks.insert(joysticks.end(), m_scanResults.begin(), m_scanResults.end());
+  GetScanResults(joysticks);
   ClearScanResults();
 
   return true;
@@ -288,22 +288,4 @@ BOOL CALLBACK CJoystickInterfaceDirectInput::EnumWindowsCallback(HWND hnd, LPARA
     *args->handle = hnd;
 
   return TRUE;
-}
-
-void CJoystickInterfaceDirectInput::AddScanResult(CJoystick* joystick)
-{
-  joystick->SetRequestedPlayer(m_scanResults.size() + 1);
-  m_scanResults.push_back(joystick);
-}
-
-size_t CJoystickInterfaceDirectInput::ScanResultCount(void)
-{
-  return m_scanResults.size();
-}
-
-void CJoystickInterfaceDirectInput::ClearScanResults(void)
-{
-  for (std::vector<CJoystick*>::iterator it = m_scanResults.begin(); it != m_scanResults.end(); ++it)
-    delete *it;
-  m_scanResults.clear();
 }

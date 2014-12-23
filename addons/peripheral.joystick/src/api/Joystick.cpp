@@ -28,15 +28,6 @@ using namespace JOYSTICK;
 
 #define ANALOG_EPSILON  0.001f
 
-/*
-void CJoystick::JoystickState::Clear(void)
-{
-  buttons.clear();
-  hats.clear();
-  axes.clear();
-}
-*/
-
 CJoystick::CJoystick(CJoystickInterface* api)
  : m_api(api)
 {
