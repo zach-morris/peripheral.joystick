@@ -20,6 +20,7 @@
 */
 #pragma once
 
+#include "XInputDLL.h"
 #include "api/JoystickInterface.h"
 
 #include <windows.h> // TODO: Remove me when IsXInputDevice() is moved
@@ -32,11 +33,13 @@ namespace JOYSTICK
     CJoystickInterfaceXInput(void);
     virtual ~CJoystickInterfaceXInput(void) { Deinitialize(); }
 
-    virtual bool Initialize(void) { return true;  }
-    virtual void Deinitialize(void) { }
+    virtual bool Initialize(void);
+    virtual void Deinitialize(void);
 
     // TODO: Move IsXInputDevice() to JoystickInterfaceXInput.cpp
     static bool IsXInputDevice(const GUID* pGuidProductFromDirectInput);
+
+
 
   protected:
     virtual bool PerformJoystickScan(std::vector<CJoystick*>& joysticks);

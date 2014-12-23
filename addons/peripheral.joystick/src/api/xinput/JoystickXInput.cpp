@@ -20,6 +20,7 @@
 
 #include "JoystickXInput.h"
 #include "JoystickInterfaceXInput.h"
+#include "XInputDLL.h"
 #include "log/Log.h"
 
 #include <Xinput.h>
@@ -27,7 +28,7 @@
 using namespace JOYSTICK;
 
 #define XINPUT_ALIAS  "Xbox 360-compatible controller"
-#define BUTTON_COUNT  14
+#define BUTTON_COUNT  15
 #define HAT_COUNT     0 // hats are treated as buttons
 #define AXIS_COUNT    6
 #define MAX_AXIS      32768
@@ -55,10 +56,9 @@ bool CJoystickXInput::Initialize(void)
 
 bool CJoystickXInput::GetEvents(std::vector<ADDON::PeripheralEvent>& events)
 {
-  XINPUT_STATE controllerState;
+  XINPUT_STATE_EX controllerState;
 
-  DWORD result = XInputGetState(m_controllerID, &controllerState);
-  if (result != ERROR_SUCCESS)
+  if (!CXInputDLL::Get().GetState(m_controllerID, controllerState))
     return false;
 
   m_dwPacketNumber = controllerState.dwPacketNumber;
@@ -78,6 +78,8 @@ bool CJoystickXInput::GetEvents(std::vector<ADDON::PeripheralEvent>& events)
   buttons[11] = (controllerState.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_RIGHT)     ? JOYSTICK_STATE_BUTTON_PRESSED : JOYSTICK_STATE_BUTTON_UNPRESSED;
   buttons[12] = (controllerState.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_DOWN)      ? JOYSTICK_STATE_BUTTON_PRESSED : JOYSTICK_STATE_BUTTON_UNPRESSED;
   buttons[13] = (controllerState.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_LEFT)      ? JOYSTICK_STATE_BUTTON_PRESSED : JOYSTICK_STATE_BUTTON_UNPRESSED;
+  buttons[14] = (controllerState.Gamepad.wButtons & XINPUT_GAMEPAD_GUIDE)          ? JOYSTICK_STATE_BUTTON_PRESSED : JOYSTICK_STATE_BUTTON_UNPRESSED;
+
   // TODO: dyload XInput lib to access guide button through hidden API
   GetButtonEvents(buttons, events);
 

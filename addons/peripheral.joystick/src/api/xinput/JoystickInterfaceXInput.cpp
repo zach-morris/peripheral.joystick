@@ -20,12 +20,11 @@
 
 #include "JoystickInterfaceXInput.h"
 #include "JoystickXInput.h"
+#include "XInputDLL.h"
 #include "api/JoystickTypes.h"
 #include "log/Log.h"
 
 #include <Xinput.h>
-
-#pragma comment(lib, "XInput.lib")
 
 using namespace JOYSTICK;
 
@@ -36,23 +35,25 @@ CJoystickInterfaceXInput::CJoystickInterfaceXInput(void)
 {
 }
 
+bool CJoystickInterfaceXInput::Initialize(void)
+{
+  return CXInputDLL::Get().Load();
+}
+
+void CJoystickInterfaceXInput::Deinitialize(void)
+{
+  CXInputDLL::Get().Unload();
+}
+
 bool CJoystickInterfaceXInput::PerformJoystickScan(std::vector<CJoystick*>& joysticks)
 {
-  Deinitialize();
-
-  XINPUT_STATE controllerState; // No need to memset, only checking for controller existence
+  XINPUT_STATE_EX controllerState; // No need to memset, only checking for controller existence
 
   for (unsigned int i = 0; i < MAX_JOYSTICKS; i++)
   {
-    DWORD result = XInputGetState(i, &controllerState);
-    if (result != ERROR_SUCCESS)
-    {
-      if (result == ERROR_DEVICE_NOT_CONNECTED)
-        dsyslog("No XInput devices on port %u", i);
+    if (!CXInputDLL::Get().GetState(i, controllerState))
       continue;
-    }
 
-    // That's all it takes to check controller existence... I <3 XInput
     isyslog("Found a XInput controller on port %u", i);
     joysticks.push_back(new CJoystickXInput(i, this));
   }

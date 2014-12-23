@@ -136,6 +136,9 @@
     <ClInclude Include="..\..\src\api\JoystickTypes.h">
       <Filter>Source Files\api</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\api\xinput\XInputDLL.h">
+      <Filter>Source Files\api\xinput</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="XBMC includes">
@@ -220,6 +223,9 @@
     </ClCompile>
     <ClCompile Include="..\..\src\api\JoystickInterface.cpp">
       <Filter>Source Files\api</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\api\xinput\XInputDLL.cpp">
+      <Filter>Source Files\api\xinput</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
