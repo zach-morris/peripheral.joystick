@@ -47,6 +47,8 @@ namespace JOYSTICK
 
     static BOOL CALLBACK EnumJoysticksCallback(const DIDEVICEINSTANCE *pdidInstance, VOID *pContext);
     static bool IsXInputDevice(const GUID *pGuidProductFromDirectInput); // TODO: Move to XInput
+    static HWND GetMainWindowHandle(void);
+    static BOOL CALLBACK EnumWindowsCallback(HWND hnd, LPARAM lParam);
 
     LPDIRECTINPUT8          m_pDirectInput; // DirectInput handle, we hold onto it and release it when freeing resources
     std::vector<CJoystick*> m_scanResults;

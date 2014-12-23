@@ -24,6 +24,8 @@
 #include "log/Log.h"
 #include "utils/CommonMacros.h"
 
+#include "libXBMC_peripheral.h"
+
 // For getting the GUIDs of XInput devices
 #include <wbemidl.h>
 #include <oleauto.h>
@@ -33,7 +35,14 @@
 
 using namespace JOYSTICK;
 
-HWND g_hWnd = NULL;  // TODO: https://stackoverflow.com/questions/6202547/win32-get-main-wnd-handle-of-application
+namespace JOYSTICK
+{
+  struct EnumWindowsCallbackArgs
+  {
+    DWORD pid;
+    HWND* handle;
+  };
+}
 
 CJoystickInterfaceDirectInput::CJoystickInterfaceDirectInput(void)
  : CJoystickInterface(INTERFACE_DIRECTINPUT),
@@ -112,9 +121,16 @@ BOOL CALLBACK CJoystickInterfaceDirectInput::EnumJoysticksCallback(const DIDEVIC
     return DIENUM_CONTINUE;
   }
 
+  HWND hWnd = GetMainWindowHandle();
+
+  dsyslog("********** HWND: 0x%08x", hWnd); // TODO: temporary
+
+  if (!hWnd || !IsWindow(hWnd))
+    return DIENUM_CONTINUE;
+
   // Set the cooperative level to let DInput know how this device should
   // interact with the system and with other DInput applications.
-  hr = pJoystick->SetCooperativeLevel(g_hWnd, DISCL_NONEXCLUSIVE | DISCL_FOREGROUND);
+  hr = pJoystick->SetCooperativeLevel(hWnd, DISCL_NONEXCLUSIVE | DISCL_FOREGROUND);
   if (FAILED(hr))
   {
     esyslog("%s: Failed to SetCooperativeLevel on: %s", __FUNCTION__, pdidInstance->tszProductName);
@@ -249,6 +265,29 @@ bool CJoystickInterfaceDirectInput::IsXInputDevice(const GUID* pGuidProductFromD
     CoUninitialize();
 
   return bIsXinputDevice;
+}
+
+HWND CJoystickInterfaceDirectInput::GetMainWindowHandle(void)
+{
+  HWND hWnd = NULL;
+
+  EnumWindowsCallbackArgs args = { ::GetCurrentProcessId(), &hWnd };
+  if (::EnumWindows(&EnumWindowsCallback, (LPARAM)&args) == FALSE)
+    esyslog("Failed to get main window handle");
+
+  return hWnd;
+}
+
+BOOL CALLBACK CJoystickInterfaceDirectInput::EnumWindowsCallback(HWND hnd, LPARAM lParam)
+{
+  EnumWindowsCallbackArgs* args = reinterpret_cast<EnumWindowsCallbackArgs*>(lParam);
+
+  DWORD windowPID;
+  (void)::GetWindowThreadProcessId(hnd, &windowPID);
+  if (windowPID == args->pid && args->handle)
+    *args->handle = hnd;
+
+  return TRUE;
 }
 
 void CJoystickInterfaceDirectInput::AddScanResult(CJoystick* joystick)
