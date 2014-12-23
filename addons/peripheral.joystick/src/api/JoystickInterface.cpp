@@ -23,10 +23,9 @@
 
 using namespace JOYSTICK;
 
-CJoystickInterface::CJoystickInterface(const char* strName)
+CJoystickInterface::CJoystickInterface(const std::string& strName)
  : m_strName(strName)
 {
-  ASSERT(m_strName);
 }
 
 bool CJoystickInterface::ScanForJoysticks(std::vector<CJoystick*>& results)
@@ -51,7 +50,7 @@ void CJoystickInterface::AddScanResult(CJoystick* joystick)
   m_scanResults.push_back(joystick);
 }
 
-size_t CJoystickInterface::ScanResultCount(void) const
+unsigned int CJoystickInterface::ScanResultCount(void) const
 {
   return m_scanResults.size();
 }

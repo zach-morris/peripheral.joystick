@@ -49,35 +49,41 @@ namespace ADDON
   class PeripheralVector
   {
   public:
-    static void ToStructs(const std::vector<THE_CLASS>& vecObjects, THE_STRUCT*& pStructs)
+    static void ToStructs(const std::vector<THE_CLASS>& vecObjects, THE_STRUCT** pStructs)
     {
+      if (!pStructs)
+        return;
+
       if (vecObjects.empty())
       {
         pStructs = NULL;
       }
       else
       {
-        pStructs = new THE_STRUCT[vecObjects.size()];
+        (*pStructs) = new THE_STRUCT[vecObjects.size()];
         for (unsigned int i = 0; i < vecObjects.size(); i++)
-          vecObjects.at(i).ToStruct(pStructs[i]);
+          vecObjects.at(i).ToStruct((*pStructs)[i]);
       }
     }
 
-    static void ToStructs(const std::vector<THE_CLASS*>& vecObjects, THE_STRUCT*& pStructs)
+    static void ToStructs(const std::vector<THE_CLASS*>& vecObjects, THE_STRUCT** pStructs)
     {
+      if (!pStructs)
+        return;
+
       if (vecObjects.empty())
       {
-        pStructs = NULL;
+        *pStructs = NULL;
       }
       else
       {
-        pStructs = new THE_STRUCT[vecObjects.size()];
+        *pStructs = new THE_STRUCT[vecObjects.size()];
         for (unsigned int i = 0; i < vecObjects.size(); i++)
-          vecObjects.at(i)->ToStruct(pStructs[i]);
+          vecObjects.at(i)->ToStruct((*pStructs)[i]);
       }
     }
 
-    static void FreeStructs(unsigned int structCount, THE_STRUCT*& structs)
+    static void FreeStructs(unsigned int structCount, THE_STRUCT* structs)
     {
       if (structs)
       {
@@ -87,7 +93,7 @@ namespace ADDON
       SAFE_DELETE_ARRAY(structs);
     }
   };
-  
+
   /*!
    * ADDON::Peripheral
    *
@@ -288,7 +294,7 @@ namespace ADDON
       info.virtual_layout.axis_count    = m_axisCount;
       info.physical_layout.button_count = m_buttons.size();
 
-      JoystickButtons::ToStructs(m_buttons, info.physical_layout.buttons);
+      JoystickButtons::ToStructs(m_buttons, &info.physical_layout.buttons);
     }
 
     static void FreeStruct(JOYSTICK_INFO& info)
@@ -476,6 +482,7 @@ namespace ADDON
 
     static void FreeStruct(PERIPHERAL_EVENT& event)
     {
+      (void)event;
     }
 
   private:

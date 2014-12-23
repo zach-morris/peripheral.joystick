@@ -33,29 +33,61 @@ CJoystickSDL::CJoystickSDL(SDL_Joystick* pJoystick, CJoystickInterfaceSDL* api)
 
 bool CJoystickSDL::GetEvents(std::vector<ADDON::PeripheralEvent>& events)
 {
+  std::vector<JOYSTICK_STATE_BUTTON>& buttons = m_stateBuffer.buttons;
+  std::vector<JOYSTICK_STATE_HAT>&    hats    = m_stateBuffer.hats;
+  std::vector<JOYSTICK_STATE_ANALOG>& axes    = m_stateBuffer.axes;
+
   // Update the state of all opened joysticks
   SDL_JoystickUpdate();
 
-  /* TODO
   // Gamepad buttons
-  for (unsigned int b = 0; b < state.buttons.size(); b++)
-    state.buttons[b] = (SDL_JoystickGetButton(it->m_pJoystick, b) ? true : false);
+  for (unsigned int b = 0; b < ButtonCount(); b++)
+    buttons[b] = SDL_JoystickGetButton(m_pJoystick, b) ? JOYSTICK_STATE_BUTTON_PRESSED : JOYSTICK_STATE_BUTTON_UNPRESSED;
 
   // Gamepad hats
-  for (unsigned int h = 0; h < state.hats.size(); h++)
+  for (unsigned int h = 0; h < HatCount(); h++)
   {
-    state.hats[h].Center();
-    uint8_t hat = SDL_JoystickGetHat(it->m_pJoystick, h);
-    if      (hat & SDL_HAT_UP)    state.hats[h][CJoystickHat::UP] = true;
-    else if (hat & SDL_HAT_DOWN)  state.hats[h][CJoystickHat::DOWN] = true;
-    if      (hat & SDL_HAT_RIGHT) state.hats[h][CJoystickHat::RIGHT] = true;
-    else if (hat & SDL_HAT_LEFT)  state.hats[h][CJoystickHat::LEFT] = true;
+    uint8_t hat = SDL_JoystickGetHat(m_pJoystick, h);
+    switch (hat)
+    {
+      case SDL_HAT_UP:
+        hats[h] = JOYSTICK_STATE_HAT_UP;
+        break;
+      case SDL_HAT_RIGHT:
+        hats[h] = JOYSTICK_STATE_HAT_RIGHT;
+        break;
+      case SDL_HAT_DOWN:
+        hats[h] = JOYSTICK_STATE_HAT_DOWN;
+        break;
+      case SDL_HAT_LEFT:
+        hats[h] = JOYSTICK_STATE_HAT_LEFT;
+        break;
+      case SDL_HAT_RIGHTUP:
+        hats[h] = JOYSTICK_STATE_HAT_UP_RIGHT;
+        break;
+      case SDL_HAT_RIGHTDOWN:
+        hats[h] = JOYSTICK_STATE_HAT_DOWN_RIGHT;
+        break;
+      case SDL_HAT_LEFTUP:
+        hats[h] = JOYSTICK_STATE_HAT_UP_LEFT;
+        break;
+      case SDL_HAT_LEFTDOWN:
+        hats[h] = JOYSTICK_STATE_HAT_DOWN_LEFT;
+        break;
+      case SDL_HAT_CENTERED:
+      default:
+        hats[h] = JOYSTICK_STATE_HAT_UNPRESSED;
+        break;
+    }
   }
 
   // Gamepad axes
-  for (unsigned int a = 0; a < state.axes.size(); a++)
-    state.SetAxis(a, (long)SDL_JoystickGetAxis(it->m_pJoystick, a), MAX_AXISAMOUNT);
-  */
+  for (unsigned int a = 0; a < AxisCount(); a++)
+    axes[a] = NormalizeAxis((long)SDL_JoystickGetAxis(m_pJoystick, a), MAX_AXISAMOUNT);
 
-  return false;
+  GetButtonEvents(buttons, events);
+  GetHatEvents(hats, events);
+  GetAxisEvents(axes, events);
+
+  return true;
 }

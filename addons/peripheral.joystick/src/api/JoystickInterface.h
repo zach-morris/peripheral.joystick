@@ -18,6 +18,7 @@
  */
 #pragma once
 
+#include <string>
 #include <vector>
 
 namespace JOYSTICK
@@ -27,26 +28,27 @@ namespace JOYSTICK
   class CJoystickInterface
   {
   public:
-    CJoystickInterface(const char* strName);
+    CJoystickInterface(const std::string& strName);
     virtual ~CJoystickInterface(void) { }
 
     virtual bool Initialize(void) = 0;
     virtual void Deinitialize(void) = 0;
+
     bool ScanForJoysticks(std::vector<CJoystick*>& results);
 
-    const char* Name(void) const { return m_strName; }
+    const std::string& Name(void) const { return m_strName; }
 
   protected:
     virtual bool PerformJoystickScan(std::vector<CJoystick*>& joysticks) = 0;
     
     // Helper functions to offer a buffer for device scanners that require static callbacks
     void AddScanResult(CJoystick* joystick);
-    size_t ScanResultCount(void) const;
+    unsigned int ScanResultCount(void) const;
     void GetScanResults(std::vector<CJoystick*>& joysticks) const;
     void ClearScanResults(void);
 
   private:
-    const char* const       m_strName;
+    std::string             m_strName;
     std::vector<CJoystick*> m_scanResults;
   };
 }

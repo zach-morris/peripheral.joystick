@@ -20,6 +20,7 @@
 
 #include "JoystickManager.h"
 #include "Joystick.h"
+#include "JoystickInterface.h"
 #if defined(HAVE_DIRECT_INPUT)
   #include "directinput/JoystickInterfaceDirectInput.h"
 #endif
@@ -65,7 +66,7 @@ bool CJoystickManager::Initialize(void)
   {
     if (!m_interfaces.at(i)->Initialize())
     {
-      esyslog("Failed to initialize interface %s", m_interfaces.at(i)->Name());
+      esyslog("Failed to initialize interface %s", m_interfaces.at(i)->Name().c_str());
       delete m_interfaces.at(i);
       m_interfaces.erase(m_interfaces.begin() + i);
     }

@@ -55,6 +55,20 @@ void CJoystickLinux::Deinitialize(void)
 
 bool CJoystickLinux::GetEvents(std::vector<ADDON::PeripheralEvent>& events)
 {
+  std::vector<JOYSTICK_STATE_BUTTON>& buttons = m_stateBuffer.buttons;
+  std::vector<JOYSTICK_STATE_ANALOG>& axes    = m_stateBuffer.axes;
+
+  ReadEvents(buttons, axes);
+
+  GetButtonEvents(buttons, events);
+  GetAxisEvents(axes, events);
+
+  return true;
+}
+
+void CJoystickLinux::ReadEvents(std::vector<JOYSTICK_STATE_BUTTON>& buttons,
+                                std::vector<JOYSTICK_STATE_ANALOG>& axes)
+{
   js_event joyEvent;
 
   while (true)
@@ -76,8 +90,6 @@ bool CJoystickLinux::GetEvents(std::vector<ADDON::PeripheralEvent>& events)
       }
     }
 
-    /* TODO
-
     // The possible values of joystickEvent.type are:
     // JS_EVENT_BUTTON    0x01    // button pressed/released
     // JS_EVENT_AXIS      0x02    // joystick moved
@@ -87,18 +99,15 @@ bool CJoystickLinux::GetEvents(std::vector<ADDON::PeripheralEvent>& events)
     switch (joyEvent.type)
     {
     case JS_EVENT_BUTTON:
-      if (joyEvent.number < m_state.buttons.size())
-        m_state.buttons[joyEvent.number] = joyEvent.value;
+      if (joyEvent.number < ButtonCount())
+        buttons[joyEvent.number] = joyEvent.value ? JOYSTICK_STATE_BUTTON_PRESSED : JOYSTICK_STATE_BUTTON_UNPRESSED;
       break;
     case JS_EVENT_AXIS:
-      if (joyEvent.number < m_state.axes.size())
-        m_state.SetAxis(joyEvent.number, joyEvent.value, MAX_AXIS);
+      if (joyEvent.number < AxisCount())
+        axes[joyEvent.number] = NormalizeAxis(joyEvent.value, MAX_AXIS);
       break;
     default:
       break;
     }
-    */
   }
-
-  return false;
 }

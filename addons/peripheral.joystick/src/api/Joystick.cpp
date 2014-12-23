@@ -41,7 +41,7 @@ bool CJoystick::Initialize(void)
   m_state.axes.assign(AxisCount(), JOYSTICK_STATE_ANALOG());
 
   isyslog("Initialized joystick \"%s\" (%s), axes: %u, hats: %u, buttons: %u",
-    Name().c_str(), m_api->Name(), AxisCount(), HatCount(), ButtonCount());
+    Name().c_str(), m_api->Name().c_str(), AxisCount(), HatCount(), ButtonCount());
 
   return true;
 }

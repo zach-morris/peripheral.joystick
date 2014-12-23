@@ -39,6 +39,9 @@ namespace JOYSTICK
     virtual bool GetEvents(std::vector<ADDON::PeripheralEvent>& events);
 
   private:
+    void ReadEvents(std::vector<JOYSTICK_STATE_BUTTON>& buttons,
+                    std::vector<JOYSTICK_STATE_ANALOG>& axes);
+
     int         m_fd;
     std::string m_strFilename; // For debugging purposes
   };

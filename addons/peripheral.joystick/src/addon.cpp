@@ -145,7 +145,7 @@ PERIPHERAL_ERROR PerformDeviceScan(unsigned int* peripheral_count, PERIPHERAL_IN
   peripherals.assign(joysticks.begin(), joysticks.end());
 
   *peripheral_count = peripherals.size();
-  ADDON::Peripherals::ToStructs(peripherals, *scan_results);
+  ADDON::Peripherals::ToStructs(peripherals, scan_results);
 
   return PERIPHERAL_NO_ERROR;
 }
@@ -186,7 +186,7 @@ PERIPHERAL_ERROR GetEvents(unsigned int* event_count, PERIPHERAL_EVENT** events)
   if (CJoystickManager::Get().GetEvents(peripheralEvents))
   {
     *event_count = peripheralEvents.size();
-    ADDON::PeripheralEvents::ToStructs(peripheralEvents, *events);
+    ADDON::PeripheralEvents::ToStructs(peripheralEvents, events);
     return PERIPHERAL_NO_ERROR;
   }
 
