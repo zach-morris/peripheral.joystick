@@ -334,6 +334,7 @@ namespace ADDON
       m_virtualIndex(0),
       m_buttonId(), 
       m_digitalState(), 
+      m_hatState(),
       m_analogState1(),
       m_analogState2(),
       m_analogState3()
@@ -343,25 +344,32 @@ namespace ADDON
       case JOYSTICK_EVENT_TYPE_VIRTUAL_BUTTON:
         m_virtualIndex = event.virtual_index;
         SetDigitalState(event.digital_state);
+        break;
       case JOYSTICK_EVENT_TYPE_VIRTUAL_HAT:
         m_virtualIndex = event.virtual_index;
         SetHatState(event.hat_state);
+        break;
       case JOYSTICK_EVENT_TYPE_VIRTUAL_AXIS:
         m_virtualIndex = event.virtual_index;
         SetAnalogState(event.analog_state);
+        break;
       case JOYSTICK_EVENT_TYPE_BUTTON_DIGITAL:
         m_buttonId = event.button_id;
         SetDigitalState(event.digital_state);
+        break;
       case JOYSTICK_EVENT_TYPE_BUTTON_ANALOG:
         m_buttonId = event.button_id;
         SetAnalogState(event.analog_state);
+        break;
       case JOYSTICK_EVENT_TYPE_ANALOG_STICK:
       case JOYSTICK_EVENT_TYPE_ANALOG_STICK_THRESHOLD:
         m_buttonId = event.button_id;
         SetAnalogStick(event.analog_stick.horiz, event.analog_stick.vert);
+        break;
       case JOYSTICK_EVENT_TYPE_ACCELEROMETER:
         m_buttonId = event.button_id;
         SetAccelerometer(event.accelerometer.x, event.accelerometer.y, event.accelerometer.z);
+        break;
       case JOYSTICK_EVENT_TYPE_NONE:
       default:
         break;
