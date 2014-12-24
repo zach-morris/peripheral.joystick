@@ -64,7 +64,7 @@ bool CXInputDLL::Load(void)
 
   // 100 is the ordinal for _XInputGetStateEx, which returns the same struct as
   // XinputGetState, but with extra data in wButtons for the guide button, we think...
-  m_getState = (FnXInputGetState)GetProcAddress(m_dll, (LPCSTR)100);
+  m_getState = (FnXInputGetState)GetProcAddress(m_dll, reinterpret_cast<LPCSTR>(100));
   m_setState = (FnXInputSetState)GetProcAddress(m_dll, "XInputSetState");
   m_getCaps  = (FnXInputGetCapabilities)GetProcAddress(m_dll, "XInputGetCapabilities");
 
