@@ -82,7 +82,7 @@ bool CLog::SetType(SYS_LOG_TYPE type)
 void CLog::SetPipe(ILog* pipe)
 {
   PLATFORM::CLockObject lock(m_mutex);
-  
+
   const SYS_LOG_TYPE newType = pipe   ? pipe->Type()   : SYS_LOG_TYPE_NULL;
   const SYS_LOG_TYPE oldType = m_pipe ? m_pipe->Type() : SYS_LOG_TYPE_NULL;
 

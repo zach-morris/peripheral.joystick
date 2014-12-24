@@ -97,7 +97,7 @@ BOOL CALLBACK CJoystickInterfaceDirectInput::EnumJoysticksCallback(const DIDEVIC
   // Skip verified XInput devices
   if (IsXInputDevice(&pdidInstance->guidProduct))
     return DIENUM_CONTINUE;
-  
+
   CJoystickInterfaceDirectInput* context = static_cast<CJoystickInterfaceDirectInput*>(pContext);
 
   LPDIRECTINPUTDEVICE8 pJoystick = NULL;
@@ -136,7 +136,7 @@ BOOL CALLBACK CJoystickInterfaceDirectInput::EnumJoysticksCallback(const DIDEVIC
     esyslog("%s: Failed to SetCooperativeLevel on: %s", __FUNCTION__, pdidInstance->tszProductName);
     return DIENUM_CONTINUE;
   }
-  
+
   const std::string strName = pdidInstance->tszProductName ? pdidInstance->tszProductName : "";
 
   context->AddScanResult(new CJoystickDirectInput(pJoystick, strName, context->ScanResultCount() + 1, context));

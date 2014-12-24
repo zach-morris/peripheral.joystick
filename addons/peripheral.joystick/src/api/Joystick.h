@@ -40,15 +40,15 @@ namespace JOYSTICK
 
     const CJoystickInterface* API(void) const { return m_api; }
 
-  protected:    
+  protected:
     void GetButtonEvents(const std::vector<JOYSTICK_STATE_BUTTON>& buttons, std::vector<ADDON::PeripheralEvent>& events);
     void GetHatEvents(const std::vector<JOYSTICK_STATE_HAT>& hats, std::vector<ADDON::PeripheralEvent>& events);
     void GetAxisEvents(const std::vector<JOYSTICK_STATE_ANALOG>& axes, std::vector<ADDON::PeripheralEvent>& events);
-    
+
     static JOYSTICK_STATE_ANALOG NormalizeAxis(long value, long maxAxisAmount);
 
     CJoystickInterface* const m_api;
-    
+
     struct JoystickState
     {
       std::vector<JOYSTICK_STATE_BUTTON> buttons;

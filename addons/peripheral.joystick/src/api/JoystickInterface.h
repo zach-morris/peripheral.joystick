@@ -40,7 +40,7 @@ namespace JOYSTICK
 
   protected:
     virtual bool PerformJoystickScan(std::vector<CJoystick*>& joysticks) = 0;
-    
+
     // Helper functions to offer a buffer for device scanners that require static callbacks
     void AddScanResult(CJoystick* joystick);
     unsigned int ScanResultCount(void) const;

@@ -106,6 +106,6 @@ bool CJoystickInterfaceSDL::PerformJoystickScan(std::vector<CJoystick*>& joystic
 
   // Disable joystick events, since we'll be polling them
   SDL_JoystickEventState(SDL_DISABLE);
-  
+
   return true;
 }

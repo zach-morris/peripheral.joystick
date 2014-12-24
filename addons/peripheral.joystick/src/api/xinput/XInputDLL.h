@@ -60,7 +60,7 @@ namespace JOYSTICK
 
     bool Load(void);
     void Unload(void);
-    
+
     // Available after library is loaded successfully
     const std::string& Version(void) const { return m_strVersion; }
 
@@ -87,7 +87,7 @@ namespace JOYSTICK
     std::string             m_strVersion;
     FnXInputGetState        m_getState;
     FnXInputSetState        m_setState;
-    FnXInputGetCapabilities m_getCaps;  
+    FnXInputGetCapabilities m_getCaps;
     PLATFORM::CMutex        m_mutex;
   };
 }

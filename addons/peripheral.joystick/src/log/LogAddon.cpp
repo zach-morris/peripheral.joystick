@@ -27,7 +27,7 @@
 using namespace JOYSTICK;
 
 CLogAddon::CLogAddon(ADDON::CHelper_libXBMC_addon* frontend)
- : m_frontend(frontend) 
+ : m_frontend(frontend)
 {
   ASSERT(m_frontend);
 }

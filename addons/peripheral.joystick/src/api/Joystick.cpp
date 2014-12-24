@@ -64,7 +64,7 @@ void CJoystick::GetButtonEvents(const std::vector<JOYSTICK_STATE_BUTTON>& button
       events.push_back(event);
     }
   }
-  
+
   // TODO: Look up mapped event
 
   m_state.buttons.assign(buttons.begin(), buttons.end());
@@ -112,7 +112,7 @@ void CJoystick::GetAxisEvents(const std::vector<JOYSTICK_STATE_ANALOG>& axes, st
       events.push_back(event);
     }
   }
-  
+
   // TODO: Look up mapped event
 
   m_state.axes.assign(axes.begin(), axes.end());

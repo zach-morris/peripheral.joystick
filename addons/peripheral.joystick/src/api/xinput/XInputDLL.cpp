@@ -41,7 +41,7 @@ CXInputDLL& CXInputDLL::Get(void)
 bool CXInputDLL::Load(void)
 {
   CLockObject lock(m_mutex);
-  
+
 
   m_strVersion = "1.4";
   m_dll = LoadLibrary("XInput1_4.dll");  // 1.4 Ships with Windows 8
@@ -53,7 +53,7 @@ bool CXInputDLL::Load(void)
 
   if (!m_dll)
     m_dll = LoadLibrary("bin\\XInput1_3.dll");
-  
+
   if (!m_dll)
   {
     esyslog("Failed to load XInput DLL");
@@ -84,7 +84,7 @@ bool CXInputDLL::Load(void)
 void CXInputDLL::Unload(void)
 {
   CLockObject lock(m_mutex);
-  
+
   if (m_dll)
     FreeLibrary(m_dll);
 
@@ -128,7 +128,7 @@ bool CXInputDLL::GetCapabilities(unsigned int controllerId, XINPUT_CAPABILITIES&
 {
   if (!m_getCaps)
     return false;
-  
+
   // TODO
   return false;
 }

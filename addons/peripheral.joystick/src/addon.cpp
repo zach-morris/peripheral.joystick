@@ -83,7 +83,7 @@ void ADDON_Destroy()
   CJoystickManager::Get().Deinitialize();
 
   CLog::Get().SetType(SYS_LOG_TYPE_CONSOLE);
-  
+
   SAFE_DELETE(PERIPHERAL);
   SAFE_DELETE(FRONTEND);
 }
