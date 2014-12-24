@@ -89,7 +89,7 @@ void CLog::SetPipe(ILog* pipe)
   delete m_pipe;
   m_pipe = pipe;
 
-  Log(SYS_LOG_DEBUG, "Log pipe set to %s from %s at level %s", TypeToString(newType), TypeToString(oldType), LevelToString(m_level));
+  Log(SYS_LOG_DEBUG, "Log pipe set to \"%s\" from \"%s\" at level \"%s\"", TypeToString(newType), TypeToString(oldType), LevelToString(m_level));
 }
 
 void CLog::SetLevel(SYS_LOG_LEVEL level)
