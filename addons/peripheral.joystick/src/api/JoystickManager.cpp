@@ -96,14 +96,17 @@ bool CJoystickManager::PerformJoystickScan(std::vector<CJoystick*>& joysticks)
 {
   CLockObject lock(m_joystickMutex);
 
-  bool bReturn(true);
+  bool bReturn(false);
 
   std::vector<CJoystick*> scanResults;
   for (std::vector<CJoystickInterface*>::iterator it = m_interfaces.begin(); it != m_interfaces.end(); ++it)
   {
-    bReturn &= (*it)->ScanForJoysticks(scanResults);
-    joysticks.insert(joysticks.end(), scanResults.begin(), scanResults.end()); // TODO
-    m_joysticks[*it] = scanResults; // TODO: Manage joysticks better
+    if ((*it)->ScanForJoysticks(scanResults))
+    {
+      bReturn = true;
+      joysticks.insert(joysticks.end(), scanResults.begin(), scanResults.end()); // TODO
+      m_joysticks[*it] = scanResults; // TODO: Manage joysticks better
+    }
   }
 
   return bReturn;
@@ -117,7 +120,7 @@ CJoystick* CJoystickManager::GetJoystick(unsigned int index) const
   {
     for (std::vector<CJoystick*>::const_iterator it2 = it->second.begin(); it2 != it->second.end(); ++it2)
     {
-      if ((*it2)->RequestedPlayer() == index) // TODO: Use index instead of requested player number
+      if ((*it2)->Index() == index)
         return *it2;
     }
   }
