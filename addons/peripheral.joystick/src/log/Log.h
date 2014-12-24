@@ -49,11 +49,14 @@ namespace JOYSTICK
     static CLog& Get(void);
     ~CLog(void);
 
-    void SetType(SYS_LOG_TYPE type);
+    bool SetType(SYS_LOG_TYPE type);
     void SetPipe(ILog* pipe);
     void SetLevel(SYS_LOG_LEVEL level);
 
     void Log(SYS_LOG_LEVEL level, const char* format, ...);
+
+    static const char* TypeToString(SYS_LOG_TYPE type);
+    static const char* LevelToString(SYS_LOG_LEVEL level);
 
   private:
     ILog*            m_pipe;

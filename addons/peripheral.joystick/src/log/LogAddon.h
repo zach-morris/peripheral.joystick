@@ -32,7 +32,7 @@ namespace JOYSTICK
   class CLogAddon : public ILog
   {
   public:
-    CLogAddon(ADDON::CHelper_libXBMC_addon* frontend) : m_frontend(frontend) { }
+    CLogAddon(ADDON::CHelper_libXBMC_addon* frontend);
     virtual ~CLogAddon(void) { }
 
     virtual void Log(SYS_LOG_LEVEL level, const char* logline);

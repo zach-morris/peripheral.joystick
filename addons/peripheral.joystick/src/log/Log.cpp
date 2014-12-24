@@ -36,7 +36,7 @@ using namespace PLATFORM;
 
 CLog::CLog(ILog* pipe)
  : m_pipe(pipe),
-   m_level(SYS_LOG_INFO)
+   m_level(SYS_LOG_DEBUG)
 {
 }
 
@@ -51,42 +51,57 @@ CLog::~CLog(void)
   SetPipe(NULL);
 }
 
-void CLog::SetType(SYS_LOG_TYPE type)
+bool CLog::SetType(SYS_LOG_TYPE type)
 {
   PLATFORM::CLockObject lock(m_mutex);
-  if (!m_pipe || m_pipe->Type() != type)
+  if (m_pipe && m_pipe->Type() == type)
+    return true; // Already set
+
+  switch (type)
   {
-    switch (type)
-    {
-    case SYS_LOG_TYPE_CONSOLE:
-      SetPipe(new CLogConsole);
-      break;
+  case SYS_LOG_TYPE_CONSOLE:
+    SetPipe(new CLogConsole);
+    break;
 #if defined(HAVE_SYSLOG)
-    case SYS_LOG_TYPE_SYSLOG:
-      SetPipe(new CLogSyslog);
-      break;
+  case SYS_LOG_TYPE_SYSLOG:
+    SetPipe(new CLogSyslog);
+    break;
 #endif
-    case SYS_LOG_TYPE_NULL:
-      SetPipe(NULL);
-      break;
-    case SYS_LOG_TYPE_ADDON: // Must be set through SetPipe() because CLogAddon has no default constructor
-    default:
-      break;
-    }
+  case SYS_LOG_TYPE_NULL:
+    SetPipe(NULL);
+    break;
+  case SYS_LOG_TYPE_ADDON: // Must be set through SetPipe() because CLogAddon has no default constructor
+  default:
+    Log(SYS_LOG_ERROR, "Failed to set log type to %s", TypeToString(type));
+    return false;
   }
+
+  return true;
 }
 
 void CLog::SetPipe(ILog* pipe)
 {
   PLATFORM::CLockObject lock(m_mutex);
+  
+  const SYS_LOG_TYPE newType = pipe   ? pipe->Type()   : SYS_LOG_TYPE_NULL;
+  const SYS_LOG_TYPE oldType = m_pipe ? m_pipe->Type() : SYS_LOG_TYPE_NULL;
+
   delete m_pipe;
   m_pipe = pipe;
+
+  Log(SYS_LOG_DEBUG, "Log pipe set to %s from %s at level %s", TypeToString(newType), TypeToString(oldType), LevelToString(m_level));
 }
 
 void CLog::SetLevel(SYS_LOG_LEVEL level)
 {
   PLATFORM::CLockObject lock(m_mutex);
+
+  const SYS_LOG_LEVEL newLevel = level;
+  const SYS_LOG_LEVEL oldLevel = m_level;
+
   m_level = level;
+
+  Log(SYS_LOG_DEBUG, "Log level set to %s from %s", LevelToString(newLevel), LevelToString(oldLevel));
 }
 
 void CLog::Log(SYS_LOG_LEVEL level, const char* format, ...)
@@ -107,4 +122,38 @@ void CLog::Log(SYS_LOG_LEVEL level, const char* format, ...)
 
   if (m_pipe)
     m_pipe->Log(level, buf);
+}
+
+const char* CLog::TypeToString(SYS_LOG_TYPE type)
+{
+  switch (type)
+  {
+  case SYS_LOG_TYPE_NULL:
+    return "null";
+  case SYS_LOG_TYPE_CONSOLE:
+    return "console";
+  case SYS_LOG_TYPE_SYSLOG:
+    return "syslog";
+  case SYS_LOG_TYPE_ADDON:
+    return "addon";
+  default:
+    return "unknown";
+  }
+}
+
+const char* CLog::LevelToString(SYS_LOG_LEVEL level)
+{
+  switch (level)
+  {
+  case SYS_LOG_NONE:
+    return "none";
+  case SYS_LOG_ERROR:
+    return "error";
+  case SYS_LOG_INFO:
+    return "info";
+  case SYS_LOG_DEBUG:
+    return "debug";
+  default:
+    return "unknown";
+  }
 }
