@@ -48,3 +48,11 @@
 #ifndef ARRAY_SIZE
   #define ARRAY_SIZE(x)  (sizeof(x) / sizeof((x)[0]))
 #endif
+
+#ifndef MIN
+  #define MIN(x, y)  ((y) < (x) ? (y) : (x))
+#endif
+
+#ifndef MAX
+  #define MAX(x, y)  ((y) > (x) ? (y) : (x))
+#endif

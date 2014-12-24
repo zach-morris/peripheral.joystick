@@ -23,11 +23,6 @@
 #include "log/Log.h"
 #include "utils/CommonMacros.h"
 
-#ifndef min
-  #include <algorithm>
-  using std::min
-#endif
-
 using namespace JOYSTICK;
 
 #define AXIS_MIN     -32768  /* minimum value for axis coordinate */
@@ -39,8 +34,8 @@ using namespace JOYSTICK;
 #define JOY_POV_SW   (JOY_POVBACKWARD + JOY_POVLEFT) / 2
 #define JOY_POV_NW   (JOY_POVLEFT + JOY_POV_360) / 2
 
-CJoystickDirectInput::CJoystickDirectInput(LPDIRECTINPUTDEVICE8           joystickDevice, 
-                                           const std::string&             strName, 
+CJoystickDirectInput::CJoystickDirectInput(LPDIRECTINPUTDEVICE8           joystickDevice,
+                                           const std::string&             strName,
                                            unsigned int                   requestedPlayer,
                                            CJoystickInterfaceDirectInput* api)
  : CJoystick(api),
@@ -78,7 +73,7 @@ bool CJoystickDirectInput::Initialize(void)
     esyslog("%s: Failed to enumerate objects", __FUNCTION__);
     return false;
   }
-  
+
   m_stateBuffer.buttons.assign(ButtonCount(), JOYSTICK_STATE_BUTTON());
   m_stateBuffer.hats.assign(HatCount(), JOYSTICK_STATE_HAT());
   m_stateBuffer.axes.assign(AxisCount(), JOYSTICK_STATE_ANALOG());
@@ -176,7 +171,7 @@ bool CJoystickDirectInput::GetEvents(std::vector<ADDON::PeripheralEvent>& events
   // Gamepad axes
   std::vector<JOYSTICK_STATE_ANALOG>& axes = m_stateBuffer.axes;
   const long amounts[] = { js.lX, js.lY, js.lZ, js.lRx, js.lRy, js.lRz, js.rglSlider[0], js.rglSlider[1] };
-  for (unsigned int a = 0; a < min(AxisCount(), ARRAY_SIZE(amounts)); a++)
+  for (unsigned int a = 0; a < MIN(AxisCount(), ARRAY_SIZE(amounts)); a++)
     axes[a] = NormalizeAxis(amounts[a], AXIS_MAX);
   GetAxisEvents(axes, events);
 
