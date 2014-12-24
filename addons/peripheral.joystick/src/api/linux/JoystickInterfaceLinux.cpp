@@ -100,7 +100,7 @@ bool CJoystickInterfaceLinux::PerformJoystickScan(std::vector<CJoystick*>& joyst
   if (pd == NULL)
   {
     esyslog("%s: can't open %s (errno=%d)", __FUNCTION__, inputDir.c_str(), errno);
-    return PERIPHERAL_ERROR_FAILED;
+    return false;
   }
 
   dirent *pDirent;
@@ -212,7 +212,7 @@ bool CJoystickInterfaceLinux::PerformJoystickScan(std::vector<CJoystick*>& joyst
 
   closedir(pd);
 
-  return PERIPHERAL_NO_ERROR;
+  return true;
 }
 
 bool CJoystickInterfaceLinux::GetButtonMap(int fd, uint16_t *buttonMap)
@@ -233,7 +233,7 @@ bool CJoystickInterfaceLinux::GetButtonMap(int fd, uint16_t *buttonMap)
 
 bool CJoystickInterfaceLinux::GetAxisMap(int fd, uint8_t *axisMap)
 {
-  return ioctl(fd, JSIOCGAXMAP, axisMap);
+  return ioctl(fd, JSIOCGAXMAP, axisMap) >= 0;
 }
 
 bool CJoystickInterfaceLinux::DetermineIoctl(int fd, const unsigned long *ioctls, uint16_t *buttonMap, unsigned long &ioctl_used)
