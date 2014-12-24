@@ -68,6 +68,9 @@ ADDON_STATUS ADDON_Create(void* callbacks, void* props)
 
   CLog::Get().SetPipe(new CLogAddon(FRONTEND));
 
+  if (!CJoystickManager::Get().Initialize())
+    return ADDON_STATUS_PERMANENT_FAILURE;
+
   return ADDON_STATUS_OK;
 }
 
@@ -77,6 +80,8 @@ void ADDON_Stop()
 
 void ADDON_Destroy()
 {
+  CJoystickManager::Get().Deinitialize();
+
   CLog::Get().SetType(SYS_LOG_TYPE_CONSOLE);
   
   SAFE_DELETE(PERIPHERAL);
