@@ -55,7 +55,7 @@ bool CJoystickInterfaceDirectInput::Initialize(void)
   HRESULT hr;
 
   hr = DirectInput8Create(GetModuleHandle(NULL), DIRECTINPUT_VERSION, IID_IDirectInput8, reinterpret_cast<VOID**>(&m_pDirectInput), NULL);
-  if (FAILED(hr))
+  if (FAILED(hr) || m_pDirectInput == NULL)
   {
     esyslog("%s: Failed to create DirectInput", __FUNCTION__);
     return false;
