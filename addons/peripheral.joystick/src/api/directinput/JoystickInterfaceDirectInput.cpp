@@ -123,7 +123,7 @@ BOOL CALLBACK CJoystickInterfaceDirectInput::EnumJoysticksCallback(const DIDEVIC
 
   HWND hWnd = GetMainWindowHandle();
 
-  dsyslog("********** HWND: 0x%08x", hWnd); // TODO: temporary
+  dsyslog("********** HWND: %p", hWnd); // TODO: temporary
 
   if (!hWnd || !IsWindow(hWnd))
     return DIENUM_CONTINUE;
