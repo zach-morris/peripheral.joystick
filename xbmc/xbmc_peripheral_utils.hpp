@@ -226,8 +226,9 @@ namespace ADDON
   class Joystick : public Peripheral
   {
   public:
-    Joystick(const std::string& strName = "")
+    Joystick(const std::string& strProvider = "", const std::string& strName = "")
     : Peripheral(PERIPHERAL_TYPE_JOYSTICK, strName),
+      m_strProvider(strProvider),
       m_requestedPlayer(0),
       m_buttonCount(0),
       m_hatCount(0),
@@ -237,6 +238,7 @@ namespace ADDON
 
     Joystick(JOYSTICK_INFO& info)
     : Peripheral(info.peripheral_info),
+      m_strProvider(info.provider ? info.provider : ""),
       m_requestedPlayer(info.requested_player_num),
       m_buttonCount(info.virtual_layout.button_count),
       m_hatCount(info.virtual_layout.hat_count),
@@ -253,6 +255,7 @@ namespace ADDON
 
     virtual ~Joystick(void) { }
 
+    const std::string& Provider(void) const        { return m_strProvider; }
     unsigned int       RequestedPlayer(void) const { return m_requestedPlayer; }
     unsigned int       ButtonCount(void) const     { return m_buttonCount; }
     unsigned int       HatCount(void) const        { return m_hatCount; }
@@ -260,6 +263,7 @@ namespace ADDON
 
     const std::vector<JoystickButton>& Buttons(void) const { return m_buttons; }
 
+    void SetProvider(const std::string& strProvider)      { m_strProvider     = strProvider; }
     void SetRequestedPlayer(unsigned int requestedPlayer) { m_requestedPlayer = requestedPlayer; }
     void SetButtonCount(unsigned int buttonCount)         { m_buttonCount     = buttonCount; }
     void SetHatCount(unsigned int hatCount)               { m_hatCount        = hatCount; }
@@ -271,11 +275,14 @@ namespace ADDON
     {
       Peripheral::ToStruct(info.peripheral_info);
 
+      info.provider = new char[m_strProvider.size() + 1];
       info.requested_player_num         = m_requestedPlayer;
       info.virtual_layout.button_count  = m_buttonCount;
       info.virtual_layout.hat_count     = m_hatCount;
       info.virtual_layout.axis_count    = m_axisCount;
       info.physical_layout.button_count = m_buttons.size();
+
+      std::strcpy(info.provider, m_strProvider.c_str());
 
       JoystickButtons::ToStructs(m_buttons, &info.physical_layout.buttons);
     }
@@ -283,10 +290,14 @@ namespace ADDON
     static void FreeStruct(JOYSTICK_INFO& info)
     {
       Peripheral::FreeStruct(info.peripheral_info);
+
+      SAFE_DELETE_ARRAY(info.provider);
+
       JoystickButtons::FreeStructs(info.physical_layout.button_count, info.physical_layout.buttons);
     }
 
   private:
+    std::string                 m_strProvider;
     unsigned int                m_requestedPlayer;
     unsigned int                m_buttonCount;
     unsigned int                m_hatCount;

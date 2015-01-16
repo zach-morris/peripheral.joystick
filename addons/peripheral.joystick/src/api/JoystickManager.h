@@ -22,7 +22,6 @@
 #include "platform/threads/mutex.h"
 #include "xbmc_peripheral_utils.hpp"
 
-#include <map>
 #include <vector>
 
 namespace JOYSTICK
@@ -33,7 +32,7 @@ namespace JOYSTICK
   class CJoystickManager
   {
   private:
-    CJoystickManager(void) { }
+    CJoystickManager(void) : m_nextJoystickIndex(0) { }
 
   public:
     static CJoystickManager& Get(void);
@@ -52,10 +51,9 @@ namespace JOYSTICK
     bool GetEvents(std::vector<ADDON::PeripheralEvent>& events);
 
   private:
-    typedef std::map<CJoystickInterface*, std::vector<CJoystick*> > JoystickMap; // TODO
-
-    std::vector<CJoystickInterface*>   m_interfaces;
-    JoystickMap                        m_joysticks;
-    mutable PLATFORM::CMutex           m_joystickMutex;
+    std::vector<CJoystickInterface*> m_interfaces;
+    std::vector<CJoystick*>          m_joysticks;
+    unsigned int                     m_nextJoystickIndex;
+    mutable PLATFORM::CMutex         m_joystickMutex;
   };
 }

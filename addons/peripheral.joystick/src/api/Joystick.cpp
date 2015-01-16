@@ -32,6 +32,7 @@ CJoystick::CJoystick(CJoystickInterface* api)
  : m_api(api)
 {
   ASSERT(m_api);
+  SetProvider(api->Name());
 }
 
 bool CJoystick::Initialize(void)
