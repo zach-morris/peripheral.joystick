@@ -148,15 +148,20 @@ bool CJoystickManager::PerformJoystickScan(std::vector<CJoystick*>& joysticks)
       // Add new joysticks
       for (std::vector<CJoystick*>::iterator itResult = scanResults.begin(); itResult != scanResults.end(); ++itResult)
       {
+        bool bSuccess(false);
+
         if (std::find_if(m_joysticks.begin(), m_joysticks.end(), ScanResultEqual(*itResult)) == m_joysticks.end())
         {
           (*itResult)->SetIndex(m_nextJoystickIndex++);
-          m_joysticks.push_back(*itResult);
+          if ((*itResult)->Initialize())
+          {
+            m_joysticks.push_back(*itResult);
+            bSuccess = true;
+          }
         }
-        else
-        {
+
+        if (!bSuccess)
           delete *itResult;
-        }
       }
     }
   }
