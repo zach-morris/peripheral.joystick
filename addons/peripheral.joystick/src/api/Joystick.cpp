@@ -90,7 +90,7 @@ void CJoystick::GetAxisEvents(const std::vector<JOYSTICK_STATE_AXIS>& axes, std:
 
   for (unsigned int i = 0; i < axes.size(); i++)
   {
-    if (std::abs(axes[i] - m_state.axes[i]) < ANALOG_EPSILON)
+    if (std::abs(axes[i] - m_state.axes[i]) >= ANALOG_EPSILON)
       events.push_back(ADDON::PeripheralEvent(Index(), i, axes[i]));
   }
 
