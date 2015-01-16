@@ -49,7 +49,7 @@ CJoystickXInput::CJoystickXInput(unsigned int controllerID, CJoystickInterfaceXI
 bool CJoystickXInput::Initialize(void)
 {
   m_stateBuffer.buttons.assign(ButtonCount(), JOYSTICK_STATE_BUTTON());
-  m_stateBuffer.axes.assign(ButtonCount(), JOYSTICK_STATE_AXIS());
+  m_stateBuffer.axes.assign(AxisCount(), JOYSTICK_STATE_AXIS());
 
   return CJoystick::Initialize();
 }
