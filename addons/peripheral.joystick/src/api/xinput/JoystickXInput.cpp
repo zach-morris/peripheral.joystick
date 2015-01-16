@@ -49,7 +49,7 @@ CJoystickXInput::CJoystickXInput(unsigned int controllerID, CJoystickInterfaceXI
 bool CJoystickXInput::Initialize(void)
 {
   m_stateBuffer.buttons.assign(ButtonCount(), JOYSTICK_STATE_BUTTON());
-  m_stateBuffer.axes.assign(ButtonCount(), JOYSTICK_STATE_ANALOG());
+  m_stateBuffer.axes.assign(ButtonCount(), JOYSTICK_STATE_AXIS());
 
   return CJoystick::Initialize();
 }
@@ -83,7 +83,7 @@ bool CJoystickXInput::GetEvents(std::vector<ADDON::PeripheralEvent>& events)
   // TODO: dyload XInput lib to access guide button through hidden API
   GetButtonEvents(buttons, events);
 
-  std::vector<JOYSTICK_STATE_ANALOG>& axes = m_stateBuffer.axes;
+  std::vector<JOYSTICK_STATE_AXIS>& axes = m_stateBuffer.axes;
   axes[0] = NormalizeAxis(controllerState.Gamepad.sThumbLX, MAX_AXIS);
   axes[1] = NormalizeAxis(controllerState.Gamepad.sThumbLY, MAX_AXIS);
   axes[2] = NormalizeAxis(controllerState.Gamepad.sThumbRX, MAX_AXIS);

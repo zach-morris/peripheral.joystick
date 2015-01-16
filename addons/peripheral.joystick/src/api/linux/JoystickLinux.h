@@ -40,7 +40,7 @@ namespace JOYSTICK
 
   private:
     void ReadEvents(std::vector<JOYSTICK_STATE_BUTTON>& buttons,
-                    std::vector<JOYSTICK_STATE_ANALOG>& axes);
+                    std::vector<JOYSTICK_STATE_AXIS>& axes);
 
     int         m_fd;
     std::string m_strFilename; // For debugging purposes

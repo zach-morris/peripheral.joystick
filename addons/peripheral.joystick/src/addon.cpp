@@ -203,19 +203,22 @@ void FreeEvents(unsigned int event_count, PERIPHERAL_EVENT* events)
   ADDON::PeripheralEvents::FreeStructs(event_count, events);
 }
 
-PERIPHERAL_ERROR GetButtonMap(unsigned int index, JOYSTICK_BUTTON_MAP* button_map)
+JOYSTICK_ID GetAction(unsigned int index, JOYSTICK_BUTTON_PRIMITIVE* source)
 {
-  return PERIPHERAL_ERROR_NOT_IMPLEMENTED;
+  if (!source)
+    return JOYSTICK_ID_BUTTON_UNKNOWN;
+
+  return JOYSTICK_ID_BUTTON_UNKNOWN;
 }
 
-PERIPHERAL_ERROR FreeButtonMap(JOYSTICK_BUTTON_MAP* button_map)
+JOYSTICK_ID GetAnalogStick(unsigned int index, unsigned int axis_index, unsigned int* horiz_index, unsigned int* vert_index)
 {
-  return PERIPHERAL_ERROR_NOT_IMPLEMENTED;
+  return JOYSTICK_ID_BUTTON_UNKNOWN;
 }
 
-PERIPHERAL_ERROR UpdateButtonMap(unsigned int index, JOYSTICK_BUTTON_MAP_PAIR* key_value_pair)
+JOYSTICK_ID GetAccelerometer(unsigned int index, unsigned int axis_index, unsigned int* x_index, unsigned int* y_index, unsigned int* z_index)
 {
-  return PERIPHERAL_ERROR_NOT_IMPLEMENTED;
+  return JOYSTICK_ID_BUTTON_UNKNOWN;
 }
 
 } // extern "C"

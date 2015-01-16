@@ -76,7 +76,7 @@ bool CJoystickDirectInput::Initialize(void)
 
   m_stateBuffer.buttons.assign(ButtonCount(), JOYSTICK_STATE_BUTTON());
   m_stateBuffer.hats.assign(HatCount(), JOYSTICK_STATE_HAT());
-  m_stateBuffer.axes.assign(AxisCount(), JOYSTICK_STATE_ANALOG());
+  m_stateBuffer.axes.assign(AxisCount(), JOYSTICK_STATE_AXIS());
 
   return CJoystick::Initialize();
 }
@@ -169,7 +169,7 @@ bool CJoystickDirectInput::GetEvents(std::vector<ADDON::PeripheralEvent>& events
   GetHatEvents(hats, events);
 
   // Gamepad axes
-  std::vector<JOYSTICK_STATE_ANALOG>& axes = m_stateBuffer.axes;
+  std::vector<JOYSTICK_STATE_AXIS>& axes = m_stateBuffer.axes;
   const long amounts[] = { js.lX, js.lY, js.lZ, js.lRx, js.lRy, js.lRz, js.rglSlider[0], js.rglSlider[1] };
   for (unsigned int a = 0; a < MIN(AxisCount(), ARRAY_SIZE(amounts)); a++)
     axes[a] = NormalizeAxis(amounts[a], AXIS_MAX);

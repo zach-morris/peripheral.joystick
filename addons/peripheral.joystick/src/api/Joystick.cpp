@@ -38,7 +38,7 @@ bool CJoystick::Initialize(void)
 {
   m_state.buttons.assign(ButtonCount(), JOYSTICK_STATE_BUTTON());
   m_state.hats.assign(HatCount(), JOYSTICK_STATE_HAT());
-  m_state.axes.assign(AxisCount(), JOYSTICK_STATE_ANALOG());
+  m_state.axes.assign(AxisCount(), JOYSTICK_STATE_AXIS());
 
   isyslog("Initialized joystick \"%s\" (%s), axes: %u, hats: %u, buttons: %u",
     Name().c_str(), m_api->Name().c_str(), AxisCount(), HatCount(), ButtonCount());
@@ -57,15 +57,8 @@ void CJoystick::GetButtonEvents(const std::vector<JOYSTICK_STATE_BUTTON>& button
   for (unsigned int i = 0; i < buttons.size(); i++)
   {
     if (buttons[i] != m_state.buttons[i])
-    {
-      ADDON::PeripheralEvent event(JOYSTICK_EVENT_TYPE_VIRTUAL_BUTTON, Index());
-      event.SetVirtualIndex(i);
-      event.SetDigitalState(buttons[i]);
-      events.push_back(event);
-    }
+      events.push_back(ADDON::PeripheralEvent(Index(), i, buttons[i]));
   }
-
-  // TODO: Look up mapped event
 
   m_state.buttons.assign(buttons.begin(), buttons.end());
 }
@@ -81,20 +74,13 @@ void CJoystick::GetHatEvents(const std::vector<JOYSTICK_STATE_HAT>& hats, std::v
   for (unsigned int i = 0; i < hats.size(); i++)
   {
     if (hats[i] != m_state.hats[i])
-    {
-      ADDON::PeripheralEvent event(JOYSTICK_EVENT_TYPE_VIRTUAL_HAT, Index());
-      event.SetVirtualIndex(i);
-      event.SetHatState(hats[i]);
-      events.push_back(event);
-    }
+      events.push_back(ADDON::PeripheralEvent(Index(), i, hats[i]));
   }
-
-  // TODO: Look up mapped event
 
   m_state.hats.assign(hats.begin(), hats.end());
 }
 
-void CJoystick::GetAxisEvents(const std::vector<JOYSTICK_STATE_ANALOG>& axes, std::vector<ADDON::PeripheralEvent>& events)
+void CJoystick::GetAxisEvents(const std::vector<JOYSTICK_STATE_AXIS>& axes, std::vector<ADDON::PeripheralEvent>& events)
 {
   if (axes.size() != m_state.axes.size())
   {
@@ -105,29 +91,22 @@ void CJoystick::GetAxisEvents(const std::vector<JOYSTICK_STATE_ANALOG>& axes, st
   for (unsigned int i = 0; i < axes.size(); i++)
   {
     if (std::abs(axes[i] - m_state.axes[i]) < ANALOG_EPSILON)
-    {
-      ADDON::PeripheralEvent event(JOYSTICK_EVENT_TYPE_VIRTUAL_AXIS, Index());
-      event.SetVirtualIndex(i);
-      event.SetAnalogState(axes[i]);
-      events.push_back(event);
-    }
+      events.push_back(ADDON::PeripheralEvent(Index(), i, axes[i]));
   }
-
-  // TODO: Look up mapped event
 
   m_state.axes.assign(axes.begin(), axes.end());
 }
 
-JOYSTICK_STATE_ANALOG CJoystick::NormalizeAxis(long value, long maxAxisAmount)
+JOYSTICK_STATE_AXIS CJoystick::NormalizeAxis(long value, long maxAxisAmount)
 {
   value = CONSTRAIN(-maxAxisAmount, value, maxAxisAmount);
 
-  const JOYSTICK_STATE_ANALOG deadzoneRange = 0.2f; // TODO: Get deadzone from settings
+  const JOYSTICK_STATE_AXIS deadzoneRange = 0.2f; // TODO: Get deadzone from settings
 
   if (value > deadzoneRange)
-    return (JOYSTICK_STATE_ANALOG)(value - deadzoneRange) / (float)(maxAxisAmount - deadzoneRange);
+    return (JOYSTICK_STATE_AXIS)(value - deadzoneRange) / (float)(maxAxisAmount - deadzoneRange);
   else if (value < -deadzoneRange)
-    return (JOYSTICK_STATE_ANALOG)(value + deadzoneRange) / (float)(maxAxisAmount - deadzoneRange);
+    return (JOYSTICK_STATE_AXIS)(value + deadzoneRange) / (float)(maxAxisAmount - deadzoneRange);
   else
-    return JOYSTICK_STATE_ANALOG();
+    return JOYSTICK_STATE_AXIS();
 }

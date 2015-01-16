@@ -43,9 +43,9 @@ namespace JOYSTICK
   protected:
     void GetButtonEvents(const std::vector<JOYSTICK_STATE_BUTTON>& buttons, std::vector<ADDON::PeripheralEvent>& events);
     void GetHatEvents(const std::vector<JOYSTICK_STATE_HAT>& hats, std::vector<ADDON::PeripheralEvent>& events);
-    void GetAxisEvents(const std::vector<JOYSTICK_STATE_ANALOG>& axes, std::vector<ADDON::PeripheralEvent>& events);
+    void GetAxisEvents(const std::vector<JOYSTICK_STATE_AXIS>& axes, std::vector<ADDON::PeripheralEvent>& events);
 
-    static JOYSTICK_STATE_ANALOG NormalizeAxis(long value, long maxAxisAmount);
+    static JOYSTICK_STATE_AXIS NormalizeAxis(long value, long maxAxisAmount);
 
     CJoystickInterface* const m_api;
 
@@ -53,7 +53,7 @@ namespace JOYSTICK
     {
       std::vector<JOYSTICK_STATE_BUTTON> buttons;
       std::vector<JOYSTICK_STATE_HAT>    hats;
-      std::vector<JOYSTICK_STATE_ANALOG> axes;
+      std::vector<JOYSTICK_STATE_AXIS>   axes;
     };
 
     JoystickState m_stateBuffer;

@@ -35,7 +35,7 @@ bool CJoystickSDL::GetEvents(std::vector<ADDON::PeripheralEvent>& events)
 {
   std::vector<JOYSTICK_STATE_BUTTON>& buttons = m_stateBuffer.buttons;
   std::vector<JOYSTICK_STATE_HAT>&    hats    = m_stateBuffer.hats;
-  std::vector<JOYSTICK_STATE_ANALOG>& axes    = m_stateBuffer.axes;
+  std::vector<JOYSTICK_STATE_AXIS>&   axes    = m_stateBuffer.axes;
 
   // Update the state of all opened joysticks
   SDL_JoystickUpdate();
@@ -63,16 +63,16 @@ bool CJoystickSDL::GetEvents(std::vector<ADDON::PeripheralEvent>& events)
         hats[h] = JOYSTICK_STATE_HAT_LEFT;
         break;
       case SDL_HAT_RIGHTUP:
-        hats[h] = JOYSTICK_STATE_HAT_UP_RIGHT;
+        hats[h] = JOYSTICK_STATE_HAT_RIGHT_UP;
         break;
       case SDL_HAT_RIGHTDOWN:
-        hats[h] = JOYSTICK_STATE_HAT_DOWN_RIGHT;
+        hats[h] = JOYSTICK_STATE_HAT_RIGHT_DOWN;
         break;
       case SDL_HAT_LEFTUP:
-        hats[h] = JOYSTICK_STATE_HAT_UP_LEFT;
+        hats[h] = JOYSTICK_STATE_HAT_LEFT_UP;
         break;
       case SDL_HAT_LEFTDOWN:
-        hats[h] = JOYSTICK_STATE_HAT_DOWN_LEFT;
+        hats[h] = JOYSTICK_STATE_HAT_LEFT_DOWN;
         break;
       case SDL_HAT_CENTERED:
       default:
