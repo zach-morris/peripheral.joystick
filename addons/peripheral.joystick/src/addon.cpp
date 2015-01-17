@@ -203,22 +203,33 @@ void FreeEvents(unsigned int event_count, PERIPHERAL_EVENT* events)
   ADDON::PeripheralEvents::FreeStructs(event_count, events);
 }
 
-JOYSTICK_ID GetAction(unsigned int index, JOYSTICK_BUTTON_PRIMITIVE* source)
+PERIPHERAL_ERROR GetButtonMap(unsigned int index, JOYSTICK_BUTTONMAP* button_map)
 {
-  if (!source)
-    return JOYSTICK_ID_BUTTON_UNKNOWN;
+  if (!button_map)
+    return PERIPHERAL_ERROR_INVALID_PARAMETERS;
 
-  return JOYSTICK_ID_BUTTON_UNKNOWN;
+  ADDON::ButtonMap buttonMap; // TODO
+
+  ADDON::ButtonMaps::ToStruct(buttonMap, *button_map);
+
+  return PERIPHERAL_NO_ERROR;
 }
 
-JOYSTICK_ID GetAnalogStick(unsigned int index, unsigned int axis_index, unsigned int* horiz_index, unsigned int* vert_index)
+void FreeButtonMap(JOYSTICK_BUTTONMAP* button_map)
 {
-  return JOYSTICK_ID_BUTTON_UNKNOWN;
+  ADDON::ButtonMaps::FreeStruct(*button_map);
 }
 
-JOYSTICK_ID GetAccelerometer(unsigned int index, unsigned int axis_index, unsigned int* x_index, unsigned int* y_index, unsigned int* z_index)
+PERIPHERAL_ERROR UpdateButtonMap(JOYSTICK_ID key, JOYSTICK_BUTTONMAP_VALUE* value)
 {
-  return JOYSTICK_ID_BUTTON_UNKNOWN;
+  /* TODO
+  if (value)
+    Update(key, ADDON::ButtonMapValue(*value));
+  else
+    Remove(key);
+  */
+
+  return PERIPHERAL_NO_ERROR;
 }
 
 } // extern "C"
