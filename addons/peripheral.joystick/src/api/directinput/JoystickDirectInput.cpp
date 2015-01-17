@@ -36,13 +36,11 @@ using namespace JOYSTICK;
 
 CJoystickDirectInput::CJoystickDirectInput(LPDIRECTINPUTDEVICE8           joystickDevice,
                                            const std::string&             strName,
-                                           unsigned int                   requestedPlayer,
                                            CJoystickInterfaceDirectInput* api)
  : CJoystick(api),
    m_joystickDevice(joystickDevice)
 {
   SetName(strName);
-  SetRequestedPlayer(requestedPlayer);
 }
 
 bool CJoystickDirectInput::Initialize(void)

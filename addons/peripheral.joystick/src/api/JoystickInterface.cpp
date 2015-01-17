@@ -46,13 +46,7 @@ bool CJoystickInterface::ScanForJoysticks(std::vector<CJoystick*>& results)
 
 void CJoystickInterface::AddScanResult(CJoystick* joystick)
 {
-  joystick->SetRequestedPlayer(m_scanResults.size() + 1);
   m_scanResults.push_back(joystick);
-}
-
-unsigned int CJoystickInterface::ScanResultCount(void) const
-{
-  return m_scanResults.size();
 }
 
 void CJoystickInterface::GetScanResults(std::vector<CJoystick*>& joysticks) const

@@ -40,7 +40,7 @@ CJoystickXInput::CJoystickXInput(unsigned int controllerID, CJoystickInterfaceXI
    m_dwPacketNumber(0)
 {
   SetName(XINPUT_ALIAS);
-  SetRequestedPlayer(m_controllerID + 1);
+  SetRequestedPort(m_controllerID + 1);
   SetButtonCount(BUTTON_COUNT);
   SetHatCount(HAT_COUNT);
   SetAxisCount(AXIS_COUNT);

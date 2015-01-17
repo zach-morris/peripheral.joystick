@@ -33,7 +33,6 @@ namespace JOYSTICK
   public:
     CJoystickDirectInput(LPDIRECTINPUTDEVICE8           joystickDevice,
                          const std::string&             strName,
-                         unsigned int                   requestedPlayer,
                          CJoystickInterfaceDirectInput* api);
 
     virtual ~CJoystickDirectInput(void) { Deinitialize(); }

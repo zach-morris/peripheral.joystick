@@ -43,7 +43,6 @@ namespace JOYSTICK
 
     // Helper functions to offer a buffer for device scanners that require static callbacks
     void AddScanResult(CJoystick* joystick);
-    unsigned int ScanResultCount(void) const;
     void GetScanResults(std::vector<CJoystick*>& joysticks) const;
     void ClearScanResults(void);
 
