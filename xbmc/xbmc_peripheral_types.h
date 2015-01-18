@@ -122,8 +122,8 @@ extern "C"
     JOYSTICK_ID_BUTTON_B,                /*!< @brief corresponds to B (generic) or Circle (Sony) */
     JOYSTICK_ID_BUTTON_X,                /*!< @brief corresponds to C or X (generic), Square (Sony), C-down (N64) or One (Wii)*/
     JOYSTICK_ID_BUTTON_Y,                /*!< @brief corresponds to Y (generic), Triangle (Sony), C-left (N64) or Two (Wii) */
-    //JOYSTICK_ID_BUTTON_C,                /*!< @brief corresponds to Black (Xbox) or C-right (N64) */
-    //JOYSTICK_ID_BUTTON_Z,                /*!< @brief corresponds to White (Xbox) or C-up (N64) */
+    JOYSTICK_ID_BUTTON_C,                /*!< @brief corresponds to Black (Xbox) or C-right (N64) */
+    JOYSTICK_ID_BUTTON_Z,                /*!< @brief corresponds to White (Xbox) or C-up (N64) */
     JOYSTICK_ID_BUTTON_START,            /*!< @brief corresponds to Start (generic) */
     JOYSTICK_ID_BUTTON_SELECT,           /*!< @brief corresponds to Select (generic) or Back (Xbox) */
     JOYSTICK_ID_BUTTON_HOME,             /*!< @brief corresponds to Guide (Xbox) or Analog (Sony) */
@@ -137,45 +137,19 @@ extern "C"
     JOYSTICK_ID_BUTTON_R_STICK,          /*!< @brief corresponds to Right stick (Xbox, Sony) */
     JOYSTICK_ID_TRIGGER_L,               /*!< @brief corresponds to Left trigger (generic) or L2 (Sony) */
     JOYSTICK_ID_TRIGGER_R,               /*!< @brief corresponds to Right trigger (generic) or R2 (Sony) */
-    JOYSTICK_ID_ANALOG_STICK_LEFT,       /*!< @brief corresponds to Left analog stick */
-    JOYSTICK_ID_ANALOG_STICK_RIGHT,      /*!< @brief corresponds to Right analog stick */
+    JOYSTICK_ID_ANALOG_STICK_L,          /*!< @brief corresponds to Left analog stick */
+    JOYSTICK_ID_ANALOG_STICK_R,          /*!< @brief corresponds to Right analog stick */
     JOYSTICK_ID_ACCELEROMETER,           /*!< @brief corresponds to Accelerometer (Wii/Sixaxis) */
   } JOYSTICK_ID;
 
-  typedef enum JOYSTICK_BUTTON_TYPE
-  {
-    JOYSTICK_BUTTON_TYPE_UNKNOWN = 0,   /*!< @brief No data on button */
-    JOYSTICK_BUTTON_TYPE_DIGITAL,       /*!< @brief Digital button */
-    JOYSTICK_BUTTON_TYPE_ANALOG,        /*!< @brief Pressure-sensitive button or trigger */
-  } JOYSTICK_BUTTON_TYPE;
-
-  typedef struct JOYSTICK_BUTTON
-  {
-    JOYSTICK_ID             id;           /*!< @brief the physical button ID */
-    JOYSTICK_BUTTON_TYPE    type;         /*!< @brief button type */
-    char*                   label;        /*!< @brief the label, e.g. "X" or "Square" for JOYSTICK_ID_BUTTON_3 */
-  } ATTRIBUTE_PACKED JOYSTICK_BUTTON;
-
-  typedef struct JOYSTICK_VIRTUAL_LAYOUT
-  {
-    unsigned int    button_count;     /*!< @brief number of buttons reported by the driver */
-    unsigned int    hat_count;        /*!< @brief number of hats reported by the driver */
-    unsigned int    axis_count;       /*!< @brief number of axes reported by the driver */
-  } ATTRIBUTE_PACKED JOYSTICK_VIRTUAL_LAYOUT;
-
-  typedef struct JOYSTICK_PHYSICAL_LAYOUT
-  {
-    unsigned int           button_count;       /*!< @brief the number of buttons in this joystick map */
-    JOYSTICK_BUTTON*       buttons;            /*!< @brief the button mappings */
-  } ATTRIBUTE_PACKED JOYSTICK_PHYSICAL_LAYOUT;
-
   typedef struct JOYSTICK_INFO
   {
-    PERIPHERAL_INFO          peripheral_info;    /*!< @brief inherited info */
-    char*                    provider;           /*!< @brief name of the interface providing the joystick */
-    unsigned int             requested_port_num; /*!< @brief requested port number (such as for 360 controllers), or NO_PORT_REQUESTED */
-    JOYSTICK_VIRTUAL_LAYOUT  virtual_layout;
-    JOYSTICK_PHYSICAL_LAYOUT physical_layout;
+    PERIPHERAL_INFO peripheral_info;    /*!< @brief inherited info */
+    char*           provider;           /*!< @brief name of the interface providing the joystick */
+    unsigned int    requested_port_num; /*!< @brief requested port number (such as for 360 controllers), or NO_PORT_REQUESTED */
+    unsigned int    button_count;       /*!< @brief number of buttons reported by the driver */
+    unsigned int    hat_count;          /*!< @brief number of hats reported by the driver */
+    unsigned int    axis_count;         /*!< @brief number of axes reported by the driver */
   } ATTRIBUTE_PACKED JOYSTICK_INFO;
 
   typedef enum JOYSTICK_EVENT_TYPE
@@ -261,7 +235,7 @@ extern "C"
 
     struct semiaxis
     {
-      unsigned int index;
+      unsigned int                index;
       JOYSTICK_SEMIAXIS_DIRECTION direction;
     };
 
