@@ -208,7 +208,15 @@ PERIPHERAL_ERROR GetButtonMap(unsigned int index, JOYSTICK_BUTTONMAP* button_map
   if (!button_map)
     return PERIPHERAL_ERROR_INVALID_PARAMETERS;
 
-  ADDON::ButtonMap buttonMap; // TODO
+  CJoystick* joystick = CJoystickManager::Get().GetJoystick(index);
+  if (!joystick)
+    return PERIPHERAL_ERROR_NOT_CONNECTED;
+
+  ADDON::ButtonMap buttonMap;
+  /* TODO
+  if (!GetButtonMap(joystick, buttonMap))
+    return PERIPHERAL_ERROR_FAILED;
+  */
 
   ADDON::ButtonMaps::ToStruct(buttonMap, *button_map);
 
@@ -220,16 +228,22 @@ void FreeButtonMap(JOYSTICK_BUTTONMAP* button_map)
   ADDON::ButtonMaps::FreeStruct(*button_map);
 }
 
-PERIPHERAL_ERROR UpdateButtonMap(JOYSTICK_ID key, JOYSTICK_BUTTONMAP_VALUE* value)
+PERIPHERAL_ERROR UpdateButtonMap(unsigned int index, JOYSTICK_ID key, JOYSTICK_BUTTONMAP_VALUE* value)
 {
+  CJoystick* joystick = CJoystickManager::Get().GetJoystick(index);
+  if (!joystick)
+    return PERIPHERAL_ERROR_NOT_CONNECTED;
+
+  bool bSuccess(false);
+
   /* TODO
   if (value)
-    Update(key, ADDON::ButtonMapValue(*value));
+    bSuccess = Update(joystick, key, ADDON::ButtonMapValue(*value));
   else
-    Remove(key);
+    bSuccess = Remove(joystick, key);
   */
 
-  return PERIPHERAL_NO_ERROR;
+  return bSuccess ? PERIPHERAL_NO_ERROR : PERIPHERAL_ERROR_FAILED;
 }
 
 } // extern "C"
