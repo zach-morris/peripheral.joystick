@@ -85,9 +85,6 @@
     <ClInclude Include="..\..\src\api\xinput\JoystickXInput.h">
       <Filter>Source Files\api\xinput</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\keymapper\KeyMapper.h">
-      <Filter>Source Files\keymapper</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\storage\frontend\DatabaseFrontend.h">
       <Filter>Source Files\storage\frontend</Filter>
     </ClInclude>
@@ -150,9 +147,6 @@
     <Filter Include="Source Files\api">
       <UniqueIdentifier>{9e52d2ff-88e8-49e3-9ac5-8b7ce61d8566}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\keymapper">
-      <UniqueIdentifier>{720e16c9-5428-4695-ba5d-105b5f021f81}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\storage">
       <UniqueIdentifier>{1e89c341-0aa9-4722-873c-b2d95f3aeffc}</UniqueIdentifier>
     </Filter>
@@ -184,9 +178,6 @@
     </ClCompile>
     <ClCompile Include="..\..\src\api\xinput\JoystickXInput.cpp">
       <Filter>Source Files\api\xinput</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\keymapper\KeyMapper.cpp">
-      <Filter>Source Files\keymapper</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\storage\frontend\DatabaseFrontend.cpp">
       <Filter>Source Files\storage\frontend</Filter>
