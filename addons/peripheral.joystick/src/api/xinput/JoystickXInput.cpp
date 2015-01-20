@@ -44,6 +44,28 @@ CJoystickXInput::CJoystickXInput(unsigned int controllerID, CJoystickInterfaceXI
   SetButtonCount(BUTTON_COUNT);
   SetHatCount(HAT_COUNT);
   SetAxisCount(AXIS_COUNT);
+
+  Features().push_back(new ADDON::DriverButton(JOYSTICK_FEATURE_BUTTON_A,       0));
+  Features().push_back(new ADDON::DriverButton(JOYSTICK_FEATURE_BUTTON_B,       1));
+  Features().push_back(new ADDON::DriverButton(JOYSTICK_FEATURE_BUTTON_X,       2));
+  Features().push_back(new ADDON::DriverButton(JOYSTICK_FEATURE_BUTTON_Y,       3));
+  Features().push_back(new ADDON::DriverButton(JOYSTICK_FEATURE_BUTTON_L,       4));
+  Features().push_back(new ADDON::DriverButton(JOYSTICK_FEATURE_BUTTON_R,       5));
+  Features().push_back(new ADDON::DriverButton(JOYSTICK_FEATURE_BUTTON_SELECT,  6));
+  Features().push_back(new ADDON::DriverButton(JOYSTICK_FEATURE_BUTTON_START,   7));
+  Features().push_back(new ADDON::DriverButton(JOYSTICK_FEATURE_BUTTON_L_STICK, 8));
+  Features().push_back(new ADDON::DriverButton(JOYSTICK_FEATURE_BUTTON_R_STICK, 9));
+  Features().push_back(new ADDON::DriverButton(JOYSTICK_FEATURE_BUTTON_UP,      10));
+  Features().push_back(new ADDON::DriverButton(JOYSTICK_FEATURE_BUTTON_RIGHT,   11));
+  Features().push_back(new ADDON::DriverButton(JOYSTICK_FEATURE_BUTTON_DOWN,    12));
+  Features().push_back(new ADDON::DriverButton(JOYSTICK_FEATURE_BUTTON_LEFT,    13));
+  Features().push_back(new ADDON::DriverButton(JOYSTICK_FEATURE_BUTTON_HOME,    14));
+
+  Features().push_back(new ADDON::DriverAnalogStick(JOYSTICK_FEATURE_ANALOG_STICK_L, 0, false, 1, false));
+  Features().push_back(new ADDON::DriverAnalogStick(JOYSTICK_FEATURE_ANALOG_STICK_R, 2, false, 3, false));
+
+  Features().push_back(new ADDON::DriverSemiAxis(JOYSTICK_FEATURE_TRIGGER_L, 4, JOYSTICK_DRIVER_SEMIAXIS_DIRECTION_POSITIVE));
+  Features().push_back(new ADDON::DriverSemiAxis(JOYSTICK_FEATURE_TRIGGER_R, 5, JOYSTICK_DRIVER_SEMIAXIS_DIRECTION_POSITIVE));
 }
 
 bool CJoystickXInput::Initialize(void)
