@@ -152,7 +152,7 @@ bool CJoystickManager::PerformJoystickScan(std::vector<CJoystick*>& joysticks)
 
         if (std::find_if(m_joysticks.begin(), m_joysticks.end(), ScanResultEqual(*itResult)) == m_joysticks.end())
         {
-          (*itResult)->SetIndex(m_nextJoystickIndex++);
+          (*itResult)->SetDriverIndex(m_nextJoystickIndex++);
           if ((*itResult)->Initialize())
           {
             m_joysticks.push_back(*itResult);
@@ -177,7 +177,7 @@ CJoystick* CJoystickManager::GetJoystick(unsigned int index) const
 
   for (std::vector<CJoystick*>::const_iterator it = m_joysticks.begin(); it != m_joysticks.end(); ++it)
   {
-    if ((*it)->Index() == index)
+    if ((*it)->DriverIndex() == index)
       return *it;
   }
 

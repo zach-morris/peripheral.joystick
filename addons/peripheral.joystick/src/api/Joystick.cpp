@@ -58,7 +58,7 @@ void CJoystick::GetButtonEvents(const std::vector<JOYSTICK_STATE_BUTTON>& button
   for (unsigned int i = 0; i < buttons.size(); i++)
   {
     if (buttons[i] != m_state.buttons[i])
-      events.push_back(ADDON::PeripheralEvent(Index(), i, buttons[i]));
+      events.push_back(ADDON::PeripheralEvent(DriverIndex(), i, buttons[i]));
   }
 
   m_state.buttons.assign(buttons.begin(), buttons.end());
@@ -75,7 +75,7 @@ void CJoystick::GetHatEvents(const std::vector<JOYSTICK_STATE_HAT>& hats, std::v
   for (unsigned int i = 0; i < hats.size(); i++)
   {
     if (hats[i] != m_state.hats[i])
-      events.push_back(ADDON::PeripheralEvent(Index(), i, hats[i]));
+      events.push_back(ADDON::PeripheralEvent(DriverIndex(), i, hats[i]));
   }
 
   m_state.hats.assign(hats.begin(), hats.end());
@@ -92,7 +92,7 @@ void CJoystick::GetAxisEvents(const std::vector<JOYSTICK_STATE_AXIS>& axes, std:
   for (unsigned int i = 0; i < axes.size(); i++)
   {
     if (std::abs(axes[i] - m_state.axes[i]) >= ANALOG_EPSILON)
-      events.push_back(ADDON::PeripheralEvent(Index(), i, axes[i]));
+      events.push_back(ADDON::PeripheralEvent(DriverIndex(), i, axes[i]));
   }
 
   m_state.axes.assign(axes.begin(), axes.end());
