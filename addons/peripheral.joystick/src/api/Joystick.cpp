@@ -29,7 +29,7 @@ using namespace JOYSTICK;
 
 #define ANALOG_EPSILON  0.0001f
 
-const JOYSTICK_STATE_AXIS CJoystick::m_deadzoneRange = 0.2f; // TODO: Get deadzone from settings
+const float CJoystick::m_deadzoneRange = 0.2f; // TODO: Get deadzone from settings
 
 CJoystick::CJoystick(CJoystickInterface* api)
  : m_api(api),
@@ -116,12 +116,12 @@ void CJoystick::GetAxisEvents(const std::vector<JOYSTICK_STATE_AXIS>& axes, std:
 
 float CJoystick::NormalizeAxis(long value, long maxAxisAmount)
 {
-  value = CONSTRAIN(-maxAxisAmount, value, maxAxisAmount);
+  float position = 1.0f * CONSTRAIN(-maxAxisAmount, value, maxAxisAmount) / maxAxisAmount;
 
-  if (value > m_deadzoneRange)
-    return (float)(value - m_deadzoneRange) / (float)(maxAxisAmount - m_deadzoneRange);
-  else if (value < -m_deadzoneRange)
-    return (float)(value + m_deadzoneRange) / (float)(maxAxisAmount - m_deadzoneRange);
+  if (position > m_deadzoneRange)
+    return (float)(position - m_deadzoneRange) / (float)(1.0f - m_deadzoneRange);
+  else if (position < -m_deadzoneRange)
+    return (float)(position + m_deadzoneRange) / (float)(1.0f - m_deadzoneRange);
   else
     return 0.0f;
 }

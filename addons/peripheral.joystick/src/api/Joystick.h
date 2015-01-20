@@ -54,7 +54,7 @@ namespace JOYSTICK
 
     /*!
      * The analog stick deadzone. This is applied to each axis. Axis is scaled
-     * appropriately, so motion is continuous from -1.0 to 1.0:
+     * appropriately, so position is continuous from -1.0 to 1.0:
      *
      *            |    / 1.0
      *            |   /
@@ -128,7 +128,6 @@ namespace JOYSTICK
     int64_t                   m_discoverTimeMs;
     int64_t                   m_firstEventTimeMs;
     int64_t                   m_lastEventTimeMs;
-
-    static const JOYSTICK_STATE_AXIS m_deadzoneRange; // TODO: Get deadzone from settings
+    static const float        m_deadzoneRange; // TODO: Get deadzone from settings
   };
 }
