@@ -34,7 +34,8 @@ namespace JOYSTICK
     CJoystickSDL(SDL_Joystick* pJoystick, CJoystickInterfaceSDL* api);
     virtual ~CJoystickSDL(void) { Deinitialize(); }
 
-    virtual bool GetEvents(std::vector<ADDON::PeripheralEvent>& events);
+  protected:
+    virtual bool ScanEvents(std::vector<ADDON::PeripheralEvent>& events);
 
   private:
     SDL_Joystick* m_pJoystick;

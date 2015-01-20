@@ -31,7 +31,7 @@ CJoystickSDL::CJoystickSDL(SDL_Joystick* pJoystick, CJoystickInterfaceSDL* api)
 {
 }
 
-bool CJoystickSDL::GetEvents(std::vector<ADDON::PeripheralEvent>& events)
+bool CJoystickSDL::ScanEvents(std::vector<ADDON::PeripheralEvent>& events)
 {
   std::vector<JOYSTICK_STATE_BUTTON>& buttons = m_stateBuffer.buttons;
   std::vector<JOYSTICK_STATE_HAT>&    hats    = m_stateBuffer.hats;

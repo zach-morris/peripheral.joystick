@@ -53,7 +53,7 @@ void CJoystickLinux::Deinitialize(void)
   CJoystick::Deinitialize();
 }
 
-bool CJoystickLinux::GetEvents(std::vector<ADDON::PeripheralEvent>& events)
+bool CJoystickLinux::ScanEvents(std::vector<ADDON::PeripheralEvent>& events)
 {
   std::vector<JOYSTICK_STATE_BUTTON>& buttons = m_stateBuffer.buttons;
   std::vector<JOYSTICK_STATE_AXIS>&   axes    = m_stateBuffer.axes;

@@ -109,7 +109,7 @@ BOOL CALLBACK CJoystickDirectInput::EnumObjectsCallback(const DIDEVICEOBJECTINST
   return DIENUM_CONTINUE;
 }
 
-bool CJoystickDirectInput::GetEvents(std::vector<ADDON::PeripheralEvent>& events)
+bool CJoystickDirectInput::ScanEvents(std::vector<ADDON::PeripheralEvent>& events)
 {
   HRESULT     hr;
   DIJOYSTATE2 js; // DInput joystick state

@@ -39,7 +39,8 @@ namespace JOYSTICK
 
     virtual bool Initialize(void);
 
-    virtual bool GetEvents(std::vector<ADDON::PeripheralEvent>& events);
+  protected:
+    virtual bool ScanEvents(std::vector<ADDON::PeripheralEvent>& events);
 
   private:
     static BOOL CALLBACK EnumObjectsCallback(const DIDEVICEOBJECTINSTANCE *pdidoi, VOID *pContext);

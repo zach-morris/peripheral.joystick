@@ -20,7 +20,6 @@
 
 #include "xbmc_peripheral_utils.hpp"
 
-#include <map>
 #include <vector>
 
 namespace JOYSTICK
@@ -33,22 +32,85 @@ namespace JOYSTICK
     CJoystick(CJoystickInterface* api);
     virtual ~CJoystick(void) { }
 
+    /*!
+     * The parent API that this joystick was discovered on
+     */
+    CJoystickInterface* API(void) const { return m_api; }
+
+    /*!
+     * The time that this joystick was discovered
+     */
+    int64_t DiscoverTimeMs(void) const { return m_discoverTimeMs; }
+
+    /*!
+     * The time that this joystick delivered its first event
+     */
+    int64_t FirstEventTimeMs(void) const { return m_firstEventTimeMs; }
+
+    /*!
+     * The most recent time that this joystick delivered an event
+     */
+    int64_t LastEventTimeMs(void) const { return m_lastEventTimeMs; }
+
+    /*!
+     * The analog stick deadzone. This is applied to each axis. Axis is scaled
+     * appropriately, so motion is continuous from -1.0 to 1.0:
+     *
+     *            |    / 1.0
+     *            |   /
+     *          __|__/
+     *         /  |
+     *        /   |--| Deadzone
+     *  -1.0 /    |
+     *
+     * TODO: Disable deadzone for accelerometer
+     */
+    float DeadzoneRange(void) const { return m_deadzoneRange; }
+
+    /*!
+     * Initialize the joystick object. Joystick will be initialized before the
+     * first call to GetEvents().
+     */
     virtual bool Initialize(void);
+
+    /*!
+     * Deinitialize the joystick object. GetEvents() will not be called after
+     * deinitialization.
+     */
     virtual void Deinitialize(void) { }
 
-    virtual bool GetEvents(std::vector<ADDON::PeripheralEvent>& events) = 0;
-
-    const CJoystickInterface* API(void) const { return m_api; }
+    /*!
+     * Get events that have occurred since the last call to GetEvents()
+     */
+    virtual bool GetEvents(std::vector<ADDON::PeripheralEvent>& events);
 
   protected:
+    /*!
+     * Implemented by derived class to scan for events
+     */
+    virtual bool ScanEvents(std::vector<ADDON::PeripheralEvent>& events) = 0;
+
+    /*!
+     * Helper functions for derived class to populate event vector from observed
+     * button/hat/axis states
+     */
     void GetButtonEvents(const std::vector<JOYSTICK_STATE_BUTTON>& buttons, std::vector<ADDON::PeripheralEvent>& events);
     void GetHatEvents(const std::vector<JOYSTICK_STATE_HAT>& hats, std::vector<ADDON::PeripheralEvent>& events);
     void GetAxisEvents(const std::vector<JOYSTICK_STATE_AXIS>& axes, std::vector<ADDON::PeripheralEvent>& events);
 
-    static JOYSTICK_STATE_AXIS NormalizeAxis(long value, long maxAxisAmount);
+    /*!
+     * Call this from derived class when events are discovered
+     */
+    void FoundEvents(void);
 
-    CJoystickInterface* const m_api;
+    /*!
+     * Normalize the axis to the closed interval [-1.0, 1.0] subject to deadzone.
+     */
+    static float NormalizeAxis(long value, long maxAxisAmount);
 
+    /*!
+     * State buffer provided to derived classes
+     */
     struct JoystickState
     {
       std::vector<JOYSTICK_STATE_BUTTON> buttons;
@@ -59,6 +121,14 @@ namespace JOYSTICK
     JoystickState m_stateBuffer;
 
   private:
-    JoystickState m_state;
+    void UpdateTimers(void);
+
+    CJoystickInterface* const m_api;
+    JoystickState             m_state;
+    int64_t                   m_discoverTimeMs;
+    int64_t                   m_firstEventTimeMs;
+    int64_t                   m_lastEventTimeMs;
+
+    static const JOYSTICK_STATE_AXIS m_deadzoneRange; // TODO: Get deadzone from settings
   };
 }

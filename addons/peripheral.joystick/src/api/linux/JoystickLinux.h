@@ -36,7 +36,8 @@ namespace JOYSTICK
 
     virtual void Deinitialize(void);
 
-    virtual bool GetEvents(std::vector<ADDON::PeripheralEvent>& events);
+  protected:
+    virtual bool ScanEvents(std::vector<ADDON::PeripheralEvent>& events);
 
   private:
     void ReadEvents(std::vector<JOYSTICK_STATE_BUTTON>& buttons,

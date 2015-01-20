@@ -36,7 +36,8 @@ namespace JOYSTICK
 
     virtual bool Initialize(void);
 
-    virtual bool GetEvents(std::vector<ADDON::PeripheralEvent>& events);
+  protected:
+    virtual bool ScanEvents(std::vector<ADDON::PeripheralEvent>& events);
 
   private:
     unsigned int m_controllerID;   // XInput port, in the range (0, 3)

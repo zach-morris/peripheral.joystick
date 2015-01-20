@@ -54,7 +54,7 @@ bool CJoystickXInput::Initialize(void)
   return CJoystick::Initialize();
 }
 
-bool CJoystickXInput::GetEvents(std::vector<ADDON::PeripheralEvent>& events)
+bool CJoystickXInput::ScanEvents(std::vector<ADDON::PeripheralEvent>& events)
 {
   XINPUT_STATE_EX controllerState;
 

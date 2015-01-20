@@ -23,13 +23,19 @@
 #include "utils/CommonMacros.h"
 
 #include <cmath>
+#include <platform/util/timeutils.h>
 
 using namespace JOYSTICK;
 
-#define ANALOG_EPSILON  0.001f
+#define ANALOG_EPSILON  0.0001f
+
+const JOYSTICK_STATE_AXIS CJoystick::m_deadzoneRange = 0.2f; // TODO: Get deadzone from settings
 
 CJoystick::CJoystick(CJoystickInterface* api)
- : m_api(api)
+ : m_api(api),
+   m_discoverTimeMs(PLATFORM::GetTimeMs()),
+   m_firstEventTimeMs(-1),
+   m_lastEventTimeMs(-1)
 {
   ASSERT(m_api);
   SetProvider(api->Name());
@@ -45,6 +51,16 @@ bool CJoystick::Initialize(void)
     Name().c_str(), m_api->Name().c_str(), AxisCount(), HatCount(), ButtonCount());
 
   return true;
+}
+
+bool CJoystick::GetEvents(std::vector<ADDON::PeripheralEvent>& events)
+{
+  const bool bSuccess = ScanEvents(events);
+
+  if (bSuccess && !events.empty())
+    UpdateTimers();
+
+  return bSuccess;
 }
 
 void CJoystick::GetButtonEvents(const std::vector<JOYSTICK_STATE_BUTTON>& buttons, std::vector<ADDON::PeripheralEvent>& events)
@@ -98,16 +114,21 @@ void CJoystick::GetAxisEvents(const std::vector<JOYSTICK_STATE_AXIS>& axes, std:
   m_state.axes.assign(axes.begin(), axes.end());
 }
 
-JOYSTICK_STATE_AXIS CJoystick::NormalizeAxis(long value, long maxAxisAmount)
+float CJoystick::NormalizeAxis(long value, long maxAxisAmount)
 {
   value = CONSTRAIN(-maxAxisAmount, value, maxAxisAmount);
 
-  const JOYSTICK_STATE_AXIS deadzoneRange = 0.2f; // TODO: Get deadzone from settings
-
-  if (value > deadzoneRange)
-    return (JOYSTICK_STATE_AXIS)(value - deadzoneRange) / (float)(maxAxisAmount - deadzoneRange);
-  else if (value < -deadzoneRange)
-    return (JOYSTICK_STATE_AXIS)(value + deadzoneRange) / (float)(maxAxisAmount - deadzoneRange);
+  if (value > m_deadzoneRange)
+    return (float)(value - m_deadzoneRange) / (float)(maxAxisAmount - m_deadzoneRange);
+  else if (value < -m_deadzoneRange)
+    return (float)(value + m_deadzoneRange) / (float)(maxAxisAmount - m_deadzoneRange);
   else
-    return JOYSTICK_STATE_AXIS();
+    return 0.0f;
+}
+
+void CJoystick::UpdateTimers(void)
+{
+  if (m_firstEventTimeMs < 0)
+    m_firstEventTimeMs = PLATFORM::GetTimeMs();
+  m_lastEventTimeMs = PLATFORM::GetTimeMs();
 }
