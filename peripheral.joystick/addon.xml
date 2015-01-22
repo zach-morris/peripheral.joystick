@@ -11,16 +11,16 @@
   <extension
     point="xbmc.peripheral"
     provides_joysticks="true"
-    library_linux="Kodi_Joystick.so"
-    library_osx="Kodi_Joystick.so"
-    library_wingl="Kodi_Joystick.dll"
-    library_windx="Kodi_Joystick.dll"
-    library_android="libKodi_Joystick.so" />
+    library_linux="peripheral.joystick.so"
+    library_osx="peripheral.joystick.dylib"
+    library_wingl="peripheral.joystick.dll"
+    library_windx="peripheral.joystick.dll"
+    library_android="libperipheral.joystick.so" />
   <extension point="xbmc.addon.metadata">
     <summary lang="en">Kodi Joystick Library</summary>
     <description lang="en">Adds joystick support to Kodi.</description>
     <disclaimer lang="en">Work in progress</disclaimer>
-    <platform>@OS@</platform>
+    <platform>all</platform>
     <noicon>true</noicon>
     <nofanart>true</nofanart>
   </extension>
