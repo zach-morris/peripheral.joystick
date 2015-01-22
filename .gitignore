@@ -4,6 +4,9 @@
 .libs
 .project
 
+build
+Build
+
 .dummy
 .dummy.in
 aclocal.m4
