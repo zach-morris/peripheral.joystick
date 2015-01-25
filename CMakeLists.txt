@@ -1,10 +1,9 @@
 project(peripheral.joystick)
 
 cmake_minimum_required(VERSION 2.6)
+enable_language(CXX)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR})
-
-enable_language(CXX)
 
 find_package(kodi REQUIRED)
 find_package(kodiplatform REQUIRED)
@@ -27,11 +26,13 @@ set(JOYSTICK_SOURCES src/addon.cpp
                      src/log/LogSyslog.cpp)
 
 if(SDL_FOUND)
+  add_definitions(-DHAS_SDL)
   list(APPEND JOYSTICK_SOURCES src/api/sdl/JoystickInterfaceSDL.cpp
                                src/api/sdl/JoystickSDL.cpp)
   list(APPEND DEPLIBS ${SDL_LIBRARIES})
 endif()
 if(LINUX)
+  add_definitions(-DHAS_LINUX_JOYSTICK)
   list(APPEND JOYSTICK_SOURCES src/api/linux/JoystickInterfaceLinux.cpp
                                src/api/linux/JoystickLinux.cpp)
 endif()
