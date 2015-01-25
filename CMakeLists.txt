@@ -31,7 +31,10 @@ if(SDL_FOUND)
                                src/api/sdl/JoystickSDL.cpp)
   list(APPEND DEPLIBS ${SDL_LIBRARIES})
 endif()
-if(LINUX)
+
+include(CheckIncludeFiles)
+check_include_files(linux/joystick.h HAVE_LINUX_JOYSTICK_H)
+if(HAVE_LINUX_JOYSTICK_H)
   add_definitions(-DHAS_LINUX_JOYSTICK)
   list(APPEND JOYSTICK_SOURCES src/api/linux/JoystickInterfaceLinux.cpp
                                src/api/linux/JoystickLinux.cpp)
