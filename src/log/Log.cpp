@@ -24,7 +24,7 @@
 #include "LogConsole.h"
 #include "LogSyslog.h"
 
-#include "platform/threads/threads.h"
+#include "kodi/threads/threads.h"
 
 #include <stdarg.h>
 #include <stdio.h>

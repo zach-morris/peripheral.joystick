@@ -19,8 +19,8 @@
  */
 #pragma once
 
-#include "platform/threads/mutex.h"
-#include "xbmc_peripheral_utils.hpp"
+#include "kodi/threads/mutex.h"
+#include "kodi/xbmc_peripheral_utils.hpp"
 
 #include <vector>
 

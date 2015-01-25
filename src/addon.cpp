@@ -26,11 +26,11 @@
 #include "log/LogAddon.h"
 #include "utils/CommonMacros.h"
 
-#include "libXBMC_addon.h"
-#include "libXBMC_peripheral.h"
-#include "xbmc_addon_dll.h"
-#include "xbmc_peripheral_dll.h"
-#include "xbmc_peripheral_utils.hpp"
+#include "kodi/libXBMC_addon.h"
+#include "kodi/libXBMC_peripheral.h"
+#include "kodi/xbmc_addon_dll.h"
+#include "kodi/xbmc_peripheral_dll.h"
+#include "kodi/xbmc_peripheral_utils.hpp"
 
 #include <vector>
 

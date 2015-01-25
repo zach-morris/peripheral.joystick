@@ -18,7 +18,7 @@
  */
 #pragma once
 
-#include "xbmc_peripheral_utils.hpp"
+#include "kodi/xbmc_peripheral_utils.hpp"
 
 #include <vector>
 
