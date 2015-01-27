@@ -117,6 +117,26 @@ case "${host}" in
 esac
 
 ### External libraries checks
+missing_library="Could not find a required library."
+
+PKG_CHECK_MODULES(
+    [SDL2],
+    [sdl2],
+    [AC_DEFINE([SDL_VERSION],[2],["SDL major version"])
+      INCLUDES="$INCLUDES $SDL2_CFLAGS";
+      LIBS="$LIBS $SDL2_LIBS";],
+    [PKG_CHECK_MODULES([SDL], [sdl],
+      [AC_DEFINE([SDL_VERSION],[1],["SDL major version"])
+        INCLUDES="$INCLUDES $SDL_CFLAGS"; LIBS="$LIBS $SDL_LIBS"],
+        [AC_MSG_ERROR($missing_library)])
+    ]
+  )
+
+AC_CHECK_LIB([SDL_image], [main],, AC_MSG_ERROR($missing_library))
+AC_DEFINE([HAVE_SDL],[1],["Define to 1 if using sdl"])
+
+### Check for Linux Joystick API
+AC_CHECK_HEADER([linux/joystick.h], AC_DEFINE([HAVE_LINUX_JOYSTICK],[1],[Define if we have linux joystick headers]),)
 
 ### End external Libraries 
 
