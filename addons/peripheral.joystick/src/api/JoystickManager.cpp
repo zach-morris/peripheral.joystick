@@ -29,8 +29,7 @@
 #endif
 #if defined(HAVE_LINUX_JOYSTICK)
   #include "linux/JoystickInterfaceLinux.h"
-#endif
-#if defined(HAVE_SDL)
+#elif defined(HAVE_SDL)
   #include "sdl/JoystickInterfaceSDL.h"
 #endif
 #include "log/Log.h"
@@ -79,8 +78,7 @@ bool CJoystickManager::Initialize(void)
 #endif
 #if defined(HAVE_LINUX_JOYSTICK)
   m_interfaces.push_back(new CJoystickInterfaceLinux);
-#endif
-#if defined(HAVE_SDL)
+#elif defined(HAVE_SDL)
   m_interfaces.push_back(new CJoystickInterfaceSDL);
 #endif
 
