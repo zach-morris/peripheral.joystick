@@ -45,6 +45,16 @@ CJoystickLinux::CJoystickLinux(int fd, const std::string& strFilename, CJoystick
 {
 }
 
+bool CJoystickLinux::Initialize(void)
+{
+  m_stateBuffer.buttons.assign(ButtonCount(), JOYSTICK_STATE_BUTTON());
+  m_stateBuffer.hats.assign(HatCount(), JOYSTICK_STATE_HAT());
+  m_stateBuffer.axes.assign(AxisCount(), JOYSTICK_STATE_AXIS());
+
+  return CJoystick::Initialize();
+}
+
+
 void CJoystickLinux::Deinitialize(void)
 {
   close(m_fd);
