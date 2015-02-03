@@ -20,6 +20,7 @@
 
 #include "JoystickSDL.h"
 #include "JoystickInterfaceSDL.h"
+#include "utils/CommonMacros.h"
 
 #define MAX_AXISAMOUNT    32768
 
@@ -31,11 +32,24 @@ CJoystickSDL::CJoystickSDL(SDL_Joystick* pJoystick, CJoystickInterfaceSDL* api)
 {
 }
 
+bool CJoystickSDL::Initialize(void)
+{
+  m_stateBuffer.buttons.assign(ButtonCount(), JOYSTICK_STATE_BUTTON());
+  m_stateBuffer.hats.assign(HatCount(), JOYSTICK_STATE_HAT());
+  m_stateBuffer.axes.assign(AxisCount(), JOYSTICK_STATE_AXIS());
+
+  return CJoystick::Initialize();
+}
+
 bool CJoystickSDL::ScanEvents(std::vector<ADDON::PeripheralEvent>& events)
 {
   std::vector<JOYSTICK_STATE_BUTTON>& buttons = m_stateBuffer.buttons;
   std::vector<JOYSTICK_STATE_HAT>&    hats    = m_stateBuffer.hats;
   std::vector<JOYSTICK_STATE_AXIS>&   axes    = m_stateBuffer.axes;
+
+  ASSERT(buttons.size() == ButtonCount());
+  ASSERT(hats.size() == HatCount());
+  ASSERT(axes.size() == AxisCount());
 
   // Update the state of all opened joysticks
   SDL_JoystickUpdate();
