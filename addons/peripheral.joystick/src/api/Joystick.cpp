@@ -22,7 +22,6 @@
 #include "log/Log.h"
 #include "utils/CommonMacros.h"
 
-#include <cmath>
 #include <platform/util/timeutils.h>
 
 using namespace JOYSTICK;
@@ -107,7 +106,7 @@ void CJoystick::GetAxisEvents(const std::vector<JOYSTICK_STATE_AXIS>& axes, std:
 
   for (unsigned int i = 0; i < axes.size(); i++)
   {
-    if (std::abs(axes[i] - m_state.axes[i]) >= ANALOG_EPSILON)
+    if (axes[i] != 0.0f || m_state.axes[i] != 0.0f)
       events.push_back(ADDON::PeripheralEvent(DriverIndex(), i, axes[i]));
   }
 
