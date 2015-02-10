@@ -31,8 +31,8 @@ namespace JOYSTICK
     CJoystickInterface(const std::string& strName);
     virtual ~CJoystickInterface(void) { }
 
-    virtual bool Initialize(void) = 0;
-    virtual void Deinitialize(void) = 0;
+    virtual bool Initialize(void) { return true; }
+    virtual void Deinitialize(void) { }
 
     bool ScanForJoysticks(std::vector<CJoystick*>& results);
 

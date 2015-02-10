@@ -30,10 +30,7 @@ namespace JOYSTICK
   {
   public:
     CJoystickInterfaceLinux(void);
-    virtual ~CJoystickInterfaceLinux(void) { Deinitialize(); }
-
-    virtual bool Initialize(void) { return true; }
-    virtual void Deinitialize(void) { }
+    virtual ~CJoystickInterfaceLinux(void) { }
 
   protected:
     virtual bool PerformJoystickScan(std::vector<CJoystick*>& joysticks);

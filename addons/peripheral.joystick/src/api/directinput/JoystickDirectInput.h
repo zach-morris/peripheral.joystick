@@ -35,7 +35,7 @@ namespace JOYSTICK
                          const std::string&             strName,
                          CJoystickInterfaceDirectInput* api);
 
-    virtual ~CJoystickDirectInput(void) { Deinitialize(); }
+    virtual ~CJoystickDirectInput(void) { }
 
     virtual bool Initialize(void);
 

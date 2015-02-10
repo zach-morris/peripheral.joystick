@@ -34,7 +34,6 @@ namespace JOYSTICK
     CJoystickInterfaceSDL(void);
     virtual ~CJoystickInterfaceSDL(void) { Deinitialize(); }
 
-    virtual bool Initialize(void) { return true; }
     virtual void Deinitialize(void);
 
   protected:
