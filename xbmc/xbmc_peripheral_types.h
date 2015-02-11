@@ -93,7 +93,7 @@ extern "C"
     char*           name;           /*!< @brief name of peripheral */
     uint16_t        vendor_id;      /*!< @brief vendor ID of peripheral, 0x0000 if unknown */
     uint16_t        product_id;     /*!< @brief product ID of peripheral, 0x0000 if unknown */
-    unsigned int    driver_index;   /*!< @brief the order in which the add-on identified this peripheral */
+    unsigned int    index;          /*!< @brief the order in which the add-on identified this peripheral */
   } ATTRIBUTE_PACKED PERIPHERAL_INFO;
 
   /*!
@@ -226,7 +226,6 @@ extern "C"
 
   typedef struct JOYSTICK_DRIVER_INFO
   {
-    unsigned int    index;              /*!< @brief order in which joystick was identified */
     unsigned int    button_count;       /*!< @brief number of buttons reported by the driver */
     unsigned int    hat_count;          /*!< @brief number of hats reported by the driver */
     unsigned int    axis_count;         /*!< @brief number of axes reported by the driver */

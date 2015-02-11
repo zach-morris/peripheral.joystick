@@ -97,7 +97,7 @@ namespace ADDON
       m_strName(strName),
       m_vendorId(0),
       m_productId(0),
-      m_driverIndex(0)
+      m_index(0)
     {
     }
 
@@ -106,31 +106,31 @@ namespace ADDON
       m_strName(info.name ? info.name : ""),
       m_vendorId(info.vendor_id),
       m_productId(info.product_id),
-      m_driverIndex(info.driver_index)
+      m_index(info.index)
     {
     }
 
     virtual ~Peripheral(void) { }
 
-    PERIPHERAL_TYPE    Type(void) const        { return m_type; }
-    const std::string& Name(void) const        { return m_strName; }
-    uint16_t           VendorID(void) const    { return m_vendorId; }
-    uint16_t           ProductID(void) const   { return m_productId; }
-    unsigned int       DriverIndex(void) const { return m_driverIndex; }
+    PERIPHERAL_TYPE    Type(void) const      { return m_type; }
+    const std::string& Name(void) const      { return m_strName; }
+    uint16_t           VendorID(void) const  { return m_vendorId; }
+    uint16_t           ProductID(void) const { return m_productId; }
+    unsigned int       Index(void) const     { return m_index; }
 
-    void SetType(PERIPHERAL_TYPE type)            { m_type      = type; }
-    void SetName(const std::string& strName)      { m_strName   = strName; }
-    void SetVendorID(uint16_t vendorId)           { m_vendorId  = vendorId; }
-    void SetProductID(uint16_t productId)         { m_productId = productId; }
-    void SetDriverIndex(unsigned int driverIndex) { m_driverIndex   = driverIndex; }
+    void SetType(PERIPHERAL_TYPE type)       { m_type      = type; }
+    void SetName(const std::string& strName) { m_strName   = strName; }
+    void SetVendorID(uint16_t vendorId)      { m_vendorId  = vendorId; }
+    void SetProductID(uint16_t productId)    { m_productId = productId; }
+    void SetIndex(unsigned int index)        { m_index     = index; }
 
     void ToStruct(PERIPHERAL_INFO& info) const
     {
-      info.type         = m_type;
-      info.name         = new char[m_strName.size() + 1];
-      info.vendor_id    = m_vendorId;
-      info.product_id   = m_productId;
-      info.driver_index = m_driverIndex;
+      info.type       = m_type;
+      info.name       = new char[m_strName.size() + 1];
+      info.vendor_id  = m_vendorId;
+      info.product_id = m_productId;
+      info.index      = m_index;
 
       std::strcpy(info.name, m_strName.c_str());
     }
@@ -145,7 +145,7 @@ namespace ADDON
     std::string      m_strName;
     uint16_t         m_vendorId;
     uint16_t         m_productId;
-    unsigned int     m_driverIndex;
+    unsigned int     m_index;
   };
 
   typedef PeripheralVector<Peripheral, PERIPHERAL_INFO> Peripherals;
@@ -171,11 +171,7 @@ namespace ADDON
     }
 
     JoystickFeature(const JOYSTICK_FEATURE& feature)
-    : m_id(feature.id),
-      m_name(feature.name                ? feature.name         : ""),
-      m_symbolColor(feature.symbol_color ? feature.symbol_color : ""),
-      m_color(feature.color              ? feature.color        : ""),
-      m_icon(feature.icon                ? feature.icon         : "")
+    : m_id(feature.id)
     {
     }
 
@@ -184,48 +180,22 @@ namespace ADDON
     virtual JoystickFeature* Clone(void) const { return new JoystickFeature(*this); }
 
     virtual JOYSTICK_DRIVER_TYPE Type(void) const { return JOYSTICK_DRIVER_TYPE_UNKNOWN; }
+    JOYSTICK_FEATURE_ID          ID(void) const   { return m_id; }
 
-    JOYSTICK_FEATURE_ID ID(void) const          { return m_id; }
-    const std::string&  Name(void) const        { return m_name; }
-    const std::string&  SymbolColor(void) const { return m_symbolColor; }
-    const std::string&  Color(void) const       { return m_color; }
-    const std::string&  Icon(void) const        { return m_icon; }
-
-    void SetID(JOYSTICK_FEATURE_ID id)            { m_id = id; }
-    void SetName(const std::string& name)         { m_name = name; }
-    void SetSymbolColor(std::string& symbolColor) { m_symbolColor = symbolColor; }
-    void SetColor(std::string& color)             { m_color = color; }
-    void SetIcon(std::string& icon)               { m_icon = icon; }
+    void SetID(JOYSTICK_FEATURE_ID id) { m_id = id; }
 
     virtual void ToStruct(JOYSTICK_FEATURE& feature) const
     {
-      feature.id           = m_id;
-      feature.driver_type  = Type();
-      feature.name         = new char[m_name.size()        + 1];
-      feature.symbol_color = new char[m_symbolColor.size() + 1];
-      feature.color        = new char[m_color.size()       + 1];
-      feature.icon         = new char[m_icon.size()        + 1];
-
-      std::strcpy(feature.name,         m_name.c_str());
-      std::strcpy(feature.symbol_color, m_symbolColor.c_str());
-      std::strcpy(feature.color,        m_color.c_str());
-      std::strcpy(feature.icon,         m_icon.c_str());
+      feature.id          = m_id;
+      feature.driver_type = Type();
     }
 
     static void FreeStruct(JOYSTICK_FEATURE& feature)
     {
-      PERIPHERAL_SAFE_DELETE_ARRAY(feature.name);
-      PERIPHERAL_SAFE_DELETE_ARRAY(feature.symbol_color);
-      PERIPHERAL_SAFE_DELETE_ARRAY(feature.color);
-      PERIPHERAL_SAFE_DELETE_ARRAY(feature.icon);
     }
 
   private:
     JOYSTICK_FEATURE_ID m_id;
-    std::string         m_name;
-    std::string         m_symbolColor;
-    std::string         m_color;
-    std::string         m_icon;
   };
 
   typedef PeripheralVector<JoystickFeature, JOYSTICK_FEATURE> JoystickFeatures;
@@ -257,9 +227,8 @@ namespace ADDON
 
     virtual JoystickFeature* Clone(void) const { return new DriverButton(*this); }
 
-    virtual JOYSTICK_DRIVER_TYPE Type(void) const { return JOYSTICK_DRIVER_TYPE_BUTTON; }
-
-    int Index(void) const { return m_index; }
+    virtual JOYSTICK_DRIVER_TYPE Type(void) const  { return JOYSTICK_DRIVER_TYPE_BUTTON; }
+    int                          Index(void) const { return m_index; }
 
     void SetIndex(int index) { m_index = index; }
 
@@ -303,8 +272,7 @@ namespace ADDON
 
     virtual JoystickFeature* Clone(void) const { return new DriverHat(*this); }
 
-    virtual JOYSTICK_DRIVER_TYPE Type(void) const { return JOYSTICK_DRIVER_TYPE_HAT_DIRECTION; }
-
+    virtual JOYSTICK_DRIVER_TYPE  Type(void) const      { return JOYSTICK_DRIVER_TYPE_HAT_DIRECTION; }
     int                           Index(void) const     { return m_index; }
     JOYSTICK_DRIVER_HAT_DIRECTION Direction(void) const { return m_direction; }
 
@@ -353,8 +321,7 @@ namespace ADDON
 
     virtual JoystickFeature* Clone(void) const { return new DriverSemiAxis(*this); }
 
-    virtual JOYSTICK_DRIVER_TYPE Type(void) const { return JOYSTICK_DRIVER_TYPE_SEMIAXIS; }
-
+    virtual JOYSTICK_DRIVER_TYPE       Type(void) const      { return JOYSTICK_DRIVER_TYPE_SEMIAXIS; }
     int                                Index(void) const     { return m_index; }
     JOYSTICK_DRIVER_SEMIAXIS_DIRECTION Direction(void) const { return m_direction; }
 
@@ -409,12 +376,11 @@ namespace ADDON
 
     virtual JoystickFeature* Clone(void) const { return new DriverAnalogStick(*this); }
 
-    virtual JOYSTICK_DRIVER_TYPE Type(void) const { return JOYSTICK_DRIVER_TYPE_ANALOG_STICK; }
-
-    int  XIndex(void) const    { return m_xIndex; }
-    bool XInverted(void) const { return m_xInverted; }
-    int  YIndex(void) const    { return m_yIndex; }
-    bool YInverted(void) const { return m_yInverted; }
+    virtual JOYSTICK_DRIVER_TYPE Type(void) const      { return JOYSTICK_DRIVER_TYPE_ANALOG_STICK; }
+    int                          XIndex(void) const    { return m_xIndex; }
+    bool                         XInverted(void) const { return m_xInverted; }
+    int                          YIndex(void) const    { return m_yIndex; }
+    bool                         YInverted(void) const { return m_yInverted; }
 
     void SetXIndex(int xIndex)        { m_xIndex    = xIndex; }
     void SetXInverted(bool xInverted) { m_xInverted = xInverted; }
@@ -480,14 +446,13 @@ namespace ADDON
 
     virtual JoystickFeature* Clone(void) const { return new DriverAccelerometer(*this); }
 
-    virtual JOYSTICK_DRIVER_TYPE Type(void) const { return JOYSTICK_DRIVER_TYPE_ACCELEROMETER; }
-
-    unsigned int XIndex(void) const    { return m_xIndex; }
-    bool         XInverted(void) const { return m_xInverted; }
-    unsigned int YIndex(void) const    { return m_yIndex; }
-    bool         YInverted(void) const { return m_yInverted; }
-    unsigned int ZIndex(void) const    { return m_zIndex; }
-    bool         ZInverted(void) const { return m_zInverted; }
+    virtual JOYSTICK_DRIVER_TYPE Type(void) const      { return JOYSTICK_DRIVER_TYPE_ACCELEROMETER; }
+    int                          XIndex(void) const    { return m_xIndex; }
+    bool                         XInverted(void) const { return m_xInverted; }
+    int                          YIndex(void) const    { return m_yIndex; }
+    bool                         YInverted(void) const { return m_yInverted; }
+    int                          ZIndex(void) const    { return m_zIndex; }
+    bool                         ZInverted(void) const { return m_zInverted; }
 
     void SetXIndex(int xIndex)        { m_xIndex    = xIndex; }
     void SetXInverted(bool xInverted) { m_xInverted = xInverted; }
@@ -636,7 +601,6 @@ namespace ADDON
 
       info.provider            = new char[m_provider.size() + 1];
       info.requested_port_num  = m_requestedPort;
-      info.driver.index        = DriverIndex();
       info.driver.button_count = m_buttonCount;
       info.driver.hat_count    = m_hatCount;
       info.driver.axis_count   = m_axisCount;
