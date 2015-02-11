@@ -36,8 +36,6 @@ bool CJoystickInterface::ScanForJoysticks(std::vector<CJoystick*>& results)
   if (PerformJoystickScan(joysticks))
   {
     bReturn = true;
-
-    // TODO: Manage added/removed joysticks
     results.insert(results.end(), joysticks.begin(), joysticks.end());
   }
 

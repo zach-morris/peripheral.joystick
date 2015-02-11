@@ -49,11 +49,15 @@ struct ScanResultEqual
     if (m_needle == NULL || rhs == NULL)
       return m_needle == rhs;
 
-    return m_needle->API()       == rhs->API()       &&
-           m_needle->Type()      == rhs->Type()      &&
-           m_needle->Name()      == rhs->Name()      &&
-           m_needle->VendorID()  == rhs->VendorID()  &&
-           m_needle->ProductID() == rhs->ProductID();
+    return m_needle->Type()          == rhs->Type()          &&
+           m_needle->Name()          == rhs->Name()          &&
+           m_needle->VendorID()      == rhs->VendorID()      &&
+           m_needle->ProductID()     == rhs->ProductID()     &&
+           m_needle->Provider()      == rhs->Provider()      &&
+           m_needle->RequestedPort() == rhs->RequestedPort() &&
+           m_needle->ButtonCount()   == rhs->ButtonCount()   &&
+           m_needle->HatCount()      == rhs->HatCount()      &&
+           m_needle->AxisCount()     == rhs->AxisCount();
   }
 
 private:
@@ -115,53 +119,42 @@ bool CJoystickManager::PerformJoystickScan(std::vector<CJoystick*>& joysticks)
 
   bool bReturn(false);
 
+  // Scan for joysticks
   std::vector<CJoystick*> scanResults;
   for (std::vector<CJoystickInterface*>::iterator itInterface = m_interfaces.begin(); itInterface != m_interfaces.end(); ++itInterface)
   {
     if ((*itInterface)->ScanForJoysticks(scanResults))
-    {
       bReturn = true;
+  }
 
-      // Check for removed joysticks
-      std::vector<CJoystick*> removedJoysticks;
-      for (std::vector<CJoystick*>::iterator itJoystick = m_joysticks.begin(); itJoystick != m_joysticks.end(); ++itJoystick)
+  // Unregister removed joysticks
+  for (int i = (int)m_joysticks.size() - 1; i >= 0; i--)
+  {
+    CJoystick* joystick = m_joysticks.at(i);
+    if (std::find_if(scanResults.begin(), scanResults.end(), ScanResultEqual(joystick)) == scanResults.end())
+    {
+      delete joystick;
+      m_joysticks.erase(m_joysticks.begin() + i);
+    }
+  }
+
+  // Register new joysticks
+  for (std::vector<CJoystick*>::iterator itJoystick = scanResults.begin(); itJoystick != scanResults.end(); ++itJoystick)
+  {
+    bool bSuccess(false);
+
+    if (std::find_if(m_joysticks.begin(), m_joysticks.end(), ScanResultEqual(*itJoystick)) == m_joysticks.end())
+    {
+      if ((*itJoystick)->Initialize())
       {
-        if (*itInterface == (*itJoystick)->API())
-        {
-          if (std::find_if(scanResults.begin(), scanResults.end(), ScanResultEqual(*itJoystick)) == scanResults.end())
-            removedJoysticks.push_back(*itJoystick);
-        }
-      }
-
-      // Remove expired joysticks
-      for (std::vector<CJoystick*>::iterator itRemoved = removedJoysticks.begin(); itRemoved != removedJoysticks.end(); ++itRemoved)
-      {
-        std::vector<CJoystick*>::iterator itJoystick = std::find(m_joysticks.begin(), m_joysticks.end(), *itRemoved);
-        ASSERT(itJoystick != m_joysticks.end());
-        m_joysticks.erase(itJoystick);
-
-        delete *itRemoved;
-      }
-
-      // Add new joysticks
-      for (std::vector<CJoystick*>::iterator itResult = scanResults.begin(); itResult != scanResults.end(); ++itResult)
-      {
-        bool bSuccess(false);
-
-        if (std::find_if(m_joysticks.begin(), m_joysticks.end(), ScanResultEqual(*itResult)) == m_joysticks.end())
-        {
-          (*itResult)->SetDriverIndex(m_nextJoystickIndex++);
-          if ((*itResult)->Initialize())
-          {
-            m_joysticks.push_back(*itResult);
-            bSuccess = true;
-          }
-        }
-
-        if (!bSuccess)
-          delete *itResult;
+        (*itJoystick)->SetDriverIndex(m_nextJoystickIndex++);
+        m_joysticks.push_back(*itJoystick);
+        bSuccess = true;
       }
     }
+
+    if (!bSuccess)
+      delete *itJoystick;
   }
 
   joysticks.assign(m_joysticks.begin(), m_joysticks.end());
