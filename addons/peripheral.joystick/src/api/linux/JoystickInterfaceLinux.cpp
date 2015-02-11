@@ -95,8 +95,6 @@ CJoystickInterfaceLinux::CJoystickInterfaceLinux(void)
 
 bool CJoystickInterfaceLinux::PerformJoystickScan(std::vector<CJoystick*>& joysticks)
 {
-  Deinitialize();
-
   // TODO: Use udev to grab device names instead of reading /dev/input/js*
   std::string inputDir("/dev/input");
   DIR *pd = opendir(inputDir.c_str());

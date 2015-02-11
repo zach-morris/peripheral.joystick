@@ -81,8 +81,6 @@ void CJoystickLinux::Deinitialize(void)
 {
   close(m_fd);
   m_fd = INVALID_FD;
-
-  CJoystick::Deinitialize();
 }
 
 bool CJoystickLinux::ScanEvents(std::vector<ADDON::PeripheralEvent>& events)
