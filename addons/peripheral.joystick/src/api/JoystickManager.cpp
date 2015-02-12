@@ -69,7 +69,7 @@ namespace JOYSTICK
   template <class T>
   void safe_delete_vector(std::vector<T*>& vec)
   {
-    for (std::vector<CJoystickInterface*>::iterator it = vec.begin(); it != vec.end(); ++it)
+    for (typename std::vector<T*>::iterator it = vec.begin(); it != vec.end(); ++it)
       delete *it;
     vec.clear();
   }
@@ -123,15 +123,10 @@ bool CJoystickManager::PerformJoystickScan(std::vector<CJoystick*>& joysticks)
 {
   CLockObject lock(m_joystickMutex);
 
-  bool bReturn(false);
-
   // Scan for joysticks
   std::vector<CJoystick*> scanResults;
   for (std::vector<CJoystickInterface*>::iterator itInterface = m_interfaces.begin(); itInterface != m_interfaces.end(); ++itInterface)
-  {
-    if ((*itInterface)->ScanForJoysticks(scanResults))
-      bReturn = true;
-  }
+    (*itInterface)->ScanForJoysticks(scanResults);
 
   // Unregister removed joysticks
   for (int i = (int)m_joysticks.size() - 1; i >= 0; i--)
@@ -164,7 +159,7 @@ bool CJoystickManager::PerformJoystickScan(std::vector<CJoystick*>& joysticks)
 
   joysticks.assign(m_joysticks.begin(), m_joysticks.end());
 
-  return bReturn;
+  return !joysticks.empty();
 }
 
 CJoystick* CJoystickManager::GetJoystick(unsigned int index) const
