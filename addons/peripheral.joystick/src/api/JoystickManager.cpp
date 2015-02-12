@@ -65,6 +65,14 @@ namespace JOYSTICK
   private:
     const CJoystick* const m_needle;
   };
+
+  template <class T>
+  void safe_delete_vector(std::vector<T*>& vec)
+  {
+    for (std::vector<CJoystickInterface*>::iterator it = vec.begin(); it != vec.end(); ++it)
+      delete *it;
+    vec.clear();
+  }
 }
 
 CJoystickManager& CJoystickManager::Get(void)
@@ -107,13 +115,8 @@ void CJoystickManager::Deinitialize(void)
 {
   CLockObject lock(m_joystickMutex);
 
-  for (std::vector<CJoystickInterface*>::iterator it = m_interfaces.begin(); it != m_interfaces.end(); ++it)
-    delete *it;
-  m_interfaces.clear();
-
-  for (std::vector<CJoystick*>::iterator it = m_joysticks.begin(); it != m_joysticks.end(); ++it)
-    delete *it;
-  m_joysticks.clear();
+  safe_delete_vector(m_interfaces);
+  safe_delete_vector(m_joysticks);
 }
 
 bool CJoystickManager::PerformJoystickScan(std::vector<CJoystick*>& joysticks)
@@ -133,10 +136,9 @@ bool CJoystickManager::PerformJoystickScan(std::vector<CJoystick*>& joysticks)
   // Unregister removed joysticks
   for (int i = (int)m_joysticks.size() - 1; i >= 0; i--)
   {
-    CJoystick* joystick = m_joysticks.at(i);
-    if (std::find_if(scanResults.begin(), scanResults.end(), ScanResultEqual(joystick)) == scanResults.end())
+    if (std::find_if(scanResults.begin(), scanResults.end(), ScanResultEqual(m_joysticks.at(i))) == scanResults.end())
     {
-      delete joystick;
+      delete m_joysticks.at(i);
       m_joysticks.erase(m_joysticks.begin() + i);
     }
   }
