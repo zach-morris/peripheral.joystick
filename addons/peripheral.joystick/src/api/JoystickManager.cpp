@@ -40,29 +40,32 @@
 using namespace JOYSTICK;
 using namespace PLATFORM;
 
-struct ScanResultEqual
+namespace JOYSTICK
 {
-  ScanResultEqual(const CJoystick* needle) : m_needle(needle) { }
-
-  bool operator()(const CJoystick* rhs)
+  struct ScanResultEqual
   {
-    if (m_needle == NULL || rhs == NULL)
-      return m_needle == rhs;
+    ScanResultEqual(const CJoystick* needle) : m_needle(needle) { }
 
-    return m_needle->Type()          == rhs->Type()          &&
-           m_needle->Name()          == rhs->Name()          &&
-           m_needle->VendorID()      == rhs->VendorID()      &&
-           m_needle->ProductID()     == rhs->ProductID()     &&
-           m_needle->Provider()      == rhs->Provider()      &&
-           m_needle->RequestedPort() == rhs->RequestedPort() &&
-           m_needle->ButtonCount()   == rhs->ButtonCount()   &&
-           m_needle->HatCount()      == rhs->HatCount()      &&
-           m_needle->AxisCount()     == rhs->AxisCount();
-  }
+    bool operator()(const CJoystick* rhs)
+    {
+      if (m_needle == NULL || rhs == NULL)
+        return m_needle == rhs;
 
-private:
-  const CJoystick* const m_needle;
-};
+      return m_needle->Type()          == rhs->Type()          &&
+             m_needle->Name()          == rhs->Name()          &&
+             m_needle->VendorID()      == rhs->VendorID()      &&
+             m_needle->ProductID()     == rhs->ProductID()     &&
+             m_needle->Provider()      == rhs->Provider()      &&
+             m_needle->RequestedPort() == rhs->RequestedPort() &&
+             m_needle->ButtonCount()   == rhs->ButtonCount()   &&
+             m_needle->HatCount()      == rhs->HatCount()      &&
+             m_needle->AxisCount()     == rhs->AxisCount();
+    }
+
+  private:
+    const CJoystick* const m_needle;
+  };
+}
 
 CJoystickManager& CJoystickManager::Get(void)
 {
