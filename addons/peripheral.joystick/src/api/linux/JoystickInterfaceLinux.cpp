@@ -203,10 +203,13 @@ bool CJoystickInterfaceLinux::PerformJoystickScan(std::vector<CJoystick*>& joyst
         isyslog("Axes: %s", strAxes.str().c_str());
       }
 
+      long index = std::max(strtol(pDirent->d_name + strlen("js"), NULL, 10), 0L);
+
       CJoystick* joystick = new CJoystickLinux(fd, filename, this);
       joystick->SetName(name);
       joystick->SetButtonCount(buttons);
       joystick->SetAxisCount(axes);
+      joystick->SetRequestedPort(index);
       joysticks.push_back(joystick);
     }
   }
