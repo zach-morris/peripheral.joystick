@@ -148,6 +148,11 @@ bool CJoystickManager::PerformJoystickScan(std::vector<CJoystick*>& joysticks)
       if ((*itJoystick)->Initialize())
       {
         (*itJoystick)->SetIndex(m_nextJoystickIndex++);
+
+        isyslog("Initialized joystick %u: \"%s\" (%s), axes: %u, hats: %u, buttons: %u",
+                (*itJoystick)->Index(), (*itJoystick)->Name().c_str(), (*itJoystick)->API()->Name().c_str(),
+                (*itJoystick)->AxisCount(), (*itJoystick)->HatCount(), (*itJoystick)->ButtonCount());
+
         m_joysticks.push_back(*itJoystick);
         bSuccess = true;
       }
