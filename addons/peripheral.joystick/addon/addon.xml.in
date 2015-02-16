@@ -21,5 +21,7 @@
     <description lang="en">Adds joystick support to Kodi.</description>
     <disclaimer lang="en">Work in progress</disclaimer>
     <platform>@OS@</platform>
+    <noicon>true</noicon>
+    <nofanart>true</nofanart>
   </extension>
 </addon>
