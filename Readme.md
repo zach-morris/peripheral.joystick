@@ -1,82 +1,33 @@
 
-Begin by cloning the following repos
+To build peripheral add-ons:
 
 ```shell
-git clone -b joysticks-cmake git://github.com/garbear/xbmc.git
-git clone                    git://github.com/Montellese/kodi-platform.git
-git clone -b cmake           git://github.com/garbear/peripheral.joystick.git
-```
+KODI_PREFIX=$HOME/kodi
 
-If you f*ck up and want a clean slate in an instant, try again in a subdirectory
-
-```shell
-echo "Screw this"
-mkdir kodi-workspace
-cd    kodi-workspace
-git clone -b joysticks-cmake ../xbmc
-git clone                    ../kodi-platform
-git clone -b cmake           ../peripheral.joystick
-```
-
-Choose a target prefix
-
-```shell
-KODI_PREFIX=`pwd`/target
-```
-
-Build Kodi
-
-```shell
+git clone -b retroplayer-15alpha1-6438+6227 https://github.com/garbear/xbmc.git xbmc
 cd xbmc
 ./bootstrap
-./configure --prefix=$KODI_PREFIX
-time make -j8
-make install
+./configure
+make -j8
+make install DESTDIR=$KODI_PREFIX
+make -C tools/depends/target/xbmc-peripheral-addons/ PREFIX=$KODI_PREFIX
 cd ..
 ```
 
-Remove xbmc symlink to work around bug fixed in https://github.com/xbmc/xbmc/pull/6271
+To build just joystick add-on, after doing the above:
 
 ```shell
-rm target/include/xbmc
-```
+git clone -b cmake https://github.com/garbear/peripheral.joystick.git peripheral.joystick
+mkdir peripheral.joystick-project
+cd peripheral.joystick-project
 
-Build kodi-platform
+cmake ../peripheral.joystick -DCMAKE_BUILD_TYPE=Debug -DCMAKE_PREFIX_PATH=$KODI_PREFIX -DCMAKE_INSTALL_PREFIX=$KODI_PREFIX
 
-```shell
-cd kodi-platform
-mkdir build
-cd    build
-cmake .. -DCMAKE_BUILD_TYPE=Debug -DCMAKE_PREFIX_PATH=$KODI_PREFIX -DCMAKE_INSTALL_PREFIX=$KODI_PREFIX
-time make
-sudo make install
-cd ..
-```
+# or, for eclipse project files:
 
-Build peripheral.joystick
+cmake ../peripheral.joystick -G"Eclipse CDT4 - Unix Makefiles" -D_ECLIPSE_VERSION=4.4 -DCMAKE_BUILD_TYPE=Debug -DCMAKE_PREFIX_PATH=$KODI_PREFIX -DCMAKE_INSTALL_PREFIX=$KODI_PREFIX
 
-```shell
-cd peripheral.joystick
-mkdir build
-cd    build
-cmake .. -DCMAKE_BUILD_TYPE=Debug -DCMAKE_PREFIX_PATH=$KODI_PREFIX -DCMAKE_INSTALL_PREFIX=$KODI_PREFIX
-time make
-cd ../..
-```
+# and then
 
-Build all peripheral add-ons as Kodi build depends (optional)
-
-```shell
-# Use the repo in our workspace
-echo "peripheral.joystick `pwd`/peripheral.joystick origin/cmake" > \
-  xbmc/project/cmake/addons/addons/peripheral.joystick/peripheral.joystick.txt
-
-cd xbmc
-time make -C tools/depends/target/xbmc-peripheral-addons PREFIX=$KODI_PREFIX
-```
-
-To clean the build depends for peripheral add-ons
-
-```shell
-make -C tools/depends/target/xbmc-peripheral-addons clean
+make
 ```
