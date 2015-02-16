@@ -24,8 +24,7 @@
     #include <assert.h>
     #define ASSERT(x)  assert(x)
   #else
-    #include "log/Log.h"
-    #define ASSERT(x)  esyslog("FAILED ASSERT in %s line %s: %s", __FILE__, __LINE__, #x)
+    #define ASSERT(x)
   #endif
 #endif
 
