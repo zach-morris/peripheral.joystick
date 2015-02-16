@@ -9,12 +9,13 @@ find_package(kodi REQUIRED)
 find_package(kodiplatform REQUIRED)
 find_package(Sdl)
 
-include_directories(${kodiplatform_INCLUDE_DIRS}
+include_directories(${INCLUDES}
+                    ${kodiplatform_INCLUDE_DIRS}
                     ${SDL_INCLUDE_DIRS}
                     ${KODI_INCLUDE_DIR}
                     ${PROJECT_SOURCE_DIR}/src)
 
-set(DEPLIBS ${kodiplatform_LIBRARIES})
+list(APPEND DEPLIBS ${kodiplatform_LIBRARIES})
 
 set(JOYSTICK_SOURCES src/addon.cpp
                      src/api/Joystick.cpp
