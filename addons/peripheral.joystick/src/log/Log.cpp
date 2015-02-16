@@ -88,8 +88,6 @@ void CLog::SetPipe(ILog* pipe)
 
   delete m_pipe;
   m_pipe = pipe;
-
-  Log(SYS_LOG_DEBUG, "Log pipe set to \"%s\" from \"%s\" at level \"%s\"", TypeToString(newType), TypeToString(oldType), LevelToString(m_level));
 }
 
 void CLog::SetLevel(SYS_LOG_LEVEL level)
@@ -100,8 +98,6 @@ void CLog::SetLevel(SYS_LOG_LEVEL level)
   const SYS_LOG_LEVEL oldLevel = m_level;
 
   m_level = level;
-
-  Log(SYS_LOG_DEBUG, "Log level set to %s from %s", LevelToString(newLevel), LevelToString(oldLevel));
 }
 
 void CLog::Log(SYS_LOG_LEVEL level, const char* format, ...)
