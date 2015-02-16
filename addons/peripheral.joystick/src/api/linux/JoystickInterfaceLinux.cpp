@@ -28,6 +28,7 @@
 #include <fcntl.h>
 #include <linux/input.h>
 #include <linux/joystick.h>
+#include <stdlib.h>
 #include <string.h>
 #include <sys/ioctl.h>
 #include <sys/stat.h>
