@@ -23,8 +23,8 @@
 #include "api/JoystickTypes.h"
 #include "log/Log.h"
 
-#include <SDL/SDL.h>
-#include <SDL/SDL_joystick.h>
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_joystick.h>
 
 using namespace JOYSTICK;
 
@@ -81,12 +81,12 @@ bool CJoystickInterfaceSDL::PerformJoystickScan(std::vector<CJoystick*>& joystic
         if (num_axis > 20 && num_buttons > 50)
         {
           isyslog("Your Joystick seems to be a Keyboard, ignoring it: %s Axis: %d Buttons: %d",
-            SDL_JoystickName(i), num_axis, num_buttons);
+            SDL_JoystickNameForIndex(i), num_axis, num_buttons);
         }
         else
         {
           CJoystick* joystick = new CJoystickSDL(joy, this);
-          joystick->SetName(SDL_JoystickName(i));
+          joystick->SetName(SDL_JoystickNameForIndex(i));
           joystick->SetButtonCount(SDL_JoystickNumButtons(joy));
           joystick->SetHatCount(SDL_JoystickNumHats(joy));
           joystick->SetAxisCount(SDL_JoystickNumAxes(joy));
