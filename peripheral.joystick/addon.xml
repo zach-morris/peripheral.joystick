@@ -6,10 +6,10 @@
   provider-name="Team-Kodi">
   <requires>
     <c-pluff version="0.1"/>
-    <import addon="xbmc.peripheral" version="1.0.0"/>
+    <import addon="kodi.peripheral" version="1.0.0"/>
   </requires>
   <extension
-    point="xbmc.peripheral"
+    point="kodi.peripheral"
     provides_joysticks="true"
     library_linux="peripheral.joystick.so"
     library_osx="peripheral.joystick.dylib"
