@@ -2,7 +2,7 @@
 <addon
   id="peripheral.joystick"
   version="1.0.0"
-  name="Kodi Joystick Library"
+  name="Joystick Support"
   provider-name="Team-Kodi">
   <requires>
     <c-pluff version="0.1"/>
@@ -18,7 +18,7 @@
     library_android="libperipheral.joystick.so" />
   <extension point="xbmc.addon.metadata">
     <summary lang="en">Kodi Joystick Library</summary>
-    <description lang="en">Adds joystick support to Kodi.</description>
+    <description lang="en">This library enables joystick support through various APIs, including DirectX, XInput, SDL and the Linux Joystick API.</description>
     <disclaimer lang="en">Work in progress</disclaimer>
     <platform>all</platform>
     <noicon>true</noicon>
