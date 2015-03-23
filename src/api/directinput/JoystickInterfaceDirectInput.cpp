@@ -24,7 +24,7 @@
 #include "log/Log.h"
 #include "utils/CommonMacros.h"
 
-#include "libXBMC_peripheral.h"
+#include "libKODI_peripheral.h"
 
 // For getting the GUIDs of XInput devices
 #include <wbemidl.h>

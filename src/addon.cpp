@@ -27,10 +27,10 @@
 #include "utils/CommonMacros.h"
 
 #include "kodi/libXBMC_addon.h"
-#include "kodi/libXBMC_peripheral.h"
+#include "kodi/libKODI_peripheral.h"
 #include "kodi/xbmc_addon_dll.h"
-#include "kodi/xbmc_peripheral_dll.h"
-#include "kodi/xbmc_peripheral_utils.hpp"
+#include "kodi/kodi_peripheral_dll.h"
+#include "kodi/kodi_peripheral_utils.hpp"
 
 #include <vector>
 
@@ -40,7 +40,7 @@ extern "C"
 {
 
 ADDON::CHelper_libXBMC_addon*      FRONTEND;
-ADDON::CHelper_libXBMC_peripheral* PERIPHERAL;
+ADDON::CHelper_libKODI_peripheral* PERIPHERAL;
 
 ADDON_STATUS ADDON_Create(void* callbacks, void* props)
 {
@@ -55,7 +55,7 @@ ADDON_STATUS ADDON_Create(void* callbacks, void* props)
     if (!FRONTEND || !FRONTEND->RegisterMe(callbacks))
       throw ADDON_STATUS_PERMANENT_FAILURE;
 
-    PERIPHERAL = new ADDON::CHelper_libXBMC_peripheral;
+    PERIPHERAL = new ADDON::CHelper_libKODI_peripheral;
     if (!PERIPHERAL || !PERIPHERAL->RegisterMe(callbacks))
       throw ADDON_STATUS_PERMANENT_FAILURE;
   }
