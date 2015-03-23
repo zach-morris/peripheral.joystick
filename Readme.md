@@ -14,13 +14,9 @@ cd build
 Generate a build environment with config for debugging
 
 ```shell
-
-cmake -DADDONS_TO_BUILD=peripheral.joystick \
-      -DADDON_SRC_PREFIX=/home/xbmc/progs/src \
-      -DCMAKE_BUILD_TYPE=Debug \
-      -DCMAKE_INSTALL_PREFIX=/home/xbmc/progs/src/xbmc/addons \
-      -DPACKAGE_ZIP=1 \
-      /home/xbmc/progs/src/xbmc/project/cmake/addons
+cmake -DCMAKE_BUILD_TYPE=Debug \
+      -DCMAKE_INSTALL_PREFIX=$HOME/workspace/xbmc/addons \
+      $HOME/workspace/xbmc/project/cmake/addons
 ```
 
 If you are developing in Eclipse, you can create a "makefile project with existing code" using `peripheral.joystick/` as the existing code location. To build, enter Properties -> "C/C++ Build" and change the build command to `make -C build`.
@@ -30,56 +26,60 @@ It is also possible to generate Eclipse project files with cmake
 ```shell
 cmake -G"Eclipse CDT4 - Unix Makefiles" \
       -D_ECLIPSE_VERSION=4.4 \
-      -DADDONS_TO_BUILD=peripheral.joystick \
-      -DADDON_SRC_PREFIX=/home/xbmc/progs/src \
       -DCMAKE_BUILD_TYPE=Debug \
-      -DCMAKE_INSTALL_PREFIX=/home/xbmc/progs/src/xbmc/addons \
-      -DPACKAGE_ZIP=1 \
-      /home/xbmc/progs/src/xbmc/project/cmake/addons
+      -DCMAKE_INSTALL_PREFIX=$HOME/workspace/xbmc/addons \
+      $HOME/workspace/xbmc/project/cmake/addons
 ```
 
-## Windows
-
-First, download and install [CMake](http://www.cmake.org/download/).
-
-To build on windows, change to the addons folder:
-
-```batch
-cd D:\Projects\xbmx\xbmc\project\cmake\addons
-```
-
-Generate Visual Studio 2013 solution
-
-```batch
-cmake -DADDONS_TO_BUILD=peripheral.joystick -DADDON_SRC_PREFIX="D:\Projects\demo" -DCMAKE_BUILD_TYPE=Debug -G "Visual Studio 12"  -DCMAKE_USER_MAKE_RULES_OVERRIDE="D:\Projects\xbmx\xbmc\project\cmake\scripts\windows\c-flag-overrides.cmake" -DCMAKE_USER_MAKE_RULES_OVERRIDE_CXX="D:\Projects\xbmx\xbmc\project\cmake\scripts\windows\cxx-flag-overrides.cmake" -DCMAKE_INSTALL_PREFIX="D:\Projects\xbmx\xbmc\adons" -DPACKAGE_ZIP=1
-```
-
-Open Visual Studio, load and build this solution:
-
-```
-D:\Projects\xbmx\xbmc\project\cmake\addons\kodi-addons.sln
-```
-
-Alternatively, wait for the `prepare-addons-dev.bat` build script in [PR #6658](https://github.com/xbmc/xbmc/pull/6658) to be merged. Enter tools/buildsteps/win32 and execute it from there. If you want to execute it from somewhere else you need to adjust the default value of WORKDIR in the batch file.
-
-Available options are:
-* **clean** to simply clean the whole generated buildsystem
-* **&lt;addon-id>** to only generate the buildsystem for that addon
-
-# Building in-tree
+# Building in-tree (cross-compiling)
 
 Kodi's build system will fetch the add-on from the GitHub URL and git hash specified in [peripheral.joystick.txt](https://github.com/garbear/xbmc/blob/retroplayer-15alpha2/project/cmake/addons/addons/peripheral.joystick/peripheral.joystick.txt).
 
-## Windows
+## Linux
 
-Remember, CMake is needed.
+Ensure that kodi has been built successfully. Then, from the root of the source tree, run
 
 ```shell
-cd tools\buildsteps\win32
-make-addons.bat peripheral.joystick
+make install DESTDIR=$HOME/kodi
 ```
 
-The compiled .dll will be placed in `project\cmake\addons\build\peripheral.joystick-prefix\src\peripheral.joystick-build`.
+Build the add-on
+
+```shell
+make -C tools/depends/target/binary-addons PREFIX=$HOME/kodi ADDONS="peripheral.joystick"
+```
+
+The compiled .so can be found at
+
+```
+$HOME/kodi/lib/kodi/addons/peripheral.joystick/peripheral.joystick.so
+```
+
+To rebuild the add-on or compile a different one, clean the build directory
+
+```shell
+make -C tools/depends/target/binary-addons clean
+```
+
+## Windows
+
+We will use CMake to generate a `kodi-addons.sln` Visual Studio solution and project files. Add-ons can be built individually through their specific project, or all at once by building the solution.
+
+First, download and install [CMake](http://www.cmake.org/download/).
+
+Run the script from [PR 6658](https://github.com/xbmc/xbmc/pull/6658) to create Visual Studio project files
+
+```
+tools\windows\prepare-binary-addons-dev.bat
+```
+
+The generated solution can be found at
+
+```
+project\cmake\addons\build\kodi-addons.sln
+```
+
+No source code is downloaded at the CMake stage; when the project is built, the add-on's source will be downloaded and compiled.
 
 ## OSX
 
@@ -90,9 +90,7 @@ cd tools/depends
 make -C target/binary-addons ADDONS="peripheral.joystick"
 ```
 
-## Cleaning build directory
-
-Run the following to clean the build directory. Note, this will clean all add-ons, not just peripheral.joystick.
+To rebuild the add-on or compile a different one, clean the build directory
 
 ```shell
 make -C target/binary-addons clean
