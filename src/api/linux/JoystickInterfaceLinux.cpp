@@ -100,7 +100,7 @@ bool CJoystickInterfaceLinux::PerformJoystickScan(std::vector<CJoystick*>& joyst
         continue;
       }
 
-      long index = std::max(strtol(pDirent->d_name + strlen("js"), NULL, 10), 0L);
+      unsigned int index = (unsigned int)std::max(strtol(pDirent->d_name + strlen("js"), NULL, 10), 0L);
 
       CJoystick* joystick = new CJoystickLinux(fd, filename, this);
       joystick->SetName(name);
