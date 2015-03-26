@@ -17,6 +17,7 @@ Generate a build environment with config for debugging
 cmake -DADDONS_TO_BUILD=peripheral.joystick \
       -DCMAKE_BUILD_TYPE=Debug \
       -DCMAKE_INSTALL_PREFIX=$HOME/workspace/xbmc/addons \
+      -DPACKAGE_ZIP=1 \
       $HOME/workspace/xbmc/project/cmake/addons
 ```
 
@@ -30,6 +31,7 @@ cmake -G"Eclipse CDT4 - Unix Makefiles" \
       -DADDONS_TO_BUILD=peripheral.joystick \
       -DCMAKE_BUILD_TYPE=Debug \
       -DCMAKE_INSTALL_PREFIX=$HOME/workspace/xbmc/addons \
+      -DPACKAGE_ZIP=1 \
       $HOME/workspace/xbmc/project/cmake/addons
 ```
 
