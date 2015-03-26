@@ -34,8 +34,6 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 
-#define JOYSTICK_UNKNOWN   "Unknown XBMC-Compatible Linux Joystick"
-
 using namespace JOYSTICK;
 
 CJoystickInterfaceLinux::CJoystickInterfaceLinux(void)
@@ -70,10 +68,10 @@ bool CJoystickInterfaceLinux::PerformJoystickScan(std::vector<CJoystick*>& joyst
         continue;
       }
 
-      unsigned char axes = 0;
-      unsigned char buttons = 0;
-      int version = 0x000000;
-      char name[128] = JOYSTICK_UNKNOWN;
+      unsigned char axes      = 0;
+      unsigned char buttons   = 0;
+      int           version   = 0x000000;
+      char          name[128] = { };
 
       if (ioctl(fd, JSIOCGVERSION, &version) < 0 ||
           ioctl(fd, JSIOCGAXES, &axes)       < 0 ||
