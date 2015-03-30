@@ -108,7 +108,7 @@ bool CJoystickManager::Initialize(void)
     }
   }
 
-  return !m_interfaces.empty();
+  return true;
 }
 
 void CJoystickManager::Deinitialize(void)
