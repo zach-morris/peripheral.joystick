@@ -26,7 +26,7 @@ namespace JOYSTICK
 {
   class CJoystickInterface;
 
-  class CJoystick : public ADDON::Joystick
+  class CJoystick : public ADDON::Peripheral, public ADDON::Joystick
   {
   public:
     CJoystick(CJoystickInterface* api);

@@ -22,6 +22,7 @@
 
 #include "api/Joystick.h"
 #include "api/JoystickManager.h"
+#include "buttonmapper/ButtonMapper.h"
 #include "log/Log.h"
 #include "log/LogAddon.h"
 #include "utils/CommonMacros.h"
@@ -71,6 +72,9 @@ ADDON_STATUS ADDON_Create(void* callbacks, void* props)
   if (!CJoystickManager::Get().Initialize())
     return ADDON_STATUS_PERMANENT_FAILURE;
 
+  if (!CButtonMapper::Get().Initialize())
+    return ADDON_STATUS_PERMANENT_FAILURE;
+
   return ADDON_STATUS_OK;
 }
 
@@ -81,6 +85,7 @@ void ADDON_Stop()
 void ADDON_Destroy()
 {
   CJoystickManager::Get().Deinitialize();
+  CButtonMapper::Get().Deinitialize();
 
   CLog::Get().SetType(SYS_LOG_TYPE_CONSOLE);
 
@@ -160,28 +165,6 @@ void FreeScanResults(unsigned int peripheral_count, PERIPHERAL_INFO* scan_result
   ADDON::Peripherals::FreeStructs(peripheral_count, scan_results);
 }
 
-PERIPHERAL_ERROR GetJoystickInfo(unsigned int index, JOYSTICK_INFO* info)
-{
-  if (!info)
-    return PERIPHERAL_ERROR_INVALID_PARAMETERS;
-
-  CJoystick* joystick = CJoystickManager::Get().GetJoystick(index);
-  if (!joystick)
-    return PERIPHERAL_ERROR_NOT_CONNECTED;
-
-  joystick->ToStruct(*info);
-
-  return PERIPHERAL_NO_ERROR;
-}
-
-void FreeJoystickInfo(JOYSTICK_INFO* info)
-{
-  if (!info)
-    return;
-
-  CJoystick::FreeStruct(*info);
-}
-
 PERIPHERAL_ERROR GetEvents(unsigned int* event_count, PERIPHERAL_EVENT** events)
 {
   if (!event_count || !events)
@@ -203,20 +186,64 @@ void FreeEvents(unsigned int event_count, PERIPHERAL_EVENT* events)
   ADDON::PeripheralEvents::FreeStructs(event_count, events);
 }
 
-PERIPHERAL_ERROR UpdateJoystickFeature(unsigned int index, JOYSTICK_FEATURE* feature)
+PERIPHERAL_ERROR GetJoystickInfo(unsigned int index, JOYSTICK_INFO* info)
 {
-  if (!feature)
+  if (!info)
     return PERIPHERAL_ERROR_INVALID_PARAMETERS;
 
-  CJoystick* joystick = CJoystickManager::Get().GetJoystick(index);
+  const CJoystick* joystick = CJoystickManager::Get().GetJoystick(index);
   if (!joystick)
     return PERIPHERAL_ERROR_NOT_CONNECTED;
 
-  bool bSuccess(false);
+  // Need to be explicit because we're using instead typedef struct { ... }T of struct T{ ... }
+  joystick->ADDON::Joystick::ToStruct(*info);
 
-  // TODO
-  joystick->Features().push_back(ADDON::JoystickFeatureFactory::Create(*feature));
-  bSuccess = true;
+  return PERIPHERAL_NO_ERROR;
+}
+
+void FreeJoystickInfo(JOYSTICK_INFO* info)
+{
+  if (!info)
+    return;
+
+  ADDON::Joystick::FreeStruct(*info);
+}
+
+PERIPHERAL_ERROR GetButtonMap(const JOYSTICK_INFO* joystick, const char* device,
+                              unsigned int* feature_count, JOYSTICK_FEATURE** features)
+{
+  if (!joystick || !device || !feature_count || !features)
+    return PERIPHERAL_ERROR_INVALID_PARAMETERS;
+
+  std::vector<ADDON::JoystickFeature*> joystickFeatures;
+  if (CButtonMapper::Get().GetFeatures(ADDON::Joystick(*joystick), device, joystickFeatures))
+  {
+    *feature_count = joystickFeatures.size();
+    ADDON::JoystickFeatures::ToStructs(joystickFeatures, features);
+    return PERIPHERAL_NO_ERROR;
+  }
+
+  return PERIPHERAL_ERROR_FAILED;
+}
+
+void FreeButtonMap(unsigned int feature_count, JOYSTICK_FEATURE* features)
+{
+  ADDON::JoystickFeatures::FreeStructs(feature_count, features);
+}
+
+PERIPHERAL_ERROR MapJoystickFeature(const JOYSTICK_INFO* joystick, const char* device,
+                                    JOYSTICK_FEATURE* feature)
+{
+  if (!joystick || !device || !feature)
+    return PERIPHERAL_ERROR_INVALID_PARAMETERS;
+
+  ADDON::JoystickFeature* joystickFeature = ADDON::JoystickFeatureFactory::Create(*feature);
+  if (!joystickFeature)
+    return PERIPHERAL_ERROR_INVALID_PARAMETERS;
+
+  bool bSuccess = CButtonMapper::Get().MapFeature(ADDON::Joystick(*joystick), device, joystickFeature);
+
+  delete joystickFeature;
 
   return bSuccess ? PERIPHERAL_NO_ERROR : PERIPHERAL_ERROR_FAILED;
 }
