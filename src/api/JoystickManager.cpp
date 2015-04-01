@@ -184,10 +184,8 @@ bool CJoystickManager::GetEvents(std::vector<ADDON::PeripheralEvent>& events)
 {
   CLockObject lock(m_joystickMutex);
 
-  bool bResult(false);
-
   for (std::vector<CJoystick*>::iterator it = m_joysticks.begin(); it != m_joysticks.end(); ++it)
-    bResult |= (*it)->GetEvents(events);
+    (*it)->GetEvents(events);
 
-  return bResult;
+  return true;
 }
