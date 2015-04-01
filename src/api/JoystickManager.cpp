@@ -164,7 +164,7 @@ bool CJoystickManager::PerformJoystickScan(std::vector<CJoystick*>& joysticks)
 
   joysticks.assign(m_joysticks.begin(), m_joysticks.end());
 
-  return !joysticks.empty();
+  return true;
 }
 
 CJoystick* CJoystickManager::GetJoystick(unsigned int index) const
