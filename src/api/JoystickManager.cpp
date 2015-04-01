@@ -162,7 +162,7 @@ bool CJoystickManager::PerformJoystickScan(std::vector<CJoystick*>& joysticks)
       delete *itJoystick;
   }
 
-  joysticks.assign(m_joysticks.begin(), m_joysticks.end());
+  joysticks = m_joysticks;
 
   return true;
 }
