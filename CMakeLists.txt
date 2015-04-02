@@ -28,7 +28,7 @@ set(JOYSTICK_SOURCES src/addon.cpp
                      src/log/LogSyslog.cpp)
 
 if(SDL_FOUND)
-  add_definitions(-DHAS_SDL)
+  add_definitions(-DHAVE_SDL)
   list(APPEND JOYSTICK_SOURCES src/api/sdl/JoystickInterfaceSDL.cpp
                                src/api/sdl/JoystickSDL.cpp)
   list(APPEND DEPLIBS ${SDL_LIBRARIES})
