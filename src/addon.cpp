@@ -209,14 +209,16 @@ void FreeJoystickInfo(JOYSTICK_INFO* info)
   ADDON::Joystick::FreeStruct(*info);
 }
 
-PERIPHERAL_ERROR GetButtonMap(const JOYSTICK_INFO* joystick, const char* device,
+PERIPHERAL_ERROR GetButtonMap(const PERIPHERAL_INFO* peripheral, const JOYSTICK_INFO* joystick,
+                              const char* device,
                               unsigned int* feature_count, JOYSTICK_FEATURE** features)
 {
-  if (!joystick || !device || !feature_count || !features)
+  if (!peripheral || !joystick || !device || !feature_count || !features)
     return PERIPHERAL_ERROR_INVALID_PARAMETERS;
 
   std::vector<ADDON::JoystickFeature*> joystickFeatures;
-  if (CButtonMapper::Get().GetFeatures(ADDON::Joystick(*joystick), device, joystickFeatures))
+  if (CButtonMapper::Get().GetFeatures(ADDON::Peripheral(*peripheral), ADDON::Joystick(*joystick),
+                                       device,  joystickFeatures))
   {
     *feature_count = joystickFeatures.size();
     ADDON::JoystickFeatures::ToStructs(joystickFeatures, features);
@@ -231,17 +233,19 @@ void FreeButtonMap(unsigned int feature_count, JOYSTICK_FEATURE* features)
   ADDON::JoystickFeatures::FreeStructs(feature_count, features);
 }
 
-PERIPHERAL_ERROR MapJoystickFeature(const JOYSTICK_INFO* joystick, const char* device,
+PERIPHERAL_ERROR MapJoystickFeature(const PERIPHERAL_INFO* peripheral, const JOYSTICK_INFO* joystick,
+                                    const char* device,
                                     JOYSTICK_FEATURE* feature)
 {
-  if (!joystick || !device || !feature)
+  if (!peripheral || !joystick || !device || !feature)
     return PERIPHERAL_ERROR_INVALID_PARAMETERS;
 
   ADDON::JoystickFeature* joystickFeature = ADDON::JoystickFeatureFactory::Create(*feature);
   if (!joystickFeature)
     return PERIPHERAL_ERROR_INVALID_PARAMETERS;
 
-  bool bSuccess = CButtonMapper::Get().MapFeature(ADDON::Joystick(*joystick), device, joystickFeature);
+  bool bSuccess = CButtonMapper::Get().MapFeature(ADDON::Peripheral(*peripheral), ADDON::Joystick(*joystick),
+                                                  device, joystickFeature);
 
   delete joystickFeature;
 
