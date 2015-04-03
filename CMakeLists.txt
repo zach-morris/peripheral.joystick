@@ -28,7 +28,7 @@ set(JOYSTICK_SOURCES src/addon.cpp
                      src/log/LogSyslog.cpp)
 
 if(SDL_FOUND)
-  add_definitions(-DHAS_SDL)
+  add_definitions(-DHAVE_SDL)
   list(APPEND JOYSTICK_SOURCES src/api/sdl/JoystickInterfaceSDL.cpp
                                src/api/sdl/JoystickSDL.cpp)
   list(APPEND DEPLIBS ${SDL_LIBRARIES})
@@ -37,7 +37,7 @@ endif()
 include(CheckIncludeFiles)
 check_include_files(linux/joystick.h HAVE_LINUX_JOYSTICK_H)
 if(HAVE_LINUX_JOYSTICK_H)
-  add_definitions(-DHAS_LINUX_JOYSTICK)
+  add_definitions(-DHAVE_LINUX_JOYSTICK)
   list(APPEND JOYSTICK_SOURCES src/api/linux/JoystickInterfaceLinux.cpp
                                src/api/linux/JoystickLinux.cpp)
 endif()
