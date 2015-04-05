@@ -105,42 +105,34 @@ void CButtonMapper::UnMap(ButtonMap& buttonMap, const ADDON::JoystickFeature* fe
 
 void CButtonMapper::UnMapButton(ButtonMap& buttonMap, const ADDON::DriverButton* button)
 {
-  bool bConflicted = false;
-
-  for (ButtonMap::iterator it = buttonMap.begin(); !bConflicted && it != buttonMap.end(); ++it)
+  for (ButtonMap::iterator it = buttonMap.begin(); it != buttonMap.end(); ++it)
   {
     if (ButtonConflicts(button, it->second))
     {
-      bConflicted = true;
       buttonMap.erase(it);
+      break;
     }
   }
 }
 
 void CButtonMapper::UnMapHat(ButtonMap& buttonMap, const ADDON::DriverHat* hat)
 {
-  bool bConflicted = false;
-
-  for (ButtonMap::iterator it = buttonMap.begin(); !bConflicted && it != buttonMap.end(); ++it)
+  for (ButtonMap::iterator it = buttonMap.begin(); it != buttonMap.end(); ++it)
   {
     if (HatConflicts(hat, it->second))
     {
-      bConflicted = true;
       buttonMap.erase(it);
+      break;
     }
   }
 }
 
 void CButtonMapper::UnMapSemiAxis(ButtonMap& buttonMap, const ADDON::DriverSemiAxis* semiAxis)
 {
-  bool bConflicted = false;
-
-  for (ButtonMap::iterator it = buttonMap.begin(); !bConflicted && it != buttonMap.end(); ++it)
+  for (ButtonMap::iterator it = buttonMap.begin(); it != buttonMap.end(); ++it)
   {
     if (SemiAxisConflicts(semiAxis, it->second))
     {
-      bConflicted = true;
-
       switch (it->second->Type())
       {
         case JOYSTICK_DRIVER_TYPE_SEMIAXIS:
@@ -194,6 +186,8 @@ void CButtonMapper::UnMapSemiAxis(ButtonMap& buttonMap, const ADDON::DriverSemiA
           break;
       }
     }
+
+    break;
   }
 }
 
