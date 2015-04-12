@@ -57,8 +57,8 @@ namespace JOYSTICK
     unsigned int m_hatCount;
     unsigned int m_axisCount;
 
-    typedef std::string                    DeviceName;
-    typedef std::map<DeviceName, CButtons> ButtonMaps;
+    typedef std::string                  DeviceID;
+    typedef std::map<DeviceID, CButtons> ButtonMaps;
 
     ButtonMaps m_buttonMaps;
   };
