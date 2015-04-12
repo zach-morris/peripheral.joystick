@@ -42,9 +42,9 @@ bool CDevices::GetFeatures(const ADDON::Peripheral& peripheral, const ADDON::Joy
   unsigned int       axisCount   = joystick.AxisCount();
 
   CDevice needle(strName,
+                 strProvider,
                  vid,
                  pid,
-                 strProvider,
                  buttonCount,
                  hatCount,
                  axisCount);
@@ -68,9 +68,9 @@ bool CDevices::MapFeature(const ADDON::Peripheral& peripheral, const ADDON::Joys
   unsigned int       axisCount   = joystick.AxisCount();
 
   CDevice needle(strName,
+                 strProvider,
                  vid,
                  pid,
-                 strProvider,
                  buttonCount,
                  hatCount,
                  axisCount);

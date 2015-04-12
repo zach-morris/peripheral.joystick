@@ -35,9 +35,9 @@ namespace JOYSTICK
     CDevice(void);
 
     CDevice(const std::string& m_strName,
+            const std::string& strProvider,
             uint16_t           vid,
             uint16_t           pid,
-            const std::string& strProvider,
             unsigned int       buttonCount,
             unsigned int       hatCount,
             unsigned int       axisCount);
@@ -50,9 +50,9 @@ namespace JOYSTICK
 
   private:
     std::string  m_strName;
+    std::string  m_strProvider;
     uint16_t     m_vid;
     uint16_t     m_pid;
-    std::string  m_strProvider;
     unsigned int m_buttonCount;
     unsigned int m_hatCount;
     unsigned int m_axisCount;
