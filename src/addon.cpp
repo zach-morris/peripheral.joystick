@@ -45,12 +45,12 @@ ADDON::CHelper_libKODI_peripheral* PERIPHERAL;
 
 ADDON_STATUS ADDON_Create(void* callbacks, void* props)
 {
+  PERIPHERAL_PROPERTIES* peripheralProps = static_cast<PERIPHERAL_PROPERTIES*>(props);
+
   try
   {
-    if (!callbacks || !props)
+    if (!callbacks || !peripheralProps)
       throw ADDON_STATUS_UNKNOWN;
-
-    PERIPHERAL_PROPERTIES* peripheralProps = static_cast<PERIPHERAL_PROPERTIES*>(props);
 
     FRONTEND = new ADDON::CHelper_libXBMC_addon;
     if (!FRONTEND || !FRONTEND->RegisterMe(callbacks))
@@ -72,7 +72,7 @@ ADDON_STATUS ADDON_Create(void* callbacks, void* props)
   if (!CJoystickManager::Get().Initialize())
     return ADDON_STATUS_PERMANENT_FAILURE;
 
-  if (!CDevices::Get().Initialize())
+  if (!CDevices::Get().Initialize(*peripheralProps));
     return ADDON_STATUS_PERMANENT_FAILURE;
 
   return ADDON_STATUS_OK;

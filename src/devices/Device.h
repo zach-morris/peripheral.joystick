@@ -27,6 +27,8 @@
 #include <stdint.h>
 #include <string>
 
+class TiXmlElement;
+
 namespace JOYSTICK
 {
   class CDevice
@@ -42,11 +44,20 @@ namespace JOYSTICK
             unsigned int       hatCount,
             unsigned int       axisCount);
 
+    void Reset(void) { *this = CDevice(); }
+
     bool operator==(const CDevice& rhs) const;
+
+    const std::string& Name(void) const { return m_strName; }
 
     bool GetFeatures(const std::string& strDeviceId, std::vector<ADDON::JoystickFeature*>& features) const;
 
     bool MapFeature(const std::string& strDeviceId, const ADDON::JoystickFeature* feature);
+
+    bool IsValid(void) const;
+
+    bool Serialize(TiXmlElement* pElement) const;
+    bool Deserialize(const TiXmlElement* pElement);
 
   private:
     std::string  m_strName;

@@ -21,10 +21,13 @@
 
 #include "Device.h"
 
+#include "kodi/kodi_peripheral_types.h"
 #include "kodi/kodi_peripheral_utils.hpp"
 
 #include <string>
 #include <vector>
+
+class TiXmlElement;
 
 namespace JOYSTICK
 {
@@ -38,7 +41,7 @@ namespace JOYSTICK
 
     virtual ~CDevices(void) { Deinitialize(); }
 
-    bool Initialize(void) { return true; }
+    bool Initialize(const PERIPHERAL_PROPERTIES& props);
     void Deinitialize(void) { }
 
     bool GetFeatures(const ADDON::Peripheral& peripheral, const ADDON::Joystick& joystick,
@@ -47,7 +50,14 @@ namespace JOYSTICK
     bool MapFeature(const ADDON::Peripheral& peripheral, const ADDON::Joystick& joystick,
                     const std::string& strDeviceId, const ADDON::JoystickFeature* feature);
 
+    bool Deserialize(const TiXmlElement* pElement);
+    bool Serialize(TiXmlElement* pElement) const;
+
   private:
+    bool Load(const std::string& strPath);
+    bool Save(const std::string& strPath) const;
+
     std::vector<CDevice> m_devices;
+    std::string          m_strPath;
   };
 }

@@ -24,6 +24,8 @@
 #include <map>
 #include <string>
 
+class TiXmlElement;
+
 namespace JOYSTICK
 {
   class CButtons
@@ -31,9 +33,14 @@ namespace JOYSTICK
   public:
     CButtons(void) { }
 
+    void Reset(void) { *this = CButtons(); }
+
     bool GetFeatures(std::vector<ADDON::JoystickFeature*>& features) const;
 
     bool MapFeature(const ADDON::JoystickFeature* feature);
+
+    bool Serialize(TiXmlElement* pElement) const;
+    bool Deserialize(const TiXmlElement* pElement);
 
   private:
     void UnMap(const ADDON::JoystickFeature* feature);
