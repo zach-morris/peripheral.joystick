@@ -23,7 +23,7 @@
 using namespace JOYSTICK;
 
 CDevice::CDevice(void)
-  : m_strDeviceId(),
+  : m_strName(),
     m_vid(0),
     m_pid(0),
     m_strProvider(),
@@ -33,14 +33,14 @@ CDevice::CDevice(void)
 {
 }
 
-CDevice::CDevice(const std::string& strDeviceId,
+CDevice::CDevice(const std::string& strName,
                  uint16_t           vid,
                  uint16_t           pid,
                  const std::string& strProvider,
                  unsigned int       buttonCount,
                  unsigned int       hatCount,
                  unsigned int       axisCount)
- : m_strDeviceId(strDeviceId),
+ : m_strName(strName),
    m_pid(pid),
    m_vid(vid),
    m_strProvider(strProvider),
@@ -52,17 +52,16 @@ CDevice::CDevice(const std::string& strDeviceId,
 
 bool CDevice::operator==(const CDevice& rhs) const
 {
-  return rhs.m_strDeviceId.empty()          ? true : m_strDeviceId == rhs.m_strDeviceId   &&
+  return rhs.m_strName.empty()              ? true : m_strName     == rhs.m_strName   &&
          (rhs.m_pid == 0 && rhs.m_vid == 0) ? true : m_pid == rhs.m_pid && m_vid == rhs.m_vid &&
-         rhs.m_strProvider.empty()          ? true : m_strProvider   == rhs.m_strProvider &&
+         rhs.m_strProvider.empty()          ? true : m_strProvider == rhs.m_strProvider &&
          rhs.m_buttonCount == 0 &&
          rhs.m_hatCount    == 0 &&
-         rhs.m_axisCount   == 0             ? true : m_buttonCount   == rhs.m_buttonCount &&
-                                                     m_hatCount      == rhs.m_hatCount    &&
-                                                     m_axisCount     == rhs.m_axisCount;
+         rhs.m_axisCount   == 0             ? true : m_buttonCount == rhs.m_buttonCount &&
+                                                     m_hatCount    == rhs.m_hatCount    &&
+                                                     m_axisCount   == rhs.m_axisCount;
 
 }
-
 
 bool CDevice::GetFeatures(const std::string& strDeviceId, std::vector<ADDON::JoystickFeature*>& features) const
 {

@@ -34,7 +34,7 @@ namespace JOYSTICK
   public:
     CDevice(void);
 
-    CDevice(const std::string& strDeviceId,
+    CDevice(const std::string& m_strName,
             uint16_t           vid,
             uint16_t           pid,
             const std::string& strProvider,
@@ -49,7 +49,7 @@ namespace JOYSTICK
     bool MapFeature(const std::string& strDeviceId, const ADDON::JoystickFeature* feature);
 
   private:
-    std::string  m_strDeviceId;
+    std::string  m_strName;
     uint16_t     m_vid;
     uint16_t     m_pid;
     std::string  m_strProvider;
