@@ -34,7 +34,7 @@ namespace JOYSTICK
   public:
     CDevice(void);
 
-    CDevice(const std::string& m_strName,
+    CDevice(const std::string& strName,
             const std::string& strProvider,
             uint16_t           vid,
             uint16_t           pid,
