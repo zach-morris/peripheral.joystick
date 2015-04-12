@@ -32,13 +32,13 @@ bool CButtons::GetFeatures(std::vector<ADDON::JoystickFeature*>& features) const
 
 bool CButtons::MapFeature(const ADDON::JoystickFeature* feature)
 {
-  if (feature)
+  if (feature && !feature->Name().empty())
   {
     UnMap(feature);
 
-    const std::string strFeatureName = ""; // feature->Name(); // TODO
+    const std::string& strFeatureName = feature->Name();
 
-    Buttons::iterator itFeature = m_buttons.find(strFeatureName); // TODO
+    Buttons::iterator itFeature = m_buttons.find(strFeatureName);
     if (itFeature != m_buttons.end())
       delete itFeature->second;
 
