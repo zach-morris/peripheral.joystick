@@ -64,8 +64,12 @@ bool CDevices::Initialize(const PERIPHERAL_PROPERTIES& props)
 
   bool bSuccess = false;
 
+  /* TODO
   // Require add-on buttonmap, attempt user buttonmap
   bSuccess = Load(strAddonPath);
+  */
+  bSuccess = true;
+  Load(strAddonPath);
   Load(strUserPath);
 
   m_strPath = strUserPath;
