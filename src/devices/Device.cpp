@@ -174,16 +174,16 @@ bool CDevice::Deserialize(const TiXmlElement* pElement)
 
   if (!pProfile)
   {
-    esyslog("Device \"%s\" can't find <%s> tag", m_strName.c_str(), BUTTONMAP_XML_ELEM_PROFILE);
+    esyslog("Device \"%s\": can't find <%s> tag", m_strName.c_str(), BUTTONMAP_XML_ELEM_PROFILE);
     return false;
   }
 
   while (pProfile)
   {
-    const char* id = pElement->Attribute(BUTTONMAP_XML_ATTR_PROFILE_ID);
+    const char* id = pProfile->Attribute(BUTTONMAP_XML_ATTR_PROFILE_ID);
     if (!id)
     {
-      esyslog("Device \"%s\" <%s> tag has no \"%s\" attribute", m_strName.c_str(),
+      esyslog("Device \"%s\": <%s> tag has no attribute \"%s\"", m_strName.c_str(),
               BUTTONMAP_XML_ELEM_PROFILE, BUTTONMAP_XML_ATTR_PROFILE_ID);
       return false;
     }
