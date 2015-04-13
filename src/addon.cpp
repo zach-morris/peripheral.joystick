@@ -72,7 +72,7 @@ ADDON_STATUS ADDON_Create(void* callbacks, void* props)
   if (!CJoystickManager::Get().Initialize())
     return ADDON_STATUS_PERMANENT_FAILURE;
 
-  if (!CDevices::Get().Initialize(*peripheralProps));
+  if (!CDevices::Get().Initialize(*peripheralProps))
     return ADDON_STATUS_PERMANENT_FAILURE;
 
   return ADDON_STATUS_OK;
