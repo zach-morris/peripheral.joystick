@@ -378,7 +378,7 @@ bool CButtons::Deserialize(const TiXmlElement* pElement)
 
   while (pFeature)
   {
-    const char* name = pElement->Attribute(BUTTONMAP_XML_ATTR_FEATURE_NAME);
+    const char* name = pFeature->Attribute(BUTTONMAP_XML_ATTR_FEATURE_NAME);
     if (!name)
     {
       esyslog("<%s> tag has no \"%s\" attribute", BUTTONMAP_XML_ELEM_FEATURE, BUTTONMAP_XML_ATTR_FEATURE_NAME);
@@ -387,15 +387,15 @@ bool CButtons::Deserialize(const TiXmlElement* pElement)
 
     ADDON::JoystickFeature* feature = NULL;
 
-    const char* button = pElement->Attribute(BUTTONMAP_XML_ATTR_FEATURE_BUTTON);
-    const char* hat = pElement->Attribute(BUTTONMAP_XML_ATTR_FEATURE_HAT);
-    const char* axis = pElement->Attribute(BUTTONMAP_XML_ATTR_FEATURE_AXIS);
-    const char* xaxis = pElement->Attribute(BUTTONMAP_XML_ATTR_FEATURE_XAXIS);
-    const char* yaxis = pElement->Attribute(BUTTONMAP_XML_ATTR_FEATURE_YAXIS);
-    const char* zaxis = pElement->Attribute(BUTTONMAP_XML_ATTR_FEATURE_ZAXIS);
-    const char* xinverted = pElement->Attribute(BUTTONMAP_XML_ATTR_FEATURE_XINVERTED);
-    const char* yinverted = pElement->Attribute(BUTTONMAP_XML_ATTR_FEATURE_YINVERTED);
-    const char* zinverted = pElement->Attribute(BUTTONMAP_XML_ATTR_FEATURE_ZINVERTED);
+    const char* button = pFeature->Attribute(BUTTONMAP_XML_ATTR_FEATURE_BUTTON);
+    const char* hat = pFeature->Attribute(BUTTONMAP_XML_ATTR_FEATURE_HAT);
+    const char* axis = pFeature->Attribute(BUTTONMAP_XML_ATTR_FEATURE_AXIS);
+    const char* xaxis = pFeature->Attribute(BUTTONMAP_XML_ATTR_FEATURE_XAXIS);
+    const char* yaxis = pFeature->Attribute(BUTTONMAP_XML_ATTR_FEATURE_YAXIS);
+    const char* zaxis = pFeature->Attribute(BUTTONMAP_XML_ATTR_FEATURE_ZAXIS);
+    const char* xinverted = pFeature->Attribute(BUTTONMAP_XML_ATTR_FEATURE_XINVERTED);
+    const char* yinverted = pFeature->Attribute(BUTTONMAP_XML_ATTR_FEATURE_YINVERTED);
+    const char* zinverted = pFeature->Attribute(BUTTONMAP_XML_ATTR_FEATURE_ZINVERTED);
 
     if (button)
     {
