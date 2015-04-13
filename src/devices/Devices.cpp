@@ -238,7 +238,11 @@ bool CDevices::Deserialize(const TiXmlElement* pElement)
     return false;
   }
 
-  const TiXmlElement* pDevice = pElement->FirstChildElement(BUTTONMAP_XML_ELEM_DEVICE);
+  const TiXmlNode* pDevicesNode = pDevices->ToElement();
+  if (!pDevicesNode)
+    return false;
+
+  const TiXmlElement* pDevice = pDevicesNode->FirstChildElement(BUTTONMAP_XML_ELEM_DEVICE);
 
   if (!pDevice)
   {
