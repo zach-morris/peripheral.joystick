@@ -21,6 +21,7 @@
 #include "JoystickManager.h"
 #include "Joystick.h"
 #include "JoystickInterface.h"
+
 #if defined(HAVE_DIRECT_INPUT)
   #include "directinput/JoystickInterfaceDirectInput.h"
 #endif
@@ -32,6 +33,10 @@
 #elif defined(HAVE_SDL)
   #include "sdl/JoystickInterfaceSDL.h"
 #endif
+#if defined(HAVE_COCOA)
+  #include "cocoa/JoystickInterfaceCocoa.h"
+#endif
+
 #include "log/Log.h"
 #include "utils/CommonMacros.h"
 
@@ -95,6 +100,9 @@ bool CJoystickManager::Initialize(void)
   m_interfaces.push_back(new CJoystickInterfaceLinux);
 #elif defined(HAVE_SDL)
   m_interfaces.push_back(new CJoystickInterfaceSDL);
+#endif
+#if defined(HAVE_COCOA)
+  m_interfaces.push_back(new CJoystickInterfaceCocoa);
 #endif
 
   // Initialise all known interfaces

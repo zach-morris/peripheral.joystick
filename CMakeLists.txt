@@ -30,6 +30,17 @@ set(JOYSTICK_SOURCES src/addon.cpp
                      src/log/LogConsole.cpp
                      src/log/LogSyslog.cpp)
 
+if("${CORE_SYSTEM_NAME}" STREQUAL "darwin")
+  find_library(COCOA_LIBRARY Cocoa)
+
+  list(APPEND JOYSTICK_SOURCES src/api/cocoa/JoystickCocoa.cpp
+                               src/api/cocoa/JoystickInterfaceCocoa.cpp)
+
+  add_definitions(-DHAVE_COCOA)
+
+  list(APPEND DEPLIBS ${COCOA_LIBRARY})
+endif()
+
 if(SDL_FOUND)
   add_definitions(-DHAVE_SDL)
   list(APPEND JOYSTICK_SOURCES src/api/sdl/JoystickInterfaceSDL.cpp

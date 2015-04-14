@@ -1,0 +1,161 @@
+/*
+ *      Copyright (C) 2014 Garrett Brown
+ *      Copyright (C) 2014 Team XBMC
+ *
+ *  This Program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2, or (at your option)
+ *  any later version.
+ *
+ *  This Program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with XBMC; see the file COPYING.  If not, see
+ *  <http://www.gnu.org/licenses/>.
+ *
+ */
+
+#include "JoystickCocoa.h"
+#include "utils/CommonMacros.h"
+
+using namespace JOYSTICK;
+using namespace PLATFORM;
+
+#define MAX_JOYSTICK_BUTTONS  512
+
+CJoystickCocoa::CJoystickCocoa(IOHIDDeviceRef device, CJoystickInterfaceCocoa* api)
+ : CJoystick(api),
+   m_device(device)
+{
+  api->RegisterInputCallback(m_device, this);
+}
+
+CJoystickCocoa::~CJoystickCocoa(void)
+{
+  static_cast<CJoystickInterfaceCocoa*>(API())->UnregisterInputCallback(m_device);
+}
+
+bool CJoystickCocoa::Initialize(void)
+{
+  CFArrayRef elements = IOHIDDeviceCopyMatchingElements(m_device, NULL, kIOHIDOptionsTypeNone);
+
+  CFIndex n = CFArrayGetCount(elements);
+  for (CFIndex i = 0; i < n; i++)
+  {
+    IOHIDElementRef element = (IOHIDElementRef)CFArrayGetValueAtIndex(elements, i);
+    uint32_t usagePage = IOHIDElementGetUsagePage(element);
+    uint32_t usage = IOHIDElementGetUsage(element);
+
+    if (usagePage == GENERIC_DESKTOP_USAGE_PAGE &&
+        usage     >= AXIS_MIN_USAGE_NUMBER &&
+        usage     <= AXIS_MAX_USAGE_NUMBER)
+    {
+      CFIndex min = IOHIDElementGetLogicalMin(element);
+      CFIndex max = IOHIDElementGetLogicalMax(element);
+
+      CocoaAxis axis = { element, min, max };
+      m_axes.push_back(axis);
+    }
+    else if (usagePage == BUTTON_USAGE_PAGE)
+    {
+      int buttonId = (int)usage - 1;
+      if (0 <= buttonId && buttonId < MAX_JOYSTICK_BUTTONS)
+      {
+        if (buttonId >= (int)m_buttons.size())
+          m_buttons.resize(buttonId + 1);
+
+        m_buttons[buttonId] = element;
+      }
+    }
+    else
+    {
+      // TODO: handle other usage pages
+    }
+  }
+
+  SetButtonCount(m_buttons.size());
+  SetAxisCount(m_axes.size());
+
+  m_stateBuffer.buttons.assign(m_buttons.size(), JOYSTICK_STATE_BUTTON_UNPRESSED);
+  m_stateBuffer.axes.assign(m_axes.size(), 0.0f);
+
+  // Gather some identifying information
+  CFNumberRef vendorIdRef = (CFNumberRef)IOHIDDeviceGetProperty(m_device, CFSTR(kIOHIDVendorIDKey));
+  CFNumberRef productIdRef = (CFNumberRef)IOHIDDeviceGetProperty(m_device, CFSTR(kIOHIDProductIDKey));
+  CFStringRef productRef = (CFStringRef)IOHIDDeviceGetProperty(m_device, CFSTR(kIOHIDProductKey));
+
+  char product_name[128] = { };
+  CFStringGetCString(productRef, product_name, sizeof(product_name), kCFStringEncodingASCII);
+  SetName(product_name);
+
+  int vendorId = 0;
+  int productId = 0;
+
+  CFNumberGetValue(vendorIdRef, kCFNumberIntType, &vendorId);
+  CFNumberGetValue(productIdRef, kCFNumberIntType, &productId);
+
+  SetVendorID(vendorId);
+  SetProductID(vendorId);
+
+  return CJoystick::Initialize();
+}
+
+void CJoystickCocoa::Deinitialize(void)
+{
+  CJoystick::Deinitialize();
+
+  m_buttons.clear();
+  m_axes.clear();
+}
+
+void CJoystickCocoa::InputValueChanged(IOHIDValueRef value)
+{
+  CLockObject lock(m_mutex);
+
+  IOHIDElementRef element = IOHIDValueGetElement(value);
+
+  for (unsigned int i = 0; i < m_axes.size(); i++)
+  {
+    if (m_axes[i].element == element)
+    {
+      float d = IOHIDValueGetIntegerValue(value);
+
+      float val = 2.0f * (d - m_axes[i].min) / (float)(m_axes[i].max - m_axes[i].min) - 1.0f;
+
+      m_stateBuffer.axes[i] = val;
+
+      return;
+    }
+  }
+
+  for (unsigned int i = 0; i < m_buttons.size(); i++)
+  {
+    if (m_buttons[i] == element)
+    {
+      bool bPressed = IOHIDValueGetIntegerValue(value) != 0;
+
+      m_stateBuffer.buttons[i] = bPressed ? JOYSTICK_STATE_BUTTON_PRESSED : JOYSTICK_STATE_BUTTON_UNPRESSED;
+
+      return;
+    }
+  }
+}
+
+bool CJoystickCocoa::ScanEvents(std::vector<ADDON::PeripheralEvent>& events)
+{
+  CLockObject lock(m_mutex);
+
+  std::vector<JOYSTICK_STATE_BUTTON>& buttons = m_stateBuffer.buttons;
+  std::vector<JOYSTICK_STATE_AXIS>&   axes    = m_stateBuffer.axes;
+
+  ASSERT(buttons.size() == ButtonCount());
+  ASSERT(axes.size() == AxisCount());
+
+  GetButtonEvents(buttons, events);
+  GetAxisEvents(axes, events);
+
+  return true;
+}

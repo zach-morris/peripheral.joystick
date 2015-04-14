@@ -18,6 +18,7 @@
  */
 #pragma once
 
+#define INTERFACE_COCOA        "cocoa"
 #define INTERFACE_DIRECTINPUT  "directinput"
 #define INTERFACE_LINUX        "linux"
 #define INTERFACE_SDL          "sdl"
