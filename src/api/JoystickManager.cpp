@@ -18,6 +18,7 @@
  *
  */
 
+#include "utils/CommonIncludes.h"
 #include "JoystickManager.h"
 #include "Joystick.h"
 #include "JoystickInterface.h"
