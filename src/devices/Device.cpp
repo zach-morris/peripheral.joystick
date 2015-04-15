@@ -48,8 +48,8 @@ CDevice::CDevice(const std::string& strName,
                  unsigned int       axisCount)
  : m_strName(strName),
    m_strProvider(strProvider),
-   m_pid(pid),
    m_vid(vid),
+   m_pid(pid),
    m_buttonCount(buttonCount),
    m_hatCount(hatCount),
    m_axisCount(axisCount)
@@ -60,7 +60,7 @@ bool CDevice::operator==(const CDevice& rhs) const
 {
   return rhs.m_strName.empty()              ? true : m_strName     == rhs.m_strName   &&
          rhs.m_strProvider.empty()          ? true : m_strProvider == rhs.m_strProvider &&
-         (rhs.m_pid == 0 && rhs.m_vid == 0) ? true : m_pid == rhs.m_pid && m_vid == rhs.m_vid &&
+         (rhs.m_vid == 0 && rhs.m_pid == 0) ? true : m_vid == rhs.m_vid && m_pid == rhs.m_pid &&
          rhs.m_buttonCount == 0 &&
          rhs.m_hatCount    == 0 &&
          rhs.m_axisCount   == 0             ? true : m_buttonCount == rhs.m_buttonCount &&
