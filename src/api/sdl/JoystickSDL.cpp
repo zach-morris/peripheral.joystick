@@ -34,9 +34,9 @@ CJoystickSDL::CJoystickSDL(SDL_Joystick* pJoystick, CJoystickInterfaceSDL* api)
 
 bool CJoystickSDL::Initialize(void)
 {
-  m_stateBuffer.buttons.assign(ButtonCount(), JOYSTICK_STATE_BUTTON());
-  m_stateBuffer.hats.assign(HatCount(), JOYSTICK_STATE_HAT());
-  m_stateBuffer.axes.assign(AxisCount(), JOYSTICK_STATE_AXIS());
+  m_stateBuffer.buttons.assign(ButtonCount(), JOYSTICK_STATE_BUTTON_UNPRESSED);
+  m_stateBuffer.hats.assign(HatCount(), JOYSTICK_STATE_HAT_UNPRESSED);
+  m_stateBuffer.axes.assign(AxisCount(), 0.0f);
 
   return CJoystick::Initialize();
 }
