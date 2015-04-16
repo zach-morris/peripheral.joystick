@@ -42,6 +42,20 @@ CJoystick::CJoystick(CJoystickInterface* api)
   SetProvider(m_api->Name());
 }
 
+bool CJoystick::Equals(const CJoystick* rhs) const
+{
+  return rhs &&
+         Type()          == rhs->Type()          &&
+         Name()          == rhs->Name()          &&
+         VendorID()      == rhs->VendorID()      &&
+         ProductID()     == rhs->ProductID()     &&
+         Provider()      == rhs->Provider()      &&
+         RequestedPort() == rhs->RequestedPort() &&
+         ButtonCount()   == rhs->ButtonCount()   &&
+         HatCount()      == rhs->HatCount()      &&
+         AxisCount()     == rhs->AxisCount();
+}
+
 bool CJoystick::Initialize(void)
 {
   m_state.buttons.assign(ButtonCount(), JOYSTICK_STATE_BUTTON());

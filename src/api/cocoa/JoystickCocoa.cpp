@@ -38,6 +38,13 @@ CJoystickCocoa::~CJoystickCocoa(void)
   static_cast<CJoystickInterfaceCocoa*>(API())->UnregisterInputCallback(this);
 }
 
+bool CJoystickCocoa::Equals(const CJoystick* rhs) const
+{
+  const CJoystickCocoa* joystick = dynamic_cast<const CJoystickCocoa*>(rhs);
+
+  return joystick && m_device == joystick->m_device;
+}
+
 bool CJoystickCocoa::Initialize(void)
 {
   CFArrayRef elements = IOHIDDeviceCopyMatchingElements(m_device, NULL, kIOHIDOptionsTypeNone);

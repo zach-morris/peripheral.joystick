@@ -54,18 +54,10 @@ namespace JOYSTICK
 
     bool operator()(const CJoystick* rhs)
     {
-      if (m_needle == NULL || rhs == NULL)
-        return m_needle == rhs;
+      if (m_needle != NULL)
+        return m_needle->Equals(rhs);
 
-      return m_needle->Type()          == rhs->Type()          &&
-             m_needle->Name()          == rhs->Name()          &&
-             m_needle->VendorID()      == rhs->VendorID()      &&
-             m_needle->ProductID()     == rhs->ProductID()     &&
-             m_needle->Provider()      == rhs->Provider()      &&
-             m_needle->RequestedPort() == rhs->RequestedPort() &&
-             m_needle->ButtonCount()   == rhs->ButtonCount()   &&
-             m_needle->HatCount()      == rhs->HatCount()      &&
-             m_needle->AxisCount()     == rhs->AxisCount();
+      return m_needle == rhs;
     }
 
   private:

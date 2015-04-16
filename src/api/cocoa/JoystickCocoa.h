@@ -40,6 +40,8 @@ namespace JOYSTICK
     CJoystickCocoa(IOHIDDeviceRef device, CJoystickInterfaceCocoa* api);
     virtual ~CJoystickCocoa(void);
 
+    virtual bool Equals(const CJoystick* rhs) const;
+
     bool Initialize(void);
     void Deinitialize(void);
 
