@@ -37,7 +37,9 @@ CJoystick::CJoystick(CJoystickInterface* api)
    m_lastEventTimeMs(-1)
 {
   ASSERT(m_api);
-  SetProvider(api->Name());
+
+  SetType(PERIPHERAL_TYPE_JOYSTICK);
+  SetProvider(m_api->Name());
 }
 
 bool CJoystick::Initialize(void)
