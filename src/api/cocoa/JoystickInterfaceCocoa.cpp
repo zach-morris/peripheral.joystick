@@ -163,7 +163,7 @@ void CJoystickInterfaceCocoa::InputValueChanged(IOHIDValueRef newValue)
   IOHIDElementRef element = IOHIDValueGetElement(newValue);
   IOHIDDeviceRef device = IOHIDElementGetDevice(element);
 
-  CLockObject lock(m_deviceDiscoveryMutex);
+  CLockObject lock(m_deviceInputMutex);
 
   auto it = m_registeredDevices.find(device);
   if (it != m_registeredDevices.end())
@@ -172,14 +172,14 @@ void CJoystickInterfaceCocoa::InputValueChanged(IOHIDValueRef newValue)
 
 void CJoystickInterfaceCocoa::RegisterInputCallback(IOHIDDeviceRef device, ICocoaInputCallback* callback)
 {
-  CLockObject lock(m_deviceDiscoveryMutex);
+  CLockObject lock(m_deviceInputMutex);
 
   m_registeredDevices[device] = callback;
 }
 
 void CJoystickInterfaceCocoa::UnregisterInputCallback(IOHIDDeviceRef device)
 {
-  CLockObject lock(m_deviceDiscoveryMutex);
+  CLockObject lock(m_deviceInputMutex);
 
   auto it = m_registeredDevices.find(device);
   if (it != m_registeredDevices.end())
