@@ -29,7 +29,7 @@
 #include <IOKit/hid/IOHIDKeys.h>
 #include <IOKit/hid/IOHIDManager.h>
 
-#include <map>
+#include <utility>
 #include <vector>
 
 // These values can be found in the USB HID Usage Tables:
@@ -60,8 +60,8 @@ namespace JOYSTICK
     virtual bool Initialize(void);
     virtual void Deinitialize(void);
 
-    void RegisterInputCallback(IOHIDDeviceRef device, ICocoaInputCallback* callback);
-    void UnregisterInputCallback(IOHIDDeviceRef device);
+    void RegisterInputCallback(ICocoaInputCallback* callback, IOHIDDeviceRef device);
+    void UnregisterInputCallback(ICocoaInputCallback* callback);
 
     void DeviceAdded(IOHIDDeviceRef device);
     void DeviceRemoved(IOHIDDeviceRef device);
@@ -80,8 +80,10 @@ namespace JOYSTICK
   private:
     IOHIDManagerRef m_manager;
 
-    std::vector<IOHIDDeviceRef>                    m_discoveredDevices;
-    std::map<IOHIDDeviceRef, ICocoaInputCallback*> m_registeredDevices;
+    typedef std::pair<IOHIDDeviceRef, ICocoaInputCallback*> DeviceHandle;
+
+    std::vector<IOHIDDeviceRef> m_discoveredDevices;
+    std::vector<DeviceHandle>   m_registeredDevices;
 
     PLATFORM::CMutex m_deviceDiscoveryMutex;
     PLATFORM::CMutex m_deviceInputMutex;

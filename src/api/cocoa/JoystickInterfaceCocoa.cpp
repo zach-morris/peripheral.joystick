@@ -165,25 +165,31 @@ void CJoystickInterfaceCocoa::InputValueChanged(IOHIDValueRef newValue)
 
   CLockObject lock(m_deviceInputMutex);
 
-  auto it = m_registeredDevices.find(device);
-  if (it != m_registeredDevices.end())
-    it->second->InputValueChanged(newValue);
+  for (std::vector<DeviceHandle>::iterator it = m_registeredDevices.begin(); it != m_registeredDevices.end(); ++it)
+  {
+    if (it->first == device)
+      it->second->InputValueChanged(newValue);
+  }
 }
 
-void CJoystickInterfaceCocoa::RegisterInputCallback(IOHIDDeviceRef device, ICocoaInputCallback* callback)
+void CJoystickInterfaceCocoa::RegisterInputCallback(ICocoaInputCallback* callback, IOHIDDeviceRef device)
 {
   CLockObject lock(m_deviceInputMutex);
 
-  m_registeredDevices[device] = callback;
+  m_registeredDevices.push_back(std::make_pair(device, callback));
 }
 
-void CJoystickInterfaceCocoa::UnregisterInputCallback(IOHIDDeviceRef device)
+void CJoystickInterfaceCocoa::UnregisterInputCallback(ICocoaInputCallback* callback)
 {
   CLockObject lock(m_deviceInputMutex);
 
-  auto it = m_registeredDevices.find(device);
-  if (it != m_registeredDevices.end())
-    m_registeredDevices.erase(it);
+  for (std::vector<DeviceHandle>::iterator it = m_registeredDevices.begin(); it != m_registeredDevices.end(); )
+  {
+    if (it->second == callback)
+      it = m_registeredDevices.erase(it);
+    else
+      ++it;
+  }
 }
 
 void CJoystickInterfaceCocoa::DeviceAddedCallback(void* data, IOReturn result,

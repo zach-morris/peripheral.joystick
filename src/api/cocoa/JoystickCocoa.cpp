@@ -30,12 +30,12 @@ CJoystickCocoa::CJoystickCocoa(IOHIDDeviceRef device, CJoystickInterfaceCocoa* a
  : CJoystick(api),
    m_device(device)
 {
-  api->RegisterInputCallback(m_device, this);
+  api->RegisterInputCallback(this, m_device);
 }
 
 CJoystickCocoa::~CJoystickCocoa(void)
 {
-  static_cast<CJoystickInterfaceCocoa*>(API())->UnregisterInputCallback(m_device);
+  static_cast<CJoystickInterfaceCocoa*>(API())->UnregisterInputCallback(this);
 }
 
 bool CJoystickCocoa::Initialize(void)
