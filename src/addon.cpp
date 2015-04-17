@@ -195,7 +195,7 @@ PERIPHERAL_ERROR GetJoystickInfo(unsigned int index, JOYSTICK_INFO* info)
   if (!joystick)
     return PERIPHERAL_ERROR_NOT_CONNECTED;
 
-  // Need to be explicit because we're using instead typedef struct { ... }T of struct T{ ... }
+  // Need to be explicit because we're using typedef struct { ... }T instead of struct T{ ... }
   joystick->ADDON::Joystick::ToStruct(*info);
 
   return PERIPHERAL_NO_ERROR;
