@@ -38,7 +38,6 @@ CJoystick::CJoystick(CJoystickInterface* api)
 {
   ASSERT(m_api);
 
-  SetType(PERIPHERAL_TYPE_JOYSTICK);
   SetProvider(m_api->Name());
 }
 
