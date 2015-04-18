@@ -46,6 +46,8 @@
 using namespace JOYSTICK;
 using namespace PLATFORM;
 
+// --- Utility functions -------------------------------------------------------
+
 namespace JOYSTICK
 {
   struct ScanResultEqual
@@ -65,6 +67,13 @@ namespace JOYSTICK
   };
 
   template <class T>
+  void safe_delete(T*& pVal)
+  {
+      delete pVal;
+      pVal = NULL;
+  }
+
+  template <class T>
   void safe_delete_vector(std::vector<T*>& vec)
   {
     for (typename std::vector<T*>::iterator it = vec.begin(); it != vec.end(); ++it)
@@ -73,15 +82,25 @@ namespace JOYSTICK
   }
 }
 
+// --- CJoystickManager --------------------------------------------------------
+
+CJoystickManager::CJoystickManager(void)
+  : m_scanner(NULL),
+    m_nextJoystickIndex(0)
+{
+}
+
 CJoystickManager& CJoystickManager::Get(void)
 {
   static CJoystickManager _instance;
   return _instance;
 }
 
-bool CJoystickManager::Initialize(void)
+bool CJoystickManager::Initialize(IScannerCallback* scanner)
 {
   CLockObject lock(m_joystickMutex);
+
+  m_scanner = scanner;
 
 #if defined(HAVE_DIRECT_INPUT)
   m_interfaces.push_back(new CJoystickInterfaceDirectInput);
@@ -118,6 +137,8 @@ void CJoystickManager::Deinitialize(void)
 
   safe_delete_vector(m_interfaces);
   safe_delete_vector(m_joysticks);
+
+  m_scanner = NULL;
 }
 
 bool CJoystickManager::PerformJoystickScan(std::vector<CJoystick*>& joysticks)
@@ -189,4 +210,10 @@ bool CJoystickManager::GetEvents(std::vector<ADDON::PeripheralEvent>& events)
     (*it)->GetEvents(events);
 
   return true;
+}
+
+void CJoystickManager::TriggerScan(void)
+{
+  if (m_scanner)
+    m_scanner->TriggerScan();
 }

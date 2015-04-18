@@ -22,6 +22,7 @@
 
 #include "api/Joystick.h"
 #include "api/JoystickManager.h"
+#include "api/PeripheralScanner.h"
 #include "devices/Devices.h"
 #include "log/Log.h"
 #include "log/LogAddon.h"
@@ -42,6 +43,7 @@ extern "C"
 
 ADDON::CHelper_libXBMC_addon*      FRONTEND;
 ADDON::CHelper_libKODI_peripheral* PERIPHERAL;
+CPeripheralScanner*                SCANNER;
 
 ADDON_STATUS ADDON_Create(void* callbacks, void* props)
 {
@@ -69,7 +71,8 @@ ADDON_STATUS ADDON_Create(void* callbacks, void* props)
 
   CLog::Get().SetPipe(new CLogAddon(FRONTEND));
 
-  if (!CJoystickManager::Get().Initialize())
+  SCANNER = new CPeripheralScanner(PERIPHERAL);
+  if (!CJoystickManager::Get().Initialize(SCANNER))
     return ADDON_STATUS_PERMANENT_FAILURE;
 
   if (!CDevices::Get().Initialize(*peripheralProps))
@@ -91,6 +94,7 @@ void ADDON_Destroy()
 
   SAFE_DELETE(PERIPHERAL);
   SAFE_DELETE(FRONTEND);
+  SAFE_DELETE(SCANNER);
 }
 
 ADDON_STATUS ADDON_GetStatus()

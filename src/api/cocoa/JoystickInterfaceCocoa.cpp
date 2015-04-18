@@ -20,6 +20,7 @@
 
 #include "JoystickInterfaceCocoa.h"
 #include "JoystickCocoa.h"
+#include "api/JoystickManager.h"
 #include "api/JoystickTypes.h"
 
 #include <algorithm>
@@ -148,14 +149,21 @@ void CJoystickInterfaceCocoa::DeviceAdded(IOHIDDeviceRef device)
   CLockObject lock(m_deviceDiscoveryMutex);
 
   if (std::find(m_discoveredDevices.begin(), m_discoveredDevices.end(), device) == m_discoveredDevices.end())
+  {
     m_discoveredDevices.push_back(device);
+
+    CJoystickManager::Get().TriggerScan();
+  }
 }
 
 void CJoystickInterfaceCocoa::DeviceRemoved(IOHIDDeviceRef device)
 {
-  CLockObject lock(m_deviceDiscoveryMutex);
+  {
+    CLockObject lock(m_deviceDiscoveryMutex);
+    m_discoveredDevices.erase(std::remove(m_discoveredDevices.begin(), m_discoveredDevices.end(), device), m_discoveredDevices.end());
+  }
 
-  m_discoveredDevices.erase(std::remove(m_discoveredDevices.begin(), m_discoveredDevices.end(), device), m_discoveredDevices.end());
+  CJoystickManager::Get().TriggerScan();
 }
 
 void CJoystickInterfaceCocoa::InputValueChanged(IOHIDValueRef newValue)

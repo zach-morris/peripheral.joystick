@@ -19,6 +19,7 @@ set(JOYSTICK_SOURCES src/addon.cpp
                      src/api/Joystick.cpp
                      src/api/JoystickInterface.cpp
                      src/api/JoystickManager.cpp
+                     src/api/PeripheralScanner.cpp
                      src/devices/Buttons.cpp
                      src/devices/Device.cpp
                      src/devices/Devices.cpp

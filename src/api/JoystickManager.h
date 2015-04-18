@@ -29,16 +29,24 @@ namespace JOYSTICK
   class CJoystick;
   class CJoystickInterface;
 
+  class IScannerCallback
+  {
+  public:
+    virtual ~IScannerCallback(void) { }
+
+    virtual void TriggerScan(void) = 0;
+  };
+
   class CJoystickManager
   {
   private:
-    CJoystickManager(void) : m_nextJoystickIndex(0) { }
+    CJoystickManager(void);
 
   public:
     static CJoystickManager& Get(void);
     virtual ~CJoystickManager(void) { Deinitialize(); }
 
-    bool Initialize(void);
+    bool Initialize(IScannerCallback* scanner);
     void Deinitialize(void);
 
     bool PerformJoystickScan(std::vector<CJoystick*>& joysticks);
@@ -50,7 +58,10 @@ namespace JOYSTICK
     */
     bool GetEvents(std::vector<ADDON::PeripheralEvent>& events);
 
+    void TriggerScan(void);
+
   private:
+    IScannerCallback*                m_scanner;
     std::vector<CJoystickInterface*> m_interfaces;
     std::vector<CJoystick*>          m_joysticks;
     unsigned int                     m_nextJoystickIndex;
