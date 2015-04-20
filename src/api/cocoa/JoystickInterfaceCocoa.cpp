@@ -146,14 +146,20 @@ bool CJoystickInterfaceCocoa::PerformJoystickScan(std::vector<CJoystick*>& joyst
 
 void CJoystickInterfaceCocoa::DeviceAdded(IOHIDDeviceRef device)
 {
-  CLockObject lock(m_deviceDiscoveryMutex);
+  bool bDeviceAdded = false;
 
-  if (std::find(m_discoveredDevices.begin(), m_discoveredDevices.end(), device) == m_discoveredDevices.end())
   {
-    m_discoveredDevices.push_back(device);
+    CLockObject lock(m_deviceDiscoveryMutex);
 
-    CJoystickManager::Get().TriggerScan();
+    if (std::find(m_discoveredDevices.begin(), m_discoveredDevices.end(), device) == m_discoveredDevices.end())
+    {
+      m_discoveredDevices.push_back(device);
+      bDeviceAdded = true;
+    }
   }
+
+  if (bDeviceAdded)
+    CJoystickManager::Get().TriggerScan();
 }
 
 void CJoystickInterfaceCocoa::DeviceRemoved(IOHIDDeviceRef device)
