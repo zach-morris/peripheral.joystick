@@ -39,20 +39,14 @@ CDevice::CDevice(void)
 {
 }
 
-CDevice::CDevice(const std::string& strName,
-                 const std::string& strProvider,
-                 uint16_t           vid,
-                 uint16_t           pid,
-                 unsigned int       buttonCount,
-                 unsigned int       hatCount,
-                 unsigned int       axisCount)
- : m_strName(strName),
-   m_strProvider(strProvider),
-   m_vid(vid),
-   m_pid(pid),
-   m_buttonCount(buttonCount),
-   m_hatCount(hatCount),
-   m_axisCount(axisCount)
+CDevice::CDevice(const ADDON::Joystick& joystick)
+ : m_strName(joystick.Name()),
+   m_strProvider(joystick.Provider()),
+   m_vid(joystick.VendorID()),
+   m_pid(joystick.ProductID()),
+   m_buttonCount(joystick.ButtonCount()),
+   m_hatCount(joystick.HatCount()),
+   m_axisCount(joystick.AxisCount())
 {
 }
 

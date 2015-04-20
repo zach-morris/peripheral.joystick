@@ -32,6 +32,8 @@ using namespace JOYSTICK;
 #define ADDON_BUTTONMAP  "/resources/buttonmap.xml"
 #define USER_BUTTONMAP   "/buttonmap.xml"
 
+// --- RemoveSlashAtEnd --------------------------------------------------------
+
 namespace JOYSTICK
 {
   void RemoveSlashAtEnd(std::string& strPath)
@@ -44,6 +46,8 @@ namespace JOYSTICK
     }
   }
 }
+
+// --- CDevices ----------------------------------------------------------------
 
 CDevices& CDevices::Get(void)
 {
@@ -140,24 +144,10 @@ bool CDevices::Save(const std::string& strPath) const
   return xmlFile.SaveFile(m_strPath);
 }
 
-bool CDevices::GetFeatures(const ADDON::Peripheral& peripheral, const ADDON::Joystick& joystick,
-                           const std::string& strControllerId, std::vector<ADDON::JoystickFeature*>& features) const
+bool CDevices::GetFeatures(const ADDON::Joystick& joystick, const std::string& strControllerId,
+                           std::vector<ADDON::JoystickFeature*>& features) const
 {
-  const std::string& strName     = peripheral.Name();
-  uint16_t           vid         = peripheral.VendorID();
-  uint16_t           pid         = peripheral.ProductID();
-  const std::string& strProvider = joystick.Provider();
-  unsigned int       buttonCount = joystick.ButtonCount();
-  unsigned int       hatCount    = joystick.HatCount();
-  unsigned int       axisCount   = joystick.AxisCount();
-
-  CDevice needle(strName,
-                 strProvider,
-                 vid,
-                 pid,
-                 buttonCount,
-                 hatCount,
-                 axisCount);
+  CDevice needle(joystick);
 
   std::vector<CDevice>::const_iterator itDevice = std::find(m_devices.begin(), m_devices.end(), needle);
   if (itDevice != m_devices.end())
@@ -166,24 +156,10 @@ bool CDevices::GetFeatures(const ADDON::Peripheral& peripheral, const ADDON::Joy
   return true;
 }
 
-bool CDevices::MapFeature(const ADDON::Peripheral& peripheral, const ADDON::Joystick& joystick,
-                          const std::string& strControllerId, const ADDON::JoystickFeature* feature)
+bool CDevices::MapFeature(const ADDON::Joystick& joystick, const std::string& strControllerId,
+                          const ADDON::JoystickFeature* feature)
 {
-  const std::string& strName     = peripheral.Name();
-  uint16_t           vid         = peripheral.VendorID();
-  uint16_t           pid         = peripheral.ProductID();
-  const std::string& strProvider = joystick.Provider();
-  unsigned int       buttonCount = joystick.ButtonCount();
-  unsigned int       hatCount    = joystick.HatCount();
-  unsigned int       axisCount   = joystick.AxisCount();
-
-  CDevice needle(strName,
-                 strProvider,
-                 vid,
-                 pid,
-                 buttonCount,
-                 hatCount,
-                 axisCount);
+  CDevice needle(joystick);
 
   std::vector<CDevice>::iterator itDevice = std::find(m_devices.begin(), m_devices.end(), needle);
   if (itDevice == m_devices.end())

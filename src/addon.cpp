@@ -213,16 +213,14 @@ void FreeJoystickInfo(JOYSTICK_INFO* info)
   ADDON::Joystick::FreeStruct(*info);
 }
 
-PERIPHERAL_ERROR GetButtonMap(const PERIPHERAL_INFO* peripheral, const JOYSTICK_INFO* joystick,
-                              const char* controller_id,
+PERIPHERAL_ERROR GetButtonMap(const JOYSTICK_INFO* joystick, const char* controller_id,
                               unsigned int* feature_count, JOYSTICK_FEATURE** features)
 {
-  if (!peripheral || !joystick || !controller_id || !feature_count || !features)
+  if (!joystick || !controller_id || !feature_count || !features)
     return PERIPHERAL_ERROR_INVALID_PARAMETERS;
 
   std::vector<ADDON::JoystickFeature*> joystickFeatures;
-  if (CDevices::Get().GetFeatures(ADDON::Peripheral(*peripheral), ADDON::Joystick(*joystick),
-                                  controller_id,  joystickFeatures))
+  if (CDevices::Get().GetFeatures(ADDON::Joystick(*joystick), controller_id,  joystickFeatures))
   {
     *feature_count = joystickFeatures.size();
     ADDON::JoystickFeatures::ToStructs(joystickFeatures, features);
@@ -237,19 +235,17 @@ void FreeButtonMap(unsigned int feature_count, JOYSTICK_FEATURE* features)
   ADDON::JoystickFeatures::FreeStructs(feature_count, features);
 }
 
-PERIPHERAL_ERROR MapJoystickFeature(const PERIPHERAL_INFO* peripheral, const JOYSTICK_INFO* joystick,
-                                    const char* controller_id,
+PERIPHERAL_ERROR MapJoystickFeature(const JOYSTICK_INFO* joystick, const char* controller_id,
                                     JOYSTICK_FEATURE* feature)
 {
-  if (!peripheral || !joystick || !controller_id || !feature)
+  if (!joystick || !controller_id || !feature)
     return PERIPHERAL_ERROR_INVALID_PARAMETERS;
 
   ADDON::JoystickFeature* joystickFeature = ADDON::JoystickFeatureFactory::Create(*feature);
   if (!joystickFeature)
     return PERIPHERAL_ERROR_INVALID_PARAMETERS;
 
-  bool bSuccess = CDevices::Get().MapFeature(ADDON::Peripheral(*peripheral), ADDON::Joystick(*joystick),
-                                             controller_id, joystickFeature);
+  bool bSuccess = CDevices::Get().MapFeature(ADDON::Joystick(*joystick), controller_id, joystickFeature);
 
   delete joystickFeature;
 

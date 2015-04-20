@@ -44,11 +44,11 @@ namespace JOYSTICK
     bool Initialize(const PERIPHERAL_PROPERTIES& props);
     void Deinitialize(void) { }
 
-    bool GetFeatures(const ADDON::Peripheral& peripheral, const ADDON::Joystick& joystick,
-                     const std::string& strDeviceId, std::vector<ADDON::JoystickFeature*>& features) const;
+    bool GetFeatures(const ADDON::Joystick& joystick, const std::string& strDeviceId,
+                     std::vector<ADDON::JoystickFeature*>& features) const;
 
-    bool MapFeature(const ADDON::Peripheral& peripheral, const ADDON::Joystick& joystick,
-                    const std::string& strDeviceId, const ADDON::JoystickFeature* feature);
+    bool MapFeature(const ADDON::Joystick& joystick, const std::string& strDeviceId,
+                    const ADDON::JoystickFeature* feature);
 
     bool Deserialize(const TiXmlElement* pElement);
     bool Serialize(TiXmlElement* pElement) const;

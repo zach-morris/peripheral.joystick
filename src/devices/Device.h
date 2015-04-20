@@ -36,13 +36,7 @@ namespace JOYSTICK
   public:
     CDevice(void);
 
-    CDevice(const std::string& strName,
-            const std::string& strProvider,
-            uint16_t           vid,
-            uint16_t           pid,
-            unsigned int       buttonCount,
-            unsigned int       hatCount,
-            unsigned int       axisCount);
+    CDevice(const ADDON::Joystick& joystick);
 
     void Reset(void) { *this = CDevice(); }
 
