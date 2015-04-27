@@ -5,6 +5,8 @@ enable_language(CXX)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR})
 
+include(CheckIncludeFiles)
+
 # --- Add-on Dependencies ------------------------------------------------------
 
 find_package(kodi REQUIRED)
@@ -26,9 +28,14 @@ set(JOYSTICK_SOURCES src/addon.cpp
                      src/JoystickTranslator.cpp
                      src/log/Log.cpp
                      src/log/LogAddon.cpp
-                     src/log/LogConsole.cpp
-                     src/log/LogSyslog.cpp)
+                     src/log/LogConsole.cpp)
 
+check_include_files("syslog.h" HAVE_SYSLOG)
+
+if(HAVE_SYSLOG)
+  list(APPEND JOYSTICK_SOURCES src/log/LogSyslog.cpp)
+endif()
+                               
 list(APPEND DEPLIBS ${kodiplatform_LIBRARIES})
 
 # --- Cocoa --------------------------------------------------------------------
@@ -61,7 +68,6 @@ endif()
 
 # --- Linux Joystick API -------------------------------------------------------
 
-include(CheckIncludeFiles)
 check_include_files(linux/joystick.h HAVE_LINUX_JOYSTICK_H)
 
 if(HAVE_LINUX_JOYSTICK_H)
