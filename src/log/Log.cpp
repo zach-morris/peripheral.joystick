@@ -22,7 +22,10 @@
 #include "Log.h"
 #include "LogAddon.h"
 #include "LogConsole.h"
+
+#if defined(HAVE_SYSLOG)
 #include "LogSyslog.h"
+#endif
 
 #include "kodi/threads/threads.h"
 
