@@ -52,6 +52,7 @@ namespace JOYSTICK
 
   private:
     IOHIDDeviceRef m_device;
+    bool           m_bInitialized;
 
     struct CocoaAxis
     {

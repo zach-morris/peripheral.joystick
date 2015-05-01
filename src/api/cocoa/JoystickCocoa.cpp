@@ -28,9 +28,13 @@ using namespace PLATFORM;
 
 CJoystickCocoa::CJoystickCocoa(IOHIDDeviceRef device, CJoystickInterfaceCocoa* api)
  : CJoystick(api),
-   m_device(device)
+   m_device(device),
+   m_bInitialized(false)
 {
   api->RegisterInputCallback(this, m_device);
+
+  // Must initialize in the constructor to fill out joystick properties
+  Initialize();
 }
 
 CJoystickCocoa::~CJoystickCocoa(void)
@@ -47,67 +51,72 @@ bool CJoystickCocoa::Equals(const CJoystick* rhs) const
 
 bool CJoystickCocoa::Initialize(void)
 {
-  CFArrayRef elements = IOHIDDeviceCopyMatchingElements(m_device, NULL, kIOHIDOptionsTypeNone);
-
-  CFIndex n = CFArrayGetCount(elements);
-  for (CFIndex i = 0; i < n; i++)
+  if (CJoystick::Initialize() && !m_bInitialized)
   {
-    IOHIDElementRef element = (IOHIDElementRef)CFArrayGetValueAtIndex(elements, i);
-    uint32_t usagePage = IOHIDElementGetUsagePage(element);
-    uint32_t usage = IOHIDElementGetUsage(element);
+    m_bInitialized = true;
 
-    if (usagePage == GENERIC_DESKTOP_USAGE_PAGE &&
-        usage     >= AXIS_MIN_USAGE_NUMBER &&
-        usage     <= AXIS_MAX_USAGE_NUMBER)
-    {
-      CFIndex min = IOHIDElementGetLogicalMin(element);
-      CFIndex max = IOHIDElementGetLogicalMax(element);
+    CFArrayRef elements = IOHIDDeviceCopyMatchingElements(m_device, NULL, kIOHIDOptionsTypeNone);
 
-      CocoaAxis axis = { element, min, max };
-      m_axes.push_back(axis);
-    }
-    else if (usagePage == BUTTON_USAGE_PAGE)
+    CFIndex n = CFArrayGetCount(elements);
+    for (CFIndex i = 0; i < n; i++)
     {
-      int buttonId = (int)usage - 1;
-      if (0 <= buttonId && buttonId < MAX_JOYSTICK_BUTTONS)
+      IOHIDElementRef element = (IOHIDElementRef)CFArrayGetValueAtIndex(elements, i);
+      uint32_t usagePage = IOHIDElementGetUsagePage(element);
+      uint32_t usage = IOHIDElementGetUsage(element);
+
+      if (usagePage == GENERIC_DESKTOP_USAGE_PAGE &&
+          usage     >= AXIS_MIN_USAGE_NUMBER &&
+          usage     <= AXIS_MAX_USAGE_NUMBER)
       {
-        if (buttonId >= (int)m_buttons.size())
-          m_buttons.resize(buttonId + 1);
+        CFIndex min = IOHIDElementGetLogicalMin(element);
+        CFIndex max = IOHIDElementGetLogicalMax(element);
 
-        m_buttons[buttonId] = element;
+        CocoaAxis axis = { element, min, max };
+        m_axes.push_back(axis);
+      }
+      else if (usagePage == BUTTON_USAGE_PAGE)
+      {
+        int buttonId = (int)usage - 1;
+        if (0 <= buttonId && buttonId < MAX_JOYSTICK_BUTTONS)
+        {
+          if (buttonId >= (int)m_buttons.size())
+            m_buttons.resize(buttonId + 1);
+
+          m_buttons[buttonId] = element;
+        }
+      }
+      else
+      {
+        // TODO: handle other usage pages
       }
     }
-    else
-    {
-      // TODO: handle other usage pages
-    }
+
+    SetButtonCount(m_buttons.size());
+    SetAxisCount(m_axes.size());
+
+    m_stateBuffer.buttons.assign(m_buttons.size(), JOYSTICK_STATE_BUTTON_UNPRESSED);
+    m_stateBuffer.axes.assign(m_axes.size(), 0.0f);
+
+    // Gather some identifying information
+    CFNumberRef vendorIdRef = (CFNumberRef)IOHIDDeviceGetProperty(m_device, CFSTR(kIOHIDVendorIDKey));
+    CFNumberRef productIdRef = (CFNumberRef)IOHIDDeviceGetProperty(m_device, CFSTR(kIOHIDProductIDKey));
+    CFStringRef productRef = (CFStringRef)IOHIDDeviceGetProperty(m_device, CFSTR(kIOHIDProductKey));
+
+    char product_name[128] = { };
+    CFStringGetCString(productRef, product_name, sizeof(product_name), kCFStringEncodingASCII);
+    SetName(product_name);
+
+    int vendorId = 0;
+    int productId = 0;
+
+    CFNumberGetValue(vendorIdRef, kCFNumberIntType, &vendorId);
+    CFNumberGetValue(productIdRef, kCFNumberIntType, &productId);
+
+    SetVendorID(vendorId);
+    SetProductID(vendorId);
   }
 
-  SetButtonCount(m_buttons.size());
-  SetAxisCount(m_axes.size());
-
-  m_stateBuffer.buttons.assign(m_buttons.size(), JOYSTICK_STATE_BUTTON_UNPRESSED);
-  m_stateBuffer.axes.assign(m_axes.size(), 0.0f);
-
-  // Gather some identifying information
-  CFNumberRef vendorIdRef = (CFNumberRef)IOHIDDeviceGetProperty(m_device, CFSTR(kIOHIDVendorIDKey));
-  CFNumberRef productIdRef = (CFNumberRef)IOHIDDeviceGetProperty(m_device, CFSTR(kIOHIDProductIDKey));
-  CFStringRef productRef = (CFStringRef)IOHIDDeviceGetProperty(m_device, CFSTR(kIOHIDProductKey));
-
-  char product_name[128] = { };
-  CFStringGetCString(productRef, product_name, sizeof(product_name), kCFStringEncodingASCII);
-  SetName(product_name);
-
-  int vendorId = 0;
-  int productId = 0;
-
-  CFNumberGetValue(vendorIdRef, kCFNumberIntType, &vendorId);
-  CFNumberGetValue(productIdRef, kCFNumberIntType, &productId);
-
-  SetVendorID(vendorId);
-  SetProductID(vendorId);
-
-  return CJoystick::Initialize();
+  return m_bInitialized;
 }
 
 void CJoystickCocoa::Deinitialize(void)
@@ -116,6 +125,8 @@ void CJoystickCocoa::Deinitialize(void)
 
   m_buttons.clear();
   m_axes.clear();
+
+  m_bInitialized = false;
 }
 
 void CJoystickCocoa::InputValueChanged(IOHIDValueRef value)
