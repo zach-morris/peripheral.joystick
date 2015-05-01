@@ -26,7 +26,6 @@
 #include "kodi/util/timeutils.h"
 
 using namespace JOYSTICK;
-using namespace PLATFORM;
 
 #define ANALOG_EPSILON  0.0001f
 
@@ -76,8 +75,6 @@ bool CJoystick::Initialize(void)
 
 bool CJoystick::GetEvents(std::vector<ADDON::PeripheralEvent>& events)
 {
-  CLockObject lock(m_valueMutex);
-
   if (ScanEvents())
   {
     GetButtonEvents(events);
@@ -133,24 +130,18 @@ void CJoystick::GetAxisEvents(std::vector<ADDON::PeripheralEvent>& events)
 
 void CJoystick::SetButtonValue(unsigned int buttonIndex, JOYSTICK_STATE_BUTTON buttonValue)
 {
-  CLockObject lock(m_valueMutex);
-
   if (buttonIndex < ButtonCount())
     m_stateBuffer.buttons[buttonIndex] = buttonValue;
 }
 
 void CJoystick::SetHatValue(unsigned int hatIndex, JOYSTICK_STATE_HAT hatValue)
 {
-  CLockObject lock(m_valueMutex);
-
   if (hatIndex < HatCount())
     m_stateBuffer.hats[hatIndex] = hatValue;
 }
 
 void CJoystick::SetAxisValue(unsigned int axisIndex, JOYSTICK_STATE_AXIS axisValue)
 {
-  CLockObject lock(m_valueMutex);
-
   if (axisIndex < AxisCount())
     m_stateBuffer.axes[axisIndex] = axisValue;
 }

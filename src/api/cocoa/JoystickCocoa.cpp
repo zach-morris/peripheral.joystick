@@ -26,7 +26,7 @@ using namespace JOYSTICK;
 #define MAX_JOYSTICK_BUTTONS  512
 
 CJoystickCocoa::CJoystickCocoa(IOHIDDeviceRef device, CJoystickInterfaceCocoa* api)
- : CJoystick(api),
+ : CJoystickAsync(api),
    m_device(device),
    m_bInitialized(false)
 {

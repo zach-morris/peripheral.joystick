@@ -21,7 +21,7 @@
 
 #include "utils/CommonIncludes.h"
 #include "JoystickInterfaceCocoa.h"
-#include "api/Joystick.h"
+#include "api/JoystickAsync.h"
 
 #include <CoreFoundation/CoreFoundation.h>
 #include <IOKit/hid/IOHIDBase.h>
@@ -32,7 +32,7 @@ namespace JOYSTICK
 {
   class CJoystickInterfaceCocoa;
 
-  class CJoystickCocoa : public CJoystick, public ICocoaInputCallback
+  class CJoystickCocoa : public CJoystickAsync, public ICocoaInputCallback
   {
   public:
     CJoystickCocoa(IOHIDDeviceRef device, CJoystickInterfaceCocoa* api);

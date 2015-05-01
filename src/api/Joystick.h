@@ -19,7 +19,6 @@
 #pragma once
 
 #include "kodi/kodi_peripheral_utils.hpp"
-#include "kodi/threads/mutex.h"
 
 #include <vector>
 
@@ -78,9 +77,9 @@ namespace JOYSTICK
      */
     virtual bool ScanEvents(void) = 0;
 
-    void SetButtonValue(unsigned int buttonIndex, JOYSTICK_STATE_BUTTON buttonValue);
-    void SetHatValue(unsigned int hatIndex, JOYSTICK_STATE_HAT hatValue);
-    void SetAxisValue(unsigned int axisIndex, JOYSTICK_STATE_AXIS axisValue);
+    virtual void SetButtonValue(unsigned int buttonIndex, JOYSTICK_STATE_BUTTON buttonValue);
+    virtual void SetHatValue(unsigned int hatIndex, JOYSTICK_STATE_HAT hatValue);
+    virtual void SetAxisValue(unsigned int axisIndex, JOYSTICK_STATE_AXIS axisValue);
     void SetAxisValue(unsigned int axisIndex, long value, long maxAxisAmount);
 
   private:
@@ -108,6 +107,5 @@ namespace JOYSTICK
     int64_t                   m_discoverTimeMs;
     int64_t                   m_firstEventTimeMs;
     int64_t                   m_lastEventTimeMs;
-    PLATFORM::CMutex          m_valueMutex;
   };
 }
