@@ -31,13 +31,11 @@ namespace JOYSTICK
   class CJoystickSDL : public CJoystick
   {
   public:
-    CJoystickSDL(SDL_Joystick* pJoystick, CJoystickInterfaceSDL* api);
+    CJoystickSDL(const std::string& strName, SDL_Joystick* pJoystick, CJoystickInterfaceSDL* api);
     virtual ~CJoystickSDL(void) { Deinitialize(); }
 
-    bool Initialize(void);
-
   protected:
-    virtual bool ScanEvents(std::vector<ADDON::PeripheralEvent>& events);
+    virtual bool ScanEvents(void);
 
   private:
     SDL_Joystick* m_pJoystick;

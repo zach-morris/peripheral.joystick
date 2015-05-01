@@ -22,7 +22,6 @@
 #include "utils/CommonMacros.h"
 
 using namespace JOYSTICK;
-using namespace PLATFORM;
 
 #define MAX_JOYSTICK_BUTTONS  512
 
@@ -51,7 +50,7 @@ bool CJoystickCocoa::Equals(const CJoystick* rhs) const
 
 bool CJoystickCocoa::Initialize(void)
 {
-  if (CJoystick::Initialize() && !m_bInitialized)
+  if (!m_bInitialized)
   {
     m_bInitialized = true;
 
@@ -94,9 +93,6 @@ bool CJoystickCocoa::Initialize(void)
     SetButtonCount(m_buttons.size());
     SetAxisCount(m_axes.size());
 
-    m_stateBuffer.buttons.assign(m_buttons.size(), JOYSTICK_STATE_BUTTON_UNPRESSED);
-    m_stateBuffer.axes.assign(m_axes.size(), 0.0f);
-
     // Gather some identifying information
     CFNumberRef vendorIdRef = (CFNumberRef)IOHIDDeviceGetProperty(m_device, CFSTR(kIOHIDVendorIDKey));
     CFNumberRef productIdRef = (CFNumberRef)IOHIDDeviceGetProperty(m_device, CFSTR(kIOHIDProductIDKey));
@@ -114,6 +110,8 @@ bool CJoystickCocoa::Initialize(void)
 
     SetVendorID(vendorId);
     SetProductID(vendorId);
+
+    return CJoystick::Initialize();
   }
 
   return m_bInitialized;
@@ -129,10 +127,13 @@ void CJoystickCocoa::Deinitialize(void)
   m_bInitialized = false;
 }
 
+bool CJoystickCocoa::ScanEvents(void)
+{
+  return m_bInitialized;
+}
+
 void CJoystickCocoa::InputValueChanged(IOHIDValueRef value)
 {
-  CLockObject lock(m_mutex);
-
   IOHIDElementRef element = IOHIDValueGetElement(value);
 
   for (unsigned int i = 0; i < m_axes.size(); i++)
@@ -140,11 +141,8 @@ void CJoystickCocoa::InputValueChanged(IOHIDValueRef value)
     if (m_axes[i].element == element)
     {
       float d = IOHIDValueGetIntegerValue(value);
-
       float val = 2.0f * (d - m_axes[i].min) / (float)(m_axes[i].max - m_axes[i].min) - 1.0f;
-
-      m_stateBuffer.axes[i] = val;
-
+      SetAxisValue(i, val);
       return;
     }
   }
@@ -154,26 +152,8 @@ void CJoystickCocoa::InputValueChanged(IOHIDValueRef value)
     if (m_buttons[i] == element)
     {
       bool bPressed = IOHIDValueGetIntegerValue(value) != 0;
-
-      m_stateBuffer.buttons[i] = bPressed ? JOYSTICK_STATE_BUTTON_PRESSED : JOYSTICK_STATE_BUTTON_UNPRESSED;
-
+      SetButtonValue(i, bPressed ? JOYSTICK_STATE_BUTTON_PRESSED : JOYSTICK_STATE_BUTTON_UNPRESSED);
       return;
     }
   }
-}
-
-bool CJoystickCocoa::ScanEvents(std::vector<ADDON::PeripheralEvent>& events)
-{
-  CLockObject lock(m_mutex);
-
-  std::vector<JOYSTICK_STATE_BUTTON>& buttons = m_stateBuffer.buttons;
-  std::vector<JOYSTICK_STATE_AXIS>&   axes    = m_stateBuffer.axes;
-
-  ASSERT(buttons.size() == ButtonCount());
-  ASSERT(axes.size() == AxisCount());
-
-  GetButtonEvents(buttons, events);
-  GetAxisEvents(axes, events);
-
-  return true;
 }

@@ -26,82 +26,65 @@
 
 using namespace JOYSTICK;
 
-CJoystickSDL::CJoystickSDL(SDL_Joystick* pJoystick, CJoystickInterfaceSDL* api)
+CJoystickSDL::CJoystickSDL(const std::string& strName, SDL_Joystick* pJoystick, CJoystickInterfaceSDL* api)
  : CJoystick(api),
    m_pJoystick(pJoystick)
 {
+  SetName(strName);
+  SetButtonCount(SDL_JoystickNumButtons(m_pJoystick));
+  SetHatCount(SDL_JoystickNumHats(m_pJoystick));
+  SetAxisCount(SDL_JoystickNumAxes(m_pJoystick));
 }
 
-bool CJoystickSDL::Initialize(void)
+bool CJoystickSDL::ScanEvents(void)
 {
-  m_stateBuffer.buttons.assign(ButtonCount(), JOYSTICK_STATE_BUTTON_UNPRESSED);
-  m_stateBuffer.hats.assign(HatCount(), JOYSTICK_STATE_HAT_UNPRESSED);
-  m_stateBuffer.axes.assign(AxisCount(), 0.0f);
-
-  return CJoystick::Initialize();
-}
-
-bool CJoystickSDL::ScanEvents(std::vector<ADDON::PeripheralEvent>& events)
-{
-  std::vector<JOYSTICK_STATE_BUTTON>& buttons = m_stateBuffer.buttons;
-  std::vector<JOYSTICK_STATE_HAT>&    hats    = m_stateBuffer.hats;
-  std::vector<JOYSTICK_STATE_AXIS>&   axes    = m_stateBuffer.axes;
-
-  ASSERT(buttons.size() == ButtonCount());
-  ASSERT(hats.size() == HatCount());
-  ASSERT(axes.size() == AxisCount());
-
   // Update the state of all opened joysticks
   SDL_JoystickUpdate();
 
   // Gamepad buttons
   for (unsigned int b = 0; b < ButtonCount(); b++)
-    buttons[b] = SDL_JoystickGetButton(m_pJoystick, b) ? JOYSTICK_STATE_BUTTON_PRESSED : JOYSTICK_STATE_BUTTON_UNPRESSED;
+    SetButtonValue(b, SDL_JoystickGetButton(m_pJoystick, b) ? JOYSTICK_STATE_BUTTON_PRESSED :
+                                                              JOYSTICK_STATE_BUTTON_UNPRESSED);
 
   // Gamepad hats
   for (unsigned int h = 0; h < HatCount(); h++)
   {
-    uint8_t hat = SDL_JoystickGetHat(m_pJoystick, h);
-    switch (hat)
+    switch (SDL_JoystickGetHat(m_pJoystick, h))
     {
       case SDL_HAT_UP:
-        hats[h] = JOYSTICK_STATE_HAT_UP;
+        SetHatValue(h, JOYSTICK_STATE_HAT_UP);
         break;
       case SDL_HAT_RIGHT:
-        hats[h] = JOYSTICK_STATE_HAT_RIGHT;
+        SetHatValue(h, JOYSTICK_STATE_HAT_RIGHT);
         break;
       case SDL_HAT_DOWN:
-        hats[h] = JOYSTICK_STATE_HAT_DOWN;
+        SetHatValue(h, JOYSTICK_STATE_HAT_DOWN);
         break;
       case SDL_HAT_LEFT:
-        hats[h] = JOYSTICK_STATE_HAT_LEFT;
+        SetHatValue(h, JOYSTICK_STATE_HAT_LEFT);
         break;
       case SDL_HAT_RIGHTUP:
-        hats[h] = JOYSTICK_STATE_HAT_RIGHT_UP;
+        SetHatValue(h, JOYSTICK_STATE_HAT_RIGHT_UP);
         break;
       case SDL_HAT_RIGHTDOWN:
-        hats[h] = JOYSTICK_STATE_HAT_RIGHT_DOWN;
+        SetHatValue(h, JOYSTICK_STATE_HAT_RIGHT_DOWN);
         break;
       case SDL_HAT_LEFTUP:
-        hats[h] = JOYSTICK_STATE_HAT_LEFT_UP;
+        SetHatValue(h, JOYSTICK_STATE_HAT_LEFT_UP);
         break;
       case SDL_HAT_LEFTDOWN:
-        hats[h] = JOYSTICK_STATE_HAT_LEFT_DOWN;
+        SetHatValue(h, JOYSTICK_STATE_HAT_LEFT_DOWN);
         break;
       case SDL_HAT_CENTERED:
       default:
-        hats[h] = JOYSTICK_STATE_HAT_UNPRESSED;
+        SetHatValue(h, JOYSTICK_STATE_HAT_UNPRESSED);
         break;
     }
   }
 
   // Gamepad axes
   for (unsigned int a = 0; a < AxisCount(); a++)
-    axes[a] = NormalizeAxis((long)SDL_JoystickGetAxis(m_pJoystick, a), MAX_AXISAMOUNT);
-
-  GetButtonEvents(buttons, events);
-  GetHatEvents(hats, events);
-  GetAxisEvents(axes, events);
+    SetAxisValue(a, (long)SDL_JoystickGetAxis(m_pJoystick, a), MAX_AXISAMOUNT);
 
   return true;
 }

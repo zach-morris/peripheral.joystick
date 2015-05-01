@@ -85,12 +85,7 @@ bool CJoystickInterfaceSDL::PerformJoystickScan(std::vector<CJoystick*>& joystic
         }
         else
         {
-          CJoystick* joystick = new CJoystickSDL(joy, this);
-          joystick->SetName(SDL_JoystickNameForIndex(i));
-          joystick->SetButtonCount(SDL_JoystickNumButtons(joy));
-          joystick->SetHatCount(SDL_JoystickNumHats(joy));
-          joystick->SetAxisCount(SDL_JoystickNumAxes(joy));
-          joysticks.push_back(joystick);
+          joysticks.push_back(new CJoystickSDL(SDL_JoystickNameForIndex(i), joy, this));
 
           /* TODO
           isyslog("Enabled Joystick: \"%s\" (SDL)", joystick.m_configuration.Name().c_str());

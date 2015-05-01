@@ -19,6 +19,7 @@
 #pragma once
 
 #include "kodi/kodi_peripheral_utils.hpp"
+#include "kodi/threads/mutex.h"
 
 #include <vector>
 
@@ -75,29 +76,25 @@ namespace JOYSTICK
     /*!
      * Implemented by derived class to scan for events
      */
-    virtual bool ScanEvents(std::vector<ADDON::PeripheralEvent>& events) = 0;
+    virtual bool ScanEvents(void) = 0;
 
-    /*!
-     * Helper functions for derived class to populate event vector from observed
-     * button/hat/axis states
-     */
-    void GetButtonEvents(const std::vector<JOYSTICK_STATE_BUTTON>& buttons, std::vector<ADDON::PeripheralEvent>& events);
-    void GetHatEvents(const std::vector<JOYSTICK_STATE_HAT>& hats, std::vector<ADDON::PeripheralEvent>& events);
-    void GetAxisEvents(const std::vector<JOYSTICK_STATE_AXIS>& axes, std::vector<ADDON::PeripheralEvent>& events);
+    void SetButtonValue(unsigned int buttonIndex, JOYSTICK_STATE_BUTTON buttonValue);
+    void SetHatValue(unsigned int hatIndex, JOYSTICK_STATE_HAT hatValue);
+    void SetAxisValue(unsigned int axisIndex, JOYSTICK_STATE_AXIS axisValue);
+    void SetAxisValue(unsigned int axisIndex, long value, long maxAxisAmount);
 
-    /*!
-     * Call this from derived class when events are discovered
-     */
-    void FoundEvents(void);
+  private:
+    void GetButtonEvents(std::vector<ADDON::PeripheralEvent>& events);
+    void GetHatEvents(std::vector<ADDON::PeripheralEvent>& events);
+    void GetAxisEvents(std::vector<ADDON::PeripheralEvent>& events);
+
+    void UpdateTimers(void);
 
     /*!
      * Normalize the axis to the closed interval [-1.0, 1.0] subject to deadzone.
      */
     static float NormalizeAxis(long value, long maxAxisAmount);
 
-    /*!
-     * State buffer provided to derived classes
-     */
     struct JoystickState
     {
       std::vector<JOYSTICK_STATE_BUTTON> buttons;
@@ -105,15 +102,12 @@ namespace JOYSTICK
       std::vector<JOYSTICK_STATE_AXIS>   axes;
     };
 
-    JoystickState m_stateBuffer;
-
-  private:
-    void UpdateTimers(void);
-
     CJoystickInterface* const m_api;
     JoystickState             m_state;
+    JoystickState             m_stateBuffer;
     int64_t                   m_discoverTimeMs;
     int64_t                   m_firstEventTimeMs;
     int64_t                   m_lastEventTimeMs;
+    PLATFORM::CMutex          m_valueMutex;
   };
 }

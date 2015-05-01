@@ -34,16 +34,12 @@ namespace JOYSTICK
     CJoystickLinux(int fd, const std::string& strFilename, CJoystickInterfaceLinux* api);
     virtual ~CJoystickLinux(void) { Deinitialize(); }
 
-    virtual bool Initialize(void);
     virtual void Deinitialize(void);
 
   protected:
-    virtual bool ScanEvents(std::vector<ADDON::PeripheralEvent>& events);
+    virtual bool ScanEvents(void);
 
   private:
-    void ReadEvents(std::vector<JOYSTICK_STATE_BUTTON>& buttons,
-                    std::vector<JOYSTICK_STATE_AXIS>& axes);
-
     int         m_fd;
     std::string m_strFilename; // For debugging purposes
   };

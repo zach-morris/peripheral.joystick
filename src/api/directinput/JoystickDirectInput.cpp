@@ -72,10 +72,6 @@ bool CJoystickDirectInput::Initialize(void)
     return false;
   }
 
-  m_stateBuffer.buttons.assign(ButtonCount(), JOYSTICK_STATE_BUTTON());
-  m_stateBuffer.hats.assign(HatCount(), JOYSTICK_STATE_HAT());
-  m_stateBuffer.axes.assign(AxisCount(), JOYSTICK_STATE_AXIS());
-
   return CJoystick::Initialize();
 }
 
@@ -109,7 +105,7 @@ BOOL CALLBACK CJoystickDirectInput::EnumObjectsCallback(const DIDEVICEOBJECTINST
   return DIENUM_CONTINUE;
 }
 
-bool CJoystickDirectInput::ScanEvents(std::vector<ADDON::PeripheralEvent>& events)
+bool CJoystickDirectInput::ScanEvents(void)
 {
   HRESULT     hr;
   DIJOYSTATE2 js; // DInput joystick state
@@ -138,40 +134,37 @@ bool CJoystickDirectInput::ScanEvents(std::vector<ADDON::PeripheralEvent>& event
     return false; // The device should have been acquired during the Poll()
 
   // Gamepad buttons
-  std::vector<JOYSTICK_STATE_BUTTON>& buttons = m_stateBuffer.buttons;
   for (unsigned int b = 0; b < ButtonCount(); b++)
-    buttons[b] = (js.rgbButtons[b] & 0x80) ? JOYSTICK_STATE_BUTTON_PRESSED : JOYSTICK_STATE_BUTTON_UNPRESSED;
-  GetButtonEvents(buttons, events);
-
+    SetButtonValue(b, (js.rgbButtons[b] & 0x80) ? JOYSTICK_STATE_BUTTON_PRESSED : JOYSTICK_STATE_BUTTON_UNPRESSED);
 
   // Gamepad hats
   std::vector<JOYSTICK_STATE_HAT>& hats = m_stateBuffer.hats;
   for (unsigned int h = 0; h < HatCount(); h++)
   {
-    hats[h] = JOYSTICK_STATE_HAT_UNPRESSED;
+    JOYSTICK_STATE_HAT hatState = JOYSTICK_STATE_HAT_UNPRESSED;
 
     const bool bCentered = ((js.rgdwPOV[h] & 0xFFFF) == 0xFFFF);
     if (!bCentered)
     {
       if ((JOY_POV_NW <= js.rgdwPOV[h] && js.rgdwPOV[h] <= JOY_POV_360) || js.rgdwPOV[h] <= JOY_POV_NE)
-        hats[h] = JOYSTICK_STATE_HAT_UP;
+        hatState = JOYSTICK_STATE_HAT_UP;
       else if (JOY_POV_SE <= js.rgdwPOV[h] && js.rgdwPOV[h] <= JOY_POV_SW)
-        hats[h] = JOYSTICK_STATE_HAT_DOWN;
+        hatState = JOYSTICK_STATE_HAT_DOWN;
 
       if (JOY_POV_NE <= js.rgdwPOV[h] && js.rgdwPOV[h] <= JOY_POV_SE)
-        hats[h] = (JOYSTICK_STATE_HAT)(hats[h] | JOYSTICK_STATE_HAT_RIGHT);
+        hatState = (JOYSTICK_STATE_HAT)(hatState | JOYSTICK_STATE_HAT_RIGHT);
       else if (JOY_POV_SW <= js.rgdwPOV[h] && js.rgdwPOV[h] <= JOY_POV_NW)
-        hats[h] = (JOYSTICK_STATE_HAT)(hats[h] | JOYSTICK_STATE_HAT_LEFT);
+        hatState = (JOYSTICK_STATE_HAT)(hatState | JOYSTICK_STATE_HAT_LEFT);
     }
+
+    SetHatValue(h, hatState);
   }
-  GetHatEvents(hats, events);
 
   // Gamepad axes
   std::vector<JOYSTICK_STATE_AXIS>& axes = m_stateBuffer.axes;
   const long amounts[] = { js.lX, js.lY, js.lZ, js.lRx, js.lRy, js.lRz, js.rglSlider[0], js.rglSlider[1] };
-  for (unsigned int a = 0; a < MIN(AxisCount(), ARRAY_SIZE(amounts)); a++)
-    axes[a] = NormalizeAxis(amounts[a], AXIS_MAX);
-  GetAxisEvents(axes, events);
+  for (unsigned int a = 0; a < ARRAY_SIZE(amounts); a++)
+    SetAxisValue(a, amounts[a], AXIS_MAX);
 
   return true;
 }

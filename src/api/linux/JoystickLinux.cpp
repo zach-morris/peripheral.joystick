@@ -46,40 +46,13 @@ CJoystickLinux::CJoystickLinux(int fd, const std::string& strFilename, CJoystick
 {
 }
 
-bool CJoystickLinux::Initialize(void)
-{
-  m_stateBuffer.buttons.assign(ButtonCount(), JOYSTICK_STATE_BUTTON());
-  m_stateBuffer.hats.assign(HatCount(), JOYSTICK_STATE_HAT());
-  m_stateBuffer.axes.assign(AxisCount(), JOYSTICK_STATE_AXIS());
-
-  return CJoystick::Initialize();
-}
-
-
 void CJoystickLinux::Deinitialize(void)
 {
   close(m_fd);
   m_fd = INVALID_FD;
 }
 
-bool CJoystickLinux::ScanEvents(std::vector<ADDON::PeripheralEvent>& events)
-{
-  std::vector<JOYSTICK_STATE_BUTTON>& buttons = m_stateBuffer.buttons;
-  std::vector<JOYSTICK_STATE_AXIS>&   axes    = m_stateBuffer.axes;
-
-  ASSERT(buttons.size() == ButtonCount());
-  ASSERT(axes.size() == AxisCount());
-
-  ReadEvents(buttons, axes);
-
-  GetButtonEvents(buttons, events);
-  GetAxisEvents(axes, events);
-
-  return true;
-}
-
-void CJoystickLinux::ReadEvents(std::vector<JOYSTICK_STATE_BUTTON>& buttons,
-                                std::vector<JOYSTICK_STATE_AXIS>& axes)
+bool CJoystickLinux::ScanEvents(void)
 {
   js_event joyEvent;
 
@@ -111,12 +84,10 @@ void CJoystickLinux::ReadEvents(std::vector<JOYSTICK_STATE_BUTTON>& buttons,
     switch (joyEvent.type)
     {
     case JS_EVENT_BUTTON:
-      if (joyEvent.number < ButtonCount())
-        buttons[joyEvent.number] = joyEvent.value ? JOYSTICK_STATE_BUTTON_PRESSED : JOYSTICK_STATE_BUTTON_UNPRESSED;
+      SetButtonValue(joyEvent.number, (joyEvent.value ? JOYSTICK_STATE_BUTTON_PRESSED : JOYSTICK_STATE_BUTTON_UNPRESSED));
       break;
     case JS_EVENT_AXIS:
-      if (joyEvent.number < AxisCount())
-        axes[joyEvent.number] = NormalizeAxis(joyEvent.value, MAX_AXIS);
+      SetAxisValue(joyEvent.number, joyEvent.value, MAX_AXIS);
       break;
     default:
       break;

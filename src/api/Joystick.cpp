@@ -26,6 +26,7 @@
 #include "kodi/util/timeutils.h"
 
 using namespace JOYSTICK;
+using namespace PLATFORM;
 
 #define ANALOG_EPSILON  0.0001f
 
@@ -56,30 +57,44 @@ bool CJoystick::Equals(const CJoystick* rhs) const
 
 bool CJoystick::Initialize(void)
 {
-  m_state.buttons.assign(ButtonCount(), JOYSTICK_STATE_BUTTON());
-  m_state.hats.assign(HatCount(), JOYSTICK_STATE_HAT());
-  m_state.axes.assign(AxisCount(), JOYSTICK_STATE_AXIS());
+  if (ButtonCount() == 0 && HatCount() == 0 && AxisCount() == 0)
+  {
+    esyslog("Failed to initialize %s joystick: no buttons, hats or axes", Provider().c_str());
+    return false;
+  }
+
+  m_state.buttons.assign(ButtonCount(), JOYSTICK_STATE_BUTTON_UNPRESSED);
+  m_state.hats.assign(HatCount(), JOYSTICK_STATE_HAT_UNPRESSED);
+  m_state.axes.assign(AxisCount(), 0.0f);
+
+  m_stateBuffer.buttons.assign(ButtonCount(), JOYSTICK_STATE_BUTTON_UNPRESSED);
+  m_stateBuffer.hats.assign(HatCount(), JOYSTICK_STATE_HAT_UNPRESSED);
+  m_stateBuffer.axes.assign(AxisCount(), 0.0f);
 
   return true;
 }
 
 bool CJoystick::GetEvents(std::vector<ADDON::PeripheralEvent>& events)
 {
-  const bool bSuccess = ScanEvents(events);
+  CLockObject lock(m_valueMutex);
 
-  if (bSuccess && !events.empty())
+  if (ScanEvents())
+  {
+    GetButtonEvents(events);
+    GetHatEvents(events);
+    GetAxisEvents(events);
+
     UpdateTimers();
 
-  return bSuccess;
+    return true;
+  }
+
+  return false;
 }
 
-void CJoystick::GetButtonEvents(const std::vector<JOYSTICK_STATE_BUTTON>& buttons, std::vector<ADDON::PeripheralEvent>& events)
+void CJoystick::GetButtonEvents(std::vector<ADDON::PeripheralEvent>& events)
 {
-  if (buttons.size() != m_state.buttons.size())
-  {
-    esyslog("Error: button mismatch! Updating %u buttons, but state contains %u buttons", buttons.size(), m_state.buttons.size());
-    return;
-  }
+  const std::vector<JOYSTICK_STATE_BUTTON>& buttons = m_stateBuffer.buttons;
 
   for (unsigned int i = 0; i < buttons.size(); i++)
   {
@@ -90,13 +105,9 @@ void CJoystick::GetButtonEvents(const std::vector<JOYSTICK_STATE_BUTTON>& button
   m_state.buttons.assign(buttons.begin(), buttons.end());
 }
 
-void CJoystick::GetHatEvents(const std::vector<JOYSTICK_STATE_HAT>& hats, std::vector<ADDON::PeripheralEvent>& events)
+void CJoystick::GetHatEvents(std::vector<ADDON::PeripheralEvent>& events)
 {
-  if (hats.size() != m_state.hats.size())
-  {
-    esyslog("Error: hat mismatch! Updating %u hats, but state contains %u hats", hats.size(), m_state.hats.size());
-    return;
-  }
+  const std::vector<JOYSTICK_STATE_HAT>& hats = m_stateBuffer.hats;
 
   for (unsigned int i = 0; i < hats.size(); i++)
   {
@@ -107,13 +118,9 @@ void CJoystick::GetHatEvents(const std::vector<JOYSTICK_STATE_HAT>& hats, std::v
   m_state.hats.assign(hats.begin(), hats.end());
 }
 
-void CJoystick::GetAxisEvents(const std::vector<JOYSTICK_STATE_AXIS>& axes, std::vector<ADDON::PeripheralEvent>& events)
+void CJoystick::GetAxisEvents(std::vector<ADDON::PeripheralEvent>& events)
 {
-  if (axes.size() != m_state.axes.size())
-  {
-    esyslog("Error: axis mismatch! Updating %u axes, but state contains %u axes", axes.size(), m_state.axes.size());
-    return;
-  }
+  const std::vector<JOYSTICK_STATE_AXIS>& axes = m_stateBuffer.axes;
 
   for (unsigned int i = 0; i < axes.size(); i++)
   {
@@ -122,6 +129,42 @@ void CJoystick::GetAxisEvents(const std::vector<JOYSTICK_STATE_AXIS>& axes, std:
   }
 
   m_state.axes.assign(axes.begin(), axes.end());
+}
+
+void CJoystick::SetButtonValue(unsigned int buttonIndex, JOYSTICK_STATE_BUTTON buttonValue)
+{
+  CLockObject lock(m_valueMutex);
+
+  if (buttonIndex < ButtonCount())
+    m_stateBuffer.buttons[buttonIndex] = buttonValue;
+}
+
+void CJoystick::SetHatValue(unsigned int hatIndex, JOYSTICK_STATE_HAT hatValue)
+{
+  CLockObject lock(m_valueMutex);
+
+  if (hatIndex < HatCount())
+    m_stateBuffer.hats[hatIndex] = hatValue;
+}
+
+void CJoystick::SetAxisValue(unsigned int axisIndex, JOYSTICK_STATE_AXIS axisValue)
+{
+  CLockObject lock(m_valueMutex);
+
+  if (axisIndex < AxisCount())
+    m_stateBuffer.axes[axisIndex] = axisValue;
+}
+
+void CJoystick::SetAxisValue(unsigned int axisIndex, long value, long maxAxisAmount)
+{
+  SetAxisValue(axisIndex, NormalizeAxis(value, maxAxisAmount));
+}
+
+void CJoystick::UpdateTimers(void)
+{
+  if (m_firstEventTimeMs < 0)
+    m_firstEventTimeMs = PLATFORM::GetTimeMs();
+  m_lastEventTimeMs = PLATFORM::GetTimeMs();
 }
 
 float CJoystick::NormalizeAxis(long value, long maxAxisAmount)
@@ -135,11 +178,4 @@ float CJoystick::NormalizeAxis(long value, long maxAxisAmount)
     return (float)(position + deadzone) / (float)(1.0f - deadzone);
   else
     return 0.0f;
-}
-
-void CJoystick::UpdateTimers(void)
-{
-  if (m_firstEventTimeMs < 0)
-    m_firstEventTimeMs = PLATFORM::GetTimeMs();
-  m_lastEventTimeMs = PLATFORM::GetTimeMs();
 }

@@ -23,8 +23,6 @@
 #include "JoystickInterfaceCocoa.h"
 #include "api/Joystick.h"
 
-#include "kodi/threads/mutex.h"
-
 #include <CoreFoundation/CoreFoundation.h>
 #include <IOKit/hid/IOHIDBase.h>
 #include <IOKit/hid/IOHIDKeys.h>
@@ -48,7 +46,7 @@ namespace JOYSTICK
     virtual void InputValueChanged(IOHIDValueRef value);
 
   protected:
-    virtual bool ScanEvents(std::vector<ADDON::PeripheralEvent>& events);
+    virtual bool ScanEvents(void);
 
   private:
     IOHIDDeviceRef m_device;
@@ -63,7 +61,5 @@ namespace JOYSTICK
 
     std::vector<IOHIDElementRef> m_buttons;
     std::vector<CocoaAxis>       m_axes;
-
-    PLATFORM::CMutex  m_mutex;
   };
 }

@@ -40,7 +40,7 @@ namespace JOYSTICK
     virtual bool Initialize(void);
 
   protected:
-    virtual bool ScanEvents(std::vector<ADDON::PeripheralEvent>& events);
+    virtual bool ScanEvents(void);
 
   private:
     static BOOL CALLBACK EnumObjectsCallback(const DIDEVICEOBJECTINSTANCE *pdidoi, VOID *pContext);
