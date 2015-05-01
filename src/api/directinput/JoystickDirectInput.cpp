@@ -159,9 +159,9 @@ bool CJoystickDirectInput::ScanEvents(std::vector<ADDON::PeripheralEvent>& event
         hats[h] = JOYSTICK_STATE_HAT_DOWN;
 
       if (JOY_POV_NE <= js.rgdwPOV[h] && js.rgdwPOV[h] <= JOY_POV_SE)
-        hats[h] = (JOYSTICK_STATE_HAT)(hats[h] & JOYSTICK_STATE_HAT_RIGHT);
+        hats[h] = (JOYSTICK_STATE_HAT)(hats[h] | JOYSTICK_STATE_HAT_RIGHT);
       else if (JOY_POV_SW <= js.rgdwPOV[h] && js.rgdwPOV[h] <= JOY_POV_NW)
-        hats[h] = (JOYSTICK_STATE_HAT)(hats[h] & JOYSTICK_STATE_HAT_LEFT);
+        hats[h] = (JOYSTICK_STATE_HAT)(hats[h] | JOYSTICK_STATE_HAT_LEFT);
     }
   }
   GetHatEvents(hats, events);
