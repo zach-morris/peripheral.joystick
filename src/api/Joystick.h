@@ -64,7 +64,7 @@ namespace JOYSTICK
      * Deinitialize the joystick object. GetEvents() will not be called after
      * deinitialization.
      */
-    virtual void Deinitialize(void) { }
+    virtual void Deinitialize(void);
 
     /*!
      * Get events that have occurred since the last call to GetEvents()

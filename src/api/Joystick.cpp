@@ -73,6 +73,17 @@ bool CJoystick::Initialize(void)
   return true;
 }
 
+void CJoystick::Deinitialize(void)
+{
+  m_state.buttons.clear();
+  m_state.hats.clear();
+  m_state.axes.clear();
+
+  m_stateBuffer.buttons.clear();
+  m_stateBuffer.hats.clear();
+  m_stateBuffer.axes.clear();
+}
+
 bool CJoystick::GetEvents(std::vector<ADDON::PeripheralEvent>& events)
 {
   if (ScanEvents())

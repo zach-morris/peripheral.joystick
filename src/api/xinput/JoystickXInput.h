@@ -32,7 +32,7 @@ namespace JOYSTICK
   {
   public:
     CJoystickXInput(unsigned int controllerID, CJoystickInterfaceXInput* api);
-    virtual ~CJoystickXInput(void) { Deinitialize(); }
+    virtual ~CJoystickXInput(void) { }
 
   protected:
     virtual bool ScanEvents(void);
