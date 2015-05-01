@@ -28,7 +28,8 @@ set(JOYSTICK_SOURCES src/addon.cpp
                      src/JoystickTranslator.cpp
                      src/log/Log.cpp
                      src/log/LogAddon.cpp
-                     src/log/LogConsole.cpp)
+                     src/log/LogConsole.cpp
+                     src/settings/Settings.cpp)
 
 check_include_files("syslog.h" HAVE_SYSLOG)
 

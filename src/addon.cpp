@@ -26,6 +26,7 @@
 #include "devices/Devices.h"
 #include "log/Log.h"
 #include "log/LogAddon.h"
+#include "settings/Settings.h"
 #include "utils/CommonMacros.h"
 
 #include "kodi/libXBMC_addon.h"
@@ -114,6 +115,9 @@ unsigned int ADDON_GetSettings(ADDON_StructSetting ***sSet)
 
 ADDON_STATUS ADDON_SetSetting(const char *settingName, const void *settingValue)
 {
+  if (settingName && settingValue)
+    CSettings::Get().SetSetting(settingName, settingValue);
+
   return ADDON_STATUS_OK;
 }
 

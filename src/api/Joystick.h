@@ -55,21 +55,6 @@ namespace JOYSTICK
     int64_t LastEventTimeMs(void) const { return m_lastEventTimeMs; }
 
     /*!
-     * The analog stick deadzone. This is applied to each axis. Axis is scaled
-     * appropriately, so position is continuous from -1.0 to 1.0:
-     *
-     *            |    / 1.0
-     *            |   /
-     *          __|__/
-     *         /  |
-     *        /   |--| Deadzone
-     *  -1.0 /    |
-     *
-     * TODO: Disable deadzone for accelerometer
-     */
-    float DeadzoneRange(void) const { return m_deadzoneRange; }
-
-    /*!
      * Initialize the joystick object. Joystick will be initialized before the
      * first call to GetEvents().
      */
@@ -130,6 +115,5 @@ namespace JOYSTICK
     int64_t                   m_discoverTimeMs;
     int64_t                   m_firstEventTimeMs;
     int64_t                   m_lastEventTimeMs;
-    static const float        m_deadzoneRange; // TODO: Get deadzone from settings
   };
 }
