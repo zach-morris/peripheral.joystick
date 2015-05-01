@@ -315,7 +315,9 @@ bool CButtons::Serialize(TiXmlElement* pElement) const
         const ADDON::DriverSemiAxis* semiAxis = static_cast<const ADDON::DriverSemiAxis*>(feature);
 
         std::ostringstream strAxis;
-        if (semiAxis->Direction() >= 0)
+        if (semiAxis->Direction() == JOYSTICK_DRIVER_SEMIAXIS_DIRECTION_NEGATIVE)
+          strAxis << "-";
+        else
           strAxis << "+";
         strAxis << semiAxis->Index();
 
