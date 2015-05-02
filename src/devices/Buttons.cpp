@@ -31,6 +31,24 @@
 
 using namespace JOYSTICK;
 
+CButtons& CButtons::operator=(const CButtons& rhs)
+{
+  if (this != &rhs)
+  {
+    Reset();
+    for (Buttons::const_iterator it = rhs.m_buttons.begin(); it != rhs.m_buttons.end(); ++it)
+      m_buttons[it->first] = it->second->Clone();
+  }
+  return *this;
+}
+
+void CButtons::Reset(void)
+{
+  for (Buttons::iterator it = m_buttons.begin(); it != m_buttons.end(); ++it)
+    delete it->second;
+  m_buttons.clear();
+}
+
 bool CButtons::GetFeatures(std::vector<ADDON::JoystickFeature*>& features) const
 {
   for (Buttons::const_iterator itButton = m_buttons.begin(); itButton != m_buttons.end(); ++itButton)
@@ -48,10 +66,17 @@ bool CButtons::MapFeature(const ADDON::JoystickFeature* feature)
     const std::string& strFeatureName = feature->Name();
 
     Buttons::iterator itFeature = m_buttons.find(strFeatureName);
-    if (itFeature != m_buttons.end())
+    if (itFeature == m_buttons.end())
+    {
+      dsyslog("Adding \"%s\" to button map", strFeatureName.c_str());
+      m_buttons[strFeatureName] = feature->Clone();
+    }
+    else
+    {
+      dsyslog("Updating \"%s\" in button map", strFeatureName.c_str());
       delete itFeature->second;
-
-    m_buttons[strFeatureName] = feature->Clone();
+      itFeature->second = feature->Clone();
+    }
 
     return true;
   }
@@ -89,6 +114,8 @@ void CButtons::UnMapButton(const ADDON::DriverButton* button)
   {
     if (ButtonConflicts(button, it->second))
     {
+      dsyslog("Removing \"%s\" from button map due to conflict", it->second->Name().c_str());
+      delete it->second;
       m_buttons.erase(it);
       break;
     }
@@ -101,6 +128,8 @@ void CButtons::UnMapHat(const ADDON::DriverHat* hat)
   {
     if (HatConflicts(hat, it->second))
     {
+      dsyslog("Removing \"%s\" from button map due to conflict", it->second->Name().c_str());
+      delete it->second;
       m_buttons.erase(it);
       break;
     }
@@ -117,6 +146,8 @@ void CButtons::UnMapSemiAxis(const ADDON::DriverSemiAxis* semiAxis)
       {
         case JOYSTICK_DRIVER_TYPE_SEMIAXIS:
         {
+          dsyslog("Removing \"%s\" from button map due to conflict", it->second->Name().c_str());
+          delete it->second;
           m_buttons.erase(it);
           break;
         }
@@ -128,13 +159,21 @@ void CButtons::UnMapSemiAxis(const ADDON::DriverSemiAxis* semiAxis)
           {
             analogStick->SetXIndex(-1);
             if (analogStick->YIndex() < 0)
+            {
+              dsyslog("Removing \"%s\" from button map due to conflict", it->second->Name().c_str());
+              delete it->second;
               m_buttons.erase(it);
+            }
           }
           else if (semiAxis->Index() == analogStick->YIndex())
           {
             analogStick->SetYIndex(-1);
             if (analogStick->XIndex() < 0)
+            {
+              dsyslog("Removing \"%s\" from button map due to conflict", it->second->Name().c_str());
+              delete it->second;
               m_buttons.erase(it);
+            }
           }
           break;
         }
@@ -146,19 +185,31 @@ void CButtons::UnMapSemiAxis(const ADDON::DriverSemiAxis* semiAxis)
           {
             accelerometer->SetXIndex(-1);
             if (accelerometer->YIndex() < 0 && accelerometer->ZIndex() < 0)
+            {
+              dsyslog("Removing \"%s\" from button map due to conflict", it->second->Name().c_str());
+              delete it->second;
               m_buttons.erase(it);
+            }
           }
           else if (semiAxis->Index() == accelerometer->YIndex())
           {
             accelerometer->SetYIndex(-1);
             if (accelerometer->XIndex() < 0 && accelerometer->ZIndex() < 0)
+            {
+              dsyslog("Removing \"%s\" from button map due to conflict", it->second->Name().c_str());
+              delete it->second;
               m_buttons.erase(it);
+            }
           }
           else if (semiAxis->Index() == accelerometer->ZIndex())
           {
             accelerometer->SetZIndex(-1);
             if (accelerometer->XIndex() < 0 && accelerometer->YIndex() < 0)
+            {
+              dsyslog("Removing \"%s\" from button map due to conflict", it->second->Name().c_str());
+              delete it->second;
               m_buttons.erase(it);
+            }
           }
           break;
         }

@@ -32,8 +32,12 @@ namespace JOYSTICK
   {
   public:
     CButtons(void) { }
+    CButtons(const CButtons& other) { *this = other; }
+    ~CButtons(void) { Reset(); }
 
-    void Reset(void) { *this = CButtons(); }
+    CButtons& operator=(const CButtons& rhs);
+
+    void Reset(void);
 
     bool GetFeatures(std::vector<ADDON::JoystickFeature*>& features) const;
 
