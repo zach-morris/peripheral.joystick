@@ -62,7 +62,7 @@ bool CJoystickDirectInput::Initialize(void)
   SetAxisCount(diDevCaps.dwAxes);
 
   // Initialize axes
-  // Enumerate the joystick objects. The callback function enabled user
+  // Enumerate the joystick objects. The callback function enables user
   // interface elements for objects that are found, and sets the min/max
   // values properly for discovered axes.
   hr = m_joystickDevice->EnumObjects(EnumObjectsCallback, m_joystickDevice, DIDFT_ALL);
