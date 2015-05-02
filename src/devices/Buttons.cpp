@@ -216,9 +216,9 @@ void CButtons::UnMapSemiAxis(const ADDON::DriverSemiAxis* semiAxis)
         default:
           break;
       }
-    }
 
-    break;
+      break; // Break if semi-axis conflicts
+    }
   }
 }
 
