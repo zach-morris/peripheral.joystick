@@ -90,7 +90,7 @@ namespace JOYSTICK
     void UpdateTimers(void);
 
     /*!
-     * Normalize the axis to the closed interval [-1.0, 1.0] subject to deadzone.
+     * Normalize the axis to the closed interval [-1.0, 1.0].
      */
     static float NormalizeAxis(long value, long maxAxisAmount);
 
