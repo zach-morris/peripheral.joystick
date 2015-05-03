@@ -26,7 +26,8 @@ using namespace JOYSTICK;
 #define SETTING_DEADZONE  "deadzone"
 
 CSettings::CSettings(void)
-  : m_deadzone(0.0f)
+  : m_bInitialized(false),
+    m_deadzone(0.0f)
 {
 }
 
@@ -43,4 +44,6 @@ void CSettings::SetSetting(const std::string& strName, const void* value)
     m_deadzone = *static_cast<const float*>(value);
     dsyslog("Setting \"%s\" set to %f", SETTING_DEADZONE, m_deadzone);
   }
+
+  m_bInitialized = true;
 }

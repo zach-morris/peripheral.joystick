@@ -33,6 +33,8 @@ namespace JOYSTICK
 
     void SetSetting(const std::string& strName, const void* value);
 
+    bool IsInitialized(void) const { return m_bInitialized; }
+
     /*!
      * The analog stick deadzone. This is applied to each axis. Axis is scaled
      * appropriately, so position is continuous from -1.0 to 1.0:
@@ -47,6 +49,7 @@ namespace JOYSTICK
     float Deadzone(void) const { return m_deadzone; }
 
   private:
+    bool m_bInitialized;
     float m_deadzone;
   };
 }

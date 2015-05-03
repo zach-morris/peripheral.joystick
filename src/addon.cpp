@@ -79,7 +79,7 @@ ADDON_STATUS ADDON_Create(void* callbacks, void* props)
   if (!CDevices::Get().Initialize(*peripheralProps))
     return ADDON_STATUS_PERMANENT_FAILURE;
 
-  return ADDON_STATUS_OK;
+  return ADDON_GetStatus();
 }
 
 void ADDON_Stop()
@@ -100,7 +100,13 @@ void ADDON_Destroy()
 
 ADDON_STATUS ADDON_GetStatus()
 {
-  return FRONTEND && PERIPHERAL ? ADDON_STATUS_OK : ADDON_STATUS_UNKNOWN;
+  if (!FRONTEND || !PERIPHERAL)
+    return ADDON_STATUS_UNKNOWN;
+
+  if (!CSettings::Get().IsInitialized())
+    return ADDON_STATUS_NEED_SETTINGS;
+
+  return ADDON_STATUS_OK;
 }
 
 bool ADDON_HasSettings()
