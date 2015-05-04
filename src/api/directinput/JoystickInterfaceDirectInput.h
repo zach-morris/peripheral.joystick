@@ -19,7 +19,7 @@
  */
 #pragma once
 
-#include "api/JoystickInterface.h"
+#include "api/JoystickInterfaceCallback.h"
 
 #define DIRECTINPUT_VERSION 0x0800
 #include <dinput.h>
@@ -28,7 +28,7 @@
 
 namespace JOYSTICK
 {
-  class CJoystickInterfaceDirectInput : public CJoystickInterface
+  class CJoystickInterfaceDirectInput : public CJoystickInterfaceCallback
   {
   public:
     CJoystickInterfaceDirectInput(void);

@@ -17,26 +17,29 @@
  *  <http://www.gnu.org/licenses/>.
  */
 
-#include "JoystickInterface.h"
+#include "JoystickInterfaceCallback.h"
 #include "Joystick.h"
 
 using namespace JOYSTICK;
 
-CJoystickInterface::CJoystickInterface(const std::string& strName)
- : m_strName(strName)
+CJoystickInterfaceCallback::CJoystickInterfaceCallback(const std::string& strName)
+  : CJoystickInterface(strName)
 {
 }
 
-bool CJoystickInterface::ScanForJoysticks(std::vector<CJoystick*>& results)
+void CJoystickInterfaceCallback::AddScanResult(CJoystick* joystick)
 {
-  bool bReturn(false);
+  m_scanResults.push_back(joystick);
+}
 
-  std::vector<CJoystick*> joysticks;
-  if (PerformJoystickScan(joysticks))
-  {
-    bReturn = true;
-    results.insert(results.end(), joysticks.begin(), joysticks.end());
-  }
+void CJoystickInterfaceCallback::GetScanResults(std::vector<CJoystick*>& joysticks) const
+{
+  joysticks.insert(joysticks.end(), m_scanResults.begin(), m_scanResults.end());
+}
 
-  return bReturn;
+void CJoystickInterfaceCallback::ClearScanResults(void)
+{
+  for (std::vector<CJoystick*>::iterator it = m_scanResults.begin(); it != m_scanResults.end(); ++it)
+    delete *it;
+  m_scanResults.clear();
 }

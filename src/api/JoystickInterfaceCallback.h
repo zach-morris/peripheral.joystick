@@ -16,27 +16,27 @@
  *  along with XBMC; see the file COPYING.  If not, see
  *  <http://www.gnu.org/licenses/>.
  */
+#pragma once
 
 #include "JoystickInterface.h"
-#include "Joystick.h"
 
-using namespace JOYSTICK;
+#include <vector>
 
-CJoystickInterface::CJoystickInterface(const std::string& strName)
- : m_strName(strName)
+namespace JOYSTICK
 {
-}
-
-bool CJoystickInterface::ScanForJoysticks(std::vector<CJoystick*>& results)
-{
-  bool bReturn(false);
-
-  std::vector<CJoystick*> joysticks;
-  if (PerformJoystickScan(joysticks))
+  class CJoystickInterfaceCallback : public CJoystickInterface
   {
-    bReturn = true;
-    results.insert(results.end(), joysticks.begin(), joysticks.end());
-  }
+  public:
+    CJoystickInterfaceCallback(const std::string& strName);
+    virtual ~CJoystickInterfaceCallback(void) { ClearScanResults(); }
 
-  return bReturn;
+  protected:
+    // Helper functions to offer a buffer for device scanners that require static callbacks
+    void AddScanResult(CJoystick* joystick);
+    void GetScanResults(std::vector<CJoystick*>& joysticks) const;
+    void ClearScanResults(void);
+
+  private:
+    std::vector<CJoystick*> m_scanResults;
+  };
 }

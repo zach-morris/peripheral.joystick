@@ -45,7 +45,7 @@ namespace JOYSTICK
 }
 
 CJoystickInterfaceDirectInput::CJoystickInterfaceDirectInput(void)
- : CJoystickInterface(INTERFACE_DIRECTINPUT),
+ : CJoystickInterfaceCallback(INTERFACE_DIRECTINPUT),
    m_pDirectInput(NULL)
 {
 }
