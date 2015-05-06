@@ -453,7 +453,7 @@ bool CButtons::Deserialize(const TiXmlElement* pElement)
     if (button)
     {
       int buttonIndex = std::atoi(button);
-      feature = new ADDON::DriverButton(0, name, buttonIndex);
+      feature = new ADDON::DriverButton(name, buttonIndex);
     }
     else if (hat)
     {
@@ -467,7 +467,7 @@ bool CButtons::Deserialize(const TiXmlElement* pElement)
         return false;
       }
 
-      feature = new ADDON::DriverHat(0, name, hatIndex, dir);
+      feature = new ADDON::DriverHat(name, hatIndex, dir);
     }
     else if (axis)
     {
@@ -487,7 +487,7 @@ bool CButtons::Deserialize(const TiXmlElement* pElement)
         return false;
       }
 
-      feature = new ADDON::DriverSemiAxis(0, name, axisIndex, dir);
+      feature = new ADDON::DriverSemiAxis(name, axisIndex, dir);
     }
     else if (xaxis && yaxis && !zaxis)
     {
@@ -497,7 +497,7 @@ bool CButtons::Deserialize(const TiXmlElement* pElement)
       bool bInvertedX = std::string(xinverted ? xinverted : "") == "true";
       bool bInvertedY = std::string(yinverted ? yinverted : "") == "true";
 
-      feature = new ADDON::DriverAnalogStick(0, name,
+      feature = new ADDON::DriverAnalogStick(name,
                                              axisIndexX, bInvertedX,
                                              axisIndexY, bInvertedY);
     }
@@ -511,7 +511,7 @@ bool CButtons::Deserialize(const TiXmlElement* pElement)
       bool bInvertedY = std::string(yinverted ? yinverted : "") == "true";
       bool bInvertedZ = std::string(zinverted ? zinverted : "") == "true";
 
-      feature = new ADDON::DriverAccelerometer(0, name,
+      feature = new ADDON::DriverAccelerometer(name,
                                                axisIndexX, bInvertedX,
                                                axisIndexY, bInvertedY,
                                                axisIndexZ, bInvertedZ);
