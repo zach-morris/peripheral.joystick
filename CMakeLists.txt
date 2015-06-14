@@ -11,11 +11,13 @@ include(CheckIncludeFiles)
 
 find_package(kodi REQUIRED)
 find_package(kodiplatform REQUIRED)
+find_package(platform REQUIRED)
 
 include_directories(${INCLUDES}
                     ${PROJECT_SOURCE_DIR}/src
                     ${KODI_INCLUDE_DIR}
-                    ${kodiplatform_INCLUDE_DIRS})
+                    ${kodiplatform_INCLUDE_DIRS}
+                    ${platform_INCLUDE_DIRS})
 
 set(JOYSTICK_SOURCES src/addon.cpp
                      src/api/Joystick.cpp
@@ -39,7 +41,7 @@ if(HAVE_SYSLOG)
   list(APPEND JOYSTICK_SOURCES src/log/LogSyslog.cpp)
 endif()
                                
-list(APPEND DEPLIBS ${kodiplatform_LIBRARIES})
+list(APPEND DEPLIBS ${kodiplatform_LIBRARIES} ${platform_LIBRARIES})
 
 # --- Cocoa --------------------------------------------------------------------
 
