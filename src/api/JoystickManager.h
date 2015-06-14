@@ -19,8 +19,8 @@
  */
 #pragma once
 
-#include "kodi/threads/mutex.h"
 #include "kodi/kodi_peripheral_utils.hpp"
+#include "threads/mutex.h"
 
 #include <vector>
 

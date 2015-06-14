@@ -22,7 +22,7 @@
 #include "utils/CommonIncludes.h"
 #include "api/JoystickInterface.h"
 
-#include "kodi/threads/mutex.h"
+#include "threads/mutex.h"
 
 #include <CoreFoundation/CoreFoundation.h>
 #include <IOKit/hid/IOHIDBase.h>

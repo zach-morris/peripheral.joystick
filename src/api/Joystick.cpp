@@ -23,7 +23,7 @@
 #include "settings/Settings.h"
 #include "utils/CommonMacros.h"
 
-#include "kodi/util/timeutils.h"
+#include "util/timeutils.h"
 
 using namespace JOYSTICK;
 

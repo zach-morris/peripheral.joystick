@@ -22,6 +22,6 @@
 // Typedef conflicts with cocoa
 #if defined(HAVE_COCOA)
   #define HRESULT CONFLICTING_TYPEDEF
-  #include "kodi/posix/os-types.h"
+  #include "posix/os-types.h"
   #undef HRESULT
 #endif

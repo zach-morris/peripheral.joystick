@@ -27,7 +27,7 @@
 #include "LogSyslog.h"
 #endif
 
-#include "kodi/threads/threads.h"
+#include "threads/threads.h"
 
 #include <stdarg.h>
 #include <stdio.h>

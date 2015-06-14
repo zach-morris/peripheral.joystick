@@ -20,7 +20,7 @@
 
 #include "Joystick.h"
 
-#include "kodi/threads/mutex.h"
+#include "threads/mutex.h"
 
 namespace JOYSTICK
 {
