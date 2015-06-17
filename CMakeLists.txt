@@ -40,7 +40,7 @@ check_include_files("syslog.h" HAVE_SYSLOG)
 if(HAVE_SYSLOG)
   list(APPEND JOYSTICK_SOURCES src/log/LogSyslog.cpp)
 endif()
-                               
+
 list(APPEND DEPLIBS ${kodiplatform_LIBRARIES} ${platform_LIBRARIES})
 
 # --- Cocoa --------------------------------------------------------------------
@@ -82,6 +82,25 @@ if(HAVE_LINUX_JOYSTICK_H)
 
   list(APPEND JOYSTICK_SOURCES src/api/linux/JoystickInterfaceLinux.cpp
                                src/api/linux/JoystickLinux.cpp)
+endif()
+
+# --- DirectInput --------------------------------------------------------------
+
+if("${CORE_SYSTEM_NAME}" STREQUAL "windows")
+  add_definitions(-DHAVE_DIRECT_INPUT)
+
+  list(APPEND JOYSTICK_SOURCES src/api/directinput/JoystickDirectInput.cpp
+                               src/api/directinput/JoystickInterfaceDirectInput.cpp)
+endif()
+
+# --- XInput -------------------------------------------------------------------
+
+if("${CORE_SYSTEM_NAME}" STREQUAL "windows")
+  add_definitions(-DHAVE_XINPUT)
+
+  list(APPEND JOYSTICK_SOURCES src/api/xinput/JoystickInterfaceXInput.cpp
+                               src/api/xinput/JoystickXInput.cpp
+                               src/api/xinput/XInputDLL.cpp)
 endif()
 
 # ------------------------------------------------------------------------------
