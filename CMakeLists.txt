@@ -58,17 +58,19 @@ endif()
 
 # --- SDL ----------------------------------------------------------------------
 
-find_package(Sdl)
+if(NOT "${CORE_SYSTEM_NAME}" STREQUAL "windows")
+  find_package(Sdl)
 
-if(SDL_FOUND)
-  include_directories(${SDL_INCLUDE_DIRS})
+  if(SDL_FOUND)
+    include_directories(${SDL_INCLUDE_DIRS})
 
-  add_definitions(-DHAVE_SDL)
+    add_definitions(-DHAVE_SDL)
 
-  list(APPEND JOYSTICK_SOURCES src/api/sdl/JoystickInterfaceSDL.cpp
-                               src/api/sdl/JoystickSDL.cpp)
+    list(APPEND JOYSTICK_SOURCES src/api/sdl/JoystickInterfaceSDL.cpp
+                                 src/api/sdl/JoystickSDL.cpp)
 
-  list(APPEND DEPLIBS ${SDL_LIBRARIES})
+    list(APPEND DEPLIBS ${SDL_LIBRARIES})
+  endif()
 endif()
 
 # --- Linux Joystick API -------------------------------------------------------
