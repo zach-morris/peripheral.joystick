@@ -138,7 +138,6 @@ bool CJoystickDirectInput::ScanEvents(void)
     SetButtonValue(b, (js.rgbButtons[b] & 0x80) ? JOYSTICK_STATE_BUTTON_PRESSED : JOYSTICK_STATE_BUTTON_UNPRESSED);
 
   // Gamepad hats
-  std::vector<JOYSTICK_STATE_HAT>& hats = m_stateBuffer.hats;
   for (unsigned int h = 0; h < HatCount(); h++)
   {
     JOYSTICK_STATE_HAT hatState = JOYSTICK_STATE_HAT_UNPRESSED;
@@ -161,7 +160,6 @@ bool CJoystickDirectInput::ScanEvents(void)
   }
 
   // Gamepad axes
-  std::vector<JOYSTICK_STATE_AXIS>& axes = m_stateBuffer.axes;
   const long amounts[] = { js.lX, js.lY, js.lZ, js.lRx, js.lRy, js.lRz, js.rglSlider[0], js.rglSlider[1] };
   for (unsigned int a = 0; a < ARRAY_SIZE(amounts); a++)
     SetAxisValue(a, amounts[a], AXIS_MAX);
