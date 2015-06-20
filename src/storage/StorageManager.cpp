@@ -99,7 +99,7 @@ bool CStorageManager::GetFeatures(const ADDON::Joystick& joystick, const std::st
   for (std::vector<CDatabase*>::const_iterator it = m_databases.begin(); it != m_databases.end(); ++it)
   {
     if ((*it)->GetFeatures(needle, strControllerId, features))
-      return true;
+      break;
   }
 
   return true;
@@ -110,12 +110,10 @@ bool CStorageManager::MapFeature(const ADDON::Joystick& joystick, const std::str
 {
   CDevice needle(joystick);
 
-  bool bSuccess = false;
-
   for (std::vector<CDatabase*>::const_iterator it = m_databases.begin(); it != m_databases.end(); ++it)
-    bSuccess |= (*it)->MapFeature(needle, strControllerId, feature);
+    (*it)->MapFeature(needle, strControllerId, feature);
 
-  return bSuccess;
+  return true;
 }
 
 void CStorageManager::RefreshButtonMaps(void)

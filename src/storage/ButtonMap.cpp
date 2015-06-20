@@ -51,56 +51,66 @@ bool CButtonMap::GetFeatures(std::vector<ADDON::JoystickFeature*>& features) con
 
 bool CButtonMap::MapFeature(const ADDON::JoystickFeature* feature)
 {
+  bool bModified = false;
+
   if (feature && !feature->Name().empty())
   {
-    UnMap(feature);
-
     const std::string& strFeatureName = feature->Name();
 
     Buttons::iterator itFeature = m_buttons.find(strFeatureName);
-    if (itFeature == m_buttons.end())
+    const bool bExists = (itFeature != m_buttons.end());
+
+    if (bExists && itFeature->second->Equals(feature))
     {
-      dsyslog("Adding \"%s\" to button map", strFeatureName.c_str());
-      m_buttons[strFeatureName] = feature->Clone();
+      dsyslog("Button map: relationship for \"%s\" already exists", strFeatureName.c_str());
     }
     else
     {
-      dsyslog("Updating \"%s\" in button map", strFeatureName.c_str());
-      delete itFeature->second;
-      itFeature->second = feature->Clone();
-    }
+      dsyslog("Button map: %s \"%s\"", bExists ? "updating" : "adding", strFeatureName.c_str());
 
-    return true;
+      // If button map is modified, iterator may be invalidated
+      if (UnMap(feature))
+        itFeature = m_buttons.find(strFeatureName);
+
+      if (itFeature == m_buttons.end())
+      {
+        m_buttons[strFeatureName] = feature->Clone();
+      }
+      else
+      {
+        delete itFeature->second;
+        itFeature->second = feature->Clone();
+      }
+
+      bModified = true;
+    }
+  }
+
+  return bModified;
+}
+
+bool CButtonMap::UnMap(const ADDON::JoystickFeature* feature)
+{
+  switch (feature->Type())
+  {
+    case JOYSTICK_DRIVER_TYPE_BUTTON:
+      return UnMapButton(static_cast<const ADDON::DriverButton*>(feature));
+    case JOYSTICK_DRIVER_TYPE_HAT_DIRECTION:
+      return UnMapHat(static_cast<const ADDON::DriverHat*>(feature));
+    case JOYSTICK_DRIVER_TYPE_SEMIAXIS:
+      return UnMapSemiAxis(static_cast<const ADDON::DriverSemiAxis*>(feature));
+    case JOYSTICK_DRIVER_TYPE_ANALOG_STICK:
+      return UnMapAnalogStick(static_cast<const ADDON::DriverAnalogStick*>(feature));
+    case JOYSTICK_DRIVER_TYPE_ACCELEROMETER:
+      return UnMapAccelerometer(static_cast<const ADDON::DriverAccelerometer*>(feature));
+    default:
+      break;
   }
 
   return false;
 }
 
-void CButtonMap::UnMap(const ADDON::JoystickFeature* feature)
-{
-  switch (feature->Type())
-  {
-    case JOYSTICK_DRIVER_TYPE_BUTTON:
-      UnMapButton(static_cast<const ADDON::DriverButton*>(feature));
-      break;
-    case JOYSTICK_DRIVER_TYPE_HAT_DIRECTION:
-      UnMapHat(static_cast<const ADDON::DriverHat*>(feature));
-      break;
-    case JOYSTICK_DRIVER_TYPE_SEMIAXIS:
-      UnMapSemiAxis(static_cast<const ADDON::DriverSemiAxis*>(feature));
-      break;
-    case JOYSTICK_DRIVER_TYPE_ANALOG_STICK:
-      UnMapAnalogStick(static_cast<const ADDON::DriverAnalogStick*>(feature));
-      break;
-    case JOYSTICK_DRIVER_TYPE_ACCELEROMETER:
-      UnMapAccelerometer(static_cast<const ADDON::DriverAccelerometer*>(feature));
-      break;
-    default:
-      break;
-  }
-}
-
-void CButtonMap::UnMapButton(const ADDON::DriverButton* button)
+bool CButtonMap::UnMapButton(const ADDON::DriverButton* button)
 {
   for (Buttons::iterator it = m_buttons.begin(); it != m_buttons.end(); ++it)
   {
@@ -109,12 +119,14 @@ void CButtonMap::UnMapButton(const ADDON::DriverButton* button)
       dsyslog("Removing \"%s\" from button map due to conflict", it->second->Name().c_str());
       delete it->second;
       m_buttons.erase(it);
-      break;
+      return true;
     }
   }
+
+  return false;
 }
 
-void CButtonMap::UnMapHat(const ADDON::DriverHat* hat)
+bool CButtonMap::UnMapHat(const ADDON::DriverHat* hat)
 {
   for (Buttons::iterator it = m_buttons.begin(); it != m_buttons.end(); ++it)
   {
@@ -123,12 +135,14 @@ void CButtonMap::UnMapHat(const ADDON::DriverHat* hat)
       dsyslog("Removing \"%s\" from button map due to conflict", it->second->Name().c_str());
       delete it->second;
       m_buttons.erase(it);
-      break;
+      return true;
     }
   }
+
+  return false;
 }
 
-void CButtonMap::UnMapSemiAxis(const ADDON::DriverSemiAxis* semiAxis)
+bool CButtonMap::UnMapSemiAxis(const ADDON::DriverSemiAxis* semiAxis)
 {
   for (Buttons::iterator it = m_buttons.begin(); it != m_buttons.end(); ++it)
   {
@@ -209,64 +223,74 @@ void CButtonMap::UnMapSemiAxis(const ADDON::DriverSemiAxis* semiAxis)
           break;
       }
 
-      break; // Break if semi-axis conflicts
+      return true; // Semi-axis conflicts
     }
   }
+
+  return false;
 }
 
-void CButtonMap::UnMapAnalogStick(const ADDON::DriverAnalogStick* analogStick)
+bool CButtonMap::UnMapAnalogStick(const ADDON::DriverAnalogStick* analogStick)
 {
+  bool bModified = false;
+
   ADDON::DriverSemiAxis semiAxis;
 
   if (analogStick->XIndex() >= 0)
   {
     semiAxis.SetIndex(analogStick->XIndex());
     semiAxis.SetDirection(JOYSTICK_DRIVER_SEMIAXIS_DIRECTION_POSITIVE);
-    UnMapSemiAxis(&semiAxis);
+    bModified |= UnMapSemiAxis(&semiAxis);
     semiAxis.SetDirection(JOYSTICK_DRIVER_SEMIAXIS_DIRECTION_NEGATIVE);
-    UnMapSemiAxis(&semiAxis);
+    bModified |= UnMapSemiAxis(&semiAxis);
   }
 
   if (analogStick->YIndex() >= 0)
   {
     semiAxis.SetIndex(analogStick->YIndex());
     semiAxis.SetDirection(JOYSTICK_DRIVER_SEMIAXIS_DIRECTION_POSITIVE);
-    UnMapSemiAxis(&semiAxis);
+    bModified |= UnMapSemiAxis(&semiAxis);
     semiAxis.SetDirection(JOYSTICK_DRIVER_SEMIAXIS_DIRECTION_NEGATIVE);
-    UnMapSemiAxis(&semiAxis);
+    bModified |= UnMapSemiAxis(&semiAxis);
   }
+
+  return bModified;
 }
 
-void CButtonMap::UnMapAccelerometer(const ADDON::DriverAccelerometer* accelerometer)
+bool CButtonMap::UnMapAccelerometer(const ADDON::DriverAccelerometer* accelerometer)
 {
+  bool bModified = false;
+
   ADDON::DriverSemiAxis semiAxis;
 
   if (accelerometer->XIndex() >= 0)
   {
     semiAxis.SetIndex(accelerometer->XIndex());
     semiAxis.SetDirection(JOYSTICK_DRIVER_SEMIAXIS_DIRECTION_POSITIVE);
-    UnMapSemiAxis(&semiAxis);
+    bModified |= UnMapSemiAxis(&semiAxis);
     semiAxis.SetDirection(JOYSTICK_DRIVER_SEMIAXIS_DIRECTION_NEGATIVE);
-    UnMapSemiAxis(&semiAxis);
+    bModified |= UnMapSemiAxis(&semiAxis);
   }
 
   if (accelerometer->YIndex() >= 0)
   {
     semiAxis.SetIndex(accelerometer->YIndex());
     semiAxis.SetDirection(JOYSTICK_DRIVER_SEMIAXIS_DIRECTION_POSITIVE);
-    UnMapSemiAxis(&semiAxis);
+    bModified |= UnMapSemiAxis(&semiAxis);
     semiAxis.SetDirection(JOYSTICK_DRIVER_SEMIAXIS_DIRECTION_NEGATIVE);
-    UnMapSemiAxis(&semiAxis);
+    bModified |= UnMapSemiAxis(&semiAxis);
   }
 
   if (accelerometer->ZIndex() >= 0)
   {
     semiAxis.SetIndex(accelerometer->ZIndex());
     semiAxis.SetDirection(JOYSTICK_DRIVER_SEMIAXIS_DIRECTION_POSITIVE);
-    UnMapSemiAxis(&semiAxis);
+    bModified |= UnMapSemiAxis(&semiAxis);
     semiAxis.SetDirection(JOYSTICK_DRIVER_SEMIAXIS_DIRECTION_NEGATIVE);
-    UnMapSemiAxis(&semiAxis);
+    bModified |= UnMapSemiAxis(&semiAxis);
   }
+
+  return bModified;
 }
 
 bool CButtonMap::ButtonConflicts(const ADDON::DriverButton* button, const ADDON::JoystickFeature* feature)
