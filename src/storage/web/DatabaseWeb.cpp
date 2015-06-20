@@ -27,6 +27,7 @@
 #include "tinyxml.h"
 
 #include <assert.h>
+#include <algorithm>
 
 using namespace JOYSTICK;
 using namespace PLATFORM;
@@ -41,14 +42,41 @@ CDatabaseWeb::CDatabaseWeb(CStorageManager* manager, CDatabase* userXml)
 
 void* CDatabaseWeb::Process(void)
 {
+  while (true)
+  {
+    CDevice request;
+    CDevice update;
+
+    {
+      CLockObject lock(m_mutex);
+      if (m_requestQueue.empty() && m_updateQueue.empty())
+        break;
+
+      if (!m_requestQueue.empty())
+      {
+        request = m_requestQueue[0];
+        m_requestQueue.erase(m_requestQueue.begin());
+      }
+
+      if (!m_updateQueue.empty())
+      {
+        update = m_updateQueue[0];
+        m_updateQueue.erase(m_updateQueue.begin());
+      }
+    }
+
+    if (request.IsValid())
+      ProcessRequest(request);
+
+    if (update.IsValid())
+      ProcessUpdate(update);
+  }
+
   return NULL;
 }
 
-bool CDatabaseWeb::GetFeatures(const CDevice& needle, const std::string& strControllerId,
-                               std::vector<ADDON::JoystickFeature*>& features)
+void CDatabaseWeb::ProcessRequest(const CDevice& needle)
 {
-  CLockObject lock(m_mutex);
-
   static const char* strXml =
     "<device name=\"Keyboard\" provider=\"application\">\n"
         "<controller id=\"game.controller.nes\">\n"
@@ -67,30 +95,47 @@ bool CDatabaseWeb::GetFeatures(const CDevice& needle, const std::string& strCont
   if (!xmlFile.Parse(strXml))
   {
     esyslog("Failed to parse xml response line %d: %s", xmlFile.ErrorRow(), xmlFile.ErrorDesc());
-    return false;
+    return;
   }
 
   TiXmlElement* pRootElement = xmlFile.RootElement();
   if (!pRootElement || pRootElement->NoChildren() || pRootElement->ValueStr() != BUTTONMAP_XML_ELEM_DEVICE)
   {
     esyslog("Can't find root <%s> tag", BUTTONMAP_XML_ELEM_DEVICE);
-    return false;
+    return;
   }
 
   CDeviceXml device;
   if (!device.Deserialize(pRootElement))
-    return false;
+    return;
 
   if (!device.IsValid())
   {
     esyslog("<%s> tag with name=\"%s\" is invalid", BUTTONMAP_XML_ELEM_DEVICE, device.Name().c_str());
-    return false;
+    return;
   }
+
+  CDatabase::MergeDevice(device);
 
   if (m_userXml->MergeDevice(device))
     m_manager->RefreshButtonMaps();
+}
 
-  //CreateThread(false);
+void CDatabaseWeb::ProcessUpdate(const CDevice& needle)
+{
+
+}
+
+bool CDatabaseWeb::GetFeatures(const CDevice& needle, const std::string& strControllerId,
+                               std::vector<ADDON::JoystickFeature*>& features)
+{
+  CLockObject lock(m_mutex);
+
+  if (std::find(m_requestQueue.begin(), m_requestQueue.end(), needle) == m_requestQueue.end())
+  {
+    m_requestQueue.push_back(needle);
+    CreateThread(false);
+  }
 
   return false;
 }
@@ -100,7 +145,12 @@ bool CDatabaseWeb::MapFeature(const CDevice& needle, const std::string& strContr
 {
   CLockObject lock(m_mutex);
 
-  //CreateThread(false);
+  if (CDatabase::MapFeature(needle, strControllerId, feature))
+  {
+    CLockObject lock(m_mutex);
+    //m_updateQueue.push_back(needle);
+    //CreateThread(false);
+  }
 
   return false;
 }

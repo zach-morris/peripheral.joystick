@@ -24,6 +24,8 @@
 #include "threads/mutex.h"
 #include "threads/threads.h"
 
+#include <vector>
+
 namespace JOYSTICK
 {
   class CStorageManager;
@@ -45,9 +47,13 @@ namespace JOYSTICK
     virtual void* Process(void);
 
   private:
+    void ProcessRequest(const CDevice& needle);
+    void ProcessUpdate(const CDevice& needle);
+
     CStorageManager* const m_manager;
     CDatabase* const       m_userXml;
-    std::vector<CDevice>   m_devices;
+    std::vector<CDevice>   m_requestQueue;
+    std::vector<CDevice>   m_updateQueue;
     PLATFORM::CMutex       m_mutex;
   };
 }
