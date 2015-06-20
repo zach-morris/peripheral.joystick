@@ -23,7 +23,10 @@
 
 #include "threads/mutex.h"
 #include "threads/threads.h"
+#include "util/timeutils.h"
 
+#include <string>
+#include <utility>
 #include <vector>
 
 namespace JOYSTICK
@@ -48,13 +51,18 @@ namespace JOYSTICK
 
   private:
     void ProcessRequest(const CDevice& needle);
-    void ProcessUpdate(const CDevice& needle);
+    void ProcessUpdate(const CDevice& needle, const std::string& strControllerId);
+
+    typedef std::string                      ControllerID;
+    typedef std::pair<CDevice, ControllerID> UpdateJob;
 
     CStorageManager* const m_manager;
     CDatabase* const       m_userXml;
     const std::string      m_strUserId;
     std::vector<CDevice>   m_requestQueue;
-    std::vector<CDevice>   m_updateQueue;
+    std::vector<UpdateJob> m_updateQueue;
+    PLATFORM::CTimeout     m_updateTimeout;
+    PLATFORM::CEvent       m_idleEvent;
     PLATFORM::CMutex       m_mutex;
   };
 }

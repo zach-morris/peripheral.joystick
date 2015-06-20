@@ -22,15 +22,20 @@
 #include "JoystickDefinitions.h"
 #include "log/Log.h"
 #include "storage/StorageManager.h"
+#include "storage/web/DeviceQuery.h"
 #include "storage/xml/DeviceXml.h"
 
 #include "tinyxml.h"
 
 #include <assert.h>
 #include <algorithm>
+#include <sstream>
 
 using namespace JOYSTICK;
 using namespace PLATFORM;
+
+// Amount of time to wait before updating button maps
+#define UPDATE_DELAY_SEC  30
 
 CDatabaseWeb::CDatabaseWeb(CStorageManager* manager, CDatabase* userXml, const std::string& strUserId)
   : m_manager(manager),
@@ -46,7 +51,7 @@ void* CDatabaseWeb::Process(void)
   while (true)
   {
     CDevice request;
-    CDevice update;
+    UpdateJob update;
 
     {
       CLockObject lock(m_mutex);
@@ -54,23 +59,31 @@ void* CDatabaseWeb::Process(void)
         break;
 
       if (!m_requestQueue.empty())
-      {
         request = m_requestQueue[0];
-        m_requestQueue.erase(m_requestQueue.begin());
-      }
 
-      if (!m_updateQueue.empty())
-      {
+      if (!m_updateQueue.empty() && m_updateTimeout.TimeLeft() == 0)
         update = m_updateQueue[0];
-        m_updateQueue.erase(m_updateQueue.begin());
-      }
     }
 
     if (request.IsValid())
+    {
       ProcessRequest(request);
+      CLockObject lock(m_mutex);
+      m_requestQueue.erase(m_requestQueue.begin());
+      if (!m_requestQueue.empty())
+        continue;
+    }
 
-    if (update.IsValid())
-      ProcessUpdate(update);
+    if (update.first.IsValid())
+    {
+      ProcessUpdate(update.first, update.second);
+      CLockObject lock(m_mutex);
+      m_updateQueue.erase(m_updateQueue.begin());
+    }
+
+    uint32_t timeLeft = m_updateTimeout.TimeLeft();
+    if (timeLeft > 0)
+      m_idleEvent.Wait(timeLeft);
   }
 
   return NULL;
@@ -122,9 +135,18 @@ void CDatabaseWeb::ProcessRequest(const CDevice& needle)
     m_manager->RefreshButtonMaps();
 }
 
-void CDatabaseWeb::ProcessUpdate(const CDevice& needle)
+void CDatabaseWeb::ProcessUpdate(const CDevice& needle, const std::string& strControllerId)
 {
+  std::vector<CDevice>::const_iterator itDevice = std::find(m_devices.begin(), m_devices.end(), needle);
+  if (itDevice != m_devices.end())
+  {
+    CDeviceQuery device(*itDevice);
 
+    std::stringstream ss;
+    device.GetQueryString(ss, strControllerId);
+    dsyslog("Opening URL: www.test.com/buttonmap?random=%s&%s", m_strUserId.c_str(),
+            ss.str().c_str());
+  }
 }
 
 bool CDatabaseWeb::GetFeatures(const CDevice& needle, const std::string& strControllerId,
@@ -135,6 +157,7 @@ bool CDatabaseWeb::GetFeatures(const CDevice& needle, const std::string& strCont
   if (std::find(m_requestQueue.begin(), m_requestQueue.end(), needle) == m_requestQueue.end())
   {
     m_requestQueue.push_back(needle);
+    m_idleEvent.Signal();
     CreateThread(false);
   }
 
@@ -148,9 +171,15 @@ bool CDatabaseWeb::MapFeature(const CDevice& needle, const std::string& strContr
 
   if (CDatabase::MapFeature(needle, strControllerId, feature))
   {
-    CLockObject lock(m_mutex);
-    //m_updateQueue.push_back(needle);
-    //CreateThread(false);
+    m_updateTimeout.Init(UPDATE_DELAY_SEC * 1000);
+
+    UpdateJob updatePair(needle, strControllerId);
+    if (std::find(m_updateQueue.begin(), m_updateQueue.end(), updatePair) == m_updateQueue.end())
+    {
+      m_updateQueue.push_back(updatePair);
+      m_idleEvent.Signal();
+      CreateThread(false);
+    }
   }
 
   return false;

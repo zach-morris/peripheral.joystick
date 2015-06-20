@@ -35,7 +35,9 @@ set(JOYSTICK_SOURCES src/addon.cpp
                      src/storage/Database.cpp
                      src/storage/Device.cpp
                      src/storage/StorageManager.cpp
+                     src/storage/web/ButtonMapQuery.cpp
                      src/storage/web/DatabaseWeb.cpp
+                     src/storage/web/DeviceQuery.cpp
                      src/storage/xml/ButtonMapXml.cpp
                      src/storage/xml/DatabaseXml.cpp
                      src/storage/xml/DeviceXml.cpp)
