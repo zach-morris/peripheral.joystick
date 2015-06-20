@@ -24,18 +24,16 @@
 #include <map>
 #include <string>
 
-class TiXmlElement;
-
 namespace JOYSTICK
 {
-  class CButtons
+  class CButtonMap
   {
   public:
-    CButtons(void) { }
-    CButtons(const CButtons& other) { *this = other; }
-    ~CButtons(void) { Reset(); }
+    CButtonMap(void) { }
+    CButtonMap(const CButtonMap& other) { *this = other; }
+    virtual ~CButtonMap(void) { Reset(); }
 
-    CButtons& operator=(const CButtons& rhs);
+    CButtonMap& operator=(const CButtonMap& rhs);
 
     void Reset(void);
 
@@ -43,8 +41,11 @@ namespace JOYSTICK
 
     bool MapFeature(const ADDON::JoystickFeature* feature);
 
-    bool Serialize(TiXmlElement* pElement) const;
-    bool Deserialize(const TiXmlElement* pElement);
+  protected:
+    typedef std::string                                    FeatureName;
+    typedef std::map<FeatureName, ADDON::JoystickFeature*> Buttons;
+
+    Buttons m_buttons;
 
   private:
     void UnMap(const ADDON::JoystickFeature* feature);
@@ -57,10 +58,5 @@ namespace JOYSTICK
     static bool ButtonConflicts(const ADDON::DriverButton* button, const ADDON::JoystickFeature* feature);
     static bool HatConflicts(const ADDON::DriverHat* hat, const ADDON::JoystickFeature* feature);
     static bool SemiAxisConflicts(const ADDON::DriverSemiAxis* semiAxis, const ADDON::JoystickFeature* feature);
-
-    typedef std::string                                    FeatureName;
-    typedef std::map<FeatureName, ADDON::JoystickFeature*> Buttons;
-
-    Buttons m_buttons;
   };
 }

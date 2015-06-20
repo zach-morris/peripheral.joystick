@@ -18,7 +18,8 @@
  *
  */
 
-#include "Device.h"
+#include "DeviceXml.h"
+#include "ButtonMapXml.h"
 #include "JoystickDefinitions.h"
 #include "log/Log.h"
 
@@ -28,62 +29,7 @@
 
 using namespace JOYSTICK;
 
-CDevice::CDevice(void)
-  : m_strName(),
-    m_strProvider(),
-    m_vid(0),
-    m_pid(0),
-    m_buttonCount(0),
-    m_hatCount(0),
-    m_axisCount(0)
-{
-}
-
-CDevice::CDevice(const ADDON::Joystick& joystick)
- : m_strName(joystick.Name()),
-   m_strProvider(joystick.Provider()),
-   m_vid(joystick.VendorID()),
-   m_pid(joystick.ProductID()),
-   m_buttonCount(joystick.ButtonCount()),
-   m_hatCount(joystick.HatCount()),
-   m_axisCount(joystick.AxisCount())
-{
-}
-
-bool CDevice::operator==(const CDevice& rhs) const
-{
-  return rhs.m_strName.empty()              ? true : m_strName     == rhs.m_strName   &&
-         rhs.m_strProvider.empty()          ? true : m_strProvider == rhs.m_strProvider &&
-         (rhs.m_vid == 0 && rhs.m_pid == 0) ? true : m_vid == rhs.m_vid && m_pid == rhs.m_pid &&
-         rhs.m_buttonCount == 0 &&
-         rhs.m_hatCount    == 0 &&
-         rhs.m_axisCount   == 0             ? true : m_buttonCount == rhs.m_buttonCount &&
-                                                     m_hatCount    == rhs.m_hatCount    &&
-                                                     m_axisCount   == rhs.m_axisCount;
-
-}
-
-bool CDevice::GetFeatures(const std::string& strControllerId, std::vector<ADDON::JoystickFeature*>& features) const
-{
-  ButtonMaps::const_iterator it = m_buttonMaps.find(strControllerId);
-  if (it != m_buttonMaps.end())
-    return it->second.GetFeatures(features);
-
-  return true;
-}
-
-bool CDevice::MapFeature(const std::string& strControllerId, const ADDON::JoystickFeature* feature)
-{
-  return m_buttonMaps[strControllerId].MapFeature(feature);
-}
-
-bool CDevice::IsValid(void) const
-{
-  return !m_strName.empty()     &&
-         !m_strProvider.empty();
-}
-
-bool CDevice::Serialize(TiXmlElement* pElement) const
+bool CDeviceXml::Serialize(TiXmlElement* pElement) const
 {
   pElement->SetAttribute(BUTTONMAP_XML_ATTR_DEVICE_NAME,     m_strName);
   pElement->SetAttribute(BUTTONMAP_XML_ATTR_DEVICE_PROVIDER, m_strProvider);
@@ -105,7 +51,7 @@ bool CDevice::Serialize(TiXmlElement* pElement) const
   for (ButtonMaps::const_iterator it = m_buttonMaps.begin(); it != m_buttonMaps.end(); ++it)
   {
     const std::string& controllerId = it->first;
-    const CButtons& buttons = it->second;
+    CButtonMapXml buttons(it->second);
 
     TiXmlElement profileElement(BUTTONMAP_XML_ELEM_CONTROLLER);
     TiXmlNode* profileNode = pElement->InsertEndChild(profileElement);
@@ -124,7 +70,7 @@ bool CDevice::Serialize(TiXmlElement* pElement) const
   return true;
 }
 
-bool CDevice::Deserialize(const TiXmlElement* pElement)
+bool CDeviceXml::Deserialize(const TiXmlElement* pElement)
 {
   Reset();
 
@@ -182,7 +128,7 @@ bool CDevice::Deserialize(const TiXmlElement* pElement)
       return false;
     }
 
-    CButtons buttons;
+    CButtonMapXml buttons;
     if (!buttons.Deserialize(pProfile))
       return false;
 

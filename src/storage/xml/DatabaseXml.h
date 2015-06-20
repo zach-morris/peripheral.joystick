@@ -1,6 +1,6 @@
 /*
- *      Copyright (C) 2014 Garrett Brown
- *      Copyright (C) 2014 Team XBMC
+ *      Copyright (C) 2014-2015 Garrett Brown
+ *      Copyright (C) 2014-2015 Team XBMC
  *
  *  This Program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -19,10 +19,7 @@
  */
 #pragma once
 
-#include "Device.h"
-
-#include "kodi/kodi_peripheral_types.h"
-#include "kodi/kodi_peripheral_utils.hpp"
+#include "storage/Database.h"
 
 #include <string>
 #include <vector>
@@ -31,33 +28,29 @@ class TiXmlElement;
 
 namespace JOYSTICK
 {
-  class CDevices
+  class CDatabaseXml : public CDatabase
   {
-  private:
-    CDevices(void) { }
-
   public:
-    static CDevices& Get(void);
+    CDatabaseXml(const std::string& strXmlPath, bool bReadOnly);
 
-    virtual ~CDevices(void) { Deinitialize(); }
+    virtual ~CDatabaseXml(void) { }
 
-    bool Initialize(const PERIPHERAL_PROPERTIES& props);
-    void Deinitialize(void) { }
+    virtual bool GetFeatures(const CDevice& needle, const std::string& strDeviceId,
+                             std::vector<ADDON::JoystickFeature*>& features);
 
-    bool GetFeatures(const ADDON::Joystick& joystick, const std::string& strDeviceId,
-                     std::vector<ADDON::JoystickFeature*>& features) const;
+    virtual bool MapFeature(const CDevice& needle, const std::string& strDeviceId,
+                            const ADDON::JoystickFeature* feature);
 
-    bool MapFeature(const ADDON::Joystick& joystick, const std::string& strDeviceId,
-                    const ADDON::JoystickFeature* feature);
+  private:
+    bool Load(void);
+    bool Save(void) const;
 
     bool Deserialize(const TiXmlElement* pElement);
     bool Serialize(TiXmlElement* pElement) const;
 
-  private:
-    bool Load(const std::string& strPath);
-    bool Save(const std::string& strPath) const;
-
-    std::vector<CDevice> m_devices;
-    std::string          m_strPath;
+    std::string             m_strPath;
+    bool                    m_bReadOnly;
+    bool                    m_bLoadAttempted;
+    bool                    m_bLoaded;
   };
 }

@@ -26,14 +26,19 @@ set(JOYSTICK_SOURCES src/addon.cpp
                      src/api/JoystickInterfaceCallback.cpp
                      src/api/JoystickManager.cpp
                      src/api/PeripheralScanner.cpp
-                     src/devices/Buttons.cpp
-                     src/devices/Device.cpp
-                     src/devices/Devices.cpp
                      src/JoystickTranslator.cpp
                      src/log/Log.cpp
                      src/log/LogAddon.cpp
                      src/log/LogConsole.cpp
-                     src/settings/Settings.cpp)
+                     src/settings/Settings.cpp
+                     src/storage/ButtonMap.cpp
+                     src/storage/Database.cpp
+                     src/storage/Device.cpp
+                     src/storage/StorageManager.cpp
+                     src/storage/web/DatabaseWeb.cpp
+                     src/storage/xml/ButtonMapXml.cpp
+                     src/storage/xml/DatabaseXml.cpp
+                     src/storage/xml/DeviceXml.cpp)
 
 check_include_files("syslog.h" HAVE_SYSLOG)
 

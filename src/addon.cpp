@@ -23,10 +23,10 @@
 #include "api/Joystick.h"
 #include "api/JoystickManager.h"
 #include "api/PeripheralScanner.h"
-#include "devices/Devices.h"
 #include "log/Log.h"
 #include "log/LogAddon.h"
 #include "settings/Settings.h"
+#include "storage/StorageManager.h"
 #include "utils/CommonMacros.h"
 
 #include "kodi/libXBMC_addon.h"
@@ -76,7 +76,7 @@ ADDON_STATUS ADDON_Create(void* callbacks, void* props)
   if (!CJoystickManager::Get().Initialize(SCANNER))
     return ADDON_STATUS_PERMANENT_FAILURE;
 
-  if (!CDevices::Get().Initialize(*peripheralProps))
+  if (!CStorageManager::Get().Initialize(*peripheralProps))
     return ADDON_STATUS_PERMANENT_FAILURE;
 
   return ADDON_GetStatus();
@@ -89,7 +89,7 @@ void ADDON_Stop()
 void ADDON_Destroy()
 {
   CJoystickManager::Get().Deinitialize();
-  CDevices::Get().Deinitialize();
+  CStorageManager::Get().Deinitialize();
 
   CLog::Get().SetType(SYS_LOG_TYPE_CONSOLE);
 
@@ -230,7 +230,7 @@ PERIPHERAL_ERROR GetButtonMap(const JOYSTICK_INFO* joystick, const char* control
     return PERIPHERAL_ERROR_INVALID_PARAMETERS;
 
   std::vector<ADDON::JoystickFeature*> joystickFeatures;
-  if (CDevices::Get().GetFeatures(ADDON::Joystick(*joystick), controller_id,  joystickFeatures))
+  if (CStorageManager::Get().GetFeatures(ADDON::Joystick(*joystick), controller_id,  joystickFeatures))
   {
     *feature_count = joystickFeatures.size();
     ADDON::JoystickFeatures::ToStructs(joystickFeatures, features);
@@ -255,7 +255,7 @@ PERIPHERAL_ERROR MapJoystickFeature(const JOYSTICK_INFO* joystick, const char* c
   if (!joystickFeature)
     return PERIPHERAL_ERROR_INVALID_PARAMETERS;
 
-  bool bSuccess = CDevices::Get().MapFeature(ADDON::Joystick(*joystick), controller_id, joystickFeature);
+  bool bSuccess = CStorageManager::Get().MapFeature(ADDON::Joystick(*joystick), controller_id, joystickFeature);
 
   delete joystickFeature;
 
