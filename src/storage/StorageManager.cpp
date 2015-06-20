@@ -22,6 +22,8 @@
 #include "storage/web/DatabaseWeb.h"
 #include "storage/xml/DatabaseXml.h"
 
+#include "kodi/libKODI_peripheral.h"
+
 #include <cstdio>
 #include <cstdlib>
 #include <ctime>
@@ -124,12 +126,10 @@ bool CStorageManager::MapFeature(const ADDON::Joystick& joystick, const std::str
   return true;
 }
 
-void CStorageManager::RefreshButtonMaps(void)
+void CStorageManager::RefreshButtonMaps(const std::string& strDeviceName /* = "" */)
 {
-  /* TODO
   if (m_peripheralLib)
-    m_peripheralLib->RefreshButtonMaps();
-  */
+    m_peripheralLib->RefreshButtonMaps(strDeviceName);
 }
 
 std::string CStorageManager::LoadRandomNumber(const std::string& strPath)

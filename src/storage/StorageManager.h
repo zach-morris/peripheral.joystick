@@ -53,7 +53,7 @@ namespace JOYSTICK
     bool MapFeature(const ADDON::Joystick& joystick, const std::string& strDeviceId,
                     const ADDON::JoystickFeature* feature);
 
-    void RefreshButtonMaps(void);
+    void RefreshButtonMaps(const std::string& strDeviceName = "");
 
   private:
     static std::string LoadRandomNumber(const std::string& strPath);

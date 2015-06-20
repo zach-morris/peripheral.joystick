@@ -132,7 +132,7 @@ void CDatabaseWeb::ProcessRequest(const CDevice& needle)
   CDatabase::MergeDevice(device);
 
   if (m_userXml->MergeDevice(device))
-    m_manager->RefreshButtonMaps();
+    m_manager->RefreshButtonMaps(device.Name());
 }
 
 void CDatabaseWeb::ProcessUpdate(const CDevice& needle, const std::string& strControllerId)
