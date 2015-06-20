@@ -67,6 +67,23 @@ bool CDatabaseXml::MapFeature(const CDevice& needle, const std::string& strContr
   return false;
 }
 
+bool CDatabaseXml::MergeDevice(const CDevice& device)
+{
+  if (m_bReadOnly)
+    return false;
+
+  if (CDatabase::MergeDevice(device))
+  {
+    m_bLoaded = true;
+
+    Save();
+
+    return true;
+  }
+
+  return false;
+}
+
 bool CDatabaseXml::Load(void)
 {
   if (m_bLoadAttempted)

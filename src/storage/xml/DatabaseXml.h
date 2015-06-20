@@ -41,6 +41,8 @@ namespace JOYSTICK
     virtual bool MapFeature(const CDevice& needle, const std::string& strDeviceId,
                             const ADDON::JoystickFeature* feature);
 
+    virtual bool MergeDevice(const CDevice& device);
+
   private:
     bool Load(void);
     bool Save(void) const;

@@ -49,12 +49,20 @@ bool CDatabase::MapFeature(const CDevice& needle, const std::string& strControll
   return itDevice->MapFeature(strControllerId, feature);
 }
 
-void CDatabase::MergeDevice(const CDevice& device)
+bool CDatabase::MergeDevice(const CDevice& device)
 {
-  std::vector<CDevice>::iterator itDevice = std::find(m_devices.begin(), m_devices.end(), device);
+  bool bModified;
 
+  std::vector<CDevice>::iterator itDevice = std::find(m_devices.begin(), m_devices.end(), device);
   if (itDevice != m_devices.end())
-    itDevice->MergeButtonMaps(device);
+  {
+    bModified = itDevice->MergeButtonMaps(device);
+  }
   else
+  {
     m_devices.push_back(device);
+    bModified = true;
+  }
+
+  return bModified;
 }

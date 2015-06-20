@@ -87,8 +87,8 @@ bool CDatabaseWeb::GetFeatures(const CDevice& needle, const std::string& strCont
     return false;
   }
 
-  m_userXml->MergeDevice(device);
-  m_manager->RefreshButtonMaps();
+  if (m_userXml->MergeDevice(device))
+    m_manager->RefreshButtonMaps();
 
   //CreateThread(false);
 
