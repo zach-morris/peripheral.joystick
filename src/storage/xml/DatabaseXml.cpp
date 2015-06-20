@@ -55,7 +55,12 @@ bool CDatabaseXml::MapFeature(const CDevice& needle, const std::string& strContr
 
   if (CDatabase::MapFeature(needle, strControllerId, feature))
   {
+    // Loading might have failed because button map didn't exist. The database
+    // is no longer empty, so consider it loaded.
+    m_bLoaded = true;
+
     Save();
+
     return true;
   }
 
