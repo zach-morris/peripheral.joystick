@@ -21,6 +21,7 @@
 #include "DatabaseWeb.h"
 #include "JoystickDefinitions.h"
 #include "log/Log.h"
+#include "settings/Settings.h"
 #include "storage/StorageManager.h"
 #include "storage/web/DeviceQuery.h"
 #include "storage/xml/DeviceXml.h"
@@ -33,6 +34,9 @@
 
 using namespace JOYSTICK;
 using namespace PLATFORM;
+
+#define API_QUERY_ACTION   "action"
+#define API_QUERY_USER_ID  "random"
 
 // Amount of time to wait before updating button maps
 #define UPDATE_DELAY_SEC  30
@@ -91,6 +95,16 @@ void* CDatabaseWeb::Process(void)
 
 void CDatabaseWeb::ProcessRequest(const CDevice& needle)
 {
+  std::stringstream strUrl;
+
+  strUrl << CSettings::Get().ButtonMapAPI();
+  strUrl << "?" << API_QUERY_ACTION << "=" << GetAction(API_ACTION_GET);
+  strUrl << "&" << API_QUERY_USER_ID << "=" << m_strUserId;
+  strUrl << "&";
+  CDeviceQuery(needle).GetQueryString(strUrl);
+
+  dsyslog("Opening URL: %s", strUrl.str().c_str());
+
   static const char* strXml =
     "<device name=\"Keyboard\" provider=\"application\">\n"
         "<controller id=\"game.controller.nes\">\n"
@@ -140,12 +154,15 @@ void CDatabaseWeb::ProcessUpdate(const CDevice& needle, const std::string& strCo
   std::vector<CDevice>::const_iterator itDevice = std::find(m_devices.begin(), m_devices.end(), needle);
   if (itDevice != m_devices.end())
   {
-    CDeviceQuery device(*itDevice);
+    std::stringstream strUrl;
 
-    std::stringstream ss;
-    device.GetQueryString(ss, strControllerId);
-    dsyslog("Opening URL: www.test.com/buttonmap?random=%s&%s", m_strUserId.c_str(),
-            ss.str().c_str());
+    strUrl << CSettings::Get().ButtonMapAPI();
+    strUrl << "?" << API_QUERY_ACTION << "=" << GetAction(API_ACTION_PUT);
+    strUrl << "&" << API_QUERY_USER_ID << "=" << m_strUserId;
+    strUrl << "&";
+    CDeviceQuery(*itDevice).GetQueryString(strUrl, strControllerId);
+
+    dsyslog("Opening URL: %s", strUrl.str().c_str());
   }
 }
 
@@ -183,4 +200,16 @@ bool CDatabaseWeb::MapFeature(const CDevice& needle, const std::string& strContr
   }
 
   return false;
+}
+
+const char* CDatabaseWeb::GetAction(API_ACTION action)
+{
+  switch (action)
+  {
+    case API_ACTION_GET: return "get";
+    case API_ACTION_PUT: return "put";
+    default:
+      break;
+  }
+  return "";
 }

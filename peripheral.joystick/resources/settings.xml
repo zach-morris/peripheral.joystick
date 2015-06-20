@@ -2,5 +2,6 @@
 <settings>
 	<category label="5">
 		<setting label="30000" type="slider" id="deadzone" option="float" range="0,.05,1" default="0.2"/>
+		<setting label="30001" type="text" id="api" default="https://kineticthings.com/buttonmap"/>
 	</category>
 </settings>

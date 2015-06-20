@@ -48,8 +48,14 @@ namespace JOYSTICK
      */
     float Deadzone(void) const { return m_deadzone; }
 
+    /*!
+     * The API used for button map queries
+     */
+    const std::string& ButtonMapAPI(void) const { return m_buttonMapApi; }
+
   private:
-    bool m_bInitialized;
-    float m_deadzone;
+    bool        m_bInitialized;
+    float       m_deadzone;
+    std::string m_buttonMapApi;
   };
 }

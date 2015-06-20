@@ -34,6 +34,6 @@ namespace JOYSTICK
 
     virtual ~CDeviceQuery(void) { }
 
-    void GetQueryString(std::stringstream& ss, const std::string& strControllerId) const;
+    void GetQueryString(std::stringstream& ss, const std::string& strControllerId = "") const;
   };
 }

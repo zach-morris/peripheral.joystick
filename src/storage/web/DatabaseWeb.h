@@ -53,6 +53,14 @@ namespace JOYSTICK
     void ProcessRequest(const CDevice& needle);
     void ProcessUpdate(const CDevice& needle, const std::string& strControllerId);
 
+    enum API_ACTION
+    {
+      API_ACTION_GET,
+      API_ACTION_PUT,
+    };
+
+    static const char* GetAction(API_ACTION action);
+
     typedef std::string                      ControllerID;
     typedef std::pair<CDevice, ControllerID> UpdateJob;
 

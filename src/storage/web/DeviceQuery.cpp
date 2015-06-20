@@ -24,7 +24,8 @@
 
 using namespace JOYSTICK;
 
-void CDeviceQuery::GetQueryString(std::stringstream& ss, const std::string& strControllerId) const
+void CDeviceQuery::GetQueryString(std::stringstream& ss,
+                                  const std::string& strControllerId /* = "" */) const
 {
   ss << BUTTONMAP_XML_ATTR_DEVICE_NAME << "=" << m_strName;
   ss << "&" << BUTTONMAP_XML_ATTR_DEVICE_PROVIDER << "=" << m_strProvider;
@@ -44,11 +45,14 @@ void CDeviceQuery::GetQueryString(std::stringstream& ss, const std::string& strC
   if (m_axisCount != 0)
     ss << "&" << BUTTONMAP_XML_ATTR_DEVICE_AXISCOUNT << "=" << m_axisCount;
 
-  ButtonMaps::const_iterator it = m_buttonMaps.find(strControllerId);
-  if (it != m_buttonMaps.end())
+  if (!strControllerId.empty())
   {
-    ss << "&" << BUTTONMAP_XML_ELEM_CONTROLLER << "=" << strControllerId;
-    CButtonMapQuery buttonMap(it->second);
-    buttonMap.GetQueryString(ss);
+    ButtonMaps::const_iterator it = m_buttonMaps.find(strControllerId);
+    if (it != m_buttonMaps.end())
+    {
+      ss << "&" << BUTTONMAP_XML_ELEM_CONTROLLER << "=" << strControllerId;
+      CButtonMapQuery buttonMap(it->second);
+      buttonMap.GetQueryString(ss);
+    }
   }
 }

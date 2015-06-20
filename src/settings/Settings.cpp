@@ -24,6 +24,7 @@
 using namespace JOYSTICK;
 
 #define SETTING_DEADZONE  "deadzone"
+#define SETTING_API       "api"
 
 CSettings::CSettings(void)
   : m_bInitialized(false),
@@ -43,6 +44,11 @@ void CSettings::SetSetting(const std::string& strName, const void* value)
   {
     m_deadzone = *static_cast<const float*>(value);
     dsyslog("Setting \"%s\" set to %f", SETTING_DEADZONE, m_deadzone);
+  }
+  else if (strName == SETTING_API)
+  {
+    m_buttonMapApi = static_cast<const char*>(value);
+    dsyslog("Setting \"%s\" set to %s", SETTING_API, m_buttonMapApi.c_str());
   }
 
   m_bInitialized = true;
