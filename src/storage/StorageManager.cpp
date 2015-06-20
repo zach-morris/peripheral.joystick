@@ -22,10 +22,16 @@
 #include "storage/web/DatabaseWeb.h"
 #include "storage/xml/DatabaseXml.h"
 
+#include <cstdio>
+#include <cstdlib>
+#include <ctime>
+#include <fstream>
+
 using namespace JOYSTICK;
 
 #define ADDON_BUTTONMAP  "/resources/buttonmap.xml"
 #define USER_BUTTONMAP   "/buttonmap.xml"
+#define USER_RANDOM_NO   "/random_number.txt"
 
 // --- RemoveSlashAtEnd --------------------------------------------------------
 
@@ -72,6 +78,8 @@ bool CStorageManager::Initialize(ADDON::CHelper_libKODI_peripheral* peripheralLi
   RemoveSlashAtEnd(strAddonPath);
   RemoveSlashAtEnd(strUserPath);
 
+  std::string strUserId = LoadRandomNumber(strUserPath + USER_RANDOM_NO);
+
   strAddonPath += ADDON_BUTTONMAP;
   strUserPath += USER_BUTTONMAP;
 
@@ -79,7 +87,7 @@ bool CStorageManager::Initialize(ADDON::CHelper_libKODI_peripheral* peripheralLi
   CDatabase* addonXml = new CDatabaseXml(strAddonPath, true);
 
   m_databases.push_back(userXml);
-  m_databases.push_back(new CDatabaseWeb(this, userXml));
+  m_databases.push_back(new CDatabaseWeb(this, userXml, strUserId));
   m_databases.push_back(addonXml);
 
   return true;
@@ -122,4 +130,32 @@ void CStorageManager::RefreshButtonMaps(void)
   if (m_peripheralLib)
     m_peripheralLib->RefreshButtonMaps();
   */
+}
+
+std::string CStorageManager::LoadRandomNumber(const std::string& strPath)
+{
+  std::string randomNo;
+
+  std::ifstream file(strPath.c_str());
+  const bool bExists = (bool)file;
+
+  if (bExists)
+  {
+    file >> randomNo;
+  }
+  else
+  {
+    std::srand(std::time(NULL));
+
+    char randNo[13];
+    std::snprintf(randNo, sizeof(randNo), "%04X%04X%04X", std::rand() % 0x10000,
+                                                          std::rand() % 0x10000,
+                                                          std::rand() % 0x10000);
+    randomNo = randNo;
+
+    std::ofstream ofile(strPath.c_str());
+    ofile << randomNo;
+  }
+
+  return randomNo;
 }

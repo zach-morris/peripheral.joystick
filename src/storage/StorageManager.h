@@ -56,6 +56,8 @@ namespace JOYSTICK
     void RefreshButtonMaps(void);
 
   private:
+    static std::string LoadRandomNumber(const std::string& strPath);
+
     ADDON::CHelper_libKODI_peripheral* m_peripheralLib;
     std::vector<CDatabase*>            m_databases;
   };

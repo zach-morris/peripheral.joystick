@@ -32,9 +32,10 @@
 using namespace JOYSTICK;
 using namespace PLATFORM;
 
-CDatabaseWeb::CDatabaseWeb(CStorageManager* manager, CDatabase* userXml)
+CDatabaseWeb::CDatabaseWeb(CStorageManager* manager, CDatabase* userXml, const std::string& strUserId)
   : m_manager(manager),
-    m_userXml(userXml)
+    m_userXml(userXml),
+    m_strUserId(strUserId)
 {
   assert(m_manager);
   assert(m_userXml);
