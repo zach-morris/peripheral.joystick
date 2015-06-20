@@ -76,3 +76,17 @@ bool CDevice::MapFeature(const std::string& strControllerId, const ADDON::Joysti
 {
   return m_buttonMaps[strControllerId].MapFeature(feature);
 }
+
+void CDevice::MergeButtonMaps(const CDevice& device)
+{
+  const ButtonMaps& buttonMaps = device.m_buttonMaps;
+
+  for (ButtonMaps::const_iterator it = buttonMaps.begin(); it != buttonMaps.end(); ++it)
+  {
+    const ControllerID& strControllerId = it->first;
+
+    ButtonMaps::const_iterator it2 = m_buttonMaps.find(strControllerId);
+    if (it2 == m_buttonMaps.end())
+      m_buttonMaps[strControllerId] = it->second;
+  }
+}

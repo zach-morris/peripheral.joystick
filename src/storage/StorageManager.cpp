@@ -44,14 +44,25 @@ namespace JOYSTICK
 
 // --- CStorageManager ---------------------------------------------------------
 
+CStorageManager::CStorageManager(void)
+  : m_peripheralLib(NULL)
+{
+}
+
 CStorageManager& CStorageManager::Get(void)
 {
   static CStorageManager _instance;
   return _instance;
 }
 
-bool CStorageManager::Initialize(const PERIPHERAL_PROPERTIES& props)
+bool CStorageManager::Initialize(ADDON::CHelper_libKODI_peripheral* peripheralLib,
+                                 const PERIPHERAL_PROPERTIES& props)
 {
+  if (!peripheralLib)
+    return false;
+
+  m_peripheralLib = peripheralLib;
+
   std::string strAddonPath = props.addon_path ? props.addon_path : "";
   std::string strUserPath = props.user_path ? props.user_path : "";
 
@@ -68,7 +79,7 @@ bool CStorageManager::Initialize(const PERIPHERAL_PROPERTIES& props)
   CDatabase* addonXml = new CDatabaseXml(strAddonPath, true);
 
   m_databases.push_back(userXml);
-  m_databases.push_back(new CDatabaseWeb(userXml));
+  m_databases.push_back(new CDatabaseWeb(this, userXml));
   m_databases.push_back(addonXml);
 
   return true;
@@ -105,4 +116,12 @@ bool CStorageManager::MapFeature(const ADDON::Joystick& joystick, const std::str
     bSuccess |= (*it)->MapFeature(needle, strControllerId, feature);
 
   return bSuccess;
+}
+
+void CStorageManager::RefreshButtonMaps(void)
+{
+  /* TODO
+  if (m_peripheralLib)
+    m_peripheralLib->RefreshButtonMaps();
+  */
 }

@@ -49,6 +49,8 @@ namespace JOYSTICK
 
     bool MapFeature(const std::string& strDeviceId, const ADDON::JoystickFeature* feature);
 
+    void MergeButtonMaps(const CDevice& device);
+
   protected:
     std::string  m_strName;
     std::string  m_strProvider;

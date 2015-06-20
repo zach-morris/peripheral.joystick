@@ -27,6 +27,8 @@
 
 class TiXmlElement;
 
+namespace ADDON { class CHelper_libKODI_peripheral; }
+
 namespace JOYSTICK
 {
   class CDatabase;
@@ -34,14 +36,15 @@ namespace JOYSTICK
   class CStorageManager
   {
   private:
-    CStorageManager(void) { }
+    CStorageManager(void);
 
   public:
     static CStorageManager& Get(void);
 
     ~CStorageManager(void) { Deinitialize(); }
 
-    bool Initialize(const PERIPHERAL_PROPERTIES& props);
+    bool Initialize(ADDON::CHelper_libKODI_peripheral* peripheralLib,
+                    const PERIPHERAL_PROPERTIES& props);
     void Deinitialize(void);
 
     bool GetFeatures(const ADDON::Joystick& joystick, const std::string& strDeviceId,
@@ -50,7 +53,10 @@ namespace JOYSTICK
     bool MapFeature(const ADDON::Joystick& joystick, const std::string& strDeviceId,
                     const ADDON::JoystickFeature* feature);
 
+    void RefreshButtonMaps(void);
+
   private:
-    std::vector<CDatabase*> m_databases;
+    ADDON::CHelper_libKODI_peripheral* m_peripheralLib;
+    std::vector<CDatabase*>            m_databases;
   };
 }

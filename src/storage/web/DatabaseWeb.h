@@ -26,10 +26,12 @@
 
 namespace JOYSTICK
 {
+  class CStorageManager;
+
   class CDatabaseWeb : public CDatabase, protected PLATFORM::CThread
   {
   public:
-    CDatabaseWeb(CDatabase* userXml);
+    CDatabaseWeb(CStorageManager* manager, CDatabase* userXml);
 
     virtual ~CDatabaseWeb(void) { }
 
@@ -43,8 +45,9 @@ namespace JOYSTICK
     virtual void* Process(void);
 
   private:
-    CDatabase*           m_userXml;
-    std::vector<CDevice> m_devices;
-    PLATFORM::CMutex     m_mutex;
+    CStorageManager* const m_manager;
+    CDatabase* const       m_userXml;
+    std::vector<CDevice>   m_devices;
+    PLATFORM::CMutex       m_mutex;
   };
 }

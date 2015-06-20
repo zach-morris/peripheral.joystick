@@ -76,7 +76,7 @@ ADDON_STATUS ADDON_Create(void* callbacks, void* props)
   if (!CJoystickManager::Get().Initialize(SCANNER))
     return ADDON_STATUS_PERMANENT_FAILURE;
 
-  if (!CStorageManager::Get().Initialize(*peripheralProps))
+  if (!CStorageManager::Get().Initialize(PERIPHERAL, *peripheralProps))
     return ADDON_STATUS_PERMANENT_FAILURE;
 
   return ADDON_GetStatus();

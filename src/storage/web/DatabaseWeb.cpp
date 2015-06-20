@@ -19,13 +19,24 @@
  */
 
 #include "DatabaseWeb.h"
+#include "JoystickDefinitions.h"
+#include "log/Log.h"
+#include "storage/StorageManager.h"
+#include "storage/xml/DeviceXml.h"
+
+#include "tinyxml.h"
+
+#include <assert.h>
 
 using namespace JOYSTICK;
 using namespace PLATFORM;
 
-CDatabaseWeb::CDatabaseWeb(CDatabase* userXml)
-  : m_userXml(userXml)
+CDatabaseWeb::CDatabaseWeb(CStorageManager* manager, CDatabase* userXml)
+  : m_manager(manager),
+    m_userXml(userXml)
 {
+  assert(m_manager);
+  assert(m_userXml);
 }
 
 void* CDatabaseWeb::Process(void)
@@ -38,11 +49,48 @@ bool CDatabaseWeb::GetFeatures(const CDevice& needle, const std::string& strCont
 {
   CLockObject lock(m_mutex);
 
-  /*
-  std::vector<CDevice>::const_iterator itDevice = std::find(m_devices.begin(), m_devices.end(), needle);
-  if (itDevice != m_devices.end())
-    return itDevice->GetFeatures(strControllerId, features);
-  */
+  static const char* strXml =
+    "<device name=\"Keyboard\" provider=\"application\">\n"
+        "<controller id=\"game.controller.nes\">\n"
+            "<feature name=\"a\" button=\"90\"/>\n"
+            "<feature name=\"b\" button=\"88\"/>\n"
+            "<feature name=\"down\" button=\"129\"/>\n"
+            "<feature name=\"left\" button=\"130\"/>\n"
+            "<feature name=\"right\" button=\"131\"/>\n"
+            "<feature name=\"select\" button=\"92\"/>\n"
+            "<feature name=\"start\" button=\"13\"/>\n"
+            "<feature name=\"up\" button=\"128\"/>\n"
+        "</controller>\n"
+    "</device>\n";
+
+  TiXmlDocument xmlFile;
+  if (!xmlFile.Parse(strXml))
+  {
+    esyslog("Failed to parse xml response line %d: %s", xmlFile.ErrorRow(), xmlFile.ErrorDesc());
+    return false;
+  }
+
+  TiXmlElement* pRootElement = xmlFile.RootElement();
+  if (!pRootElement || pRootElement->NoChildren() || pRootElement->ValueStr() != BUTTONMAP_XML_ELEM_DEVICE)
+  {
+    esyslog("Can't find root <%s> tag", BUTTONMAP_XML_ELEM_DEVICE);
+    return false;
+  }
+
+  CDeviceXml device;
+  if (!device.Deserialize(pRootElement))
+    return false;
+
+  if (!device.IsValid())
+  {
+    esyslog("<%s> tag with name=\"%s\" is invalid", BUTTONMAP_XML_ELEM_DEVICE, device.Name().c_str());
+    return false;
+  }
+
+  m_userXml->MergeDevice(device);
+  m_manager->RefreshButtonMaps();
+
+  //CreateThread(false);
 
   return false;
 }
@@ -52,20 +100,7 @@ bool CDatabaseWeb::MapFeature(const CDevice& needle, const std::string& strContr
 {
   CLockObject lock(m_mutex);
 
-  /*
-  std::vector<CDevice>::iterator itDevice = std::find(m_devices.begin(), m_devices.end(), needle);
-  if (itDevice == m_devices.end())
-  {
-    m_devices.push_back(needle);
-    itDevice = m_devices.end() - 1;
-  }
-
-  if (itDevice->MapFeature(strControllerId, feature))
-  {
-    Save();
-    return true;
-  }
-  */
+  //CreateThread(false);
 
   return false;
 }
