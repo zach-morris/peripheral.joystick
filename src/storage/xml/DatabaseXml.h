@@ -21,6 +21,8 @@
 
 #include "storage/Database.h"
 
+#include "threads/mutex.h"
+
 #include <string>
 #include <vector>
 
@@ -50,9 +52,10 @@ namespace JOYSTICK
     bool Deserialize(const TiXmlElement* pElement);
     bool Serialize(TiXmlElement* pElement) const;
 
-    std::string             m_strPath;
-    bool                    m_bReadOnly;
-    bool                    m_bLoadAttempted;
-    bool                    m_bLoaded;
+    std::string      m_strPath;
+    bool             m_bReadOnly;
+    bool             m_bLoadAttempted;
+    bool             m_bLoaded;
+    PLATFORM::CMutex m_mutex;
   };
 }

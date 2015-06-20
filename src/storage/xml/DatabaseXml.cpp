@@ -29,6 +29,7 @@
 #include <algorithm>
 
 using namespace JOYSTICK;
+using namespace PLATFORM;
 
 CDatabaseXml::CDatabaseXml(const std::string& strXmlPath, bool bReadOnly)
   : m_strPath(strXmlPath),
@@ -41,6 +42,8 @@ CDatabaseXml::CDatabaseXml(const std::string& strXmlPath, bool bReadOnly)
 bool CDatabaseXml::GetFeatures(const CDevice& needle, const std::string& strControllerId,
                                std::vector<ADDON::JoystickFeature*>& features)
 {
+  CLockObject lock(m_mutex);
+
   if (!Load())
     return false;
 
@@ -50,6 +53,8 @@ bool CDatabaseXml::GetFeatures(const CDevice& needle, const std::string& strCont
 bool CDatabaseXml::MapFeature(const CDevice& needle, const std::string& strControllerId,
                               const ADDON::JoystickFeature* feature)
 {
+  CLockObject lock(m_mutex);
+
   if (m_bReadOnly)
     return false;
 
@@ -69,6 +74,8 @@ bool CDatabaseXml::MapFeature(const CDevice& needle, const std::string& strContr
 
 bool CDatabaseXml::MergeDevice(const CDevice& device)
 {
+  CLockObject lock(m_mutex);
+
   if (m_bReadOnly)
     return false;
 
