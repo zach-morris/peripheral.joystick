@@ -179,7 +179,7 @@ void CDatabaseWeb::ProcessUpdate(const CDevice& needle, const std::string& strCo
     strUrl << "&";
     CDeviceQuery(*itDevice).GetQueryString(strUrl, strControllerId);
 
-    dsyslog("Opening URL: %s", strUrl.str().c_str());
+    dsyslog("Opening %s", strUrl.str().c_str());
 
     std::string strResponse;
 
