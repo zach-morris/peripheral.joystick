@@ -146,6 +146,8 @@ bool CDatabaseXml::Save(void) const
   if (!Serialize(devicesElem))
     return false;
 
+  dsyslog("Saving buttonmap: %s", m_strPath.c_str());
+
   return xmlFile.SaveFile(m_strPath);
 }
 
