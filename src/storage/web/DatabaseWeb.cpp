@@ -38,17 +38,20 @@
 using namespace JOYSTICK;
 using namespace PLATFORM;
 
-#define API_QUERY_ACTION     "action"
-#define API_QUERY_USER_ID    "random"
+#define API_QUERY_ACTION        "action"
+#define API_QUERY_USER_ID       "random"
 
 // Amount of time to wait before updating button maps
-#define UPDATE_DELAY_SEC     10
+#define UPDATE_DELAY_SEC        10
 
 // Read at most this many bytes per API call to retrieve button maps
-#define MAX_BUTTONMAP_BYTES  (10 * 1024 * 1024)  // 10 MB
+#define MAX_BUTTONMAP_BYTES     (10 * 1024 * 1024)  // 10 MB
 
 // Read at most this many bytes per API call to update button map
-#define MAX_RESPONSE_BYTES   256 // Size of buffer for each line being logged
+#define MAX_RESPONSE_BYTES      256 // Size of buffer for each line being logged
+
+// Delay for this long when an API call fails
+#define API_FAILURE_DELAY_MINS  30
 
 CDatabaseWeb::CDatabaseWeb(CStorageManager* manager, CDatabase* userXml, const std::string& strUserId)
   : m_manager(manager),
@@ -61,10 +64,10 @@ CDatabaseWeb::CDatabaseWeb(CStorageManager* manager, CDatabase* userXml, const s
 
 void* CDatabaseWeb::Process(void)
 {
-  while (true)
+  while (!IsStopped() && IsEnabled())
   {
-    CDevice request;
-    UpdateJob update;
+    CDevice requestDevice;
+    UpdateButtonMapJob updateJob;
 
     {
       CLockObject lock(m_mutex);
@@ -72,24 +75,39 @@ void* CDatabaseWeb::Process(void)
         break;
 
       if (!m_requestQueue.empty())
-        request = m_requestQueue[0];
+        requestDevice = m_requestQueue[0];
 
       if (!m_updateQueue.empty() && m_updateTimeout.TimeLeft() == 0)
-        update = m_updateQueue[0];
+        updateJob = m_updateQueue[0];
     }
 
-    if (request.IsValid())
+    if (requestDevice.IsValid())
     {
-      ProcessRequest(request);
+      if (!ProcessRequest(requestDevice))
+      {
+        // Delay until next API call is allowed
+        const unsigned int delayMs = API_FAILURE_DELAY_MINS * 60 * 1000;
+        Sleep(delayMs);
+      }
+
       CLockObject lock(m_mutex);
       m_requestQueue.erase(m_requestQueue.begin());
-      if (!m_requestQueue.empty())
-        continue;
+
+      continue;
     }
 
-    if (update.first.IsValid())
+    const CDevice&      updateJobDevice       = updateJob.first;
+    const ControllerID& updateJobControllerId = updateJob.second;
+
+    if (updateJobDevice.IsValid())
     {
-      ProcessUpdate(update.first, update.second);
+      if (!ProcessUpdate(updateJobDevice, updateJobControllerId))
+      {
+        // Delay until next API call is allowed
+        const unsigned int delayMs = API_FAILURE_DELAY_MINS * 60 * 1000;
+        Sleep(delayMs);
+      }
+
       CLockObject lock(m_mutex);
       m_updateQueue.erase(m_updateQueue.begin());
     }
@@ -255,7 +273,7 @@ bool CDatabaseWeb::MapFeature(const CDevice& needle, const std::string& strContr
   {
     m_updateTimeout.Init(UPDATE_DELAY_SEC * 1000);
 
-    const UpdateJob updatePair(needle, strControllerId);
+    const UpdateButtonMapJob updatePair(needle, strControllerId);
     if (std::find(m_updateQueue.begin(), m_updateQueue.end(), updatePair) == m_updateQueue.end())
     {
       m_updateQueue.push_back(updatePair);

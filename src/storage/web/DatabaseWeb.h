@@ -62,15 +62,16 @@ namespace JOYSTICK
     static const char* GetAction(API_ACTION action);
 
     typedef std::string                      ControllerID;
-    typedef std::pair<CDevice, ControllerID> UpdateJob;
+    typedef std::pair<CDevice, ControllerID> UpdateButtonMapJob;
 
-    CStorageManager* const m_manager;
-    CDatabase* const       m_userXml;
-    const std::string      m_strUserId;
-    std::vector<CDevice>   m_requestQueue;
-    std::vector<UpdateJob> m_updateQueue;
-    PLATFORM::CTimeout     m_updateTimeout;
-    PLATFORM::CEvent       m_idleEvent;
-    PLATFORM::CMutex       m_mutex;
+    CStorageManager* const          m_manager;
+    CDatabase* const                m_userXml;
+    const std::string               m_strUserId;
+
+    std::vector<CDevice>            m_requestQueue;
+    std::vector<UpdateButtonMapJob> m_updateQueue;
+    PLATFORM::CTimeout              m_updateTimeout;
+    PLATFORM::CEvent                m_idleEvent;
+    PLATFORM::CMutex                m_mutex;
   };
 }
