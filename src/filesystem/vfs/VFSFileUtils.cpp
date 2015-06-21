@@ -18,14 +18,9 @@
  *
  */
 
-// This must be #defined before libXBMC_addon.h to fix compile on OS X
+// This must be #defined before libXBMC_addon.h to fix compile
 #include <sys/stat.h>
-#if defined(TARGET_OSX)
-  #define stat64 stat
-  #define __stat64 stat
-#elif !defined(TARGET_WINDOWS)
-  #define __stat64 stat64
-#endif
+#define __stat64 stat64
 
 #include "VFSFileUtils.h"
 
@@ -53,9 +48,15 @@ bool CVFSFileUtils::Stat(const std::string& url, STAT_STRUCTURE& buffer)
   {
     buffer.deviceId         = frontendBuffer.st_dev;
     buffer.size             = frontendBuffer.st_size;
+#if defined(__APPLE__)
+    buffer.accessTime       = frontendBuffer.st_atimespec;
+    buffer.modificationTime = frontendBuffer.st_mtimespec;
+    buffer.statusTime       = frontendBuffer.st_ctimespec;
+#else
     buffer.accessTime       = frontendBuffer.st_atim;
     buffer.modificationTime = frontendBuffer.st_mtim;
     buffer.statusTime       = frontendBuffer.st_ctim;
+#endif
     buffer.isDirectory      = S_ISDIR(frontendBuffer.st_mode);
     buffer.isSymLink        = S_ISLNK(frontendBuffer.st_mode);
     buffer.isHidden         = false; // TODO
