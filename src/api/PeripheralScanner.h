@@ -31,6 +31,9 @@ namespace JOYSTICK
 
     virtual ~CPeripheralScanner(void) { }
 
+    /*!
+     * \brief Trigger a scan through the Peripheral API
+     */
     virtual void TriggerScan(void);
 
   private:

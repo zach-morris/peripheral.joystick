@@ -34,6 +34,9 @@ namespace JOYSTICK
   public:
     virtual ~IScannerCallback(void) { }
 
+    /*!
+     * \brief Trigger a scan for joysticks
+     */
     virtual void TriggerScan(void) = 0;
   };
 
@@ -46,18 +49,37 @@ namespace JOYSTICK
     static CJoystickManager& Get(void);
     virtual ~CJoystickManager(void) { Deinitialize(); }
 
+    /*!
+     * \brief Initialize the joystick manager
+     *
+     * \param scanner The callback used to trigger a scan
+     */
     bool Initialize(IScannerCallback* scanner);
+
+    /*!
+     * \brief Deinitialize the joystick manager
+     */
     void Deinitialize(void);
 
+    /*!
+     * \brief Scan the available interfaces for joysticks
+     *
+     * \param joysticks The discovered joysticks; must be deallocated
+     *
+     * \return true if the scan succeeded (even if there are no joysticks)
+     */
     bool PerformJoystickScan(std::vector<CJoystick*>& joysticks);
 
     CJoystick* GetJoystick(unsigned int index) const;
 
     /*!
-    * @brief Get all events that have occurred since the last call to GetEvents()
+    * \brief Get all events that have occurred since the last call to GetEvents()
     */
     bool GetEvents(std::vector<ADDON::PeripheralEvent>& events);
 
+    /*!
+     * \brief Trigger a scan for joysticks through the callback
+     */
     void TriggerScan(void);
 
   private:

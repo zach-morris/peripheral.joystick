@@ -76,9 +76,9 @@ int64_t CVFSFile::Seek(int64_t filePosition, SEEK_FLAG whence /* = SEEK_SET */)
   return m_file.Seek(filePosition, static_cast<unsigned int>(whence));
 }
 
-int64_t CVFSFile::Truncate(uint64_t size)
+bool CVFSFile::Truncate(uint64_t size)
 {
-  return m_file.Truncate(size);
+  return m_file.Truncate(size) == size;
 }
 
 int64_t CVFSFile::GetPosition(void)

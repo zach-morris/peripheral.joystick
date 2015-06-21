@@ -40,28 +40,11 @@ void CFileUtils::Deinitialize(void)
   m_frontend = NULL;
 }
 
-bool CFileUtils::Exists(const std::string& url)
-{
-  // Create file utils
-  FileUtilsPtr fileUtils = CreateFileUtils(url);
-  if (fileUtils)
-    return fileUtils->Exists(url);
-
-  return false;
-}
-
-bool CFileUtils::Stat(const std::string& url, STAT_STRUCTURE& buffer)
-{
-  // Create file utils
-  FileUtilsPtr fileUtils = CreateFileUtils(url);
-  if (fileUtils)
-    return fileUtils->Stat(url, buffer);
-
-  return false;
-}
+// --- File operations ---------------------------------------------------------
 
 bool CFileUtils::ExistsOnVFS(const std::string& url)
 {
+  // Create file
   FilePtr file = CreateFile(url);
   if (file.get() != NULL)
     return true;
@@ -87,6 +70,28 @@ FilePtr CFileUtils::OpenFileForWrite(const std::string& url, bool bOverWrite /* 
     return file;
 
   return FilePtr();
+}
+
+// --- File utility operations -------------------------------------------------
+
+bool CFileUtils::Exists(const std::string& url)
+{
+  // Create file utils
+  FileUtilsPtr fileUtils = CreateFileUtils(url);
+  if (fileUtils)
+    return fileUtils->Exists(url);
+
+  return false;
+}
+
+bool CFileUtils::Stat(const std::string& url, STAT_STRUCTURE& buffer)
+{
+  // Create file utils
+  FileUtilsPtr fileUtils = CreateFileUtils(url);
+  if (fileUtils)
+    return fileUtils->Stat(url, buffer);
+
+  return false;
 }
 
 bool CFileUtils::Rename(const std::string& url, const std::string& newUrl)

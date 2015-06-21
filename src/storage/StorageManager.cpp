@@ -121,6 +121,7 @@ bool CStorageManager::MapFeature(const ADDON::Joystick& joystick, const std::str
 
 void CStorageManager::RefreshButtonMaps(const std::string& strDeviceName /* = "" */)
 {
+  // Request the frontend to refresh its button maps
   if (m_peripheralLib)
     m_peripheralLib->RefreshButtonMaps(strDeviceName);
 }

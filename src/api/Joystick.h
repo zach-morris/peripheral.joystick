@@ -37,6 +37,9 @@ namespace JOYSTICK
      */
     IJoystickInterface* API(void) const { return m_api; }
 
+    /*!
+     * Compare joystick properties
+     */
     virtual bool Equals(const CJoystick* rhs) const;
 
     /*!

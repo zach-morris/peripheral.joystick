@@ -24,6 +24,11 @@
 
 namespace JOYSTICK
 {
+  /*!
+   * Protect several methods of CJoystick with a mutex for thread safety.
+   *
+   * For joysticks with events that arrive asynchronously.
+   */
   class CJoystickAsync : public CJoystick
   {
   public:

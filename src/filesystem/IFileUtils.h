@@ -42,6 +42,9 @@ namespace JOYSTICK
   public:
     virtual ~IFileUtils(void) { }
 
+    /*!
+     * \brief Check if the url exists
+     */
     virtual bool Exists(const std::string& url) = 0;
 
     virtual bool Stat(const std::string& url, STAT_STRUCTURE& buffer) = 0;

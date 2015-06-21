@@ -43,7 +43,7 @@ namespace JOYSTICK
     virtual int64_t Write(uint64_t byteCount, const std::string& buffer);
     virtual void Flush(void);
     virtual int64_t Seek(int64_t filePosition, SEEK_FLAG whence = SEEK_FLAG_SET);
-    virtual int64_t Truncate(uint64_t size);
+    virtual bool Truncate(uint64_t size);
     virtual int64_t GetPosition(void);
     virtual int64_t GetLength(void);
     virtual void Close(void);

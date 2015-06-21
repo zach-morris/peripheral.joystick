@@ -43,7 +43,8 @@ namespace JOYSTICK
   public:
     virtual ~ILog(void) { }
 
-    virtual void         Log(SYS_LOG_LEVEL level, const char* logline) = 0;
+    virtual void Log(SYS_LOG_LEVEL level, const char* logline) = 0;
+
     virtual SYS_LOG_TYPE Type(void) const = 0;
   };
 }

@@ -23,11 +23,19 @@
 
 namespace JOYSTICK
 {
+  /*!
+   * \brief Generic implementation of ReadFile() through other IFile methods
+   *
+   * NOTE: Derived class must implement IFile::Read()
+   */
   class CReadableFile : public IFile
   {
   public:
     virtual ~CReadableFile(void) { }
 
+    /*!
+     * \brief Read an entire file in chunks through calls to IFile::Read()
+     */
     virtual int64_t ReadFile(std::string& buffer, const uint64_t maxBytes = 0);
   };
 }

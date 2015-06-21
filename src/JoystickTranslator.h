@@ -29,6 +29,7 @@ namespace JOYSTICK
   {
   public:
     static JOYSTICK_DRIVER_HAT_DIRECTION TranslateHatDir(const std::string& hatDir);
+
     static const char* TranslateHatDir(JOYSTICK_DRIVER_HAT_DIRECTION hatDir);
   };
 }
