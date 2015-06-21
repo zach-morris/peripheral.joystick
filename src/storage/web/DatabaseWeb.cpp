@@ -164,6 +164,10 @@ void CDatabaseWeb::ProcessRequest(const CDevice& needle)
     if (m_userXml->MergeDevice(device))
       m_manager->RefreshButtonMaps(device.Name());
   }
+  else
+  {
+    esyslog("Failed to retrieve button maps over API");
+  }
 }
 
 void CDatabaseWeb::ProcessUpdate(const CDevice& needle, const std::string& strControllerId)
