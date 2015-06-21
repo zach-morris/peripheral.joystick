@@ -42,7 +42,7 @@ using namespace PLATFORM;
 #define API_QUERY_USER_ID    "random"
 
 // Amount of time to wait before updating button maps
-#define UPDATE_DELAY_SEC     30
+#define UPDATE_DELAY_SEC     10
 
 // Read at most this many bytes per API call to retrieve button maps
 #define MAX_BUTTONMAP_BYTES  (10 * 1024 * 1024)  // 10 MB
