@@ -69,7 +69,7 @@ namespace JOYSTICK
 
     virtual int64_t ReadLine(std::string& buffer) = 0;
 
-    virtual int64_t ReadFile(std::string& buffer, const uint32_t maxBytes = 0) = 0;
+    virtual int64_t ReadFile(std::string& buffer, const uint64_t maxBytes = 0) = 0;
 
     virtual int64_t Write(uint64_t byteCount, const std::string& buffer) = 0;
 

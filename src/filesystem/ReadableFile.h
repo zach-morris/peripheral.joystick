@@ -28,6 +28,6 @@ namespace JOYSTICK
   public:
     virtual ~CReadableFile(void) { }
 
-    virtual int64_t ReadFile(std::string& buffer, const uint32_t maxBytes = 0);
+    virtual int64_t ReadFile(std::string& buffer, const uint64_t maxBytes = 0);
   };
 }

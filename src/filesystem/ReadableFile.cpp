@@ -20,9 +20,45 @@
 
 #include "ReadableFile.h"
 
+#include <algorithm>
+
 using namespace JOYSTICK;
 
-int64_t CReadableFile::ReadFile(std::string& buffer, const uint32_t maxBytes /* = 0 */)
+// Size of buffer used for each Read() call
+#define READ_CHUNK_SIZE  (100 * 1024) // 100 KB
+
+int64_t CReadableFile::ReadFile(std::string& buffer, const uint64_t maxBytes /* = 0 */)
 {
-  return -1; // TODO
+  std::string chunkBuffer;
+  chunkBuffer.reserve(READ_CHUNK_SIZE);
+
+  uint32_t bytesRead = 0;
+  int64_t bytesToRead = maxBytes;
+
+  const bool bReadForever = (maxBytes == 0);
+  while (bReadForever || bytesToRead > 0)
+  {
+    // Read a chunk of data via Read() API call
+    unsigned int chunkReadSize = bReadForever ? READ_CHUNK_SIZE : std::min((int64_t)READ_CHUNK_SIZE, bytesToRead);
+
+    int64_t chunkBytesRead = Read(chunkReadSize, chunkBuffer);
+
+    if (chunkBytesRead < 0)
+      return -1;
+
+    if (chunkBytesRead == 0)
+      break;
+
+    bytesRead += chunkBytesRead;
+
+    if (!bReadForever)
+      bytesToRead -= chunkBytesRead;
+
+    buffer.append(chunkBuffer);
+
+    if (chunkBytesRead != chunkReadSize)
+      break;
+  }
+
+  return bytesRead;
 }
