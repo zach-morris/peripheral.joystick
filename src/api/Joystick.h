@@ -24,18 +24,18 @@
 
 namespace JOYSTICK
 {
-  class CJoystickInterface;
+  class IJoystickInterface;
 
   class CJoystick : public ADDON::Joystick
   {
   public:
-    CJoystick(CJoystickInterface* api);
+    CJoystick(IJoystickInterface* api);
     virtual ~CJoystick(void) { }
 
     /*!
      * The parent API that this joystick was discovered on
      */
-    CJoystickInterface* API(void) const { return m_api; }
+    IJoystickInterface* API(void) const { return m_api; }
 
     virtual bool Equals(const CJoystick* rhs) const;
 
@@ -101,7 +101,7 @@ namespace JOYSTICK
       std::vector<JOYSTICK_STATE_AXIS>   axes;
     };
 
-    CJoystickInterface* const m_api;
+    IJoystickInterface* const m_api;
     JoystickState             m_state;
     JoystickState             m_stateBuffer;
     int64_t                   m_discoverTimeMs;

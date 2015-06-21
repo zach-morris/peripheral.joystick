@@ -43,11 +43,9 @@ namespace JOYSTICK
     HWND* handle;
   };
 }
-
-CJoystickInterfaceDirectInput::CJoystickInterfaceDirectInput(void)
- : CJoystickInterfaceCallback(INTERFACE_DIRECTINPUT),
-   m_pDirectInput(NULL)
+const char* CJoystickInterfaceDirectInput::Name(void) const
 {
+  return INTERFACE_DIRECTINPUT;
 }
 
 bool CJoystickInterfaceDirectInput::Initialize(void)

@@ -34,11 +34,11 @@ namespace JOYSTICK
     CJoystickInterfaceDirectInput(void);
     virtual ~CJoystickInterfaceDirectInput(void) { Deinitialize(); }
 
+    // implementation of IJoystickInterface
+    virtual const char* Name(void) const;
     virtual bool Initialize(void);
     virtual void Deinitialize(void);
-
-  protected:
-    virtual bool PerformJoystickScan(std::vector<CJoystick*>& joysticks);
+    virtual bool ScanForJoysticks(std::vector<CJoystick*>& joysticks);
 
   private:
     static BOOL CALLBACK EnumJoysticksCallback(const DIDEVICEINSTANCE *pdidInstance, VOID *pContext);

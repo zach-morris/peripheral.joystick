@@ -19,8 +19,8 @@
  */
 
 #include "JoystickManager.h"
+#include "IJoystickInterface.h"
 #include "Joystick.h"
-#include "JoystickInterface.h"
 
 #if defined(HAVE_DIRECT_INPUT)
   #include "directinput/JoystickInterfaceDirectInput.h"
@@ -121,7 +121,7 @@ bool CJoystickManager::Initialize(IScannerCallback* scanner)
   {
     if (!m_interfaces.at(i)->Initialize())
     {
-      esyslog("Failed to initialize interface %s", m_interfaces.at(i)->Name().c_str());
+      esyslog("Failed to initialize interface %s", m_interfaces.at(i)->Name());
       delete m_interfaces.at(i);
       m_interfaces.erase(m_interfaces.begin() + i);
     }
@@ -146,7 +146,7 @@ bool CJoystickManager::PerformJoystickScan(std::vector<CJoystick*>& joysticks)
 
   // Scan for joysticks
   std::vector<CJoystick*> scanResults;
-  for (std::vector<CJoystickInterface*>::iterator itInterface = m_interfaces.begin(); itInterface != m_interfaces.end(); ++itInterface)
+  for (std::vector<IJoystickInterface*>::iterator itInterface = m_interfaces.begin(); itInterface != m_interfaces.end(); ++itInterface)
     (*itInterface)->ScanForJoysticks(scanResults);
 
   // Unregister removed joysticks
@@ -171,7 +171,7 @@ bool CJoystickManager::PerformJoystickScan(std::vector<CJoystick*>& joysticks)
         (*itJoystick)->SetIndex(m_nextJoystickIndex++);
 
         isyslog("Initialized joystick %u: \"%s\" (%s), axes: %u, hats: %u, buttons: %u",
-                (*itJoystick)->Index(), (*itJoystick)->Name().c_str(), (*itJoystick)->API()->Name().c_str(),
+                (*itJoystick)->Index(), (*itJoystick)->Name().c_str(), (*itJoystick)->API()->Name(),
                 (*itJoystick)->AxisCount(), (*itJoystick)->HatCount(), (*itJoystick)->ButtonCount());
 
         m_joysticks.push_back(*itJoystick);

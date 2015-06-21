@@ -22,7 +22,7 @@
 using namespace JOYSTICK;
 using namespace PLATFORM;
 
-CJoystickAsync::CJoystickAsync(CJoystickInterface* api)
+CJoystickAsync::CJoystickAsync(IJoystickInterface* api)
   : CJoystick(api)
 {
 }

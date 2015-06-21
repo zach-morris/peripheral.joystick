@@ -22,7 +22,6 @@ include_directories(${INCLUDES}
 set(JOYSTICK_SOURCES src/addon.cpp
                      src/api/Joystick.cpp
                      src/api/JoystickAsync.cpp
-                     src/api/JoystickInterface.cpp
                      src/api/JoystickInterfaceCallback.cpp
                      src/api/JoystickManager.cpp
                      src/api/PeripheralScanner.cpp

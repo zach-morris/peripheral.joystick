@@ -65,9 +65,13 @@ static CFMutableDictionaryRef MatchingDictionary(UInt32 inUsagePage, UInt32 inUs
 // --- CJoystickInterfaceCocoa -------------------------------------------------
 
 CJoystickInterfaceCocoa::CJoystickInterfaceCocoa(void)
-  : CJoystickInterface(INTERFACE_COCOA),
-    m_manager(NULL)
+  : m_manager(NULL)
 {
+}
+
+const char* CJoystickInterfaceCocoa::Name(void) const
+{
+  return INTERFACE_COCOA;
 }
 
 bool CJoystickInterfaceCocoa::Initialize(void)
@@ -134,7 +138,7 @@ void CJoystickInterfaceCocoa::Deinitialize(void)
   }
 }
 
-bool CJoystickInterfaceCocoa::PerformJoystickScan(std::vector<CJoystick*>& joysticks)
+bool CJoystickInterfaceCocoa::ScanForJoysticks(std::vector<CJoystick*>& joysticks)
 {
   CLockObject lock(m_deviceDiscoveryMutex);
 

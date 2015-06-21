@@ -27,7 +27,7 @@ namespace JOYSTICK
   class CJoystickAsync : public CJoystick
   {
   public:
-    CJoystickAsync(CJoystickInterface* api);
+    CJoystickAsync(IJoystickInterface* api);
     virtual ~CJoystickAsync(void) { }
 
     virtual bool GetEvents(std::vector<ADDON::PeripheralEvent>& events);

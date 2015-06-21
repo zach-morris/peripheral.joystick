@@ -17,8 +17,8 @@
  *  <http://www.gnu.org/licenses/>.
  */
 
+#include "IJoystickInterface.h"
 #include "Joystick.h"
-#include "JoystickInterface.h"
 #include "log/Log.h"
 #include "settings/Settings.h"
 #include "utils/CommonMacros.h"
@@ -29,7 +29,7 @@ using namespace JOYSTICK;
 
 #define ANALOG_EPSILON  0.0001f
 
-CJoystick::CJoystick(CJoystickInterface* api)
+CJoystick::CJoystick(IJoystickInterface* api)
  : m_api(api),
    m_discoverTimeMs(PLATFORM::GetTimeMs()),
    m_firstEventTimeMs(-1),

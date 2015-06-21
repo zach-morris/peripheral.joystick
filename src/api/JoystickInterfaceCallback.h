@@ -18,16 +18,16 @@
  */
 #pragma once
 
-#include "JoystickInterface.h"
+#include "IJoystickInterface.h"
 
 #include <vector>
 
 namespace JOYSTICK
 {
-  class CJoystickInterfaceCallback : public CJoystickInterface
+  class CJoystickInterfaceCallback : public IJoystickInterface
   {
   public:
-    CJoystickInterfaceCallback(const std::string& strName);
+    CJoystickInterfaceCallback(void) { }
     virtual ~CJoystickInterfaceCallback(void) { ClearScanResults(); }
 
   protected:

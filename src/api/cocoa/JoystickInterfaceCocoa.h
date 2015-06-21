@@ -19,7 +19,7 @@
  */
 #pragma once
 
-#include "api/JoystickInterface.h"
+#include "api/IJoystickInterface.h"
 
 #include "threads/mutex.h"
 
@@ -50,14 +50,17 @@ namespace JOYSTICK
     virtual void InputValueChanged(IOHIDValueRef value) = 0;
   };
 
-  class CJoystickInterfaceCocoa : public CJoystickInterface
+  class CJoystickInterfaceCocoa : public IJoystickInterface
   {
   public:
     CJoystickInterfaceCocoa(void);
     virtual ~CJoystickInterfaceCocoa(void) { Deinitialize(); }
 
+    // implementation of IJoystickInterface
+    virtual const char* Name(void) const;
     virtual bool Initialize(void);
     virtual void Deinitialize(void);
+    virtual bool ScanForJoysticks(std::vector<CJoystick*>& joysticks);
 
     void RegisterInputCallback(ICocoaInputCallback* callback, IOHIDDeviceRef device);
     void UnregisterInputCallback(ICocoaInputCallback* callback);
@@ -72,9 +75,6 @@ namespace JOYSTICK
                                       void* sender, IOHIDDeviceRef device);
     static void InputValueChangedCallback(void* data, IOReturn result,
                                           void* sender, IOHIDValueRef newValue);
-
-  protected:
-    virtual bool PerformJoystickScan(std::vector<CJoystick*>& joysticks);
 
   private:
     IOHIDManagerRef m_manager;

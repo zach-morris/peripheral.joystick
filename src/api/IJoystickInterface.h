@@ -18,30 +18,39 @@
  */
 #pragma once
 
-#include <string>
 #include <vector>
 
 namespace JOYSTICK
 {
   class CJoystick;
 
-  class CJoystickInterface
+  class IJoystickInterface
   {
   public:
-    CJoystickInterface(const std::string& strName);
-    virtual ~CJoystickInterface(void) { }
+    virtual ~IJoystickInterface(void) { }
 
+    /*!
+     * \brief Get a short name for the interface
+     */
+    virtual const char* Name(void) const = 0;
+
+    /*!
+     * \brief Initialize the interface
+     */
     virtual bool Initialize(void) { return true; }
+
+    /*!
+     * \brief Deinitialize the interface
+     */
     virtual void Deinitialize(void) { }
 
-    bool ScanForJoysticks(std::vector<CJoystick*>& results);
-
-    const std::string& Name(void) const { return m_strName; }
-
-  protected:
-    virtual bool PerformJoystickScan(std::vector<CJoystick*>& joysticks) = 0;
-
-  private:
-    const std::string m_strName;
+    /*!
+     * \brief Scan the interface for joysticks
+     *
+     * \param results (out) the discovered joysticks; must be deallocated
+     *
+     * \return true if the scan completed successfully, even if no results are found
+     */
+    virtual bool ScanForJoysticks(std::vector<CJoystick*>& joysticks) = 0;
   };
 }

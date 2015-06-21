@@ -22,11 +22,6 @@
 
 using namespace JOYSTICK;
 
-CJoystickInterfaceCallback::CJoystickInterfaceCallback(const std::string& strName)
-  : CJoystickInterface(strName)
-{
-}
-
 void CJoystickInterfaceCallback::AddScanResult(CJoystick* joystick)
 {
   m_scanResults.push_back(joystick);

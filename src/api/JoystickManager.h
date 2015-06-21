@@ -27,7 +27,7 @@
 namespace JOYSTICK
 {
   class CJoystick;
-  class CJoystickInterface;
+  class IJoystickInterface;
 
   class IScannerCallback
   {
@@ -62,7 +62,7 @@ namespace JOYSTICK
 
   private:
     IScannerCallback*                m_scanner;
-    std::vector<CJoystickInterface*> m_interfaces;
+    std::vector<IJoystickInterface*> m_interfaces;
     std::vector<CJoystick*>          m_joysticks;
     unsigned int                     m_nextJoystickIndex;
     mutable PLATFORM::CMutex         m_joystickMutex;

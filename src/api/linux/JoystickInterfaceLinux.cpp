@@ -36,12 +36,12 @@
 
 using namespace JOYSTICK;
 
-CJoystickInterfaceLinux::CJoystickInterfaceLinux(void)
- : CJoystickInterface(INTERFACE_LINUX)
+const char* CJoystickInterfaceLinux::Name(void) const
 {
+  return INTERFACE_LINUX;
 }
 
-bool CJoystickInterfaceLinux::PerformJoystickScan(std::vector<CJoystick*>& joysticks)
+bool CJoystickInterfaceLinux::ScanForJoysticks(std::vector<CJoystick*>& joysticks)
 {
   // TODO: Use udev to grab device names instead of reading /dev/input/js*
   std::string inputDir("/dev/input");

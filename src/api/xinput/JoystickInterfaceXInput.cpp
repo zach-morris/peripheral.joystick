@@ -30,9 +30,9 @@ using namespace JOYSTICK;
 
 #define MAX_JOYSTICKS 4
 
-CJoystickInterfaceXInput::CJoystickInterfaceXInput(void)
- : CJoystickInterface(INTERFACE_XINPUT)
+const char* CJoystickInterfaceXInput::Name(void) const
 {
+  return INTERFACE_XINPUT;
 }
 
 bool CJoystickInterfaceXInput::Initialize(void)
@@ -45,7 +45,7 @@ void CJoystickInterfaceXInput::Deinitialize(void)
   CXInputDLL::Get().Unload();
 }
 
-bool CJoystickInterfaceXInput::PerformJoystickScan(std::vector<CJoystick*>& joysticks)
+bool CJoystickInterfaceXInput::ScanForJoysticks(std::vector<CJoystick*>& joysticks)
 {
   XINPUT_STATE_EX controllerState; // No need to memset, only checking for controller existence
 

@@ -19,20 +19,21 @@
  */
 #pragma once
 
-#include "api/JoystickInterface.h"
+#include "api/IJoystickInterface.h"
 
 #include <stdint.h>
 #include <string>
 
 namespace JOYSTICK
 {
-  class CJoystickInterfaceLinux : public CJoystickInterface
+  class CJoystickInterfaceLinux : public IJoystickInterface
   {
   public:
     CJoystickInterfaceLinux(void);
     virtual ~CJoystickInterfaceLinux(void) { }
 
-  protected:
-    virtual bool PerformJoystickScan(std::vector<CJoystick*>& joysticks);
+    // implementation of IJoystickInterface
+    virtual const char* Name(void) const;
+    virtual bool ScanForJoysticks(std::vector<CJoystick*>& joysticks);
   };
 }

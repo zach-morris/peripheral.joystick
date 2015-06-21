@@ -28,9 +28,9 @@
 
 using namespace JOYSTICK;
 
-CJoystickInterfaceSDL::CJoystickInterfaceSDL(void)
- : CJoystickInterface(INTERFACE_SDL)
+const char* CJoystickInterfaceSDL::Name(void) const
 {
+  return INTERFACE_SDL;
 }
 
 void CJoystickInterfaceSDL::Deinitialize(void)
@@ -41,7 +41,7 @@ void CJoystickInterfaceSDL::Deinitialize(void)
     esyslog("Stopping joystick SDL subsystem failed");
 }
 
-bool CJoystickInterfaceSDL::PerformJoystickScan(std::vector<CJoystick*>& joysticks)
+bool CJoystickInterfaceSDL::ScanForJoysticks(std::vector<CJoystick*>& joysticks)
 {
   Deinitialize();
 
