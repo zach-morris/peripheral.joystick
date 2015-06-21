@@ -34,7 +34,7 @@ namespace JOYSTICK
   public:
     static bool Initialize(ADDON::CHelper_libXBMC_addon* frontend);
 
-    static void Deinitialize(void) { }
+    static void Deinitialize(void);
 
     static bool Exists(const std::string& url);
 
