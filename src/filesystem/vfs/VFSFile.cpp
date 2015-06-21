@@ -54,13 +54,6 @@ int64_t CVFSFile::ReadLine(std::string& buffer)
   return m_file.ReadLine(buffer) ? buffer.length() : -1;
 }
 
-int64_t CVFSFile::ReadFile(std::string& buffer)
-{
-  // TODO
-  int chunkSize = m_file.GetChunkSize();
-  return -1;
-}
-
 int64_t CVFSFile::Write(uint64_t byteCount, const std::string& buffer)
 {
   return m_file.Write(buffer.c_str(), byteCount);

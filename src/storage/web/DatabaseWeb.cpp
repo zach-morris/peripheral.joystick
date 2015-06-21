@@ -21,6 +21,9 @@
 #include "DatabaseWeb.h"
 #include "JoystickDefinitions.h"
 #include "log/Log.h"
+#include "filesystem/FilesystemTypes.h"
+#include "filesystem/FileUtils.h"
+#include "filesystem/IFile.h"
 #include "settings/Settings.h"
 #include "storage/StorageManager.h"
 #include "storage/web/DeviceQuery.h"
@@ -35,11 +38,17 @@
 using namespace JOYSTICK;
 using namespace PLATFORM;
 
-#define API_QUERY_ACTION   "action"
-#define API_QUERY_USER_ID  "random"
+#define API_QUERY_ACTION     "action"
+#define API_QUERY_USER_ID    "random"
 
 // Amount of time to wait before updating button maps
-#define UPDATE_DELAY_SEC  30
+#define UPDATE_DELAY_SEC     30
+
+// Read at most this many bytes per API call to retrieve button maps
+#define MAX_BUTTONMAP_BYTES  (10 * 1024 * 1024)  // 10 MB
+
+// Read at most this many bytes per API call to update button map
+#define MAX_RESPONSE_BYTES   256 // Size of buffer for each line being logged
 
 CDatabaseWeb::CDatabaseWeb(CStorageManager* manager, CDatabase* userXml, const std::string& strUserId)
   : m_manager(manager),
@@ -103,9 +112,12 @@ void CDatabaseWeb::ProcessRequest(const CDevice& needle)
   strUrl << "&";
   CDeviceQuery(needle).GetQueryString(strUrl);
 
-  dsyslog("Opening URL: %s", strUrl.str().c_str());
+  dsyslog("Opening %s", strUrl.str().c_str());
 
-  static const char* strXml =
+  std::string strResponse;
+
+  /*
+  strResponse =
     "<device name=\"Keyboard\" provider=\"application\">\n"
         "<controller id=\"game.controller.nes\">\n"
             "<feature name=\"a\" button=\"90\"/>\n"
@@ -118,35 +130,40 @@ void CDatabaseWeb::ProcessRequest(const CDevice& needle)
             "<feature name=\"up\" button=\"128\"/>\n"
         "</controller>\n"
     "</device>\n";
+  */
 
-  TiXmlDocument xmlFile;
-  if (!xmlFile.Parse(strXml))
+  FilePtr file = CFileUtils::OpenFile(strUrl.str().c_str());
+  if (file && file->ReadFile(strResponse, MAX_BUTTONMAP_BYTES))
   {
-    esyslog("Failed to parse xml response line %d: %s", xmlFile.ErrorRow(), xmlFile.ErrorDesc());
-    return;
+    TiXmlDocument xmlFile;
+    if (!xmlFile.Parse(strResponse.c_str()))
+    {
+      esyslog("Failed to parse xml response line %d: %s", xmlFile.ErrorRow(), xmlFile.ErrorDesc());
+      return;
+    }
+
+    TiXmlElement* pRootElement = xmlFile.RootElement();
+    if (!pRootElement || pRootElement->NoChildren() || pRootElement->ValueStr() != BUTTONMAP_XML_ELEM_DEVICE)
+    {
+      esyslog("Can't find root <%s> tag", BUTTONMAP_XML_ELEM_DEVICE);
+      return;
+    }
+
+    CDeviceXml device;
+    if (!device.Deserialize(pRootElement))
+      return;
+
+    if (!device.IsValid())
+    {
+      esyslog("<%s> tag with name=\"%s\" is invalid", BUTTONMAP_XML_ELEM_DEVICE, device.Name().c_str());
+      return;
+    }
+
+    CDatabase::MergeDevice(device);
+
+    if (m_userXml->MergeDevice(device))
+      m_manager->RefreshButtonMaps(device.Name());
   }
-
-  TiXmlElement* pRootElement = xmlFile.RootElement();
-  if (!pRootElement || pRootElement->NoChildren() || pRootElement->ValueStr() != BUTTONMAP_XML_ELEM_DEVICE)
-  {
-    esyslog("Can't find root <%s> tag", BUTTONMAP_XML_ELEM_DEVICE);
-    return;
-  }
-
-  CDeviceXml device;
-  if (!device.Deserialize(pRootElement))
-    return;
-
-  if (!device.IsValid())
-  {
-    esyslog("<%s> tag with name=\"%s\" is invalid", BUTTONMAP_XML_ELEM_DEVICE, device.Name().c_str());
-    return;
-  }
-
-  CDatabase::MergeDevice(device);
-
-  if (m_userXml->MergeDevice(device))
-    m_manager->RefreshButtonMaps(device.Name());
 }
 
 void CDatabaseWeb::ProcessUpdate(const CDevice& needle, const std::string& strControllerId)
@@ -163,6 +180,14 @@ void CDatabaseWeb::ProcessUpdate(const CDevice& needle, const std::string& strCo
     CDeviceQuery(*itDevice).GetQueryString(strUrl, strControllerId);
 
     dsyslog("Opening URL: %s", strUrl.str().c_str());
+
+    std::string strResponse;
+
+    FilePtr file = CFileUtils::OpenFile(strUrl.str().c_str());
+    if (file && file->ReadFile(strResponse, MAX_RESPONSE_BYTES))
+      dsyslog("Response: %s", strResponse.c_str());
+    else
+      esyslog("Failed to update button map over API");
   }
 }
 

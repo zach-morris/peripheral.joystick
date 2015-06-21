@@ -19,7 +19,7 @@
  */
 #pragma once
 
-#include "filesystem/IFile.h"
+#include "filesystem/ReadableFile.h"
 #include "VFSFileUtils.h"
 
 #include "kodi/kodi_vfs_utils.hpp"
@@ -28,7 +28,7 @@ namespace ADDON { class CHelper_libXBMC_addon; }
 
 namespace JOYSTICK
 {
-  class CVFSFile : public IFile
+  class CVFSFile : public CReadableFile
   {
   public:
     CVFSFile(ADDON::CHelper_libXBMC_addon* frontend);
@@ -40,7 +40,6 @@ namespace JOYSTICK
     virtual bool OpenForWrite(const std::string& url, bool bOverWrite = false);
     virtual int64_t Read(uint64_t byteCount, std::string& buffer);
     virtual int64_t ReadLine(std::string& buffer);
-    virtual int64_t ReadFile(std::string& buffer);
     virtual int64_t Write(uint64_t byteCount, const std::string& buffer);
     virtual void Flush(void);
     virtual int64_t Seek(int64_t filePosition, SEEK_FLAG whence = SEEK_FLAG_SET);

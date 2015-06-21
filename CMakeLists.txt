@@ -26,6 +26,8 @@ set(JOYSTICK_SOURCES src/addon.cpp
                      src/api/JoystickInterfaceCallback.cpp
                      src/api/JoystickManager.cpp
                      src/api/PeripheralScanner.cpp
+                     src/filesystem/FileUtils.cpp
+                     src/filesystem/ReadableFile.cpp
                      src/filesystem/SeekableFile.cpp
                      src/filesystem/vfs/VFSFile.cpp
                      src/filesystem/vfs/VFSFileUtils.cpp
