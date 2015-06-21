@@ -1,6 +1,6 @@
 /*
- *      Copyright (C) 2014 Garrett Brown
- *      Copyright (C) 2014 Team XBMC
+ *      Copyright (C) 2015 Garrett Brown
+ *      Copyright (C) 2015 Team XBMC
  *
  *  This Program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by

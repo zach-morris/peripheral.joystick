@@ -1,6 +1,6 @@
 /*
- *      Copyright (C) 2014 Garrett Brown
- *      Copyright (C) 2014 Team XBMC
+ *      Copyright (C) 2014-2015 Garrett Brown
+ *      Copyright (C) 2014-2015 Team XBMC
  *      Portions Copyright (C) 2013-2014 Lars Op den Kamp
  *
  *  This Program is free software; you can redistribute it and/or modify

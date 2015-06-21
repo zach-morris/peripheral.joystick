@@ -17,7 +17,6 @@
  *  <http://www.gnu.org/licenses/>.
  *
  */
-#pragma once
 
 #include "FileUtils.h"
 #include "filesystem/vfs/VFSFile.h"
