@@ -102,22 +102,31 @@ void* CDatabaseWeb::Process(void)
   return NULL;
 }
 
-void CDatabaseWeb::ProcessRequest(const CDevice& needle)
+bool CDatabaseWeb::ProcessRequest(const CDevice& needle)
 {
-  std::stringstream strUrl;
+  // Build URL
+  std::stringstream ssUrl;
+  ssUrl << CSettings::Get().ButtonMapAPI();
+  ssUrl << "?" << API_QUERY_ACTION << "=" << GetAction(API_ACTION_GET);
+  ssUrl << "&" << API_QUERY_USER_ID << "=" << m_strUserId;
+  ssUrl << "&";
+  CDeviceQuery(needle).GetQueryString(ssUrl);
 
-  strUrl << CSettings::Get().ButtonMapAPI();
-  strUrl << "?" << API_QUERY_ACTION << "=" << GetAction(API_ACTION_GET);
-  strUrl << "&" << API_QUERY_USER_ID << "=" << m_strUserId;
-  strUrl << "&";
-  CDeviceQuery(needle).GetQueryString(strUrl);
+  const std::string strUrl = ssUrl.str();
 
-  dsyslog("Opening %s", strUrl.str().c_str());
+  FilePtr file = CFileUtils::OpenFile(strUrl);
+  if (!file)
+  {
+    esyslog("No VFS file for %s", strUrl.c_str());
 
-  std::string strResponse;
+    // Don't try again
+    Disable();
+
+    return false;
+  }
 
   /*
-  strResponse =
+  const char* strResponse =
     "<device name=\"Keyboard\" provider=\"application\">\n"
         "<controller id=\"game.controller.nes\">\n"
             "<feature name=\"a\" button=\"90\"/>\n"
@@ -132,67 +141,93 @@ void CDatabaseWeb::ProcessRequest(const CDevice& needle)
     "</device>\n";
   */
 
-  FilePtr file = CFileUtils::OpenFile(strUrl.str().c_str());
-  if (file && file->ReadFile(strResponse, MAX_BUTTONMAP_BYTES))
+  std::string strResponse;
+  if (!file->ReadFile(strResponse, MAX_BUTTONMAP_BYTES))
   {
-    TiXmlDocument xmlFile;
-    if (!xmlFile.Parse(strResponse.c_str()))
-    {
-      esyslog("Failed to parse xml response line %d: %s", xmlFile.ErrorRow(), xmlFile.ErrorDesc());
-      return;
-    }
-
-    TiXmlElement* pRootElement = xmlFile.RootElement();
-    if (!pRootElement || pRootElement->NoChildren() || pRootElement->ValueStr() != BUTTONMAP_XML_ELEM_DEVICE)
-    {
-      esyslog("Can't find root <%s> tag", BUTTONMAP_XML_ELEM_DEVICE);
-      return;
-    }
-
-    CDeviceXml device;
-    if (!device.Deserialize(pRootElement))
-      return;
-
-    if (!device.IsValid())
-    {
-      esyslog("<%s> tag with name=\"%s\" is invalid", BUTTONMAP_XML_ELEM_DEVICE, device.Name().c_str());
-      return;
-    }
-
-    CDatabase::MergeDevice(device);
-
-    if (m_userXml->MergeDevice(device))
-      m_manager->RefreshButtonMaps(device.Name());
+    esyslog("Failed to read %s", strUrl.c_str());
+    return false;
   }
-  else
+
+  dsyslog("Opening %s", strUrl.c_str());
+
+  TiXmlDocument xmlFile;
+  if (!xmlFile.Parse(strResponse.c_str()))
   {
-    esyslog("Failed to retrieve button maps over API");
+    esyslog("Failed to parse xml response line %d: %s", xmlFile.ErrorRow(), xmlFile.ErrorDesc());
+    return false;
   }
+
+  TiXmlElement* pRootElement = xmlFile.RootElement();
+  if (!pRootElement || pRootElement->NoChildren() || pRootElement->ValueStr() != BUTTONMAP_XML_ELEM_DEVICE)
+  {
+    esyslog("Can't find root <%s> tag", BUTTONMAP_XML_ELEM_DEVICE);
+    return false;
+  }
+
+  CDeviceXml device;
+  if (!device.Deserialize(pRootElement))
+    return false;
+
+  if (!device.IsValid())
+  {
+    esyslog("<%s> tag with name=\"%s\" is invalid", BUTTONMAP_XML_ELEM_DEVICE, device.Name().c_str());
+    return false;
+  }
+
+  CDatabase::MergeDevice(device);
+
+  if (m_userXml->MergeDevice(device))
+    m_manager->RefreshButtonMaps(device.Name());
+
+  return true;
 }
 
-void CDatabaseWeb::ProcessUpdate(const CDevice& needle, const std::string& strControllerId)
+bool CDatabaseWeb::ProcessUpdate(const CDevice& needle, const std::string& strControllerId)
 {
-  std::vector<CDevice>::const_iterator itDevice = std::find(m_devices.begin(), m_devices.end(), needle);
-  if (itDevice != m_devices.end())
+  CDeviceQuery device;
+
   {
-    std::stringstream strUrl;
+    CLockObject lock(m_mutex);
+    std::vector<CDevice>::const_iterator itDevice = std::find(m_devices.begin(), m_devices.end(), needle);
+    if (itDevice == m_devices.end())
+      return false;
 
-    strUrl << CSettings::Get().ButtonMapAPI();
-    strUrl << "?" << API_QUERY_ACTION << "=" << GetAction(API_ACTION_PUT);
-    strUrl << "&" << API_QUERY_USER_ID << "=" << m_strUserId;
-    strUrl << "&";
-    CDeviceQuery(*itDevice).GetQueryString(strUrl, strControllerId);
-
-    dsyslog("Opening %s", strUrl.str().c_str());
-
-    std::string strResponse;
-
-    FilePtr file = CFileUtils::OpenFile(strUrl.str().c_str());
-    if (file && file->ReadFile(strResponse, MAX_RESPONSE_BYTES))
-      dsyslog("Response: %s", strResponse.c_str());
-    else
-      esyslog("Failed to update button map over API");
+    device = *itDevice;
   }
+
+  // Build URL
+  std::stringstream ssUrl;
+  ssUrl << CSettings::Get().ButtonMapAPI();
+  ssUrl << "?" << API_QUERY_ACTION << "=" << GetAction(API_ACTION_GET);
+  ssUrl << "&" << API_QUERY_USER_ID << "=" << m_strUserId;
+  ssUrl << "&";
+  CDeviceQuery(device).GetQueryString(ssUrl, strControllerId);
+
+  const std::string strUrl = ssUrl.str();
+
+  FilePtr file = CFileUtils::OpenFile(strUrl.c_str());
+  if (!file)
+  {
+    esyslog("No VFS file for %s", strUrl.c_str());
+
+    // Don't try again
+    Disable();
+
+    return false;
+  }
+
+  std::string strResponse;
+  if (!file->ReadFile(strResponse, MAX_RESPONSE_BYTES))
+  {
+    esyslog("Failed to read %s", strUrl.c_str());
+    return false;
+  }
+
+  dsyslog("Opening %s", strUrl.c_str());
+
+  dsyslog("Response: %s", strResponse.c_str());
+
+  return true;
 }
 
 bool CDatabaseWeb::GetFeatures(const CDevice& needle, const std::string& strControllerId,
@@ -200,7 +235,8 @@ bool CDatabaseWeb::GetFeatures(const CDevice& needle, const std::string& strCont
 {
   CLockObject lock(m_mutex);
 
-  if (std::find(m_requestQueue.begin(), m_requestQueue.end(), needle) == m_requestQueue.end())
+  // Only attempt one request at a time
+  if (m_requestQueue.empty())
   {
     m_requestQueue.push_back(needle);
     m_idleEvent.Signal();
@@ -219,7 +255,7 @@ bool CDatabaseWeb::MapFeature(const CDevice& needle, const std::string& strContr
   {
     m_updateTimeout.Init(UPDATE_DELAY_SEC * 1000);
 
-    UpdateJob updatePair(needle, strControllerId);
+    const UpdateJob updatePair(needle, strControllerId);
     if (std::find(m_updateQueue.begin(), m_updateQueue.end(), updatePair) == m_updateQueue.end())
     {
       m_updateQueue.push_back(updatePair);

@@ -30,6 +30,12 @@ namespace JOYSTICK
   public:
     virtual ~CDatabase(void) { }
 
+    virtual bool Enable(void) { m_bEnabled = true; return true; }
+
+    virtual void Disable(void) { m_bEnabled = false; }
+
+    virtual bool IsEnabled(void) const { return m_bEnabled; }
+
     virtual bool GetFeatures(const CDevice& needle, const std::string& strDeviceId,
                              std::vector<ADDON::JoystickFeature*>& features);
 
@@ -40,5 +46,8 @@ namespace JOYSTICK
 
   protected:
     std::vector<CDevice> m_devices;
+
+  private:
+    bool m_bEnabled;
   };
 }

@@ -108,7 +108,7 @@ bool CStorageManager::GetFeatures(const ADDON::Joystick& joystick, const std::st
 
   for (std::vector<CDatabase*>::const_iterator it = m_databases.begin(); it != m_databases.end(); ++it)
   {
-    if ((*it)->GetFeatures(needle, strControllerId, features))
+    if ((*it)->IsEnabled() && (*it)->GetFeatures(needle, strControllerId, features))
       break;
   }
 

@@ -50,8 +50,8 @@ namespace JOYSTICK
     virtual void* Process(void);
 
   private:
-    void ProcessRequest(const CDevice& needle);
-    void ProcessUpdate(const CDevice& needle, const std::string& strControllerId);
+    bool ProcessRequest(const CDevice& needle);
+    bool ProcessUpdate(const CDevice& needle, const std::string& strControllerId);
 
     enum API_ACTION
     {
