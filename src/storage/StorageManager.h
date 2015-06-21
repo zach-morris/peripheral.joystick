@@ -45,6 +45,7 @@ namespace JOYSTICK
 
     bool Initialize(ADDON::CHelper_libKODI_peripheral* peripheralLib,
                     const PERIPHERAL_PROPERTIES& props);
+
     void Deinitialize(void);
 
     bool GetFeatures(const ADDON::Joystick& joystick, const std::string& strDeviceId,
@@ -56,8 +57,6 @@ namespace JOYSTICK
     void RefreshButtonMaps(const std::string& strDeviceName = "");
 
   private:
-    static std::string LoadRandomNumber(const std::string& strPath);
-
     ADDON::CHelper_libKODI_peripheral* m_peripheralLib;
     std::vector<CDatabase*>            m_databases;
   };

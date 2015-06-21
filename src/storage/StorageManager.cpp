@@ -24,16 +24,10 @@
 
 #include "kodi/libKODI_peripheral.h"
 
-#include <cstdio>
-#include <cstdlib>
-#include <ctime>
-#include <fstream>
-
 using namespace JOYSTICK;
 
 #define ADDON_BUTTONMAP  "/resources/buttonmap.xml"
 #define USER_BUTTONMAP   "/buttonmap.xml"
-#define USER_RANDOM_NO   "/random_number.txt"
 
 // --- RemoveSlashAtEnd --------------------------------------------------------
 
@@ -80,17 +74,15 @@ bool CStorageManager::Initialize(ADDON::CHelper_libKODI_peripheral* peripheralLi
   RemoveSlashAtEnd(strAddonPath);
   RemoveSlashAtEnd(strUserPath);
 
-  std::string strUserId = LoadRandomNumber(strUserPath + USER_RANDOM_NO);
+  std::string strAddonXml = strAddonPath + ADDON_BUTTONMAP;
+  std::string strUserXml = strUserPath + USER_BUTTONMAP;
 
-  strAddonPath += ADDON_BUTTONMAP;
-  strUserPath += USER_BUTTONMAP;
+  CDatabase* userDatabase = new CDatabaseXml(strUserPath, false);
+  CDatabase* addonDatabase = new CDatabaseXml(strAddonPath, true);
 
-  CDatabase* userXml = new CDatabaseXml(strUserPath, false);
-  CDatabase* addonXml = new CDatabaseXml(strAddonPath, true);
-
-  m_databases.push_back(userXml);
-  m_databases.push_back(new CDatabaseWeb(this, userXml, strUserId));
-  m_databases.push_back(addonXml);
+  m_databases.push_back(userDatabase);
+  m_databases.push_back(new CDatabaseWeb(this, userDatabase, strUserPath));
+  m_databases.push_back(addonDatabase);
 
   return true;
 }
@@ -131,32 +123,4 @@ void CStorageManager::RefreshButtonMaps(const std::string& strDeviceName /* = ""
 {
   if (m_peripheralLib)
     m_peripheralLib->RefreshButtonMaps(strDeviceName);
-}
-
-std::string CStorageManager::LoadRandomNumber(const std::string& strPath)
-{
-  std::string randomNo;
-
-  std::ifstream file(strPath.c_str());
-  const bool bExists = (bool)file;
-
-  if (bExists)
-  {
-    file >> randomNo;
-  }
-  else
-  {
-    std::srand(std::time(NULL));
-
-    char randNo[13];
-    std::snprintf(randNo, sizeof(randNo), "%04X%04X%04X", std::rand() % 0x10000,
-                                                          std::rand() % 0x10000,
-                                                          std::rand() % 0x10000);
-    randomNo = randNo;
-
-    std::ofstream ofile(strPath.c_str());
-    ofile << randomNo;
-  }
-
-  return randomNo;
 }

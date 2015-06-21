@@ -60,6 +60,15 @@ bool CFileUtils::Stat(const std::string& url, STAT_STRUCTURE& buffer)
   return false;
 }
 
+bool CFileUtils::ExistsOnVFS(const std::string& url)
+{
+  FilePtr file = CreateFile(url);
+  if (file.get() != NULL)
+    return true;
+
+  return false;
+}
+
 FilePtr CFileUtils::OpenFile(const std::string& url, READ_FLAG flags /* = READ_FLAG_NONE */)
 {
   // Create file

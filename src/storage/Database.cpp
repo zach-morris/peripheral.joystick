@@ -24,6 +24,22 @@
 
 using namespace JOYSTICK;
 
+CDatabase::CDatabase(void)
+  : m_bEnabled(true)
+{
+}
+
+bool CDatabase::Enable(void)
+{
+  m_bEnabled = true;
+  return true;
+}
+
+void CDatabase::Disable(void)
+{
+  m_bEnabled = false;
+}
+
 bool CDatabase::GetFeatures(const CDevice& needle, const std::string& strControllerId,
                             std::vector<ADDON::JoystickFeature*>& features)
 {

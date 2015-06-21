@@ -28,11 +28,13 @@ namespace JOYSTICK
   class CDatabase
   {
   public:
+    CDatabase(void);
+
     virtual ~CDatabase(void) { }
 
-    virtual bool Enable(void) { m_bEnabled = true; return true; }
+    virtual bool Enable(void);
 
-    virtual void Disable(void) { m_bEnabled = false; }
+    virtual void Disable(void);
 
     virtual bool IsEnabled(void) const { return m_bEnabled; }
 

@@ -19,9 +19,9 @@
  */
 #pragma once
 
+#include "FilesystemTypes.h"
 #include "IFile.h"
 #include "IFileUtils.h"
-#include "FilesystemTypes.h"
 
 #include <string>
 
@@ -39,6 +39,8 @@ namespace JOYSTICK
     static bool Exists(const std::string& url);
 
     static bool Stat(const std::string& url, STAT_STRUCTURE& buffer);
+
+    static bool ExistsOnVFS(const std::string& url);
 
     static FilePtr OpenFile(const std::string& url, READ_FLAG flags = READ_FLAG_NONE);
 

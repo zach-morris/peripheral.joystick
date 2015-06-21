@@ -19,6 +19,7 @@
  */
 #pragma once
 
+#include "ButtonMapAPI.h"
 #include "storage/Database.h"
 
 #include "threads/mutex.h"
@@ -53,21 +54,13 @@ namespace JOYSTICK
     bool ProcessRequest(const CDevice& needle);
     bool ProcessUpdate(const CDevice& needle, const std::string& strControllerId);
 
-    enum API_ACTION
-    {
-      API_ACTION_GET,
-      API_ACTION_PUT,
-    };
-
-    static const char* GetAction(API_ACTION action);
-
     typedef std::string                      ControllerID;
     typedef std::pair<CDevice, ControllerID> UpdateButtonMapJob;
 
     CStorageManager* const          m_manager;
     CDatabase* const                m_userXml;
-    const std::string               m_strUserId;
 
+    CButtonMapAPI                   m_api;
     std::vector<CDevice>            m_requestQueue;
     std::vector<UpdateButtonMapJob> m_updateQueue;
     PLATFORM::CTimeout              m_updateTimeout;
