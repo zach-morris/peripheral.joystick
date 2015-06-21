@@ -97,8 +97,9 @@ bool CStorageManager::Initialize(ADDON::CHelper_libKODI_peripheral* peripheralLi
 
 void CStorageManager::Deinitialize(void)
 {
-  for (std::vector<CDatabase*>::iterator it = m_databases.begin(); it != m_databases.end(); ++it)
-    delete *it;
+  // Delete in reverse order
+  for (std::vector<CDatabase*>::iterator it = m_databases.end(); it != m_databases.begin(); --it)
+    delete *(it - 1);
 }
 
 bool CStorageManager::GetFeatures(const ADDON::Joystick& joystick, const std::string& strControllerId,
