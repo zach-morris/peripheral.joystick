@@ -26,8 +26,8 @@
 
 using namespace JOYSTICK;
 
-#define ADDON_BUTTONMAP  "/resources/buttonmap.xml"
 #define USER_BUTTONMAP   "/buttonmap.xml"
+#define ADDON_BUTTONMAP  "/resources/buttonmap.xml"
 
 // --- RemoveSlashAtEnd --------------------------------------------------------
 
@@ -65,20 +65,20 @@ bool CStorageManager::Initialize(ADDON::CHelper_libKODI_peripheral* peripheralLi
 
   m_peripheralLib = peripheralLib;
 
-  std::string strAddonPath = props.addon_path ? props.addon_path : "";
   std::string strUserPath = props.user_path ? props.user_path : "";
+  std::string strAddonPath = props.addon_path ? props.addon_path : "";
 
-  if (strAddonPath.empty() || strUserPath.empty())
+  if (strUserPath.empty() || strAddonPath.empty())
     return false;
 
-  RemoveSlashAtEnd(strAddonPath);
   RemoveSlashAtEnd(strUserPath);
+  RemoveSlashAtEnd(strAddonPath);
 
-  std::string strAddonXml = strAddonPath + ADDON_BUTTONMAP;
   std::string strUserXml = strUserPath + USER_BUTTONMAP;
+  std::string strAddonXml = strAddonPath + ADDON_BUTTONMAP;
 
-  CDatabase* userDatabase = new CDatabaseXml(strUserPath, false);
-  CDatabase* addonDatabase = new CDatabaseXml(strAddonPath, true);
+  CDatabase* userDatabase = new CDatabaseXml(strUserXml, false);
+  CDatabase* addonDatabase = new CDatabaseXml(strAddonXml, true);
 
   m_databases.push_back(userDatabase);
   m_databases.push_back(new CDatabaseWeb(this, userDatabase, strUserPath));
