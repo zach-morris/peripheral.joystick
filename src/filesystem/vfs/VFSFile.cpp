@@ -28,19 +28,26 @@ using namespace JOYSTICK;
 
 CVFSFile::CVFSFile(ADDON::CHelper_libXBMC_addon* frontend)
   : m_frontend(frontend),
-    m_file(frontend)
+    m_file(frontend),
+    m_bOpen(false)
 {
   assert(m_frontend);
 }
 
 bool CVFSFile::Open(const std::string& url, READ_FLAG flags /* = READ_FLAG_NONE */)
 {
-  return m_file.Open(url, flags);
+  if (m_file.Open(url, flags))
+    m_bOpen = true;
+
+  return m_bOpen;
 }
 
 bool CVFSFile::OpenForWrite(const std::string& url, bool bOverWrite /* = false */)
 {
-  return m_file.OpenForWrite(url, bOverWrite);
+  if (m_file.OpenForWrite(url, bOverWrite))
+    m_bOpen = true;
+
+  return m_bOpen;
 }
 
 int64_t CVFSFile::Read(uint64_t byteCount, std::string& buffer)
@@ -86,5 +93,9 @@ int64_t CVFSFile::GetLength(void)
 
 void CVFSFile::Close(void)
 {
-  m_file.Close();
+  if (m_bOpen)
+  {
+    m_bOpen = false;
+    m_file.Close();
+  }
 }

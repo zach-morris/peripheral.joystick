@@ -33,7 +33,7 @@ namespace JOYSTICK
   public:
     CVFSFile(ADDON::CHelper_libXBMC_addon* frontend);
 
-    virtual ~CVFSFile(void) { }
+    virtual ~CVFSFile(void) { Close(); }
 
     // implementation of IFile
     virtual bool Open(const std::string& url, READ_FLAG flags = READ_FLAG::READ_FLAG_NONE);
@@ -52,5 +52,6 @@ namespace JOYSTICK
   private:
     ADDON::CHelper_libXBMC_addon* const m_frontend;
     ADDON::VFSFile                      m_file;
+    bool                                m_bOpen;
   };
 }
