@@ -36,8 +36,10 @@ namespace JOYSTICK
     bool IsInitialized(void) const { return m_bInitialized; }
 
     /*!
-     * The analog stick deadzone. This is applied to each axis. Axis is scaled
-     * appropriately, so position is continuous from -1.0 to 1.0:
+     * \brief The analog stick deadzone
+     *
+     * This is applied to each axis. Axis is scaled appropriately, so position
+     * is continuous from -1.0 to 1.0:
      *
      *            |    / 1.0
      *            |   /
@@ -49,13 +51,19 @@ namespace JOYSTICK
     float Deadzone(void) const { return m_deadzone; }
 
     /*!
-     * The API used for button map queries
+     * \brief Whether the button map API should be queried
+     */
+    bool UseButtonMapAPI(void) const { return m_bUseButtonMapApi; }
+
+    /*!
+     * \bief The API used for button map queries
      */
     const std::string& ButtonMapAPI(void) const { return m_buttonMapApi; }
 
   private:
     bool        m_bInitialized;
     float       m_deadzone;
+    bool        m_bUseButtonMapApi;
     std::string m_buttonMapApi;
   };
 }

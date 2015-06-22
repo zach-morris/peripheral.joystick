@@ -21,6 +21,10 @@ msgid "Deadzone"
 msgstr ""
 
 msgctxt "#30001"
+msgid "Use button map API"
+msgstr ""
+
+msgctxt "#30002"
 msgid "Button map API"
 msgstr ""
 

@@ -19,6 +19,7 @@
  */
 
 #include "DatabaseWeb.h"
+#include "settings/Settings.h"
 #include "storage/StorageManager.h"
 #include "storage/web/DeviceQuery.h"
 #include "storage/xml/DeviceXml.h"
@@ -139,6 +140,9 @@ bool CDatabaseWeb::ProcessUpdate(const CDevice& needle, const std::string& strCo
 bool CDatabaseWeb::GetFeatures(const CDevice& needle, const std::string& strControllerId,
                                std::vector<ADDON::JoystickFeature*>& features)
 {
+  if (!CSettings::Get().UseButtonMapAPI())
+    return false;
+
   CLockObject lock(m_mutex);
 
   // Only attempt one request at a time
@@ -155,6 +159,9 @@ bool CDatabaseWeb::GetFeatures(const CDevice& needle, const std::string& strCont
 bool CDatabaseWeb::MapFeature(const CDevice& needle, const std::string& strControllerId,
                               const ADDON::JoystickFeature* feature)
 {
+  if (!CSettings::Get().UseButtonMapAPI())
+    return false;
+
   CLockObject lock(m_mutex);
 
   if (CDatabase::MapFeature(needle, strControllerId, feature))
