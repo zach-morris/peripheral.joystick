@@ -23,6 +23,8 @@
 #include "kodi/libXBMC_addon.h"
 
 #include <assert.h>
+#include <limits>
+#include <stddef.h>
 
 using namespace JOYSTICK;
 
@@ -52,8 +54,14 @@ bool CVFSFile::OpenForWrite(const std::string& url, bool bOverWrite /* = false *
 
 int64_t CVFSFile::Read(uint64_t byteCount, std::string& buffer)
 {
-  buffer.resize(byteCount);
-  return m_file.Read(const_cast<char*>(buffer.c_str()), byteCount);
+  if (byteCount <= std::numeric_limits<size_t>::max())
+  {
+    buffer.resize((size_t)byteCount);
+
+    return m_file.Read(const_cast<char*>(buffer.c_str()), byteCount);
+  }
+
+  return -1;
 }
 
 int64_t CVFSFile::ReadLine(std::string& buffer)
