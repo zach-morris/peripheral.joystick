@@ -31,7 +31,7 @@ namespace JOYSTICK
   class CJoystickInterfaceDirectInput : public CJoystickInterfaceCallback
   {
   public:
-    CJoystickInterfaceDirectInput(void);
+    CJoystickInterfaceDirectInput(void) { }
     virtual ~CJoystickInterfaceDirectInput(void) { Deinitialize(); }
 
     // implementation of IJoystickInterface

@@ -29,7 +29,7 @@ namespace JOYSTICK
   class CJoystickInterfaceXInput : public IJoystickInterface
   {
   public:
-    CJoystickInterfaceXInput(void);
+    CJoystickInterfaceXInput(void) { }
     virtual ~CJoystickInterfaceXInput(void) { Deinitialize(); }
 
     // Implementation of IJoystickInterface
