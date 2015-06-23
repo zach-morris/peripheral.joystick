@@ -22,6 +22,7 @@
 
 #include "kodi/libXBMC_addon.h"
 
+#include <algorithm>
 #include <assert.h>
 #include <limits>
 #include <stddef.h>
@@ -71,7 +72,12 @@ int64_t CVFSFile::ReadLine(std::string& buffer)
 
 int64_t CVFSFile::Write(uint64_t byteCount, const std::string& buffer)
 {
-  return m_file.Write(buffer.c_str(), byteCount);
+  uint64_t writeSize = std::min(byteCount, (uint64_t)buffer.length());
+
+  if (writeSize > 0)
+    return m_file.Write(buffer.c_str(), writeSize);
+
+  return -1;
 }
 
 void CVFSFile::Flush(void)
