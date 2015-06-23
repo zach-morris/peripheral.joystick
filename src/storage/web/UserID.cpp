@@ -21,13 +21,17 @@
 #include "UserID.h"
 
 #include <fstream>
-#include <cstdio>
 #include <cstdlib>
 #include <ctime>
+#include <stdio.h>
 
 using namespace JOYSTICK;
 
 #define USER_RANDOM_NO_FILE   "/random_number.txt"
+
+#if defined(_WIN32)
+  #define snprintf  _snprintf
+#endif
 
 bool CUserID::Load(const std::string& strUserPath)
 {
@@ -59,9 +63,9 @@ std::string CUserID::LoadRandomNumber(const std::string& strUserPath)
     std::srand(std::time(NULL));
 
     char randNo[13];
-    std::snprintf(randNo, sizeof(randNo), "%04X%04X%04X", std::rand() % 0x10000,
-                                                          std::rand() % 0x10000,
-                                                          std::rand() % 0x10000);
+    snprintf(randNo, sizeof(randNo), "%04X%04X%04X", std::rand() % 0x10000,
+                                                     std::rand() % 0x10000,
+                                                     std::rand() % 0x10000);
     randomNo = randNo;
 
     std::ofstream ofile(strPath.c_str());
