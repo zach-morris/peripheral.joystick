@@ -81,7 +81,7 @@ bool CStorageManager::Initialize(ADDON::CHelper_libKODI_peripheral* peripheralLi
   CDatabase* addonDatabase = new CDatabaseXml(strAddonXml, true);
 
   m_databases.push_back(userDatabase);
-  m_databases.push_back(new CDatabaseWeb(this, userDatabase, strUserPath));
+  //m_databases.push_back(new CDatabaseWeb(this, userDatabase, strUserPath)); // TODO: Fix crash on exit
   m_databases.push_back(addonDatabase);
 
   return true;
