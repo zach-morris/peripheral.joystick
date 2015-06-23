@@ -19,6 +19,7 @@
  */
 
 #include "UserID.h"
+#include "filesystem/FileUtils.h"
 
 #include <fstream>
 #include <cstdlib>
@@ -27,7 +28,7 @@
 
 using namespace JOYSTICK;
 
-#define USER_RANDOM_NO_FILE   "/random_number.txt"
+#define USER_ID_FILE   "special://userdata/addon_data/peripheral.joystick/random.txt"
 
 #if defined(_WIN32)
   #define snprintf  _snprintf
@@ -47,30 +48,34 @@ bool CUserID::IsLoaded(void) const
 
 std::string CUserID::LoadRandomNumber(const std::string& strUserPath)
 {
-  std::string randomNo;
+  const size_t userIdLenght = 12;
 
-  const std::string strPath = strUserPath + USER_RANDOM_NO_FILE;
+  std::string strUserId;
+  strUserId.reserve(userIdLenght);
 
-  std::ifstream file(strPath.c_str());
-  const bool bExists = (bool)file;
-
-  if (bExists)
+  FilePtr file = CFileUtils::OpenFile(USER_ID_FILE);
+  if (file)
   {
-    file >> randomNo;
+    if (file->ReadFile(strUserId, userIdLenght) != userIdLenght)
+    {
+      file->Close();
+
+      file = CFileUtils::OpenFileForWrite(USER_ID_FILE);
+
+      if (file)
+      {
+        std::srand(std::time(NULL));
+
+        char randNo[13];
+        snprintf(randNo, sizeof(randNo), "%04X%04X%04X", std::rand() % 0x10000,
+                                                         std::rand() % 0x10000,
+                                                         std::rand() % 0x10000);
+        strUserId = randNo;
+
+        file->Write(userIdLenght, strUserId);
+      }
+    }
   }
-  else
-  {
-    std::srand(std::time(NULL));
 
-    char randNo[13];
-    snprintf(randNo, sizeof(randNo), "%04X%04X%04X", std::rand() % 0x10000,
-                                                     std::rand() % 0x10000,
-                                                     std::rand() % 0x10000);
-    randomNo = randNo;
-
-    std::ofstream ofile(strPath.c_str());
-    ofile << randomNo;
-  }
-
-  return randomNo;
+  return strUserId;
 }
