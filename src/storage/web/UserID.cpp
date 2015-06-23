@@ -48,15 +48,15 @@ bool CUserID::IsLoaded(void) const
 
 std::string CUserID::LoadRandomNumber(const std::string& strUserPath)
 {
-  const size_t userIdLenght = 12;
+  const size_t userIdLength = 12;
 
   std::string strUserId;
-  strUserId.reserve(userIdLenght);
+  strUserId.reserve(userIdLength);
 
   FilePtr file = CFileUtils::OpenFile(USER_ID_FILE);
   if (file)
   {
-    if (file->ReadFile(strUserId, userIdLenght) != userIdLenght)
+    if (file->ReadFile(strUserId, userIdLength) != userIdLength)
     {
       file->Close();
 
@@ -66,13 +66,13 @@ std::string CUserID::LoadRandomNumber(const std::string& strUserPath)
       {
         std::srand(std::time(NULL));
 
-        char randNo[13];
+        char randNo[userIdLength + 1];
         snprintf(randNo, sizeof(randNo), "%04X%04X%04X", std::rand() % 0x10000,
                                                          std::rand() % 0x10000,
                                                          std::rand() % 0x10000);
         strUserId = randNo;
 
-        file->Write(userIdLenght, strUserId);
+        file->Write(userIdLength, strUserId);
       }
     }
   }
