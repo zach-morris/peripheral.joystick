@@ -27,14 +27,20 @@ namespace JOYSTICK
 {
   struct STAT_STRUCTURE
   {
-    uint32_t        deviceId;         // ID of device containing file
-    uint64_t        size;             // Total size, in bytes
-    struct timespec accessTime;       // Time of last access
-    struct timespec modificationTime; // Time of last modification
-    struct timespec statusTime;       // Time of last status change
-    bool            isDirectory;      // The stat url is a directory
-    bool            isSymLink;        // The stat url is a symbolic link
-    bool            isHidden;         // The file is hidden
+    uint32_t    deviceId;         // ID of device containing file
+    uint64_t    size;             // Total size, in bytes
+#if !defined(_WIN32)
+    timespec    accessTime;       // Time of last access
+    timespec    modificationTime; // Time of last modification
+    timespec    statusTime;       // Time of last status change
+#else
+    __time64_t  accessTime;       // Time of last access
+    __time64_t  modificationTime; // Time of last modification
+    __time64_t  statusTime;       // Time of last status change
+#endif
+    bool        isDirectory;      // The stat url is a directory
+    bool        isSymLink;        // The stat url is a symbolic link
+    bool        isHidden;         // The file is hidden
   };
 
   class IFileUtils
