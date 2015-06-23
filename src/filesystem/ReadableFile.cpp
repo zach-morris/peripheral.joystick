@@ -32,20 +32,23 @@ int64_t CReadableFile::ReadFile(std::string& buffer, const uint64_t maxBytes /* 
   std::string chunkBuffer;
   chunkBuffer.reserve(READ_CHUNK_SIZE);
 
-  uint32_t bytesRead = 0;
+  int64_t bytesRead = 0;
   int64_t bytesToRead = maxBytes;
 
   const bool bReadForever = (maxBytes == 0);
   while (bReadForever || bytesToRead > 0)
   {
     // Read a chunk of data via Read() API call
-    unsigned int chunkReadSize = bReadForever ? READ_CHUNK_SIZE : std::min((int64_t)READ_CHUNK_SIZE, bytesToRead);
+    unsigned int chunkReadSize = bReadForever ? READ_CHUNK_SIZE :
+        (unsigned int)std::min((int64_t)READ_CHUNK_SIZE, (int64_t)bytesToRead);
 
     int64_t chunkBytesRead = Read(chunkReadSize, chunkBuffer);
 
+    // If the read failed, bail out
     if (chunkBytesRead < 0)
       return -1;
 
+    // If no bytes were read, assume we hit the end of the file
     if (chunkBytesRead == 0)
       break;
 
@@ -56,7 +59,8 @@ int64_t CReadableFile::ReadFile(std::string& buffer, const uint64_t maxBytes /* 
 
     buffer.append(chunkBuffer);
 
-    if (chunkBytesRead != chunkReadSize)
+    // If less bytes were read that requested, assume we hit the end of the file
+    if (chunkBytesRead < chunkReadSize)
       break;
   }
 
