@@ -64,12 +64,10 @@ bool CJoystickInterfaceDirectInput::Initialize(void)
 
 void CJoystickInterfaceDirectInput::Deinitialize(void)
 {
-  ClearScanResults();
-
   SAFE_RELEASE(m_pDirectInput);
 }
 
-bool CJoystickInterfaceDirectInput::PerformJoystickScan(std::vector<CJoystick*>& joysticks)
+bool CJoystickInterfaceDirectInput::ScanForJoysticks(std::vector<CJoystick*>& joysticks)
 {
   ClearScanResults();
 
