@@ -1,0 +1,21 @@
+<?xml version="1.0" ?>
+<buttonmap>
+    <devices>
+        <device name="Keyboard" provider="application">
+            <controller id="game.controller.default">
+                <feature name="down" button="129" />
+                <feature name="left" button="130" />
+                <feature name="right" button="131" />
+                <feature name="start" button="13" />
+                <feature name="up" button="128" />
+            </controller>
+            <controller id="game.controller.nes">
+                <feature name="down" button="129" />
+                <feature name="left" button="130" />
+                <feature name="right" button="131" />
+                <feature name="start" button="13" />
+                <feature name="up" button="128" />
+            </controller>
+        </device>
+    </devices>
+</buttonmap>
