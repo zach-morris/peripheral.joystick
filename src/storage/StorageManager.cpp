@@ -60,16 +60,13 @@ CStorageManager& CStorageManager::Get(void)
 bool CStorageManager::Initialize(ADDON::CHelper_libKODI_peripheral* peripheralLib,
                                  const PERIPHERAL_PROPERTIES& props)
 {
-  if (!peripheralLib)
-    return false;
-
-  m_peripheralLib = peripheralLib;
-
   std::string strUserPath = props.user_path ? props.user_path : "";
   std::string strAddonPath = props.addon_path ? props.addon_path : "";
 
-  if (strUserPath.empty() || strAddonPath.empty())
+  if (peripheralLib == NULL || strUserPath.empty() || strAddonPath.empty())
     return false;
+
+  m_peripheralLib = peripheralLib;
 
   RemoveSlashAtEnd(strUserPath);
   RemoveSlashAtEnd(strAddonPath);
@@ -92,6 +89,8 @@ void CStorageManager::Deinitialize(void)
   // Delete in reverse order
   for (std::vector<CDatabase*>::iterator it = m_databases.end(); it != m_databases.begin(); --it)
     delete *(it - 1);
+
+  m_peripheralLib = NULL;
 }
 
 bool CStorageManager::GetFeatures(const ADDON::Joystick& joystick, const std::string& strControllerId,
