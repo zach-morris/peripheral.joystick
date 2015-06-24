@@ -29,7 +29,7 @@ namespace JOYSTICK
   class CJoystickInterfaceLinux : public IJoystickInterface
   {
   public:
-    CJoystickInterfaceLinux(void);
+    CJoystickInterfaceLinux(void) { }
     virtual ~CJoystickInterfaceLinux(void) { }
 
     // implementation of IJoystickInterface
