@@ -41,12 +41,10 @@ void CButtonMap::Reset(void)
   m_buttons.clear();
 }
 
-bool CButtonMap::GetFeatures(std::vector<ADDON::JoystickFeature*>& features) const
+void CButtonMap::GetFeatures(std::vector<ADDON::JoystickFeature*>& features) const
 {
   for (Buttons::const_iterator itButton = m_buttons.begin(); itButton != m_buttons.end(); ++itButton)
     features.push_back(itButton->second);
-
-  return true;
 }
 
 bool CButtonMap::MapFeature(const ADDON::JoystickFeature* feature)

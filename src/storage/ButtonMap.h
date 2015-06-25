@@ -37,7 +37,7 @@ namespace JOYSTICK
 
     void Reset(void);
 
-    bool GetFeatures(std::vector<ADDON::JoystickFeature*>& features) const;
+    void GetFeatures(std::vector<ADDON::JoystickFeature*>& features) const;
 
     bool MapFeature(const ADDON::JoystickFeature* feature);
 

@@ -78,9 +78,12 @@ bool CDevice::GetFeatures(const std::string& strControllerId, std::vector<ADDON:
 {
   ButtonMaps::const_iterator it = m_buttonMaps.find(strControllerId);
   if (it != m_buttonMaps.end())
-    return it->second.GetFeatures(features);
+  {
+    it->second.GetFeatures(features);
+    return true;
+  }
 
-  return true;
+  return false;
 }
 
 bool CDevice::MapFeature(const std::string& strControllerId, const ADDON::JoystickFeature* feature)
