@@ -137,5 +137,8 @@ bool CDeviceXml::Deserialize(const TiXmlElement* pElement)
     pProfile = pProfile->NextSiblingElement(BUTTONMAP_XML_ELEM_CONTROLLER);
   }
 
+  if (!m_buttonMaps.empty())
+    dsyslog("Button map: loaded device \"%s\" with %u controller profiles", m_strName.c_str(), m_buttonMaps.size());
+
   return true;
 }
