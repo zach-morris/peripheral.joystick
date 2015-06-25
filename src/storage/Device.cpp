@@ -46,15 +46,26 @@ CDevice::CDevice(const ADDON::Joystick& joystick)
 
 bool CDevice::operator==(const CDevice& rhs) const
 {
-  return rhs.m_strName.empty()              ? true : m_strName     == rhs.m_strName   &&
-         rhs.m_strProvider.empty()          ? true : m_strProvider == rhs.m_strProvider &&
-         (rhs.m_vid == 0 && rhs.m_pid == 0) ? true : m_vid == rhs.m_vid && m_pid == rhs.m_pid &&
-         rhs.m_buttonCount == 0 &&
-         rhs.m_hatCount    == 0 &&
-         rhs.m_axisCount   == 0             ? true : m_buttonCount == rhs.m_buttonCount &&
-                                                     m_hatCount    == rhs.m_hatCount    &&
-                                                     m_axisCount   == rhs.m_axisCount;
+  bool bEqual = true;
 
+  if (!m_strName.empty() && !rhs.m_strName.empty())
+    bEqual &= (m_strName == rhs.m_strName);
+
+  if (!m_strProvider.empty() && !rhs.m_strProvider.empty())
+    bEqual &= (m_strProvider == rhs.m_strProvider);
+
+  if ((m_vid != 0 || m_pid != 0) && (rhs.m_vid != 0 || rhs.m_pid != 0))
+    bEqual &= (m_vid == rhs.m_vid && m_pid == rhs.m_pid);
+
+  if ((m_buttonCount     != 0 || m_hatCount     != 0 || m_axisCount     != 0) &&
+      (rhs.m_buttonCount != 0 || rhs.m_hatCount != 0 || rhs.m_axisCount != 0))
+  {
+    bEqual &= (m_buttonCount == rhs.m_buttonCount &&
+               m_hatCount    == rhs.m_hatCount    &&
+               m_axisCount   == rhs.m_axisCount);
+  }
+
+  return bEqual;
 }
 
 bool CDevice::IsValid(void) const
