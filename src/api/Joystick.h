@@ -96,6 +96,7 @@ namespace JOYSTICK
      * Normalize the axis to the closed interval [-1.0, 1.0].
      */
     static float NormalizeAxis(long value, long maxAxisAmount);
+    static float ScaleDeadzone(float value);
 
     struct JoystickState
     {
