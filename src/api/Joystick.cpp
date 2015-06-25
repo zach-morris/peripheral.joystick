@@ -18,6 +18,7 @@
  */
 
 #include "IJoystickInterface.h"
+#include "AnomalousTriggerFilter.h"
 #include "Joystick.h"
 #include "log/Log.h"
 #include "settings/Settings.h"
@@ -70,6 +71,10 @@ bool CJoystick::Initialize(void)
   m_stateBuffer.hats.assign(HatCount(), JOYSTICK_STATE_HAT_UNPRESSED);
   m_stateBuffer.axes.assign(AxisCount(), 0.0f);
 
+  // Filter for anomalous triggers
+  for (unsigned int i = 0; i < AxisCount(); i++)
+    m_axisFilters.push_back(new CAnomalousTriggerFilter(i));
+
   return true;
 }
 
@@ -82,6 +87,10 @@ void CJoystick::Deinitialize(void)
   m_stateBuffer.buttons.clear();
   m_stateBuffer.hats.clear();
   m_stateBuffer.axes.clear();
+
+  for (std::vector<IJoystickAxisFilter*>::iterator it = m_axisFilters.begin(); it != m_axisFilters.end(); ++it)
+    delete *it;
+  m_axisFilters.clear();
 }
 
 bool CJoystick::GetEvents(std::vector<ADDON::PeripheralEvent>& events)
@@ -154,7 +163,7 @@ void CJoystick::SetHatValue(unsigned int hatIndex, JOYSTICK_STATE_HAT hatValue)
 void CJoystick::SetAxisValue(unsigned int axisIndex, JOYSTICK_STATE_AXIS axisValue)
 {
   if (axisIndex < AxisCount())
-    m_stateBuffer.axes[axisIndex] = ScaleDeadzone(axisValue);
+    m_stateBuffer.axes[axisIndex] = ScaleDeadzone(m_axisFilters[axisIndex]->Filter(axisValue));
 }
 
 void CJoystick::SetAxisValue(unsigned int axisIndex, long value, long maxAxisAmount)

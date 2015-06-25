@@ -24,13 +24,14 @@
 
 namespace JOYSTICK
 {
+  class IJoystickAxisFilter;
   class IJoystickInterface;
 
   class CJoystick : public ADDON::Joystick
   {
   public:
     CJoystick(IJoystickInterface* api);
-    virtual ~CJoystick(void) { }
+    virtual ~CJoystick(void) { Deinitialize(); }
 
     /*!
      * The parent API that this joystick was discovered on
@@ -105,11 +106,12 @@ namespace JOYSTICK
       std::vector<JOYSTICK_STATE_AXIS>   axes;
     };
 
-    IJoystickInterface* const m_api;
-    JoystickState             m_state;
-    JoystickState             m_stateBuffer;
-    int64_t                   m_discoverTimeMs;
-    int64_t                   m_firstEventTimeMs;
-    int64_t                   m_lastEventTimeMs;
+    IJoystickInterface* const         m_api;
+    JoystickState                     m_state;
+    JoystickState                     m_stateBuffer;
+    std::vector<IJoystickAxisFilter*> m_axisFilters;
+    int64_t                           m_discoverTimeMs;
+    int64_t                           m_firstEventTimeMs;
+    int64_t                           m_lastEventTimeMs;
   };
 }

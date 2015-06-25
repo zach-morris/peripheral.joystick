@@ -20,6 +20,7 @@ include_directories(${INCLUDES}
                     ${platform_INCLUDE_DIRS})
 
 set(JOYSTICK_SOURCES src/addon.cpp
+                     src/api/AnomalousTriggerFilter.cpp
                      src/api/Joystick.cpp
                      src/api/JoystickAsync.cpp
                      src/api/JoystickInterfaceCallback.cpp
