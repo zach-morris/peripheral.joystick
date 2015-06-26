@@ -33,12 +33,17 @@ using namespace JOYSTICK;
 
 namespace JOYSTICK
 {
+  bool IsSlash(char c)
+  {
+    return c == '/' || c == '\\';
+  }
+
   void RemoveSlashAtEnd(std::string& strPath)
   {
-    if (strPath.empty())
+    if (!strPath.empty())
     {
       char end = strPath[strPath.size() - 1];
-      if (end == '/' || end == '\\')
+      if (IsSlash(end))
         strPath.erase(strPath.end() - 1);
     }
   }
