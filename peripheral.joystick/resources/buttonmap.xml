@@ -9,11 +9,11 @@
                 <feature name="down" button="12" />
                 <feature name="left" button="13" />
                 <feature name="leftbumper" button="4" />
-                <feature name="leftstick" xaxis="0" yaxis="1" yinverted="true" />
+                <feature name="leftstick" xaxis="0" yaxis="1" />
                 <feature name="leftthumb" button="6" />
                 <feature name="right" button="14" />
                 <feature name="rightbumper" button="5" />
-                <feature name="rightstick" xaxis="2" yaxis="3" yinverted="true" />
+                <feature name="rightstick" xaxis="2" yaxis="3" />
                 <feature name="rightthumb" button="7" />
                 <feature name="start" button="8" />
                 <feature name="up" button="11" />

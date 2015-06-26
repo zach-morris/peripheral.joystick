@@ -94,7 +94,7 @@ bool CButtonMapXml::Serialize(TiXmlElement* pElement) const
           featureElem->SetAttribute(BUTTONMAP_XML_ATTR_FEATURE_XINVERTED, "true");
 
         featureElem->SetAttribute(BUTTONMAP_XML_ATTR_FEATURE_YAXIS, analogStick->YIndex());
-        if (analogStick->YInverted())
+        if (!analogStick->YInverted())
           featureElem->SetAttribute(BUTTONMAP_XML_ATTR_FEATURE_YINVERTED, "true");
 
         break;
@@ -204,7 +204,7 @@ bool CButtonMapXml::Deserialize(const TiXmlElement* pElement)
       int axisIndexY = std::atoi(yaxis);
 
       bool bInvertedX = std::string(xinverted ? xinverted : "") == "true";
-      bool bInvertedY = std::string(yinverted ? yinverted : "") == "true";
+      bool bInvertedY = std::string(yinverted ? yinverted : "") != "true";
 
       feature = new ADDON::DriverAnalogStick(name,
                                              axisIndexX, bInvertedX,
