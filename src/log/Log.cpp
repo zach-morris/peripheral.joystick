@@ -27,7 +27,7 @@
 #include "LogSyslog.h"
 #endif
 
-#include "threads/threads.h"
+#include "platform/threads/threads.h"
 
 #include <stdarg.h>
 #include <stdio.h>

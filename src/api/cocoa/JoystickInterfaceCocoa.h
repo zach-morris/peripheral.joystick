@@ -21,7 +21,7 @@
 
 #include "api/IJoystickInterface.h"
 
-#include "threads/mutex.h"
+#include "platform/threads/mutex.h"
 
 #include <CoreFoundation/CoreFoundation.h>
 #include <IOKit/hid/IOHIDBase.h>

@@ -22,9 +22,9 @@
 #include "ButtonMapAPI.h"
 #include "storage/Database.h"
 
-#include "threads/mutex.h"
-#include "threads/threads.h"
-#include "util/timeutils.h"
+#include "platform/threads/mutex.h"
+#include "platform/threads/threads.h"
+#include "platform/util/timeutils.h"
 
 #include <string>
 #include <utility>

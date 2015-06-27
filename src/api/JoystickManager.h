@@ -20,7 +20,7 @@
 #pragma once
 
 #include "kodi/kodi_peripheral_utils.hpp"
-#include "threads/mutex.h"
+#include "platform/threads/mutex.h"
 
 #include <vector>
 

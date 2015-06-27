@@ -21,7 +21,7 @@
 
 #include "storage/Database.h"
 
-#include "threads/mutex.h"
+#include "platform/threads/mutex.h"
 
 #include <string>
 #include <vector>

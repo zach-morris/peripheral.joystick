@@ -22,7 +22,7 @@
 
 #include "ILog.h"
 
-#include "threads/mutex.h"
+#include "platform/threads/mutex.h"
 
 #ifndef esyslog
 #define esyslog(...) JOYSTICK::CLog::Get().Log(SYS_LOG_ERROR, __VA_ARGS__)

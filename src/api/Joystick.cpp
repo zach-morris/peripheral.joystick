@@ -24,7 +24,7 @@
 #include "settings/Settings.h"
 #include "utils/CommonMacros.h"
 
-#include "util/timeutils.h"
+#include "platform/util/timeutils.h"
 
 using namespace JOYSTICK;
 

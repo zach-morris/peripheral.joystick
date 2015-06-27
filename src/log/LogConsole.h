@@ -22,7 +22,7 @@
 
 #include "ILog.h"
 
-#include "threads/mutex.h"
+#include "platform/threads/mutex.h"
 
 namespace JOYSTICK
 {
