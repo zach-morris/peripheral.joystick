@@ -26,7 +26,7 @@
 #include <Xinput.h>
 
 // Missing from XInput API
-#define XINPUT_GAMEPAD_GUIDE  0x8000
+#define XINPUT_GAMEPAD_GUIDE  0x0400
 
 namespace JOYSTICK
 {
