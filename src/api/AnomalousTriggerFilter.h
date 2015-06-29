@@ -26,7 +26,7 @@ namespace JOYSTICK
    * \brief Filter for anomalous triggers
    *
    * Most gamepad triggers report a value in the interval [0.0, 1.0], where 0.0
-   * if depressed and 1.0 is fully pressed.
+   * is depressed and 1.0 is fully pressed.
    *
    * Anomalous triggers, when depressed, have a value of -1.0 or 1.0. When
    * fully pressed, the value can either be zero or the depressed value's
