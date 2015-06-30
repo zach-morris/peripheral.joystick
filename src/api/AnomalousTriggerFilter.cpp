@@ -22,7 +22,7 @@
 
 using namespace JOYSTICK;
 
-#define ANOMOLOUS_MAGNITUDE  0.8f
+#define ANOMOLOUS_MAGNITUDE  0.5f
 
 CAnomalousTriggerFilter::CAnomalousTriggerFilter(unsigned int axisIndex)
   : axisIndex(axisIndex),
