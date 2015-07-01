@@ -33,6 +33,8 @@ namespace JOYSTICK
     CJoystickXInput(unsigned int controllerID, CJoystickInterfaceXInput* api);
     virtual ~CJoystickXInput(void) { }
 
+    virtual bool Equals(const CJoystick* rhs) const;
+
   protected:
     virtual bool ScanEvents(void);
 

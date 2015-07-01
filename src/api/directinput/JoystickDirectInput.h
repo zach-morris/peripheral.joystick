@@ -38,6 +38,8 @@ namespace JOYSTICK
 
     virtual ~CJoystickDirectInput(void) { }
 
+    virtual bool Equals(const CJoystick* rhs) const;
+
     virtual bool Initialize(void);
 
   protected:

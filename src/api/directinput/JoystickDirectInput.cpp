@@ -45,6 +45,18 @@ CJoystickDirectInput::CJoystickDirectInput(GUID                           device
   SetName(strName);
 }
 
+bool CJoystickDirectInput::Equals(const CJoystick* rhs) const
+{
+  if (rhs == nullptr)
+    return false;
+
+  const CJoystickDirectInput* rhsDirectInput = dynamic_cast<const CJoystickDirectInput*>(rhs);
+  if (rhsDirectInput == nullptr)
+    return false;
+
+  return m_deviceGuid == rhsDirectInput->m_deviceGuid;
+}
+
 bool CJoystickDirectInput::Initialize(void)
 {
   HRESULT hr;
