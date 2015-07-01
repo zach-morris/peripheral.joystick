@@ -34,10 +34,12 @@ using namespace JOYSTICK;
 #define JOY_POV_SW   (JOY_POVBACKWARD + JOY_POVLEFT) / 2
 #define JOY_POV_NW   (JOY_POVLEFT + JOY_POV_360) / 2
 
-CJoystickDirectInput::CJoystickDirectInput(LPDIRECTINPUTDEVICE8           joystickDevice,
+CJoystickDirectInput::CJoystickDirectInput(GUID                           deviceGuid,
+                                           LPDIRECTINPUTDEVICE8           joystickDevice,
                                            const std::string&             strName,
                                            CJoystickInterfaceDirectInput* api)
  : CJoystick(api),
+   m_deviceGuid(deviceGuid),
    m_joystickDevice(joystickDevice)
 {
   SetName(strName);

@@ -31,7 +31,8 @@ namespace JOYSTICK
   class CJoystickDirectInput : public CJoystick
   {
   public:
-    CJoystickDirectInput(LPDIRECTINPUTDEVICE8           joystickDevice,
+    CJoystickDirectInput(GUID                           deviceGuid,
+                         LPDIRECTINPUTDEVICE8           joystickDevice,
                          const std::string&             strName,
                          CJoystickInterfaceDirectInput* api);
 
@@ -45,6 +46,7 @@ namespace JOYSTICK
   private:
     static BOOL CALLBACK EnumObjectsCallback(const DIDEVICEOBJECTINSTANCE *pdidoi, VOID *pContext);
 
+    GUID m_deviceGuid;
     LPDIRECTINPUTDEVICE8 m_joystickDevice;
   };
 }
