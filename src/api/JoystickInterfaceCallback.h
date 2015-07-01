@@ -28,13 +28,12 @@ namespace JOYSTICK
   {
   public:
     CJoystickInterfaceCallback(void) { }
-    virtual ~CJoystickInterfaceCallback(void) { ClearScanResults(); }
+    virtual ~CJoystickInterfaceCallback(void) { }
 
   protected:
     // Helper functions to offer a buffer for device scanners that require static callbacks
     void AddScanResult(CJoystick* joystick);
-    void GetScanResults(std::vector<CJoystick*>& joysticks) const;
-    void ClearScanResults(void);
+    void GetScanResults(std::vector<CJoystick*>& joysticks);
 
   private:
     std::vector<CJoystick*> m_scanResults;

@@ -69,8 +69,6 @@ void CJoystickInterfaceDirectInput::Deinitialize(void)
 
 bool CJoystickInterfaceDirectInput::ScanForJoysticks(std::vector<CJoystick*>& joysticks)
 {
-  ClearScanResults();
-
   HRESULT hr;
 
   hr = m_pDirectInput->EnumDevices(DI8DEVCLASS_GAMECTRL, EnumJoysticksCallback, this, DIEDFL_ATTACHEDONLY);
@@ -81,7 +79,6 @@ bool CJoystickInterfaceDirectInput::ScanForJoysticks(std::vector<CJoystick*>& jo
   }
 
   GetScanResults(joysticks);
-  ClearScanResults();
 
   return true;
 }

@@ -27,14 +27,8 @@ void CJoystickInterfaceCallback::AddScanResult(CJoystick* joystick)
   m_scanResults.push_back(joystick);
 }
 
-void CJoystickInterfaceCallback::GetScanResults(std::vector<CJoystick*>& joysticks) const
+void CJoystickInterfaceCallback::GetScanResults(std::vector<CJoystick*>& joysticks)
 {
   joysticks.insert(joysticks.end(), m_scanResults.begin(), m_scanResults.end());
-}
-
-void CJoystickInterfaceCallback::ClearScanResults(void)
-{
-  for (std::vector<CJoystick*>::iterator it = m_scanResults.begin(); it != m_scanResults.end(); ++it)
-    delete *it;
   m_scanResults.clear();
 }
