@@ -31,7 +31,7 @@ namespace JOYSTICK
   class CJoystickInterfaceDirectInput : public CJoystickInterfaceCallback
   {
   public:
-    CJoystickInterfaceDirectInput(void) { }
+    CJoystickInterfaceDirectInput(void);
     virtual ~CJoystickInterfaceDirectInput(void) { Deinitialize(); }
 
     // implementation of IJoystickInterface
@@ -41,11 +41,14 @@ namespace JOYSTICK
     virtual bool ScanForJoysticks(std::vector<CJoystick*>& joysticks);
 
   private:
+    bool InitializeDirectInput(void);
+
     static BOOL CALLBACK EnumJoysticksCallback(const DIDEVICEINSTANCE *pdidInstance, VOID *pContext);
     static bool IsXInputDevice(const GUID *pGuidProductFromDirectInput); // TODO: Move to XInput
     static HWND GetMainWindowHandle(void);
     static BOOL CALLBACK EnumWindowsCallback(HWND hnd, LPARAM lParam);
 
+    HWND                    m_hWnd;         // Main window
     LPDIRECTINPUT8          m_pDirectInput; // DirectInput handle, we hold onto it and release it when freeing resources
   };
 }
