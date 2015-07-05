@@ -36,20 +36,17 @@ float CAnomalousTriggerFilter::Filter(float value)
 {
   if (m_state == STATE_IDLE)
   {
-    if (value != 0.0f)
-    {
-      if (value < -ANOMOLOUS_MAGNITUDE)
-        m_center = CENTER_NEGATIVE_ONE;
-      else if (value > ANOMOLOUS_MAGNITUDE)
-        m_center = CENTER_POSITIVE_ONE;
-      else
-        m_center = CENTER_ZERO;
+    if (value < -ANOMOLOUS_MAGNITUDE)
+      m_center = CENTER_NEGATIVE_ONE;
+    else if (value > ANOMOLOUS_MAGNITUDE)
+      m_center = CENTER_POSITIVE_ONE;
+    else
+      m_center = CENTER_ZERO;
 
-      if (IsAnomalousTrigger())
-        dsyslog("Anomalous trigger detected on axis %u (initial value = %f)", axisIndex, value);
+    if (IsAnomalousTrigger())
+      dsyslog("Anomalous trigger detected on axis %u (initial value = %f)", axisIndex, value);
 
-      m_state = STATE_CENTER_KNOWN;
-    }
+    m_state = STATE_CENTER_KNOWN;
   }
 
   if (IsAnomalousTrigger())
