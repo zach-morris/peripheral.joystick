@@ -46,6 +46,18 @@ CJoystickXInput::CJoystickXInput(unsigned int controllerID, CJoystickInterfaceXI
   SetAxisCount(AXIS_COUNT);
 }
 
+bool CJoystickXInput::Equals(const CJoystick* rhs) const
+{
+  if (rhs == nullptr)
+    return false;
+
+  const CJoystickXInput* rhsXInput = dynamic_cast<const CJoystickXInput*>(rhs);
+  if (rhsXInput == nullptr)
+    return false;
+
+  return m_controllerID == rhsXInput->m_controllerID;
+}
+
 bool CJoystickXInput::ScanEvents(void)
 {
   XINPUT_STATE_EX controllerState;
