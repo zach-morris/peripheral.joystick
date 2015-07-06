@@ -136,9 +136,12 @@ BOOL CALLBACK CJoystickInterfaceDirectInput::EnumJoysticksCallback(const DIDEVIC
     return DIENUM_CONTINUE;
   }
 
+  if (!context->m_hWnd)
+    return DIENUM_CONTINUE;
+
   // Set the cooperative level to let DInput know how this device should
   // interact with the system and with other DInput applications.
-  hr = pJoystick->SetCooperativeLevel(m_hWnd, DISCL_NONEXCLUSIVE | DISCL_FOREGROUND);
+  hr = pJoystick->SetCooperativeLevel(context->m_hWnd, DISCL_NONEXCLUSIVE | DISCL_FOREGROUND);
   if (FAILED(hr))
   {
     esyslog("%s: Failed to SetCooperativeLevel on: %s", __FUNCTION__, pdidInstance->tszProductName);
