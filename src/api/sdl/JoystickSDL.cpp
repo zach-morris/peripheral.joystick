@@ -36,6 +36,11 @@ CJoystickSDL::CJoystickSDL(const std::string& strName, SDL_Joystick* pJoystick, 
   SetAxisCount(SDL_JoystickNumAxes(m_pJoystick));
 }
 
+CJoystickSDL::~CJoystickSDL(void)
+{
+  SDL_JoystickClose(m_pJoystick);
+}
+
 bool CJoystickSDL::ScanEvents(void)
 {
   // Update the state of all opened joysticks

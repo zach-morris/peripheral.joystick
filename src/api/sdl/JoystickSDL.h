@@ -32,7 +32,7 @@ namespace JOYSTICK
   {
   public:
     CJoystickSDL(const std::string& strName, SDL_Joystick* pJoystick, CJoystickInterfaceSDL* api);
-    virtual ~CJoystickSDL(void) { }
+    virtual ~CJoystickSDL(void);
 
   protected:
     virtual bool ScanEvents(void);
