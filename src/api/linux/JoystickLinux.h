@@ -34,13 +34,15 @@ namespace JOYSTICK
     CJoystickLinux(int fd, const std::string& strFilename, CJoystickInterfaceLinux* api);
     virtual ~CJoystickLinux(void) { Deinitialize(); }
 
+    // implementation of CJoystick
     virtual void Deinitialize(void);
+    virtual bool Equals(const CJoystick* rhs) const;
 
   protected:
     virtual bool ScanEvents(void);
 
   private:
     int         m_fd;
-    std::string m_strFilename; // For debugging purposes
+    std::string m_strFilename;
   };
 }

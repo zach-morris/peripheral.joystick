@@ -52,6 +52,18 @@ void CJoystickLinux::Deinitialize(void)
   m_fd = INVALID_FD;
 }
 
+bool CJoystickLinux::Equals(const CJoystick* rhs) const
+{
+  if (rhs == nullptr)
+    return false;
+
+  const CJoystickLinux* rhsLinux= dynamic_cast<const CJoystickLinux*>(rhs);
+  if (rhsLinux == nullptr)
+    return false;
+
+  return m_strFilename == rhsLinux->m_strFilename;
+}
+
 bool CJoystickLinux::ScanEvents(void)
 {
   js_event joyEvent;
