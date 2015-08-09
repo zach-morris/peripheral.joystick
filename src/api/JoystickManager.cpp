@@ -142,12 +142,12 @@ void CJoystickManager::Deinitialize(void)
 
 bool CJoystickManager::PerformJoystickScan(std::vector<CJoystick*>& joysticks)
 {
-  CLockObject lock(m_joystickMutex);
-
-  // Scan for joysticks
+  // Scan for joysticks (this can take a while, don't block)
   std::vector<CJoystick*> scanResults;
   for (std::vector<IJoystickInterface*>::iterator itInterface = m_interfaces.begin(); itInterface != m_interfaces.end(); ++itInterface)
     (*itInterface)->ScanForJoysticks(scanResults);
+
+  CLockObject lock(m_joystickMutex);
 
   // Unregister removed joysticks
   for (int i = (int)m_joysticks.size() - 1; i >= 0; i--)
