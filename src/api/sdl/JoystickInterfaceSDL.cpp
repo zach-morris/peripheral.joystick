@@ -57,7 +57,7 @@ bool CJoystickInterfaceSDL::ScanForJoysticks(std::vector<CJoystick*>& joysticks)
     // Load joystick names and open all connected joysticks
     for (int i = 0 ; i < SDL_NumJoysticks(); i++)
     {
-      SDL_Joystick *joy = SDL_JoystickOpen(i);
+      SDL_Joystick *joy = SDL_JoystickOpen(i); // joystick pointer is refcounted
 #if defined(TARGET_DARWIN)
       // On OS X, the 360 controllers are handled externally, since the SDL code is
       // really buggy and doesn't handle disconnects.

@@ -38,7 +38,7 @@ CJoystickSDL::CJoystickSDL(const std::string& strName, SDL_Joystick* pJoystick, 
 
 CJoystickSDL::~CJoystickSDL(void)
 {
-  SDL_JoystickClose(m_pJoystick);
+  SDL_JoystickClose(m_pJoystick); // joystick pointer is refcounted
 }
 
 bool CJoystickSDL::ScanEvents(void)
