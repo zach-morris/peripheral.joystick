@@ -34,11 +34,6 @@ namespace JOYSTICK
     virtual ~CJoystick(void) { Deinitialize(); }
 
     /*!
-     * The parent API that this joystick was discovered on
-     */
-    IJoystickInterface* API(void) const { return m_api; }
-
-    /*!
      * Compare joystick properties
      */
     virtual bool Equals(const CJoystick* rhs) const;
@@ -106,7 +101,6 @@ namespace JOYSTICK
       std::vector<JOYSTICK_STATE_AXIS>   axes;
     };
 
-    IJoystickInterface* const         m_api;
     JoystickState                     m_state;
     JoystickState                     m_stateBuffer;
     std::vector<IJoystickAxisFilter*> m_axisFilters;

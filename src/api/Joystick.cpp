@@ -31,14 +31,12 @@ using namespace JOYSTICK;
 #define ANALOG_EPSILON  0.0001f
 
 CJoystick::CJoystick(IJoystickInterface* api)
- : m_api(api),
-   m_discoverTimeMs(PLATFORM::GetTimeMs()),
+ : m_discoverTimeMs(PLATFORM::GetTimeMs()),
    m_firstEventTimeMs(-1),
    m_lastEventTimeMs(-1)
 {
-  ASSERT(m_api);
-
-  SetProvider(m_api->Name());
+  ASSERT(api);
+  SetProvider(api->Name());
 }
 
 bool CJoystick::Equals(const CJoystick* rhs) const
