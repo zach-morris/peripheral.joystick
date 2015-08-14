@@ -26,10 +26,6 @@
 
 #include "libKODI_peripheral.h"
 
-// For getting the GUIDs of XInput devices
-#include <wbemidl.h>
-#include <oleauto.h>
-
 #pragma comment(lib, "Dinput8.lib")
 #pragma comment(lib, "dxguid.lib")
 
