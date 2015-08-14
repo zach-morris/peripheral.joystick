@@ -87,6 +87,7 @@ namespace JOYSTICK
     std::vector<IJoystickInterface*> m_interfaces;
     std::vector<CJoystick*>          m_joysticks;
     unsigned int                     m_nextJoystickIndex;
+    mutable PLATFORM::CMutex         m_interfacesMutex;
     mutable PLATFORM::CMutex         m_joystickMutex;
   };
 }

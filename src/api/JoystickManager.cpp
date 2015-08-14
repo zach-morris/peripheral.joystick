@@ -97,7 +97,7 @@ CJoystickManager& CJoystickManager::Get(void)
 
 bool CJoystickManager::Initialize(IScannerCallback* scanner)
 {
-  CLockObject lock(m_joystickMutex);
+  CLockObject lock(m_interfacesMutex);
 
   m_scanner = scanner;
 
@@ -132,20 +132,28 @@ bool CJoystickManager::Initialize(IScannerCallback* scanner)
 
 void CJoystickManager::Deinitialize(void)
 {
-  CLockObject lock(m_joystickMutex);
+  {
+    CLockObject lock(m_interfacesMutex);
+    safe_delete_vector(m_interfaces);
+  }
 
-  safe_delete_vector(m_interfaces);
-  safe_delete_vector(m_joysticks);
+  {
+    CLockObject lock(m_joystickMutex);
+    safe_delete_vector(m_joysticks);
+  }
 
   m_scanner = NULL;
 }
 
 bool CJoystickManager::PerformJoystickScan(std::vector<CJoystick*>& joysticks)
 {
-  // Scan for joysticks (this can take a while, don't block)
   std::vector<CJoystick*> scanResults;
-  for (std::vector<IJoystickInterface*>::iterator itInterface = m_interfaces.begin(); itInterface != m_interfaces.end(); ++itInterface)
-    (*itInterface)->ScanForJoysticks(scanResults);
+  {
+    CLockObject lock(m_interfacesMutex);
+    // Scan for joysticks (this can take a while, don't block)
+    for (std::vector<IJoystickInterface*>::iterator itInterface = m_interfaces.begin(); itInterface != m_interfaces.end(); ++itInterface)
+      (*itInterface)->ScanForJoysticks(scanResults);
+  }
 
   CLockObject lock(m_joystickMutex);
 
