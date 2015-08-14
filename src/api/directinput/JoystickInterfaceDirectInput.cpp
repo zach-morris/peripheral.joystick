@@ -107,8 +107,6 @@ bool CJoystickInterfaceDirectInput::ScanForJoysticks(std::vector<CJoystick*>& jo
 
 BOOL CALLBACK CJoystickInterfaceDirectInput::EnumJoysticksCallback(const DIDEVICEINSTANCE *pdidInstance, VOID *pContext)
 {
-  HRESULT hr;
-
   // Skip verified XInput devices
   if (IsXInputDevice(&pdidInstance->guidProduct))
     return DIENUM_CONTINUE;
@@ -118,7 +116,7 @@ BOOL CALLBACK CJoystickInterfaceDirectInput::EnumJoysticksCallback(const DIDEVIC
   LPDIRECTINPUTDEVICE8 pJoystick = NULL;
 
   // Obtain an interface to the enumerated joystick.
-  hr = context->m_pDirectInput->CreateDevice(pdidInstance->guidInstance, &pJoystick, NULL);
+  HRESULT hr = context->m_pDirectInput->CreateDevice(pdidInstance->guidInstance, &pJoystick, NULL);
   if (FAILED(hr) || pJoystick == NULL)
   {
     esyslog("%s: Failed to CreateDevice: %s", __FUNCTION__, pdidInstance->tszProductName);
