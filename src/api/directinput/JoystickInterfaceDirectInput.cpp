@@ -107,8 +107,6 @@ bool CJoystickInterfaceDirectInput::ScanForJoysticks(std::vector<CJoystick*>& jo
 
 BOOL CALLBACK CJoystickInterfaceDirectInput::EnumJoysticksCallback(const DIDEVICEINSTANCE *pdidInstance, VOID *pContext)
 {
-  HRESULT hr;
-
   // Skip verified XInput devices
   if (IsXInputDevice(&pdidInstance->guidProduct))
     return DIENUM_CONTINUE;
@@ -118,7 +116,7 @@ BOOL CALLBACK CJoystickInterfaceDirectInput::EnumJoysticksCallback(const DIDEVIC
   LPDIRECTINPUTDEVICE8 pJoystick = NULL;
 
   // Obtain an interface to the enumerated joystick.
-  hr = context->m_pDirectInput->CreateDevice(pdidInstance->guidInstance, &pJoystick, NULL);
+  HRESULT hr = context->m_pDirectInput->CreateDevice(pdidInstance->guidInstance, &pJoystick, NULL);
   if (FAILED(hr) || pJoystick == NULL)
   {
     esyslog("%s: Failed to CreateDevice: %s", __FUNCTION__, pdidInstance->tszProductName);
@@ -156,126 +154,58 @@ BOOL CALLBACK CJoystickInterfaceDirectInput::EnumJoysticksCallback(const DIDEVIC
 }
 
 //-----------------------------------------------------------------------------
-// Enum each PNP device using WMI and check each device ID to see if it contains
-// "IG_" (ex. "VID_045E&PID_028E&IG_00"). If it does, then it's an XInput device.
-// Unfortunately this information can not be found by just using DirectInput.
-// See http://msdn.microsoft.com/en-us/library/windows/desktop/ee417014(v=vs.85).aspx
+// This implementation has been taken from
+// https://github.com/rheit/zdoom/blob/master/src/win32/i_dijoy.cpp
+// The theory of operation is the same as for the code provided by Microsoft at
+// http://msdn.microsoft.com/en-us/library/windows/desktop/ee417014(v=vs.85).aspx,
+// except that we use the Raw Input device list to find the device ID instead of WMI.
+// This is a huge order of magnitude faster than WMI (around 10000 times faster!)
 //-----------------------------------------------------------------------------
-bool CJoystickInterfaceDirectInput::IsXInputDevice(const GUID* pGuidProductFromDirectInput)
+bool CJoystickInterfaceDirectInput::IsXInputDevice(const GUID *pGuidProductFromDirectInput)
 {
-  IWbemLocator*         pIWbemLocator = NULL;
-  IEnumWbemClassObject* pEnumDevices = NULL;
-  IWbemClassObject*     pDevices[20] = { 0 };
-  IWbemServices*        pIWbemServices = NULL;
-  BSTR                  bstrNamespace = NULL;
-  BSTR                  bstrDeviceID = NULL;
-  BSTR                  bstrClassName = NULL;
-  DWORD                 uReturned = 0;
-  bool                  bIsXinputDevice = false;
-  UINT                  iDevice = 0;
-  VARIANT               var;
-  HRESULT               hr;
+  UINT nDevices;
+  if (GetRawInputDeviceList(NULL, &nDevices, sizeof(RAWINPUTDEVICELIST)) != 0U)
+    return false;
 
-  // CoInit if needed
-  hr = CoInitialize(NULL);
-  bool bCleanupCOM = SUCCEEDED(hr);
+  RAWINPUTDEVICELIST *devices;
+  if ((devices = (RAWINPUTDEVICELIST *)malloc(sizeof(RAWINPUTDEVICELIST) * nDevices)) == NULL)
+    return false;
 
-  try
+  UINT numDevices;
+  if ((numDevices = GetRawInputDeviceList(devices, &nDevices, sizeof(RAWINPUTDEVICELIST))) == (UINT)-1)
   {
-    // Create WMI
-    hr = CoCreateInstance(__uuidof(WbemLocator), NULL, CLSCTX_INPROC_SERVER, __uuidof(IWbemLocator), (LPVOID*)&pIWbemLocator);
-    if (FAILED(hr) || pIWbemLocator == NULL)
-      throw hr;
+    free(devices);
+    return false;
+  }
 
-    bstrNamespace = SysAllocString(L"\\\\.\\root\\cimv2");
-    if (bstrNamespace == NULL)
-      throw hr;
-
-    bstrClassName = SysAllocString(L"Win32_PNPEntity");
-    if (bstrClassName == NULL)
-      throw hr;
-
-    bstrDeviceID = SysAllocString(L"DeviceID");
-    if (bstrDeviceID == NULL)
-      throw hr;
-
-    // Connect to WMI
-    hr = pIWbemLocator->ConnectServer(bstrNamespace, NULL, NULL, 0L, 0L, NULL, NULL, &pIWbemServices);
-    if (FAILED(hr) || pIWbemServices == NULL)
-      throw hr;
-
-    // Switch security level to IMPERSONATE
-    CoSetProxyBlanket(pIWbemServices, RPC_C_AUTHN_WINNT, RPC_C_AUTHZ_NONE, NULL, RPC_C_AUTHN_LEVEL_CALL,
-      RPC_C_IMP_LEVEL_IMPERSONATE, NULL, EOAC_NONE);
-
-    hr = pIWbemServices->CreateInstanceEnum(bstrClassName, 0, NULL, &pEnumDevices);
-    if (FAILED(hr) || pEnumDevices == NULL)
-      throw hr;
-
-    // Loop over all devices
-    do
+  bool isXInput = false;
+  for (UINT i = 0; i < numDevices; ++i)
+  {
+    // I am making the assumption here that all possible XInput devices will
+    // report themselves as generic HID devices and not as keyboards or mice
+    if (devices[i].dwType == RIM_TYPEHID)
     {
-      // Get 20 at a time
-      hr = pEnumDevices->Next(10000, 20, pDevices, &uReturned);
-      if (FAILED(hr))
-        throw hr;
-
-      for (iDevice = 0; iDevice < uReturned; iDevice++)
+      RID_DEVICE_INFO rdi;
+      UINT cbSize = rdi.cbSize = sizeof(rdi);
+      if ((INT)GetRawInputDeviceInfoA(devices[i].hDevice, RIDI_DEVICEINFO, &rdi, &cbSize) >= 0)
       {
-        // Don't compare IDs if we already found our XInput device
-        if (!bIsXinputDevice)
+        if (MAKELONG(rdi.hid.dwVendorId, rdi.hid.dwProductId) == (LONG)pGuidProductFromDirectInput->Data1)
         {
-          // For each device, get its device ID
-          hr = pDevices[iDevice]->Get(bstrDeviceID, 0L, &var, NULL, NULL);
-          if (SUCCEEDED(hr) && var.vt == VT_BSTR && var.bstrVal != NULL)
+          char name[256];
+          UINT namelen = sizeof(name);
+          UINT reslen = GetRawInputDeviceInfoA(devices[i].hDevice, RIDI_DEVICENAME, name, &namelen);
+          if (reslen != (UINT)-1)
           {
-            // Check if the device ID contains "IG_". If it does, then it's an XInput
-            // device. This information can not be found from DirectInput.
-            if (wcsstr(var.bstrVal, L"IG_"))
-            {
-              // If it does, then get the VID/PID from var.bstrVal
-              DWORD dwPid = 0;
-              DWORD dwVid = 0;
-              WCHAR *strVid = wcsstr(var.bstrVal, L"VID_");
-              if (strVid && swscanf(strVid, L"VID_%4X", &dwVid) != 1)
-                dwVid = 0;
-              WCHAR* strPid = wcsstr(var.bstrVal, L"PID_");
-              if (strPid && swscanf(strPid, L"PID_%4X", &dwPid) != 1)
-                dwPid = 0;
-
-              // Compare the VID/PID to the DInput device
-              DWORD dwVidPid = MAKELONG(dwVid, dwPid);
-              if (dwVidPid == pGuidProductFromDirectInput->Data1)
-                bIsXinputDevice = true;
-            }
+            isXInput = strstr(name, "IG_") != NULL;
+            break;
           }
         }
-
-        SAFE_RELEASE(pDevices[iDevice]);
       }
-    } while (uReturned);
+    }
   }
-  catch (HRESULT hr_error)
-  {
-    esyslog("%s: Error while testing for XInput device! hr=%ld", __FUNCTION__, hr_error);
-  }
+  free(devices);
 
-  if (bstrNamespace)
-    SysFreeString(bstrNamespace);
-  if (bstrDeviceID)
-    SysFreeString(bstrDeviceID);
-  if (bstrClassName)
-    SysFreeString(bstrClassName);
-  for (iDevice = 0; iDevice < 20; iDevice++)
-    SAFE_RELEASE(pDevices[iDevice]);
-  SAFE_RELEASE(pEnumDevices);
-  SAFE_RELEASE(pIWbemLocator);
-  SAFE_RELEASE(pIWbemServices);
-
-  if (bCleanupCOM)
-    CoUninitialize();
-
-  return bIsXinputDevice;
+  return isXInput;
 }
 
 HWND CJoystickInterfaceDirectInput::GetMainWindowHandle(void)

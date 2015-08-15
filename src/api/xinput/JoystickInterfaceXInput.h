@@ -22,8 +22,6 @@
 #include "XInputDLL.h"
 #include "api/IJoystickInterface.h"
 
-#include <windows.h> // TODO: Remove me when IsXInputDevice() is moved
-
 namespace JOYSTICK
 {
   class CJoystickInterfaceXInput : public IJoystickInterface
@@ -37,8 +35,5 @@ namespace JOYSTICK
     virtual bool Initialize(void);
     virtual void Deinitialize(void);
     virtual bool ScanForJoysticks(std::vector<CJoystick*>& joysticks);
-
-    // TODO: Move IsXInputDevice() to JoystickInterfaceXInput.cpp
-    static bool IsXInputDevice(const GUID* pGuidProductFromDirectInput);
   };
 }
