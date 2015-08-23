@@ -58,6 +58,7 @@ namespace JOYSTICK
       CFIndex         max;
     };
 
+    CJoystickInterfaceCocoa* const m_api;
     std::vector<IOHIDElementRef> m_buttons;
     std::vector<CocoaAxis>       m_axes;
   };

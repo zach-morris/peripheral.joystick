@@ -133,13 +133,13 @@ bool CJoystickManager::Initialize(IScannerCallback* scanner)
 void CJoystickManager::Deinitialize(void)
 {
   {
-    CLockObject lock(m_interfacesMutex);
-    safe_delete_vector(m_interfaces);
+    CLockObject lock(m_joystickMutex);
+    safe_delete_vector(m_joysticks);
   }
 
   {
-    CLockObject lock(m_joystickMutex);
-    safe_delete_vector(m_joysticks);
+    CLockObject lock(m_interfacesMutex);
+    safe_delete_vector(m_interfaces);
   }
 
   m_scanner = NULL;

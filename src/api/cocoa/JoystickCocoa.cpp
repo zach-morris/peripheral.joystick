@@ -21,16 +21,20 @@
 #include "JoystickCocoa.h"
 #include "utils/CommonMacros.h"
 
+#include <assert.h>
+
 using namespace JOYSTICK;
 
 #define MAX_JOYSTICK_BUTTONS  512
 
 CJoystickCocoa::CJoystickCocoa(IOHIDDeviceRef device, CJoystickInterfaceCocoa* api)
- : CJoystickAsync(api),
+ : m_api(api),
    m_device(device),
    m_bInitialized(false)
 {
-  api->RegisterInputCallback(this, m_device);
+  assert(m_api != nullptr);
+
+  m_api->RegisterInputCallback(this, m_device);
 
   // Must initialize in the constructor to fill out joystick properties
   Initialize();
@@ -38,7 +42,7 @@ CJoystickCocoa::CJoystickCocoa(IOHIDDeviceRef device, CJoystickInterfaceCocoa* a
 
 CJoystickCocoa::~CJoystickCocoa(void)
 {
-  static_cast<CJoystickInterfaceCocoa*>(API())->UnregisterInputCallback(this);
+  m_api->UnregisterInputCallback(this);
 }
 
 bool CJoystickCocoa::Equals(const CJoystick* rhs) const
