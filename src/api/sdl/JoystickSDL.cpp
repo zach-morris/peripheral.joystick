@@ -20,14 +20,15 @@
 
 #include "JoystickSDL.h"
 #include "JoystickInterfaceSDL.h"
+#include "api/JoystickTypes.h"
 #include "utils/CommonMacros.h"
 
 #define MAX_AXISAMOUNT    32768
 
 using namespace JOYSTICK;
 
-CJoystickSDL::CJoystickSDL(const std::string& strName, SDL_Joystick* pJoystick, CJoystickInterfaceSDL* api)
- : CJoystick(api),
+CJoystickSDL::CJoystickSDL(const std::string& strName, SDL_Joystick* pJoystick)
+ : CJoystick(INTERFACE_SDL),
    m_pJoystick(pJoystick)
 {
   SetName(strName);

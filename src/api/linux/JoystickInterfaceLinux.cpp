@@ -100,7 +100,7 @@ bool CJoystickInterfaceLinux::ScanForJoysticks(std::vector<CJoystick*>& joystick
 
       unsigned int index = (unsigned int)std::max(strtol(pDirent->d_name + strlen("js"), NULL, 10), 0L);
 
-      CJoystick* joystick = new CJoystickLinux(fd, filename, this);
+      CJoystick* joystick = new CJoystickLinux(fd, filename);
       joystick->SetName(name);
       joystick->SetButtonCount(buttons);
       joystick->SetAxisCount(axes);

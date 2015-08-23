@@ -20,6 +20,7 @@
 
 #include "JoystickDirectInput.h"
 #include "JoystickInterfaceDirectInput.h"
+#include "api/JoystickTypes.h"
 #include "log/Log.h"
 #include "utils/CommonMacros.h"
 
@@ -36,9 +37,8 @@ using namespace JOYSTICK;
 
 CJoystickDirectInput::CJoystickDirectInput(GUID                           deviceGuid,
                                            LPDIRECTINPUTDEVICE8           joystickDevice,
-                                           const std::string&             strName,
-                                           CJoystickInterfaceDirectInput* api)
- : CJoystick(api),
+                                           const std::string&             strName)
+ : CJoystick(INTERFACE_DIRECTINPUT),
    m_deviceGuid(deviceGuid),
    m_joystickDevice(joystickDevice)
 {

@@ -55,7 +55,7 @@ bool CJoystickInterfaceXInput::ScanForJoysticks(std::vector<CJoystick*>& joystic
       continue;
 
     isyslog("Found a XInput controller on port %u", i);
-    joysticks.push_back(new CJoystickXInput(i, this));
+    joysticks.push_back(new CJoystickXInput(i));
   }
 
   return true;

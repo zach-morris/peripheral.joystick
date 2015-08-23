@@ -26,12 +26,10 @@
 
 namespace JOYSTICK
 {
-  class CJoystickInterfaceLinux;
-
   class CJoystickLinux : public CJoystick
   {
   public:
-    CJoystickLinux(int fd, const std::string& strFilename, CJoystickInterfaceLinux* api);
+    CJoystickLinux(int fd, const std::string& strFilename);
     virtual ~CJoystickLinux(void) { Deinitialize(); }
 
     // implementation of CJoystick

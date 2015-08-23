@@ -32,7 +32,7 @@ namespace JOYSTICK
   class CJoystickAsync : public CJoystick
   {
   public:
-    CJoystickAsync(IJoystickInterface* api);
+    CJoystickAsync(const std::string& strProvider);
     virtual ~CJoystickAsync(void) { }
 
     virtual bool GetEvents(std::vector<ADDON::PeripheralEvent>& events);

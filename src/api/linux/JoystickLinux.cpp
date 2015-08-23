@@ -20,6 +20,7 @@
 
 #include "JoystickLinux.h"
 #include "JoystickInterfaceLinux.h"
+#include "api/JoystickTypes.h"
 #include "log/Log.h"
 #include "utils/CommonMacros.h"
 
@@ -39,8 +40,8 @@ using namespace JOYSTICK;
 #define MAX_AXIS           32767
 #define INVALID_FD         -1
 
-CJoystickLinux::CJoystickLinux(int fd, const std::string& strFilename, CJoystickInterfaceLinux* api)
- : CJoystick(api),
+CJoystickLinux::CJoystickLinux(int fd, const std::string& strFilename)
+ : CJoystick(INTERFACE_LINUX),
    m_fd(fd),
    m_strFilename(strFilename)
 {

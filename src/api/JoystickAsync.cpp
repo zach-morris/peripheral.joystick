@@ -22,8 +22,8 @@
 using namespace JOYSTICK;
 using namespace PLATFORM;
 
-CJoystickAsync::CJoystickAsync(IJoystickInterface* api)
-  : CJoystick(api)
+CJoystickAsync::CJoystickAsync(const std::string& strProvider)
+  : CJoystick(strProvider)
 {
 }
 

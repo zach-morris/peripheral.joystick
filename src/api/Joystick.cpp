@@ -17,7 +17,6 @@
  *  <http://www.gnu.org/licenses/>.
  */
 
-#include "IJoystickInterface.h"
 #include "AnomalousTriggerFilter.h"
 #include "Joystick.h"
 #include "log/Log.h"
@@ -30,13 +29,12 @@ using namespace JOYSTICK;
 
 #define ANALOG_EPSILON  0.0001f
 
-CJoystick::CJoystick(IJoystickInterface* api)
+CJoystick::CJoystick(const std::string& strProvider)
  : m_discoverTimeMs(PLATFORM::GetTimeMs()),
    m_firstEventTimeMs(-1),
    m_lastEventTimeMs(-1)
 {
-  ASSERT(api);
-  SetProvider(api->Name());
+  SetProvider(strProvider);
 }
 
 bool CJoystick::Equals(const CJoystick* rhs) const

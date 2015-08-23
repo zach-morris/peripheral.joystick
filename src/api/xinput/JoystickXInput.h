@@ -25,12 +25,10 @@
 
 namespace JOYSTICK
 {
-  class CJoystickInterfaceXInput;
-
   class CJoystickXInput : public CJoystick
   {
   public:
-    CJoystickXInput(unsigned int controllerID, CJoystickInterfaceXInput* api);
+    CJoystickXInput(unsigned int controllerID);
     virtual ~CJoystickXInput(void) { }
 
     virtual bool Equals(const CJoystick* rhs) const;

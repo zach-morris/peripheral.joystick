@@ -26,15 +26,12 @@
 
 namespace JOYSTICK
 {
-  class CJoystickInterfaceDirectInput;
-
   class CJoystickDirectInput : public CJoystick
   {
   public:
     CJoystickDirectInput(GUID                           deviceGuid,
                          LPDIRECTINPUTDEVICE8           joystickDevice,
-                         const std::string&             strName,
-                         CJoystickInterfaceDirectInput* api);
+                         const std::string&             strName);
 
     virtual ~CJoystickDirectInput(void) { }
 

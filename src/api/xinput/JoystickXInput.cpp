@@ -21,6 +21,7 @@
 #include "JoystickXInput.h"
 #include "JoystickInterfaceXInput.h"
 #include "XInputDLL.h"
+#include "api/JoystickTypes.h"
 #include "log/Log.h"
 
 #include <Xinput.h>
@@ -34,8 +35,8 @@ using namespace JOYSTICK;
 #define MAX_AXIS      32768
 #define MAX_TRIGGER   255
 
-CJoystickXInput::CJoystickXInput(unsigned int controllerID, CJoystickInterfaceXInput* api)
- : CJoystick(api),
+CJoystickXInput::CJoystickXInput(unsigned int controllerID)
+ : CJoystick(INTERFACE_XINPUT),
    m_controllerID(controllerID),
    m_dwPacketNumber(0)
 {

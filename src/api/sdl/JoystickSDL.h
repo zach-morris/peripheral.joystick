@@ -26,12 +26,10 @@
 
 namespace JOYSTICK
 {
-  class CJoystickInterfaceSDL;
-
   class CJoystickSDL : public CJoystick
   {
   public:
-    CJoystickSDL(const std::string& strName, SDL_Joystick* pJoystick, CJoystickInterfaceSDL* api);
+    CJoystickSDL(const std::string& strName, SDL_Joystick* pJoystick);
     virtual ~CJoystickSDL(void);
 
   protected:

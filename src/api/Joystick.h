@@ -20,17 +20,17 @@
 
 #include "kodi/kodi_peripheral_utils.hpp"
 
+#include <string>
 #include <vector>
 
 namespace JOYSTICK
 {
   class IJoystickAxisFilter;
-  class IJoystickInterface;
 
   class CJoystick : public ADDON::Joystick
   {
   public:
-    CJoystick(IJoystickInterface* api);
+    CJoystick(const std::string& strProvider);
     virtual ~CJoystick(void) { Deinitialize(); }
 
     /*!

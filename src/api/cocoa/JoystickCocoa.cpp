@@ -19,6 +19,7 @@
  */
 
 #include "JoystickCocoa.h"
+#include "api/JoystickTypes.h"
 #include "utils/CommonMacros.h"
 
 #include <assert.h>
@@ -28,7 +29,8 @@ using namespace JOYSTICK;
 #define MAX_JOYSTICK_BUTTONS  512
 
 CJoystickCocoa::CJoystickCocoa(IOHIDDeviceRef device, CJoystickInterfaceCocoa* api)
- : m_api(api),
+ : CJoystickAsync(INTERFACE_COCOA),
+   m_api(api),
    m_device(device),
    m_bInitialized(false)
 {
