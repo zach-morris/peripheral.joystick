@@ -32,10 +32,10 @@ namespace JOYSTICK
 
   protected:
     // Helper functions to offer a buffer for device scanners that require static callbacks
-    void AddScanResult(CJoystick* joystick);
-    void GetScanResults(std::vector<CJoystick*>& joysticks);
+    void AddScanResult(const JoystickPtr& joystick);
+    void GetScanResults(JoystickVector& joysticks);
 
   private:
-    std::vector<CJoystick*> m_scanResults;
+    JoystickVector m_scanResults;
   };
 }

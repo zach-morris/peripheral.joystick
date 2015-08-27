@@ -18,6 +18,8 @@
  */
 #pragma once
 
+#include "JoystickTypes.h"
+
 #include <vector>
 
 namespace JOYSTICK
@@ -51,6 +53,6 @@ namespace JOYSTICK
      *
      * \return true if the scan completed successfully, even if no results are found
      */
-    virtual bool ScanForJoysticks(std::vector<CJoystick*>& joysticks) = 0;
+    virtual bool ScanForJoysticks(JoystickVector& joysticks) = 0;
   };
 }

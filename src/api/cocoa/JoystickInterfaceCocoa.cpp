@@ -138,12 +138,12 @@ void CJoystickInterfaceCocoa::Deinitialize(void)
   }
 }
 
-bool CJoystickInterfaceCocoa::ScanForJoysticks(std::vector<CJoystick*>& joysticks)
+bool CJoystickInterfaceCocoa::ScanForJoysticks(JoystickVector& joysticks)
 {
   CLockObject lock(m_deviceDiscoveryMutex);
 
   for (auto it = m_discoveredDevices.begin(); it != m_discoveredDevices.end(); ++it)
-    joysticks.push_back(new CJoystickCocoa(*it, this));
+    joysticks.push_back(JoystickPtr(new CJoystickCocoa(*it, this)));
 
   return true;
 }

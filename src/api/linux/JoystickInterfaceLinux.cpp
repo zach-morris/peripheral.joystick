@@ -41,7 +41,7 @@ const char* CJoystickInterfaceLinux::Name(void) const
   return INTERFACE_LINUX;
 }
 
-bool CJoystickInterfaceLinux::ScanForJoysticks(std::vector<CJoystick*>& joysticks)
+bool CJoystickInterfaceLinux::ScanForJoysticks(JoystickVector& joysticks)
 {
   // TODO: Use udev to grab device names instead of reading /dev/input/js*
   std::string inputDir("/dev/input");
@@ -100,7 +100,7 @@ bool CJoystickInterfaceLinux::ScanForJoysticks(std::vector<CJoystick*>& joystick
 
       unsigned int index = (unsigned int)std::max(strtol(pDirent->d_name + strlen("js"), NULL, 10), 0L);
 
-      CJoystick* joystick = new CJoystickLinux(fd, filename);
+      JoystickPtr joystick = JoystickPtr(new CJoystickLinux(fd, filename));
       joystick->SetName(name);
       joystick->SetButtonCount(buttons);
       joystick->SetAxisCount(axes);

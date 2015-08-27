@@ -51,18 +51,18 @@ namespace JOYSTICK
 {
   struct ScanResultEqual
   {
-    ScanResultEqual(const CJoystick* needle) : m_needle(needle) { }
+    ScanResultEqual(const JoystickPtr& needle) : m_needle(needle) { }
 
-    bool operator()(const CJoystick* rhs)
+    bool operator()(const JoystickPtr& rhs)
     {
-      if (m_needle != NULL)
-        return m_needle->Equals(rhs);
+      if (m_needle)
+        return m_needle->Equals(rhs.get());
 
       return m_needle == rhs;
     }
 
   private:
-    const CJoystick* const m_needle;
+    JoystickPtr const m_needle;
   };
 
   template <class T>
@@ -134,7 +134,7 @@ void CJoystickManager::Deinitialize(void)
 {
   {
     CLockObject lock(m_joystickMutex);
-    safe_delete_vector(m_joysticks);
+    m_joysticks.clear();
   }
 
   {
@@ -145,9 +145,9 @@ void CJoystickManager::Deinitialize(void)
   m_scanner = NULL;
 }
 
-bool CJoystickManager::PerformJoystickScan(std::vector<CJoystick*>& joysticks)
+bool CJoystickManager::PerformJoystickScan(JoystickVector& joysticks)
 {
-  std::vector<CJoystick*> scanResults;
+  JoystickVector scanResults;
   {
     CLockObject lock(m_interfacesMutex);
     // Scan for joysticks (this can take a while, don't block)
@@ -161,17 +161,12 @@ bool CJoystickManager::PerformJoystickScan(std::vector<CJoystick*>& joysticks)
   for (int i = (int)m_joysticks.size() - 1; i >= 0; i--)
   {
     if (std::find_if(scanResults.begin(), scanResults.end(), ScanResultEqual(m_joysticks.at(i))) == scanResults.end())
-    {
-      delete m_joysticks.at(i);
       m_joysticks.erase(m_joysticks.begin() + i);
-    }
   }
 
   // Register new joysticks
-  for (std::vector<CJoystick*>::iterator itJoystick = scanResults.begin(); itJoystick != scanResults.end(); ++itJoystick)
+  for (JoystickVector::iterator itJoystick = scanResults.begin(); itJoystick != scanResults.end(); ++itJoystick)
   {
-    bool bSuccess(false);
-
     if (std::find_if(m_joysticks.begin(), m_joysticks.end(), ScanResultEqual(*itJoystick)) == m_joysticks.end())
     {
       if ((*itJoystick)->Initialize())
@@ -183,12 +178,8 @@ bool CJoystickManager::PerformJoystickScan(std::vector<CJoystick*>& joysticks)
                 (*itJoystick)->AxisCount(), (*itJoystick)->HatCount(), (*itJoystick)->ButtonCount());
 
         m_joysticks.push_back(*itJoystick);
-        bSuccess = true;
       }
     }
-
-    if (!bSuccess)
-      delete *itJoystick;
   }
 
   joysticks = m_joysticks;
@@ -196,24 +187,24 @@ bool CJoystickManager::PerformJoystickScan(std::vector<CJoystick*>& joysticks)
   return true;
 }
 
-CJoystick* CJoystickManager::GetJoystick(unsigned int index) const
+JoystickPtr CJoystickManager::GetJoystick(unsigned int index) const
 {
   CLockObject lock(m_joystickMutex);
 
-  for (std::vector<CJoystick*>::const_iterator it = m_joysticks.begin(); it != m_joysticks.end(); ++it)
+  for (JoystickVector::const_iterator it = m_joysticks.begin(); it != m_joysticks.end(); ++it)
   {
     if ((*it)->Index() == index)
       return *it;
   }
 
-  return NULL;
+  return JoystickPtr();
 }
 
 bool CJoystickManager::GetEvents(std::vector<ADDON::PeripheralEvent>& events)
 {
   CLockObject lock(m_joystickMutex);
 
-  for (std::vector<CJoystick*>::iterator it = m_joysticks.begin(); it != m_joysticks.end(); ++it)
+  for (JoystickVector::iterator it = m_joysticks.begin(); it != m_joysticks.end(); ++it)
     (*it)->GetEvents(events);
 
   return true;

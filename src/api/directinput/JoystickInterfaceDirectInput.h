@@ -38,7 +38,7 @@ namespace JOYSTICK
     virtual const char* Name(void) const;
     virtual bool Initialize(void);
     virtual void Deinitialize(void);
-    virtual bool ScanForJoysticks(std::vector<CJoystick*>& joysticks);
+    virtual bool ScanForJoysticks(JoystickVector& joysticks);
 
   private:
     bool InitializeDirectInput(void);

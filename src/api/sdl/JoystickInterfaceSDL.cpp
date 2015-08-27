@@ -41,7 +41,7 @@ void CJoystickInterfaceSDL::Deinitialize(void)
     esyslog("Stopping joystick SDL subsystem failed");
 }
 
-bool CJoystickInterfaceSDL::ScanForJoysticks(std::vector<CJoystick*>& joysticks)
+bool CJoystickInterfaceSDL::ScanForJoysticks(JoystickVector& joysticks)
 {
   Deinitialize();
 
@@ -85,7 +85,7 @@ bool CJoystickInterfaceSDL::ScanForJoysticks(std::vector<CJoystick*>& joysticks)
         }
         else
         {
-          joysticks.push_back(new CJoystickSDL(SDL_JoystickNameForIndex(i), joy));
+          joysticks.push_back(JoystickPtr(new CJoystickSDL(SDL_JoystickNameForIndex(i), joy)));
 
           /* TODO
           isyslog("Enabled Joystick: \"%s\" (SDL)", joystick.m_configuration.Name().c_str());

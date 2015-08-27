@@ -164,13 +164,14 @@ PERIPHERAL_ERROR PerformDeviceScan(unsigned int* peripheral_count, PERIPHERAL_IN
   if (!peripheral_count || !scan_results)
     return PERIPHERAL_ERROR_INVALID_PARAMETERS;
 
-  std::vector<CJoystick*> joysticks;
+  JoystickVector joysticks;
   if (!CJoystickManager::Get().PerformJoystickScan(joysticks))
     return PERIPHERAL_ERROR_FAILED;
 
   // Upcast array pointers
   std::vector<ADDON::Peripheral*> peripherals;
-  peripherals.assign(joysticks.begin(), joysticks.end());
+  for (JoystickVector::const_iterator it = joysticks.begin(); it != joysticks.end(); ++it)
+    peripherals.push_back(it->get());
 
   *peripheral_count = peripherals.size();
   ADDON::Peripherals::ToStructs(peripherals, scan_results);
@@ -209,7 +210,7 @@ PERIPHERAL_ERROR GetJoystickInfo(unsigned int index, JOYSTICK_INFO* info)
   if (!info)
     return PERIPHERAL_ERROR_INVALID_PARAMETERS;
 
-  const CJoystick* joystick = CJoystickManager::Get().GetJoystick(index);
+  JoystickPtr joystick = CJoystickManager::Get().GetJoystick(index);
   if (!joystick)
     return PERIPHERAL_ERROR_NOT_CONNECTED;
 

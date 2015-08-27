@@ -22,12 +22,12 @@
 
 using namespace JOYSTICK;
 
-void CJoystickInterfaceCallback::AddScanResult(CJoystick* joystick)
+void CJoystickInterfaceCallback::AddScanResult(const JoystickPtr& joystick)
 {
   m_scanResults.push_back(joystick);
 }
 
-void CJoystickInterfaceCallback::GetScanResults(std::vector<CJoystick*>& joysticks)
+void CJoystickInterfaceCallback::GetScanResults(JoystickVector& joysticks)
 {
   joysticks.insert(joysticks.end(), m_scanResults.begin(), m_scanResults.end());
   m_scanResults.clear();

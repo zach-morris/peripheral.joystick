@@ -37,6 +37,6 @@ namespace JOYSTICK
     // implementation of IJoystickInterface
     virtual const char* Name(void) const;
     virtual void Deinitialize(void);
-    virtual bool ScanForJoysticks(std::vector<CJoystick*>& joysticks);
+    virtual bool ScanForJoysticks(JoystickVector& joysticks);
   };
 }

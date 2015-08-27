@@ -45,7 +45,7 @@ void CJoystickInterfaceXInput::Deinitialize(void)
   CXInputDLL::Get().Unload();
 }
 
-bool CJoystickInterfaceXInput::ScanForJoysticks(std::vector<CJoystick*>& joysticks)
+bool CJoystickInterfaceXInput::ScanForJoysticks(JoystickVector& joysticks)
 {
   XINPUT_STATE_EX controllerState; // No need to memset, only checking for controller existence
 
@@ -55,7 +55,7 @@ bool CJoystickInterfaceXInput::ScanForJoysticks(std::vector<CJoystick*>& joystic
       continue;
 
     isyslog("Found a XInput controller on port %u", i);
-    joysticks.push_back(new CJoystickXInput(i));
+    joysticks.push_back(JoystickPtr(new CJoystickXInput(i)));
   }
 
   return true;

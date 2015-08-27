@@ -19,6 +19,8 @@
  */
 #pragma once
 
+#include "JoystickTypes.h"
+
 #include "kodi/kodi_peripheral_utils.hpp"
 #include "platform/threads/mutex.h"
 
@@ -26,7 +28,6 @@
 
 namespace JOYSTICK
 {
-  class CJoystick;
   class IJoystickInterface;
 
   class IScannerCallback
@@ -68,9 +69,9 @@ namespace JOYSTICK
      *
      * \return true if the scan succeeded (even if there are no joysticks)
      */
-    bool PerformJoystickScan(std::vector<CJoystick*>& joysticks);
+    bool PerformJoystickScan(JoystickVector& joysticks);
 
-    CJoystick* GetJoystick(unsigned int index) const;
+    JoystickPtr GetJoystick(unsigned int index) const;
 
     /*!
     * \brief Get all events that have occurred since the last call to GetEvents()
@@ -85,7 +86,7 @@ namespace JOYSTICK
   private:
     IScannerCallback*                m_scanner;
     std::vector<IJoystickInterface*> m_interfaces;
-    std::vector<CJoystick*>          m_joysticks;
+    JoystickVector                   m_joysticks;
     unsigned int                     m_nextJoystickIndex;
     mutable PLATFORM::CMutex         m_interfacesMutex;
     mutable PLATFORM::CMutex         m_joystickMutex;
