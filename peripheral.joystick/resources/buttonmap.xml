@@ -150,39 +150,118 @@
         </device>
         <device name="Keyboard" provider="application">
             <controller id="game.controller.default">
+                <feature name="a" button="90" />
+                <feature name="b" button="88" />
+                <feature name="back" button="92" />
+                <feature name="down" button="129" />
+                <feature name="guide" button="136" />
+                <feature name="left" button="130" />
+                <feature name="leftbumper" button="49" />
+                <feature name="leftthumb" button="68" />
+                <feature name="lefttrigger" button="65" />
+                <feature name="right" button="131" />
+                <feature name="rightbumper" button="50" />
+                <feature name="rightthumb" button="70" />
+                <feature name="righttrigger" button="83" />
+                <feature name="start" button="13" />
+                <feature name="up" button="128" />
+            </controller>
+            <controller id="game.controller.gba">
+                <feature name="a" button="90" />
+                <feature name="b" button="88" />
                 <feature name="down" button="129" />
                 <feature name="left" button="130" />
+                <feature name="leftbumper" button="65" />
+                <feature name="right" button="131" />
+                <feature name="rightbumper" button="83" />
+                <feature name="select" button="92" />
+                <feature name="start" button="13" />
+                <feature name="up" button="128" />
+            </controller>
+            <controller id="game.controller.genesis">
+                <feature name="a" button="90" />
+                <feature name="b" button="88" />
+                <feature name="c" button="67" />
+                <feature name="down" button="129" />
+                <feature name="left" button="130" />
+                <feature name="mode" button="92" />
                 <feature name="right" button="131" />
                 <feature name="start" button="13" />
                 <feature name="up" button="128" />
+                <feature name="x" button="65" />
+                <feature name="y" button="83" />
+                <feature name="z" button="68" />
             </controller>
             <controller id="game.controller.n64">
+                <feature name="a" button="90" />
+                <feature name="b" button="88" />
+                <feature name="cdown" button="83" />
+                <feature name="cleft" button="65" />
+                <feature name="cright" button="68" />
+                <feature name="cup" button="87" />
                 <feature name="down" button="129" />
                 <feature name="left" button="130" />
+                <feature name="leftbumper" button="49" />
                 <feature name="right" button="131" />
+                <feature name="rightbumper" button="50" />
                 <feature name="start" button="13" />
                 <feature name="up" button="128" />
+                <feature name="z" button="32" />
             </controller>
             <controller id="game.controller.nes">
+                <feature name="a" button="90" />
+                <feature name="b" button="88" />
                 <feature name="down" button="129" />
                 <feature name="left" button="130" />
                 <feature name="right" button="131" />
+                <feature name="select" button="92" />
                 <feature name="start" button="13" />
                 <feature name="up" button="128" />
             </controller>
             <controller id="game.controller.ps">
+                <feature name="circle" button="88" />
+                <feature name="cross" button="90" />
                 <feature name="down" button="129" />
                 <feature name="left" button="130" />
+                <feature name="leftbumper" button="49" />
+                <feature name="lefttrigger" button="81" />
                 <feature name="right" button="131" />
+                <feature name="rightbumper" button="50" />
+                <feature name="righttrigger" button="87" />
+                <feature name="select" button="92" />
+                <feature name="square" button="65" />
                 <feature name="start" button="13" />
+                <feature name="triangle" button="83" />
                 <feature name="up" button="128" />
             </controller>
-            <controller id="game.controller.snes">
+            <controller id="game.controller.saturn">
+                <feature name="a" button="90" />
+                <feature name="b" button="88" />
+                <feature name="c" button="67" />
                 <feature name="down" button="129" />
+                <feature name="l" button="81" />
                 <feature name="left" button="130" />
+                <feature name="r" button="87" />
                 <feature name="right" button="131" />
                 <feature name="start" button="13" />
                 <feature name="up" button="128" />
+                <feature name="x" button="65" />
+                <feature name="y" button="83" />
+                <feature name="z" button="68" />
+            </controller>
+            <controller id="game.controller.snes">
+                <feature name="a" button="90" />
+                <feature name="b" button="88" />
+                <feature name="down" button="129" />
+                <feature name="left" button="130" />
+                <feature name="leftbumper" button="81" />
+                <feature name="right" button="131" />
+                <feature name="rightbumper" button="87" />
+                <feature name="select" button="92" />
+                <feature name="start" button="13" />
+                <feature name="up" button="128" />
+                <feature name="x" button="65" />
+                <feature name="y" button="83" />
             </controller>
         </device>
     </devices>
