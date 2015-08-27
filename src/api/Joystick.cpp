@@ -31,6 +31,7 @@ using namespace JOYSTICK;
 
 CJoystick::CJoystick(const std::string& strProvider)
  : m_discoverTimeMs(PLATFORM::GetTimeMs()),
+   m_activateTimeMs(-1),
    m_firstEventTimeMs(-1),
    m_lastEventTimeMs(-1)
 {
@@ -146,18 +147,27 @@ void CJoystick::GetAxisEvents(std::vector<ADDON::PeripheralEvent>& events)
 
 void CJoystick::SetButtonValue(unsigned int buttonIndex, JOYSTICK_STATE_BUTTON buttonValue)
 {
+  if (m_activateTimeMs < 0)
+    m_activateTimeMs = PLATFORM::GetTimeMs();
+
   if (buttonIndex < ButtonCount())
     m_stateBuffer.buttons[buttonIndex] = buttonValue;
 }
 
 void CJoystick::SetHatValue(unsigned int hatIndex, JOYSTICK_STATE_HAT hatValue)
 {
+  if (m_activateTimeMs < 0)
+    m_activateTimeMs = PLATFORM::GetTimeMs();
+
   if (hatIndex < HatCount())
     m_stateBuffer.hats[hatIndex] = hatValue;
 }
 
 void CJoystick::SetAxisValue(unsigned int axisIndex, JOYSTICK_STATE_AXIS axisValue)
 {
+  if (m_activateTimeMs < 0)
+    m_activateTimeMs = PLATFORM::GetTimeMs();
+
   if (axisIndex < AxisCount())
     m_stateBuffer.axes[axisIndex] = ScaleDeadzone(m_axisFilters[axisIndex]->Filter(axisValue));
 }

@@ -44,6 +44,11 @@ namespace JOYSTICK
     int64_t DiscoverTimeMs(void) const { return m_discoverTimeMs; }
 
     /*!
+     * The time that this joystick received its first input
+     */
+    int64_t ActivateTimeMs(void) const { return m_activateTimeMs; }
+
+    /*!
      * The time that this joystick delivered its first event
      */
     int64_t FirstEventTimeMs(void) const { return m_firstEventTimeMs; }
@@ -105,6 +110,7 @@ namespace JOYSTICK
     JoystickState                     m_stateBuffer;
     std::vector<IJoystickAxisFilter*> m_axisFilters;
     int64_t                           m_discoverTimeMs;
+    int64_t                           m_activateTimeMs;
     int64_t                           m_firstEventTimeMs;
     int64_t                           m_lastEventTimeMs;
   };

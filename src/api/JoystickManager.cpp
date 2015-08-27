@@ -184,6 +184,16 @@ bool CJoystickManager::PerformJoystickScan(JoystickVector& joysticks)
 
   joysticks = m_joysticks;
 
+  // Work around bug on linux: Don't return disconnected Xbox 360 controllers
+  joysticks.erase(std::remove_if(joysticks.begin(), joysticks.end(),
+    [](const JoystickPtr& joystick)
+    {
+      return joystick->Provider() == INTERFACE_LINUX &&
+             (joystick->Name() == "Xbox 360 Wireless Receiver" ||
+               joystick->Name() == "Xbox 360 Wireless Receiver (XBOX)") &&
+             joystick->ActivateTimeMs() < 0;
+    }), joysticks.end());
+
   return true;
 }
 
