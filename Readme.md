@@ -5,18 +5,18 @@
 Create and enter a build directory
 
 ```shell
-mkdir peripheral.joystick
-cd peripheral.joystick
+mkdir peripheral.joystick-build
+cd peripheral.joystick-build
 ```
 
-Generate a build environment with config for debugging
+Generate a build environment with config for debugging (assuming you cloned Kodi into the folder `$HOME/workspace/kodi`)
 
 ```shell
 cmake -DADDONS_TO_BUILD=peripheral.joystick \
       -DCMAKE_BUILD_TYPE=Debug \
-      -DCMAKE_INSTALL_PREFIX=$HOME/workspace/xbmc/addons \
+      -DCMAKE_INSTALL_PREFIX=$HOME/workspace/kodi/addons \
       -DPACKAGE_ZIP=1 \
-      $HOME/workspace/xbmc/project/cmake/addons
+      $HOME/workspace/kodi/project/cmake/addons
 ```
 
 The add-on can then be built with `make`.
@@ -28,6 +28,8 @@ Stand-alone builds are closer to "normal" software builds. The build system look
 To provide these dependencies yourself in a local working directory (`$HOME/kodi`), build Kodi with an installation prefix
 
 ```shell
+cd $HOME/workspace/kodi
+./bootstrap
 ./configure --prefix=$HOME/kodi
 make
 make install
@@ -54,26 +56,26 @@ git clone https://github.com/Pulse-Eight/platform.git
 ...
 ```
 
-With these dependencies in place, the add-on can be built. Use the CMake command above, or use this command to copy add-ons to your Kodi source tree:
+With these dependencies in place, the add-on can be built. Use the CMake command for kodi-platform above, or use this command to copy add-ons to your Kodi source tree:
 
 ```shell
 cmake -DCMAKE_BUILD_TYPE=Debug \
       -DCMAKE_PREFIX_PATH=$HOME/kodi \
-      -DCMAKE_INSTALL_PREFIX=$HOME/workspace/xbmc/addons \
+      -DCMAKE_INSTALL_PREFIX=$HOME/workspace/kodi/addons \
       -DPACKAGE_ZIP=1 \
       ..
 ```
 
 # Building in-tree (cross-compiling)
 
-Kodi's build system will fetch the add-on from the GitHub URL and git hash specified in [peripheral.joystick.txt](https://github.com/garbear/xbmc/blob/retroplayer-15alpha2/project/cmake/addons/addons/peripheral.joystick/peripheral.joystick.txt).
+Kodi's build system will fetch the add-on from the GitHub URL and git hash specified in [peripheral.joystick.txt](https://github.com/garbear/xbmc/blob/retroplayer-15.1/project/cmake/addons/addons/peripheral.joystick/peripheral.joystick.txt).
 
 ## Linux
 
-Ensure that kodi has been built successfully. Then, from the root of the source tree, run
+Ensure that kodi has been built successfully with the desired prefix (`$HOME/kodi` for a local prefix, or omitted for the system prefix (usually `/usr` or `/usr/local`). Then, from the root of Kodi's source tree, run
 
 ```shell
-make install DESTDIR=$HOME/kodi
+make install
 ```
 
 Build the add-on
@@ -122,7 +124,7 @@ No source code is downloaded at the CMake stage; when the project is built, the 
 
 ## OSX
 
-Per [README.osx](https://github.com/garbear/xbmc/blob/retroplayer-15alpha2/docs/README.osx), enter the `tools/depends` directory and make the add-on:
+Per [README.osx](https://github.com/garbear/xbmc/blob/retroplayer-15.1/docs/README.osx), enter the `tools/depends` directory and make the add-on:
 
 ```shell
 cd tools/depends
