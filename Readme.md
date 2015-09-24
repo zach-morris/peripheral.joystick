@@ -23,6 +23,8 @@ The add-on can then be built with `make`.
 
 # Building stand-alone (development)
 
+## Linux
+
 Stand-alone builds are closer to "normal" software builds. The build system looks for its dependencies, by default with `/usr` and `/usr/local` prefixes.
 
 To provide these dependencies yourself in a local working directory (`$HOME/kodi`), build Kodi with an installation prefix
@@ -65,6 +67,12 @@ cmake -DCMAKE_BUILD_TYPE=Debug \
       -DPACKAGE_ZIP=1 \
       ..
 ```
+
+## Windows
+
+I'm still working on build instructions for stand-alone builds on Windows. The closest instructions may come from this helpful forum post: http://forum.kodi.tv/showthread.php?tid=173361&pid=2097898#pid2097898.
+
+For now, follow the Windows instructions below.
 
 # Building in-tree (cross-compiling)
 
