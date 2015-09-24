@@ -54,7 +54,7 @@ list(APPEND DEPLIBS ${kodiplatform_LIBRARIES} ${platform_LIBRARIES})
 
 # --- Cocoa --------------------------------------------------------------------
 
-if("${CORE_SYSTEM_NAME}" STREQUAL "darwin")
+if("${CORE_SYSTEM_NAME}" STREQUAL "darwin" OR "${CORE_SYSTEM_NAME}" STREQUAL "osx")
   find_library(COCOA_LIBRARY Cocoa)
 
   add_definitions(-DHAVE_COCOA)
