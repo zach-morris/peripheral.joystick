@@ -104,9 +104,12 @@ bool CJoystickCocoa::Initialize(void)
     CFNumberRef productIdRef = (CFNumberRef)IOHIDDeviceGetProperty(m_device, CFSTR(kIOHIDProductIDKey));
     CFStringRef productRef = (CFStringRef)IOHIDDeviceGetProperty(m_device, CFSTR(kIOHIDProductKey));
 
-    char product_name[128] = { };
-    CFStringGetCString(productRef, product_name, sizeof(product_name), kCFStringEncodingASCII);
-    SetName(product_name);
+    if (productRef)
+    {
+      char product_name[128] = { };
+      CFStringGetCString(productRef, product_name, sizeof(product_name), kCFStringEncodingASCII);
+      SetName(product_name);
+    }
 
     int vendorId = 0;
     int productId = 0;
