@@ -116,6 +116,9 @@ bool CJoystickManager::Initialize(IScannerCallback* scanner)
   m_interfaces.push_back(new CJoystickInterfaceCocoa);
 #endif
 
+  if (m_interfaces.empty())
+    esyslog("Error: no joystick APIs in use");
+
   // Initialise all known interfaces
   for (int i = (int)m_interfaces.size() - 1; i >= 0; i--)
   {
