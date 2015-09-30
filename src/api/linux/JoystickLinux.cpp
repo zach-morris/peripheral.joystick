@@ -106,4 +106,6 @@ bool CJoystickLinux::ScanEvents(void)
       break;
     }
   }
+
+  return true;
 }
