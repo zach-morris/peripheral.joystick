@@ -168,13 +168,15 @@ void CJoystick::SetAxisValue(unsigned int axisIndex, JOYSTICK_STATE_AXIS axisVal
   if (m_activateTimeMs < 0)
     m_activateTimeMs = PLATFORM::GetTimeMs();
 
+  axisValue = CONSTRAIN(-1.0f, axisValue, 1.0f);
+
   if (axisIndex < AxisCount())
     m_stateBuffer.axes[axisIndex] = ScaleDeadzone(m_axisFilters[axisIndex]->Filter(axisValue));
 }
 
 void CJoystick::SetAxisValue(unsigned int axisIndex, long value, long maxAxisAmount)
 {
-  SetAxisValue(axisIndex, NormalizeAxis(value, maxAxisAmount));
+  SetAxisValue(axisIndex, (float)value / (float)maxAxisAmount);
 }
 
 void CJoystick::UpdateTimers(void)

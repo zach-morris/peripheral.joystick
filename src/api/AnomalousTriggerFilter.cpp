@@ -26,7 +26,7 @@ using namespace JOYSTICK;
 
 CAnomalousTriggerFilter::CAnomalousTriggerFilter(unsigned int axisIndex)
   : axisIndex(axisIndex),
-    m_state(STATE_IDLE),
+    m_state(STATE_UNKNOWN),
     m_center(CENTER_ZERO),
     m_range(TRIGGER_RANGE_HALF)
 {
@@ -34,7 +34,19 @@ CAnomalousTriggerFilter::CAnomalousTriggerFilter(unsigned int axisIndex)
 
 float CAnomalousTriggerFilter::Filter(float value)
 {
-  if (m_state == STATE_IDLE)
+  if (m_state == STATE_UNKNOWN)
+  {
+    if (value == -1.0f || value == 0.0f || value == 1.0f)
+    {
+      // Might be a discrete dpad
+    }
+    else
+    {
+      m_state = STATE_NOT_DISCRETE_DPAD;
+    }
+  }
+
+  if (m_state == STATE_NOT_DISCRETE_DPAD)
   {
     if (value < -ANOMOLOUS_MAGNITUDE)
       m_center = CENTER_NEGATIVE_ONE;

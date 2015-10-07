@@ -59,15 +59,20 @@ namespace JOYSTICK
       /*!
        * \brief Axis properties are unknown
        */
-      STATE_IDLE,
+      STATE_UNKNOWN,
 
       /*!
-       * \brief First packet has arrived and the center is known
+       * \brief Axis is not a dpad with discrete values -1.0, 0.0, 1.0
+       */
+      STATE_NOT_DISCRETE_DPAD,
+
+      /*!
+       * \brief Center has been determined (see AXIS_CENTER)
        */
       STATE_CENTER_KNOWN,
 
       /*!
-       * \brief Value has been observed both positive and negative
+       * \brief Range has been determined (see TRIGGER_RANGE)
        */
       STATE_RANGE_KNOWN,
     };
