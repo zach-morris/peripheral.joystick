@@ -48,15 +48,9 @@ namespace JOYSTICK
     Buttons m_buttons;
 
   private:
-    bool UnMap(const ADDON::JoystickFeature* feature);
-    bool UnMapButton(const ADDON::DriverButton* button);
-    bool UnMapHat(const ADDON::DriverHat* hat);
-    bool UnMapSemiAxis(const ADDON::DriverSemiAxis* semiAxis);
-    bool UnMapAnalogStick(const ADDON::DriverAnalogStick* analogStick);
-    bool UnMapAccelerometer(const ADDON::DriverAccelerometer* accelerometer);
+    bool UnmapPrimitive(const ADDON::DriverPrimitive& primitive);
 
-    static bool ButtonConflicts(const ADDON::DriverButton* button, const ADDON::JoystickFeature* feature);
-    static bool HatConflicts(const ADDON::DriverHat* hat, const ADDON::JoystickFeature* feature);
-    static bool SemiAxisConflicts(const ADDON::DriverSemiAxis* semiAxis, const ADDON::JoystickFeature* feature);
+    // Helper function
+    ADDON::DriverPrimitive Opposite(const ADDON::DriverPrimitive& semiaxis);
   };
 }

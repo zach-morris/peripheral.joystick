@@ -54,67 +54,95 @@ bool CButtonMapXml::Serialize(TiXmlElement* pElement) const
 
     switch (feature->Type())
     {
-      case JOYSTICK_DRIVER_TYPE_BUTTON:
+      case JOYSTICK_FEATURE_TYPE_PRIMITIVE:
       {
-        const ADDON::DriverButton* button = static_cast<const ADDON::DriverButton*>(feature);
+        const ADDON::PrimitiveFeature* primitiveFeature = static_cast<const ADDON::PrimitiveFeature*>(feature);
 
-        featureElem->SetAttribute(BUTTONMAP_XML_ATTR_FEATURE_BUTTON, button->Index());
+        if (!SerializePrimitive(featureElem, primitiveFeature->Primitive(), BUTTONMAP_XML_ELEM_PRIMITIVE))
+          return false;
 
         break;
       }
-      case JOYSTICK_DRIVER_TYPE_HAT_DIRECTION:
+      case JOYSTICK_FEATURE_TYPE_ANALOG_STICK:
       {
-        const ADDON::DriverHat* hat = static_cast<const ADDON::DriverHat*>(feature);
+        const ADDON::AnalogStick* analogStick = static_cast<const ADDON::AnalogStick*>(feature);
 
-        featureElem->SetAttribute(BUTTONMAP_XML_ATTR_FEATURE_HAT, JoystickTranslator::TranslateHatDir(hat->Direction()));
+        if (!SerializePrimitive(featureElem, analogStick->Up(), BUTTONMAP_XML_ELEM_UP))
+          return false;
+
+        if (!SerializePrimitive(featureElem, analogStick->Down(), BUTTONMAP_XML_ELEM_DOWN))
+          return false;
+
+        if (!SerializePrimitive(featureElem, analogStick->Right(), BUTTONMAP_XML_ELEM_RIGHT))
+          return false;
+
+        if (!SerializePrimitive(featureElem, analogStick->Left(), BUTTONMAP_XML_ELEM_LEFT))
+          return false;
 
         break;
       }
-      case JOYSTICK_DRIVER_TYPE_SEMIAXIS:
+      case JOYSTICK_FEATURE_TYPE_ACCELEROMETER:
       {
-        const ADDON::DriverSemiAxis* semiAxis = static_cast<const ADDON::DriverSemiAxis*>(feature);
+        const ADDON::Accelerometer* accelerometer = static_cast<const ADDON::Accelerometer*>(feature);
 
-        std::ostringstream strAxis;
-        if (semiAxis->Direction() == JOYSTICK_DRIVER_SEMIAXIS_DIRECTION_NEGATIVE)
+        if (!SerializePrimitive(featureElem, accelerometer->PositiveX(), BUTTONMAP_XML_ELEM_POSITIVE_X))
+          return false;
+
+        if (!SerializePrimitive(featureElem, accelerometer->PositiveY(), BUTTONMAP_XML_ELEM_POSITIVE_Y))
+          return false;
+
+        if (!SerializePrimitive(featureElem, accelerometer->PositiveZ(), BUTTONMAP_XML_ELEM_POSITIVE_Z))
+          return false;
+
+        break;
+      }
+      default:
+        break;
+    }
+  }
+
+  return true;
+}
+
+bool CButtonMapXml::SerializePrimitive(TiXmlElement* pElement, const ADDON::DriverPrimitive& primitive, const char* tagName) const
+{
+  if (primitive.Type() != JOYSTICK_DRIVER_PRIMITIVE_TYPE_UNKNOWN)
+  {
+    if (pElement == NULL)
+      return false;
+
+    TiXmlElement primitiveElement(tagName);
+    TiXmlNode* primitiveNode = pElement->InsertEndChild(primitiveElement);
+    if (primitiveNode == NULL)
+      return false;
+
+    TiXmlElement* primitiveElem = primitiveNode->ToElement();
+    if (primitiveElem == NULL)
+      return false;
+
+    switch (primitive.Type())
+    {
+      case JOYSTICK_DRIVER_PRIMITIVE_TYPE_BUTTON:
+      {
+        primitiveElem->SetAttribute(BUTTONMAP_XML_ATTR_FEATURE_BUTTON, primitive.DriverIndex());
+        break;
+      }
+      case JOYSTICK_DRIVER_PRIMITIVE_TYPE_HAT_DIRECTION:
+      {
+        primitiveElem->SetAttribute(BUTTONMAP_XML_ATTR_FEATURE_HAT, JoystickTranslator::TranslateHatDir(primitive.HatDirection()));
+        break;
+      }
+
+      case JOYSTICK_DRIVER_PRIMITIVE_TYPE_SEMIAXIS:
+      {
+          std::ostringstream strAxis;
+        if (primitive.SemiAxisDirection() == JOYSTICK_DRIVER_SEMIAXIS_DIRECTION_NEGATIVE)
           strAxis << "-";
         else
           strAxis << "+";
-        strAxis << semiAxis->Index();
+        strAxis << primitive.DriverIndex();
 
-        featureElem->SetAttribute(BUTTONMAP_XML_ATTR_FEATURE_AXIS, strAxis.str());
-
-        break;
-      }
-      case JOYSTICK_DRIVER_TYPE_ANALOG_STICK:
-      {
-        const ADDON::DriverAnalogStick* analogStick = static_cast<const ADDON::DriverAnalogStick*>(feature);
-
-        featureElem->SetAttribute(BUTTONMAP_XML_ATTR_FEATURE_XAXIS, analogStick->XIndex());
-        if (analogStick->XInverted())
-          featureElem->SetAttribute(BUTTONMAP_XML_ATTR_FEATURE_XINVERTED, "true");
-
-        featureElem->SetAttribute(BUTTONMAP_XML_ATTR_FEATURE_YAXIS, analogStick->YIndex());
-        if (analogStick->YInverted())
-          featureElem->SetAttribute(BUTTONMAP_XML_ATTR_FEATURE_YINVERTED, "true");
-
-        break;
-      }
-      case JOYSTICK_DRIVER_TYPE_ACCELEROMETER:
-      {
-        const ADDON::DriverAccelerometer* accelerometer = static_cast<const ADDON::DriverAccelerometer*>(feature);
-
-        featureElem->SetAttribute(BUTTONMAP_XML_ATTR_FEATURE_XAXIS, accelerometer->XIndex());
-        if (accelerometer->XInverted())
-          featureElem->SetAttribute(BUTTONMAP_XML_ATTR_FEATURE_XINVERTED, "true");
-
-        featureElem->SetAttribute(BUTTONMAP_XML_ATTR_FEATURE_YAXIS, accelerometer->YIndex());
-        if (accelerometer->YInverted())
-          featureElem->SetAttribute(BUTTONMAP_XML_ATTR_FEATURE_YINVERTED, "true");
-
-        featureElem->SetAttribute(BUTTONMAP_XML_ATTR_FEATURE_ZAXIS, accelerometer->ZIndex());
-        if (accelerometer->ZInverted())
-          featureElem->SetAttribute(BUTTONMAP_XML_ATTR_FEATURE_ZINVERTED, "true");
-
+        primitiveElem->SetAttribute(BUTTONMAP_XML_ATTR_FEATURE_AXIS, strAxis.str());
         break;
       }
       default:
@@ -147,24 +175,116 @@ bool CButtonMapXml::Deserialize(const TiXmlElement* pElement)
       return false;
     }
 
-    ADDON::JoystickFeature* feature = NULL;
+    std::string strName(name);
 
-    const char* button = pFeature->Attribute(BUTTONMAP_XML_ATTR_FEATURE_BUTTON);
-    const char* hat = pFeature->Attribute(BUTTONMAP_XML_ATTR_FEATURE_HAT);
-    const char* axis = pFeature->Attribute(BUTTONMAP_XML_ATTR_FEATURE_AXIS);
-    const char* xaxis = pFeature->Attribute(BUTTONMAP_XML_ATTR_FEATURE_XAXIS);
-    const char* yaxis = pFeature->Attribute(BUTTONMAP_XML_ATTR_FEATURE_YAXIS);
-    const char* zaxis = pFeature->Attribute(BUTTONMAP_XML_ATTR_FEATURE_ZAXIS);
-    const char* xinverted = pFeature->Attribute(BUTTONMAP_XML_ATTR_FEATURE_XINVERTED);
-    const char* yinverted = pFeature->Attribute(BUTTONMAP_XML_ATTR_FEATURE_YINVERTED);
-    const char* zinverted = pFeature->Attribute(BUTTONMAP_XML_ATTR_FEATURE_ZINVERTED);
+    ADDON::JoystickFeature* feature = nullptr;
 
-    if (button)
+    const TiXmlElement* pPrimitive = pFeature->FirstChildElement(BUTTONMAP_XML_ELEM_PRIMITIVE);
+    const TiXmlElement* pUp = pFeature->FirstChildElement(BUTTONMAP_XML_ELEM_UP);
+    const TiXmlElement* pDown = pFeature->FirstChildElement(BUTTONMAP_XML_ELEM_DOWN);
+    const TiXmlElement* pRight = pFeature->FirstChildElement(BUTTONMAP_XML_ELEM_RIGHT);
+    const TiXmlElement* pLeft = pFeature->FirstChildElement(BUTTONMAP_XML_ELEM_LEFT);
+    const TiXmlElement* pPositiveX = pFeature->FirstChildElement(BUTTONMAP_XML_ELEM_POSITIVE_X);
+    const TiXmlElement* pPositiveY = pFeature->FirstChildElement(BUTTONMAP_XML_ELEM_POSITIVE_Y);
+    const TiXmlElement* pPositiveZ = pFeature->FirstChildElement(BUTTONMAP_XML_ELEM_POSITIVE_Z);
+
+    JOYSTICK_FEATURE_TYPE type = JOYSTICK_FEATURE_TYPE_UNKNOWN;
+
+    if (pPrimitive)
+      type = JOYSTICK_FEATURE_TYPE_PRIMITIVE;
+    else if (pUp && pDown && pRight && pLeft)
+      type = JOYSTICK_FEATURE_TYPE_ANALOG_STICK;
+    else if (pPositiveX && pPositiveY && pPositiveZ)
+      type = JOYSTICK_FEATURE_TYPE_ACCELEROMETER;
+
+    switch (type)
+    {
+      case JOYSTICK_FEATURE_TYPE_PRIMITIVE:
+      {
+        ADDON::DriverPrimitive primitive;
+
+        if (!DeserializePrimitive(pPrimitive, primitive, strName))
+          return false;
+
+        feature = new ADDON::PrimitiveFeature(strName, primitive);
+
+        break;
+      }
+      case JOYSTICK_FEATURE_TYPE_ANALOG_STICK:
+      {
+        ADDON::DriverPrimitive up;
+        ADDON::DriverPrimitive down;
+        ADDON::DriverPrimitive right;
+        ADDON::DriverPrimitive left;
+
+        if (!DeserializePrimitive(pUp, up, strName) ||
+            !DeserializePrimitive(pDown, down, strName) ||
+            !DeserializePrimitive(pRight, right, strName) ||
+            !DeserializePrimitive(pLeft, left, strName))
+        {
+          return false;
+        }
+
+        feature = new ADDON::AnalogStick(strName, up, down, right, left);
+
+        break;
+      }
+      case JOYSTICK_FEATURE_TYPE_ACCELEROMETER:
+      {
+        ADDON::DriverPrimitive positiveX;
+        ADDON::DriverPrimitive positiveY;
+        ADDON::DriverPrimitive positiveZ;
+
+        if (!DeserializePrimitive(pPositiveX, positiveX, strName) ||
+            !DeserializePrimitive(pPositiveY, positiveY, strName) ||
+            !DeserializePrimitive(pPositiveZ, positiveZ, strName))
+        {
+          return false;
+        }
+
+        feature = new ADDON::Accelerometer(strName, positiveX, positiveY, positiveZ);
+
+        break;
+      }
+      default:
+        break;
+    }
+
+    if (feature)
+      m_buttons[name] = feature;
+
+    pFeature = pFeature->NextSiblingElement(BUTTONMAP_XML_ELEM_FEATURE);
+  }
+
+  return true;
+}
+
+bool CButtonMapXml::DeserializePrimitive(const TiXmlElement* pElement, ADDON::DriverPrimitive& primitive, const std::string& featureName) const
+{
+  const char* button = pElement->Attribute(BUTTONMAP_XML_ATTR_FEATURE_BUTTON);
+  const char* hat = pElement->Attribute(BUTTONMAP_XML_ATTR_FEATURE_HAT);
+  const char* axis = pElement->Attribute(BUTTONMAP_XML_ATTR_FEATURE_AXIS);
+
+  JOYSTICK_DRIVER_PRIMITIVE_TYPE primitiveType = JOYSTICK_DRIVER_PRIMITIVE_TYPE_UNKNOWN;
+
+  if (button)
+    primitiveType = JOYSTICK_DRIVER_PRIMITIVE_TYPE_BUTTON;
+  else if (hat)
+    primitiveType = JOYSTICK_DRIVER_PRIMITIVE_TYPE_HAT_DIRECTION;
+  else if (axis)
+    primitiveType = JOYSTICK_DRIVER_PRIMITIVE_TYPE_SEMIAXIS;
+
+  switch (primitiveType)
+  {
+    case JOYSTICK_DRIVER_PRIMITIVE_TYPE_BUTTON:
     {
       int buttonIndex = std::atoi(button);
-      feature = new ADDON::DriverButton(name, buttonIndex);
+
+      primitive = ADDON::DriverPrimitive(buttonIndex);
+
+      break;
     }
-    else if (hat)
+    case JOYSTICK_DRIVER_PRIMITIVE_TYPE_HAT_DIRECTION:
     {
       const int hatIndex = 0;
 
@@ -172,13 +292,15 @@ bool CButtonMapXml::Deserialize(const TiXmlElement* pElement)
       if (dir == JOYSTICK_DRIVER_HAT_UNKNOWN)
       {
         esyslog("<%s> tag name=\"%s\" attribute \"%s\" is invalid: \"%s\"",
-                BUTTONMAP_XML_ELEM_FEATURE, name, BUTTONMAP_XML_ATTR_FEATURE_HAT, hat);
+                BUTTONMAP_XML_ELEM_FEATURE, featureName.c_str(), BUTTONMAP_XML_ATTR_FEATURE_HAT, hat);
         return false;
       }
 
-      feature = new ADDON::DriverHat(name, hatIndex, dir);
+      primitive = ADDON::DriverPrimitive(hatIndex, dir);
+
+      break;
     }
-    else if (axis)
+    case JOYSTICK_DRIVER_PRIMITIVE_TYPE_SEMIAXIS:
     {
       int axisIndex = std::abs(std::atoi(axis));
 
@@ -192,48 +314,16 @@ bool CButtonMapXml::Deserialize(const TiXmlElement* pElement)
       if (dir == JOYSTICK_DRIVER_SEMIAXIS_DIRECTION_UNKNOWN)
       {
         esyslog("<%s> tag name=\"%s\" attribute \"%s\" is invalid: \"%s\"",
-                BUTTONMAP_XML_ELEM_FEATURE, name, BUTTONMAP_XML_ATTR_FEATURE_AXIS, axis);
+                BUTTONMAP_XML_ELEM_FEATURE, featureName.c_str(), BUTTONMAP_XML_ATTR_FEATURE_AXIS, axis);
         return false;
       }
 
-      feature = new ADDON::DriverSemiAxis(name, axisIndex, dir);
+      primitive = ADDON::DriverPrimitive(axisIndex, dir);
+
+      break;
     }
-    else if (xaxis && yaxis && !zaxis)
-    {
-      int axisIndexX = std::atoi(xaxis);
-      int axisIndexY = std::atoi(yaxis);
-
-      bool bInvertedX = std::string(xinverted ? xinverted : "") == "true";
-      bool bInvertedY = std::string(yinverted ? yinverted : "") == "true";
-
-      feature = new ADDON::DriverAnalogStick(name,
-                                             axisIndexX, bInvertedX,
-                                             axisIndexY, bInvertedY);
-    }
-    else if (xaxis && yaxis && zaxis)
-    {
-      int axisIndexX = std::atoi(xaxis);
-      int axisIndexY = std::atoi(yaxis);
-      int axisIndexZ = std::atoi(zaxis);
-
-      bool bInvertedX = std::string(xinverted ? xinverted : "") == "true";
-      bool bInvertedY = std::string(yinverted ? yinverted : "") == "true";
-      bool bInvertedZ = std::string(zinverted ? zinverted : "") == "true";
-
-      feature = new ADDON::DriverAccelerometer(name,
-                                               axisIndexX, bInvertedX,
-                                               axisIndexY, bInvertedY,
-                                               axisIndexZ, bInvertedZ);
-    }
-    else
-    {
-      esyslog("Invalid <%s> tag: %s", BUTTONMAP_XML_ELEM_FEATURE, name);
-      return false;
-    }
-
-    m_buttons[name] = feature;
-
-    pFeature = pFeature->NextSiblingElement(BUTTONMAP_XML_ELEM_FEATURE);
+    default:
+      break;
   }
 
   return true;

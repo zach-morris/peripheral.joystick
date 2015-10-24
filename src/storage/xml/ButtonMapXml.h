@@ -23,6 +23,11 @@
 
 class TiXmlElement;
 
+namespace ADDON
+{
+  class DriverPrimitive;
+}
+
 namespace JOYSTICK
 {
   class CButtonMapXml : public CButtonMap
@@ -35,5 +40,9 @@ namespace JOYSTICK
 
     bool Serialize(TiXmlElement* pElement) const;
     bool Deserialize(const TiXmlElement* pElement);
+
+  private:
+    bool SerializePrimitive(TiXmlElement* pElement, const ADDON::DriverPrimitive& primitive, const char* tagName) const;
+    bool DeserializePrimitive(const TiXmlElement* pElement, ADDON::DriverPrimitive& primitive, const std::string& featureName) const;
   };
 }
