@@ -21,6 +21,8 @@
 
 #include "storage/ButtonMap.h"
 
+#include <string>
+
 class TiXmlElement;
 
 namespace ADDON
@@ -42,7 +44,10 @@ namespace JOYSTICK
     bool Deserialize(const TiXmlElement* pElement);
 
   private:
-    bool SerializePrimitive(TiXmlElement* pElement, const ADDON::DriverPrimitive& primitive, const char* tagName) const;
+    static bool IsValid(const ADDON::JoystickFeature* feature);
+    bool SerializeFeature(TiXmlElement* pElement, const ADDON::DriverPrimitive& primitive, const char* tagName) const;
+    bool SerializePrimitiveTag(TiXmlElement* pElement, const ADDON::DriverPrimitive& primitive, const char* tagName) const;
+    void SerializePrimitive(TiXmlElement* pElement, const ADDON::DriverPrimitive& primitive) const;
     bool DeserializePrimitive(const TiXmlElement* pElement, ADDON::DriverPrimitive& primitive, const std::string& featureName) const;
   };
 }

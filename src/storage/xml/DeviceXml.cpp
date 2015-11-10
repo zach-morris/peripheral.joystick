@@ -50,6 +50,9 @@ bool CDeviceXml::Serialize(TiXmlElement* pElement) const
 
   for (ButtonMaps::const_iterator it = m_buttonMaps.begin(); it != m_buttonMaps.end(); ++it)
   {
+    if (it->second.IsEmpty())
+      continue;
+
     const std::string& controllerId = it->first;
     CButtonMapXml buttons(it->second);
 
@@ -132,7 +135,8 @@ bool CDeviceXml::Deserialize(const TiXmlElement* pElement)
     if (!buttons.Deserialize(pProfile))
       return false;
 
-    m_buttonMaps[id] = buttons;
+    if (!buttons.IsEmpty())
+      m_buttonMaps[id] = buttons;
 
     pProfile = pProfile->NextSiblingElement(BUTTONMAP_XML_ELEM_CONTROLLER);
   }

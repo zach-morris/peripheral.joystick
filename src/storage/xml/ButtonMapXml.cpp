@@ -28,6 +28,7 @@
 #include <cmath>
 #include <cstdlib>
 #include <sstream>
+#include <string>
 
 using namespace JOYSTICK;
 
@@ -40,6 +41,9 @@ bool CButtonMapXml::Serialize(TiXmlElement* pElement) const
   {
     const std::string& strFeatureName = it->first;
     const ADDON::JoystickFeature* feature = it->second;
+
+    if (!IsValid(feature))
+      continue;
 
     TiXmlElement featureElement(BUTTONMAP_XML_ELEM_FEATURE);
     TiXmlNode* featureNode = pElement->InsertEndChild(featureElement);
@@ -58,8 +62,7 @@ bool CButtonMapXml::Serialize(TiXmlElement* pElement) const
       {
         const ADDON::PrimitiveFeature* primitiveFeature = static_cast<const ADDON::PrimitiveFeature*>(feature);
 
-        if (!SerializePrimitive(featureElem, primitiveFeature->Primitive(), BUTTONMAP_XML_ELEM_PRIMITIVE))
-          return false;
+        SerializePrimitive(featureElem, primitiveFeature->Primitive());
 
         break;
       }
@@ -67,16 +70,16 @@ bool CButtonMapXml::Serialize(TiXmlElement* pElement) const
       {
         const ADDON::AnalogStick* analogStick = static_cast<const ADDON::AnalogStick*>(feature);
 
-        if (!SerializePrimitive(featureElem, analogStick->Up(), BUTTONMAP_XML_ELEM_UP))
+        if (!SerializePrimitiveTag(featureElem, analogStick->Up(), BUTTONMAP_XML_ELEM_UP))
           return false;
 
-        if (!SerializePrimitive(featureElem, analogStick->Down(), BUTTONMAP_XML_ELEM_DOWN))
+        if (!SerializePrimitiveTag(featureElem, analogStick->Down(), BUTTONMAP_XML_ELEM_DOWN))
           return false;
 
-        if (!SerializePrimitive(featureElem, analogStick->Right(), BUTTONMAP_XML_ELEM_RIGHT))
+        if (!SerializePrimitiveTag(featureElem, analogStick->Right(), BUTTONMAP_XML_ELEM_RIGHT))
           return false;
 
-        if (!SerializePrimitive(featureElem, analogStick->Left(), BUTTONMAP_XML_ELEM_LEFT))
+        if (!SerializePrimitiveTag(featureElem, analogStick->Left(), BUTTONMAP_XML_ELEM_LEFT))
           return false;
 
         break;
@@ -85,13 +88,13 @@ bool CButtonMapXml::Serialize(TiXmlElement* pElement) const
       {
         const ADDON::Accelerometer* accelerometer = static_cast<const ADDON::Accelerometer*>(feature);
 
-        if (!SerializePrimitive(featureElem, accelerometer->PositiveX(), BUTTONMAP_XML_ELEM_POSITIVE_X))
+        if (!SerializePrimitiveTag(featureElem, accelerometer->PositiveX(), BUTTONMAP_XML_ELEM_POSITIVE_X))
           return false;
 
-        if (!SerializePrimitive(featureElem, accelerometer->PositiveY(), BUTTONMAP_XML_ELEM_POSITIVE_Y))
+        if (!SerializePrimitiveTag(featureElem, accelerometer->PositiveY(), BUTTONMAP_XML_ELEM_POSITIVE_Y))
           return false;
 
-        if (!SerializePrimitive(featureElem, accelerometer->PositiveZ(), BUTTONMAP_XML_ELEM_POSITIVE_Z))
+        if (!SerializePrimitiveTag(featureElem, accelerometer->PositiveZ(), BUTTONMAP_XML_ELEM_POSITIVE_Z))
           return false;
 
         break;
@@ -104,7 +107,56 @@ bool CButtonMapXml::Serialize(TiXmlElement* pElement) const
   return true;
 }
 
-bool CButtonMapXml::SerializePrimitive(TiXmlElement* pElement, const ADDON::DriverPrimitive& primitive, const char* tagName) const
+bool CButtonMapXml::IsValid(const ADDON::JoystickFeature* feature)
+{
+  bool bIsValid = false;
+
+  switch (feature->Type())
+  {
+    case JOYSTICK_FEATURE_TYPE_PRIMITIVE:
+    {
+      const ADDON::PrimitiveFeature* primitiveFeature = static_cast<const ADDON::PrimitiveFeature*>(feature);
+
+      if (primitiveFeature->Primitive().Type() != JOYSTICK_DRIVER_PRIMITIVE_TYPE_UNKNOWN)
+        bIsValid = true;
+
+      break;
+    }
+    case JOYSTICK_FEATURE_TYPE_ANALOG_STICK:
+    {
+      const ADDON::AnalogStick* analogStick = static_cast<const ADDON::AnalogStick*>(feature);
+
+      if (analogStick->Up().Type()    != JOYSTICK_DRIVER_PRIMITIVE_TYPE_UNKNOWN ||
+          analogStick->Down().Type()  != JOYSTICK_DRIVER_PRIMITIVE_TYPE_UNKNOWN ||
+          analogStick->Right().Type() != JOYSTICK_DRIVER_PRIMITIVE_TYPE_UNKNOWN ||
+          analogStick->Left().Type()  != JOYSTICK_DRIVER_PRIMITIVE_TYPE_UNKNOWN)
+      {
+        bIsValid = true;
+      }
+
+      break;
+    }
+    case JOYSTICK_FEATURE_TYPE_ACCELEROMETER:
+    {
+      const ADDON::Accelerometer* accelerometer = static_cast<const ADDON::Accelerometer*>(feature);
+
+      if (accelerometer->PositiveX().Type() != JOYSTICK_DRIVER_PRIMITIVE_TYPE_UNKNOWN ||
+          accelerometer->PositiveY().Type() != JOYSTICK_DRIVER_PRIMITIVE_TYPE_UNKNOWN ||
+          accelerometer->PositiveZ().Type() != JOYSTICK_DRIVER_PRIMITIVE_TYPE_UNKNOWN)
+      {
+        bIsValid = true;
+      }
+
+      break;
+    }
+    default:
+      break;
+  }
+
+  return bIsValid;
+}
+
+bool CButtonMapXml::SerializePrimitiveTag(TiXmlElement* pElement, const ADDON::DriverPrimitive& primitive, const char* tagName) const
 {
   if (primitive.Type() != JOYSTICK_DRIVER_PRIMITIVE_TYPE_UNKNOWN)
   {
@@ -120,37 +172,42 @@ bool CButtonMapXml::SerializePrimitive(TiXmlElement* pElement, const ADDON::Driv
     if (primitiveElem == NULL)
       return false;
 
-    switch (primitive.Type())
-    {
-      case JOYSTICK_DRIVER_PRIMITIVE_TYPE_BUTTON:
-      {
-        primitiveElem->SetAttribute(BUTTONMAP_XML_ATTR_FEATURE_BUTTON, primitive.DriverIndex());
-        break;
-      }
-      case JOYSTICK_DRIVER_PRIMITIVE_TYPE_HAT_DIRECTION:
-      {
-        primitiveElem->SetAttribute(BUTTONMAP_XML_ATTR_FEATURE_HAT, JoystickTranslator::TranslateHatDir(primitive.HatDirection()));
-        break;
-      }
-
-      case JOYSTICK_DRIVER_PRIMITIVE_TYPE_SEMIAXIS:
-      {
-          std::ostringstream strAxis;
-        if (primitive.SemiAxisDirection() == JOYSTICK_DRIVER_SEMIAXIS_DIRECTION_NEGATIVE)
-          strAxis << "-";
-        else
-          strAxis << "+";
-        strAxis << primitive.DriverIndex();
-
-        primitiveElem->SetAttribute(BUTTONMAP_XML_ATTR_FEATURE_AXIS, strAxis.str());
-        break;
-      }
-      default:
-        break;
-    }
+    SerializePrimitive(primitiveElem, primitive);
   }
 
   return true;
+}
+
+void CButtonMapXml::SerializePrimitive(TiXmlElement* pElement, const ADDON::DriverPrimitive& primitive) const
+{
+  switch (primitive.Type())
+  {
+    case JOYSTICK_DRIVER_PRIMITIVE_TYPE_BUTTON:
+    {
+      pElement->SetAttribute(BUTTONMAP_XML_ATTR_FEATURE_BUTTON, primitive.DriverIndex());
+      break;
+    }
+    case JOYSTICK_DRIVER_PRIMITIVE_TYPE_HAT_DIRECTION:
+    {
+      pElement->SetAttribute(BUTTONMAP_XML_ATTR_FEATURE_HAT, JoystickTranslator::TranslateHatDir(primitive.HatDirection()));
+      break;
+    }
+
+    case JOYSTICK_DRIVER_PRIMITIVE_TYPE_SEMIAXIS:
+    {
+      std::ostringstream strAxis;
+      if (primitive.SemiAxisDirection() == JOYSTICK_DRIVER_SEMIAXIS_DIRECTION_NEGATIVE)
+        strAxis << "-";
+      else
+        strAxis << "+";
+      strAxis << primitive.DriverIndex();
+
+      pElement->SetAttribute(BUTTONMAP_XML_ATTR_FEATURE_AXIS, strAxis.str());
+      break;
+    }
+    default:
+      break;
+  }
 }
 
 bool CButtonMapXml::Deserialize(const TiXmlElement* pElement)
@@ -168,46 +225,70 @@ bool CButtonMapXml::Deserialize(const TiXmlElement* pElement)
 
   while (pFeature)
   {
+    // The deserialized feature
+    ADDON::JoystickFeature* feature = nullptr;
+
     const char* name = pFeature->Attribute(BUTTONMAP_XML_ATTR_FEATURE_NAME);
     if (!name)
     {
       esyslog("<%s> tag has no \"%s\" attribute", BUTTONMAP_XML_ELEM_FEATURE, BUTTONMAP_XML_ATTR_FEATURE_NAME);
       return false;
     }
-
     std::string strName(name);
 
-    ADDON::JoystickFeature* feature = nullptr;
+    const TiXmlElement* pUp = nullptr;
+    const TiXmlElement* pDown = nullptr;
+    const TiXmlElement* pRight = nullptr;
+    const TiXmlElement* pLeft = nullptr;
 
-    const TiXmlElement* pPrimitive = pFeature->FirstChildElement(BUTTONMAP_XML_ELEM_PRIMITIVE);
-    const TiXmlElement* pUp = pFeature->FirstChildElement(BUTTONMAP_XML_ELEM_UP);
-    const TiXmlElement* pDown = pFeature->FirstChildElement(BUTTONMAP_XML_ELEM_DOWN);
-    const TiXmlElement* pRight = pFeature->FirstChildElement(BUTTONMAP_XML_ELEM_RIGHT);
-    const TiXmlElement* pLeft = pFeature->FirstChildElement(BUTTONMAP_XML_ELEM_LEFT);
-    const TiXmlElement* pPositiveX = pFeature->FirstChildElement(BUTTONMAP_XML_ELEM_POSITIVE_X);
-    const TiXmlElement* pPositiveY = pFeature->FirstChildElement(BUTTONMAP_XML_ELEM_POSITIVE_Y);
-    const TiXmlElement* pPositiveZ = pFeature->FirstChildElement(BUTTONMAP_XML_ELEM_POSITIVE_Z);
+    const TiXmlElement* pPositiveX = nullptr;
+    const TiXmlElement* pPositiveY = nullptr;
+    const TiXmlElement* pPositiveZ = nullptr;
 
+    // Determine the feature type
     JOYSTICK_FEATURE_TYPE type = JOYSTICK_FEATURE_TYPE_UNKNOWN;
 
-    if (pPrimitive)
+    ADDON::DriverPrimitive primitive;
+    if (DeserializePrimitive(pFeature, primitive, strName))
+    {
       type = JOYSTICK_FEATURE_TYPE_PRIMITIVE;
-    else if (pUp && pDown && pRight && pLeft)
-      type = JOYSTICK_FEATURE_TYPE_ANALOG_STICK;
-    else if (pPositiveX && pPositiveY && pPositiveZ)
-      type = JOYSTICK_FEATURE_TYPE_ACCELEROMETER;
+    }
+    else
+    {
+      pUp = pFeature->FirstChildElement(BUTTONMAP_XML_ELEM_UP);
+      pDown = pFeature->FirstChildElement(BUTTONMAP_XML_ELEM_DOWN);
+      pRight = pFeature->FirstChildElement(BUTTONMAP_XML_ELEM_RIGHT);
+      pLeft = pFeature->FirstChildElement(BUTTONMAP_XML_ELEM_LEFT);
 
+      if (pUp || pDown || pRight || pLeft)
+      {
+        type = JOYSTICK_FEATURE_TYPE_ANALOG_STICK;
+      }
+      else
+      {
+        pPositiveX = pFeature->FirstChildElement(BUTTONMAP_XML_ELEM_POSITIVE_X);
+        pPositiveY = pFeature->FirstChildElement(BUTTONMAP_XML_ELEM_POSITIVE_Y);
+        pPositiveZ = pFeature->FirstChildElement(BUTTONMAP_XML_ELEM_POSITIVE_Z);
+
+        if (pPositiveX || pPositiveY || pPositiveZ)
+        {
+          type = JOYSTICK_FEATURE_TYPE_ACCELEROMETER;
+        }
+        else
+        {
+          esyslog("Feature \"%s\": <%s> tag is not a valid primitive", strName.c_str(), BUTTONMAP_XML_ELEM_FEATURE);
+          return false;
+        }
+      }
+    }
+
+    // Deserialize according to type
     switch (type)
     {
       case JOYSTICK_FEATURE_TYPE_PRIMITIVE:
       {
-        ADDON::DriverPrimitive primitive;
-
-        if (!DeserializePrimitive(pPrimitive, primitive, strName))
-          return false;
-
+        // Already deserialized
         feature = new ADDON::PrimitiveFeature(strName, primitive);
-
         break;
       }
       case JOYSTICK_FEATURE_TYPE_ANALOG_STICK:
@@ -217,13 +298,34 @@ bool CButtonMapXml::Deserialize(const TiXmlElement* pElement)
         ADDON::DriverPrimitive right;
         ADDON::DriverPrimitive left;
 
-        if (!DeserializePrimitive(pUp, up, strName) ||
-            !DeserializePrimitive(pDown, down, strName) ||
-            !DeserializePrimitive(pRight, right, strName) ||
-            !DeserializePrimitive(pLeft, left, strName))
+        bool bSuccess = true;
+
+        if (pUp && !DeserializePrimitive(pUp, up, strName))
         {
-          return false;
+          esyslog("Feature \"%s\": <%s> tag is not a valid primitive", strName.c_str(), BUTTONMAP_XML_ELEM_UP);
+          bSuccess = false;
         }
+
+        if (pDown && !DeserializePrimitive(pDown, down, strName))
+        {
+          esyslog("Feature \"%s\": <%s> tag is not a valid primitive", strName.c_str(), BUTTONMAP_XML_ELEM_DOWN);
+          bSuccess = false;
+        }
+
+        if (pRight && !DeserializePrimitive(pRight, right, strName))
+        {
+          esyslog("Feature \"%s\": <%s> tag is not a valid primitive", strName.c_str(), BUTTONMAP_XML_ELEM_RIGHT);
+          bSuccess = false;
+        }
+
+        if (pLeft && !DeserializePrimitive(pLeft, left, strName))
+        {
+          esyslog("Feature \"%s\": <%s> tag is not a valid primitive", strName.c_str(), BUTTONMAP_XML_ELEM_LEFT);
+          bSuccess = false;
+        }
+
+        if (!bSuccess)
+          return false;
 
         feature = new ADDON::AnalogStick(strName, up, down, right, left);
 
@@ -235,12 +337,28 @@ bool CButtonMapXml::Deserialize(const TiXmlElement* pElement)
         ADDON::DriverPrimitive positiveY;
         ADDON::DriverPrimitive positiveZ;
 
-        if (!DeserializePrimitive(pPositiveX, positiveX, strName) ||
-            !DeserializePrimitive(pPositiveY, positiveY, strName) ||
-            !DeserializePrimitive(pPositiveZ, positiveZ, strName))
+        bool bSuccess = true;
+
+        if (pPositiveX && !DeserializePrimitive(pPositiveX, positiveY, strName))
         {
-          return false;
+          esyslog("Feature \"%s\": <%s> tag is not a valid primitive", strName.c_str(), BUTTONMAP_XML_ELEM_POSITIVE_X);
+          bSuccess = false;
         }
+
+        if (pPositiveY && !DeserializePrimitive(pPositiveY, positiveY, strName))
+        {
+          esyslog("Feature \"%s\": <%s> tag is not a valid primitive", strName.c_str(), BUTTONMAP_XML_ELEM_POSITIVE_Y);
+          bSuccess = false;
+        }
+
+        if (pPositiveZ && !DeserializePrimitive(pPositiveZ, positiveZ, strName))
+        {
+          esyslog("Feature \"%s\": <%s> tag is not a valid primitive", strName.c_str(), BUTTONMAP_XML_ELEM_POSITIVE_Z);
+          bSuccess = false;
+        }
+
+        if (!bSuccess)
+          return false;
 
         feature = new ADDON::Accelerometer(strName, positiveX, positiveY, positiveZ);
 

@@ -37,6 +37,8 @@ namespace JOYSTICK
 
     void Reset(void);
 
+    bool IsEmpty(void) const { return m_buttons.empty(); }
+
     void GetFeatures(std::vector<ADDON::JoystickFeature*>& features) const;
 
     bool MapFeature(const ADDON::JoystickFeature* feature);

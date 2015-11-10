@@ -158,6 +158,9 @@ bool CDatabaseXml::Serialize(TiXmlElement* pElement) const
 
   for (std::vector<CDevice>::const_iterator it = m_devices.begin(); it != m_devices.end(); ++it)
   {
+    if (it->IsEmpty())
+      continue;
+
     CDeviceXml device(*it);
 
     TiXmlElement deviceElement(BUTTONMAP_XML_ELEM_DEVICE);
@@ -212,7 +215,8 @@ bool CDatabaseXml::Deserialize(const TiXmlElement* pElement)
       return false;
     }
 
-    m_devices.push_back(device);
+    if (!device.IsEmpty())
+      m_devices.push_back(device);
 
     pDevice = pDevice->NextSiblingElement(BUTTONMAP_XML_ELEM_DEVICE);
   }

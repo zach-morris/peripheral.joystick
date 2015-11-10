@@ -42,6 +42,7 @@ namespace JOYSTICK
     bool operator==(const CDevice& rhs) const;
 
     bool IsValid(void) const;
+    bool IsEmpty(void) const { return m_buttonMaps.empty(); }
 
     const std::string& Name(void) const { return m_strName; }
 
