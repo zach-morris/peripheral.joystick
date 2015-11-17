@@ -3,7 +3,7 @@ project(peripheral.joystick)
 cmake_minimum_required(VERSION 2.6)
 enable_language(CXX)
 
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR})
+list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 
 include(CheckIncludeFiles)
 
