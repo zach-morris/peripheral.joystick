@@ -19,21 +19,16 @@
  */
 #pragma once
 
-#include "storage/Device.h"
-
 class TiXmlElement;
 
 namespace JOYSTICK
 {
-  class CDeviceXml : public CDevice
+  class CDriverRecord;
+
+  class CDriverRecordXml
   {
   public:
-    CDeviceXml(void) { }
-    CDeviceXml(const CDevice& other) : CDevice(other) { }
-
-    virtual ~CDeviceXml(void) { }
-
-    bool Serialize(TiXmlElement* pElement) const;
-    bool Deserialize(const TiXmlElement* pElement);
+    static bool Serialize(const CDriverRecord& record, TiXmlElement* pElement);
+    static bool Deserialize(const TiXmlElement* pElement, CDriverRecord& record);
   };
 }

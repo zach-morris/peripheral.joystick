@@ -19,9 +19,11 @@
  */
 #pragma once
 
-#include "Device.h"
+#include "storage/schema/ButtonMapRecord.h"
+#include "storage/schema/DriverRecord.h"
 
-#include "kodi/kodi_peripheral_utils.hpp"
+#include <map>
+#include <string>
 
 namespace JOYSTICK
 {
@@ -38,16 +40,18 @@ namespace JOYSTICK
 
     virtual bool IsEnabled(void) const { return m_bEnabled; }
 
-    virtual bool GetFeatures(const CDevice& needle, const std::string& strDeviceId,
+    virtual bool GetFeatures(const CDriverRecord& driverInfo, const std::string& controllerId,
                              std::vector<ADDON::JoystickFeature*>& features);
 
-    virtual bool MapFeature(const CDevice& needle, const std::string& strDeviceId,
+    virtual bool MapFeature(const CDriverRecord& driverInfo, const std::string& controllerId,
                             const ADDON::JoystickFeature* feature);
 
-    virtual bool MergeDevice(const CDevice& device);
-
   protected:
-    std::vector<CDevice> m_devices;
+    typedef std::string                              ControllerID;
+    typedef std::map<ControllerID, CButtonMapRecord> ButtonMaps;
+    typedef std::map<CDriverRecord, ButtonMaps>      Records;
+
+    Records m_records;
 
   private:
     bool m_bEnabled;

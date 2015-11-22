@@ -21,38 +21,24 @@
 
 #include "kodi/kodi_peripheral_utils.hpp"
 
-#include <map>
-#include <string>
-
 namespace JOYSTICK
 {
-  class CButtonMap
+  class CDriverRecord
   {
   public:
-    CButtonMap(void) { }
-    CButtonMap(const CButtonMap& other) { *this = other; }
-    virtual ~CButtonMap(void) { Reset(); }
+    CDriverRecord(void) { }
+    CDriverRecord(const ADDON::Joystick& driverInfo);
 
-    CButtonMap& operator=(const CButtonMap& rhs);
+    bool operator<(const CDriverRecord& rhs) const;
 
-    void Reset(void);
+    bool IsValid(void) const;
 
-    bool IsEmpty(void) const { return m_buttons.empty(); }
+    ADDON::Joystick& Properties(void) { return m_driverProperties; }
+    const ADDON::Joystick& Properties(void) const { return m_driverProperties; }
 
-    void GetFeatures(std::vector<ADDON::JoystickFeature*>& features) const;
-
-    bool MapFeature(const ADDON::JoystickFeature* feature);
-
-  protected:
-    typedef std::string                                    FeatureName;
-    typedef std::map<FeatureName, ADDON::JoystickFeature*> Buttons;
-
-    Buttons m_buttons;
+    void MergeProperties(const CDriverRecord& record);
 
   private:
-    bool UnmapPrimitive(const ADDON::DriverPrimitive& primitive);
-
-    // Helper function
-    ADDON::DriverPrimitive Opposite(const ADDON::DriverPrimitive& semiaxis);
+    ADDON::Joystick m_driverProperties;
   };
 }

@@ -19,7 +19,8 @@
  */
 
 #include "DatabaseXml.h"
-#include "DeviceXml.h"
+#include "ButtonMapRecordXml.h"
+#include "DriverRecordXml.h"
 #include "JoystickDefinitions.h"
 #include "log/Log.h"
 
@@ -39,7 +40,7 @@ CDatabaseXml::CDatabaseXml(const std::string& strXmlPath, bool bReadOnly)
 {
 }
 
-bool CDatabaseXml::GetFeatures(const CDevice& needle, const std::string& strControllerId,
+bool CDatabaseXml::GetFeatures(const CDriverRecord& driverInfo, const std::string& controllerId,
                                std::vector<ADDON::JoystickFeature*>& features)
 {
   CLockObject lock(m_mutex);
@@ -47,10 +48,10 @@ bool CDatabaseXml::GetFeatures(const CDevice& needle, const std::string& strCont
   if (!Load())
     return false;
 
-  return CDatabase::GetFeatures(needle, strControllerId, features);
+  return CDatabase::GetFeatures(driverInfo, controllerId, features);
 }
 
-bool CDatabaseXml::MapFeature(const CDevice& needle, const std::string& strControllerId,
+bool CDatabaseXml::MapFeature(const CDriverRecord& driverInfo, const std::string& controllerId,
                               const ADDON::JoystickFeature* feature)
 {
   CLockObject lock(m_mutex);
@@ -58,29 +59,10 @@ bool CDatabaseXml::MapFeature(const CDevice& needle, const std::string& strContr
   if (m_bReadOnly)
     return false;
 
-  if (CDatabase::MapFeature(needle, strControllerId, feature))
+  if (CDatabase::MapFeature(driverInfo, controllerId, feature))
   {
     // Loading might have failed because button map didn't exist. The database
     // is no longer empty, so consider it loaded.
-    m_bLoaded = true;
-
-    Save();
-
-    return true;
-  }
-
-  return false;
-}
-
-bool CDatabaseXml::MergeDevice(const CDevice& device)
-{
-  CLockObject lock(m_mutex);
-
-  if (m_bReadOnly)
-    return false;
-
-  if (CDatabase::MergeDevice(device))
-  {
     m_bLoaded = true;
 
     Save();
@@ -156,12 +138,13 @@ bool CDatabaseXml::Serialize(TiXmlElement* pElement) const
   if (pElement == NULL)
     return false;
 
-  for (std::vector<CDevice>::const_iterator it = m_devices.begin(); it != m_devices.end(); ++it)
+  for (Records::const_iterator it = m_records.begin(); it != m_records.end(); ++it)
   {
-    if (it->IsEmpty())
-      continue;
+    const CDriverRecord& driverRecord = it->first;
+    const ButtonMaps& buttonMaps = it->second;
 
-    CDeviceXml device(*it);
+    if (buttonMaps.empty())
+      continue;
 
     TiXmlElement deviceElement(BUTTONMAP_XML_ELEM_DEVICE);
     TiXmlNode* deviceNode = pElement->InsertEndChild(deviceElement);
@@ -172,7 +155,29 @@ bool CDatabaseXml::Serialize(TiXmlElement* pElement) const
     if (deviceElem == NULL)
       return false;
 
-    device.Serialize(deviceElem);
+    CDriverRecordXml::Serialize(driverRecord, deviceElem);
+
+    for (ButtonMaps::const_iterator it = buttonMaps.begin(); it != buttonMaps.end(); ++it)
+    {
+      const ControllerID& controllerId = it->first;
+      const CButtonMapRecord& buttonMap = it->second;
+
+      if (buttonMap.IsEmpty())
+        continue;
+
+      TiXmlElement profileElement(BUTTONMAP_XML_ELEM_CONTROLLER);
+      TiXmlNode* profileNode = deviceElem->InsertEndChild(profileElement);
+      if (profileNode == NULL)
+        continue;
+
+      TiXmlElement* profileElem = profileNode->ToElement();
+      if (profileElem == NULL)
+        continue;
+
+      profileElem->SetAttribute(BUTTONMAP_XML_ATTR_CONTROLLER_ID, controllerId);
+
+      CButtonMapRecordXml::Serialize(buttonMap, profileElem);
+    }
   }
 
   return true;
@@ -205,18 +210,48 @@ bool CDatabaseXml::Deserialize(const TiXmlElement* pElement)
 
   while (pDevice)
   {
-    CDeviceXml device;
-    if (!device.Deserialize(pDevice))
+    CDriverRecord driverRecord;
+    if (!CDriverRecordXml::Deserialize(pDevice, driverRecord))
       return false;
 
-    if (!device.IsValid())
+    if (!driverRecord.IsValid())
     {
-      esyslog("<%s> tag with name=\"%s\" is invalid", BUTTONMAP_XML_ELEM_DEVICE, device.Name().c_str());
+      esyslog("<%s> tag with name=\"%s\" is invalid", BUTTONMAP_XML_ELEM_DEVICE, driverRecord.Properties().Name().c_str());
       return false;
     }
 
-    if (!device.IsEmpty())
-      m_devices.push_back(device);
+    const TiXmlElement* pProfile = pDevice->FirstChildElement(BUTTONMAP_XML_ELEM_CONTROLLER);
+
+    if (!pProfile)
+    {
+      esyslog("Device \"%s\": can't find <%s> tag", driverRecord.Properties().Name().c_str(), BUTTONMAP_XML_ELEM_CONTROLLER);
+      return false;
+    }
+
+    ButtonMaps& buttonMaps = m_records[driverRecord];
+
+    while (pProfile)
+    {
+      const char* id = pProfile->Attribute(BUTTONMAP_XML_ATTR_CONTROLLER_ID);
+      if (!id)
+      {
+        esyslog("Device \"%s\": <%s> tag has no attribute \"%s\"", driverRecord.Properties().Name().c_str(),
+                BUTTONMAP_XML_ELEM_CONTROLLER, BUTTONMAP_XML_ATTR_CONTROLLER_ID);
+        return false;
+      }
+
+      CButtonMapRecord buttonMap(driverRecord.Properties(), id);
+      if (!CButtonMapRecordXml::Deserialize(pProfile, buttonMap))
+        return false;
+
+      if (!buttonMap.IsEmpty())
+        buttonMaps[id] = buttonMap;
+
+      pProfile = pProfile->NextSiblingElement(BUTTONMAP_XML_ELEM_CONTROLLER);
+    }
+
+    if (!buttonMaps.empty())
+      dsyslog("Button map: loaded device \"%s\" with %u controller profiles", driverRecord.Properties().Name().c_str(), buttonMaps.size());
 
     pDevice = pDevice->NextSiblingElement(BUTTONMAP_XML_ELEM_DEVICE);
   }

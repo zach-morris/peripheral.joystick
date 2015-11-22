@@ -1,6 +1,6 @@
 /*
- *      Copyright (C) 2014-2015 Garrett Brown
- *      Copyright (C) 2014-2015 Team XBMC
+ *      Copyright (C) 2015 Garrett Brown
+ *      Copyright (C) 2015 Team XBMC
  *
  *  This Program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -18,7 +18,7 @@
  *
  */
 
-#include "ButtonMap.h"
+#include "ButtonMapRecord.h"
 #include "log/Log.h"
 
 using namespace JOYSTICK;
@@ -29,31 +29,25 @@ JOYSTICK_DRIVER_SEMIAXIS_DIRECTION operator*(JOYSTICK_DRIVER_SEMIAXIS_DIRECTION 
   return static_cast<JOYSTICK_DRIVER_SEMIAXIS_DIRECTION>(static_cast<int>(dir) * i);
 }
 
-CButtonMap& CButtonMap::operator=(const CButtonMap& rhs)
+CButtonMapRecord::CButtonMapRecord(const ADDON::Joystick& driverInfo, const std::string& controllerId)
+ : m_driverProperties(driverInfo),
+   m_controllerId(controllerId)
 {
-  if (this != &rhs)
-  {
-    Reset();
-    for (Buttons::const_iterator it = rhs.m_buttons.begin(); it != rhs.m_buttons.end(); ++it)
-      m_buttons[it->first] = it->second->Clone();
-  }
-  return *this;
 }
 
-void CButtonMap::Reset(void)
+CButtonMapRecord::~CButtonMapRecord(void)
 {
-  for (Buttons::iterator it = m_buttons.begin(); it != m_buttons.end(); ++it)
+  for (ButtonMap::iterator it = m_buttonMap.begin(); it != m_buttonMap.end(); ++it)
     delete it->second;
-  m_buttons.clear();
 }
 
-void CButtonMap::GetFeatures(std::vector<ADDON::JoystickFeature*>& features) const
+void CButtonMapRecord::GetFeatures(std::vector<ADDON::JoystickFeature*>& features) const
 {
-  for (Buttons::const_iterator itButton = m_buttons.begin(); itButton != m_buttons.end(); ++itButton)
+  for (ButtonMap::const_iterator itButton = m_buttonMap.begin(); itButton != m_buttonMap.end(); ++itButton)
     features.push_back(itButton->second);
 }
 
-bool CButtonMap::MapFeature(const ADDON::JoystickFeature* feature)
+bool CButtonMapRecord::MapFeature(const ADDON::JoystickFeature* feature)
 {
   bool bModified = false;
 
@@ -61,8 +55,8 @@ bool CButtonMap::MapFeature(const ADDON::JoystickFeature* feature)
   {
     const std::string& strFeatureName = feature->Name();
 
-    Buttons::iterator itFeature = m_buttons.find(strFeatureName);
-    const bool bExists = (itFeature != m_buttons.end());
+    ButtonMap::iterator itFeature = m_buttonMap.find(strFeatureName);
+    const bool bExists = (itFeature != m_buttonMap.end());
 
     if (bExists && itFeature->second->Equals(feature))
     {
@@ -104,11 +98,11 @@ bool CButtonMap::MapFeature(const ADDON::JoystickFeature* feature)
 
       // If button map is modified, iterator may be invalidated
       if (bModified)
-        itFeature = m_buttons.find(strFeatureName);
+        itFeature = m_buttonMap.find(strFeatureName);
 
-      if (itFeature == m_buttons.end())
+      if (itFeature == m_buttonMap.end())
       {
-        m_buttons[strFeatureName] = feature->Clone();
+        m_buttonMap[strFeatureName] = feature->Clone();
       }
       else
       {
@@ -123,11 +117,11 @@ bool CButtonMap::MapFeature(const ADDON::JoystickFeature* feature)
   return bModified;
 }
 
-bool CButtonMap::UnmapPrimitive(const ADDON::DriverPrimitive& primitive)
+bool CButtonMapRecord::UnmapPrimitive(const ADDON::DriverPrimitive& primitive)
 {
   bool bModified = false;
 
-  for (Buttons::iterator it = m_buttons.begin(); it != m_buttons.end(); ++it)
+  for (ButtonMap::iterator it = m_buttonMap.begin(); it != m_buttonMap.end(); ++it)
   {
     ADDON::JoystickFeature* feature = it->second;
     switch (feature->Type())
@@ -139,7 +133,7 @@ bool CButtonMap::UnmapPrimitive(const ADDON::DriverPrimitive& primitive)
         {
           dsyslog("Removing \"%s\" from button map due to conflict", feature->Name().c_str());
           delete feature;
-          m_buttons.erase(it);
+          m_buttonMap.erase(it);
           bModified = true;
         }
 
@@ -178,7 +172,7 @@ bool CButtonMap::UnmapPrimitive(const ADDON::DriverPrimitive& primitive)
           {
             dsyslog("Removing \"%s\" from button map due to conflict", feature->Name().c_str());
             delete feature;
-            m_buttons.erase(it);
+            m_buttonMap.erase(it);
           }
         }
 
@@ -214,7 +208,7 @@ bool CButtonMap::UnmapPrimitive(const ADDON::DriverPrimitive& primitive)
           {
             dsyslog("Removing \"%s\" from button map due to conflict", feature->Name().c_str());
             delete feature;
-            m_buttons.erase(it);
+            m_buttonMap.erase(it);
           }
         }
 
@@ -231,7 +225,7 @@ bool CButtonMap::UnmapPrimitive(const ADDON::DriverPrimitive& primitive)
   return bModified;
 }
 
-ADDON::DriverPrimitive CButtonMap::Opposite(const ADDON::DriverPrimitive& primitive)
+ADDON::DriverPrimitive CButtonMapRecord::Opposite(const ADDON::DriverPrimitive& primitive)
 {
   return ADDON::DriverPrimitive(primitive.DriverIndex(), primitive.SemiAxisDirection() * -1);
 }

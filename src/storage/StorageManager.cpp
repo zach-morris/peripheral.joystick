@@ -100,11 +100,9 @@ void CStorageManager::Deinitialize(void)
 bool CStorageManager::GetFeatures(const ADDON::Joystick& joystick, const std::string& strControllerId,
                                   std::vector<ADDON::JoystickFeature*>& features)
 {
-  CDevice needle(joystick);
-
   for (std::vector<CDatabase*>::const_iterator it = m_databases.begin(); it != m_databases.end(); ++it)
   {
-    if ((*it)->IsEnabled() && (*it)->GetFeatures(needle, strControllerId, features))
+    if ((*it)->IsEnabled() && (*it)->GetFeatures(joystick, strControllerId, features))
       break;
   }
 
@@ -114,10 +112,8 @@ bool CStorageManager::GetFeatures(const ADDON::Joystick& joystick, const std::st
 bool CStorageManager::MapFeature(const ADDON::Joystick& joystick, const std::string& strControllerId,
                                  const ADDON::JoystickFeature* feature)
 {
-  CDevice needle(joystick);
-
   for (std::vector<CDatabase*>::const_iterator it = m_databases.begin(); it != m_databases.end(); ++it)
-    (*it)->MapFeature(needle, strControllerId, feature);
+    (*it)->MapFeature(joystick, strControllerId, feature);
 
   return true;
 }

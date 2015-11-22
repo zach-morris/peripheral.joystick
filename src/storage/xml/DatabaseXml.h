@@ -37,13 +37,11 @@ namespace JOYSTICK
 
     virtual ~CDatabaseXml(void) { }
 
-    virtual bool GetFeatures(const CDevice& needle, const std::string& strDeviceId,
+    virtual bool GetFeatures(const CDriverRecord& driverInfo, const std::string& controllerId,
                              std::vector<ADDON::JoystickFeature*>& features);
 
-    virtual bool MapFeature(const CDevice& needle, const std::string& strDeviceId,
+    virtual bool MapFeature(const CDriverRecord& driverInfo, const std::string& controllerId,
                             const ADDON::JoystickFeature* feature);
-
-    virtual bool MergeDevice(const CDevice& device);
 
   private:
     bool Load(void);

@@ -19,8 +19,6 @@
  */
 #pragma once
 
-#include "storage/ButtonMap.h"
-
 #include <string>
 
 class TiXmlElement;
@@ -28,26 +26,24 @@ class TiXmlElement;
 namespace ADDON
 {
   class DriverPrimitive;
+  class JoystickFeature;
 }
 
 namespace JOYSTICK
 {
-  class CButtonMapXml : public CButtonMap
+  class CButtonMapRecord;
+
+  class CButtonMapRecordXml
   {
   public:
-    CButtonMapXml(void) { }
-    CButtonMapXml(const CButtonMap& other) : CButtonMap(other) { }
-
-    virtual ~CButtonMapXml(void) { }
-
-    bool Serialize(TiXmlElement* pElement) const;
-    bool Deserialize(const TiXmlElement* pElement);
+    static bool Serialize(const CButtonMapRecord& record, TiXmlElement* pElement);
+    static bool Deserialize(const TiXmlElement* pElement, CButtonMapRecord& record);
 
   private:
     static bool IsValid(const ADDON::JoystickFeature* feature);
-    bool SerializeFeature(TiXmlElement* pElement, const ADDON::DriverPrimitive& primitive, const char* tagName) const;
-    bool SerializePrimitiveTag(TiXmlElement* pElement, const ADDON::DriverPrimitive& primitive, const char* tagName) const;
-    void SerializePrimitive(TiXmlElement* pElement, const ADDON::DriverPrimitive& primitive) const;
-    bool DeserializePrimitive(const TiXmlElement* pElement, ADDON::DriverPrimitive& primitive, const std::string& featureName) const;
+    static bool SerializeFeature(TiXmlElement* pElement, const ADDON::DriverPrimitive& primitive, const char* tagName);
+    static bool SerializePrimitiveTag(TiXmlElement* pElement, const ADDON::DriverPrimitive& primitive, const char* tagName);
+    static void SerializePrimitive(TiXmlElement* pElement, const ADDON::DriverPrimitive& primitive);
+    static bool DeserializePrimitive(const TiXmlElement* pElement, ADDON::DriverPrimitive& primitive, const std::string& featureName);
   };
 }

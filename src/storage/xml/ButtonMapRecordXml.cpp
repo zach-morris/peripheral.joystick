@@ -18,7 +18,8 @@
  *
  */
 
-#include "ButtonMapXml.h"
+#include "ButtonMapRecordXml.h"
+#include "storage/schema/ButtonMapRecord.h"
 #include "JoystickDefinitions.h"
 #include "JoystickTranslator.h"
 #include "log/Log.h"
@@ -32,12 +33,12 @@
 
 using namespace JOYSTICK;
 
-bool CButtonMapXml::Serialize(TiXmlElement* pElement) const
+bool CButtonMapRecordXml::Serialize(const CButtonMapRecord& record, TiXmlElement* pElement)
 {
   if (pElement == NULL)
     return false;
 
-  for (Buttons::const_iterator it = m_buttons.begin(); it != m_buttons.end(); ++it)
+  for (CButtonMapRecord::ButtonMap::const_iterator it = record.GetButtonMap().begin(); it != record.GetButtonMap().end(); ++it)
   {
     const std::string& strFeatureName = it->first;
     const ADDON::JoystickFeature* feature = it->second;
@@ -107,7 +108,7 @@ bool CButtonMapXml::Serialize(TiXmlElement* pElement) const
   return true;
 }
 
-bool CButtonMapXml::IsValid(const ADDON::JoystickFeature* feature)
+bool CButtonMapRecordXml::IsValid(const ADDON::JoystickFeature* feature)
 {
   bool bIsValid = false;
 
@@ -156,7 +157,7 @@ bool CButtonMapXml::IsValid(const ADDON::JoystickFeature* feature)
   return bIsValid;
 }
 
-bool CButtonMapXml::SerializePrimitiveTag(TiXmlElement* pElement, const ADDON::DriverPrimitive& primitive, const char* tagName) const
+bool CButtonMapRecordXml::SerializePrimitiveTag(TiXmlElement* pElement, const ADDON::DriverPrimitive& primitive, const char* tagName)
 {
   if (primitive.Type() != JOYSTICK_DRIVER_PRIMITIVE_TYPE_UNKNOWN)
   {
@@ -178,7 +179,7 @@ bool CButtonMapXml::SerializePrimitiveTag(TiXmlElement* pElement, const ADDON::D
   return true;
 }
 
-void CButtonMapXml::SerializePrimitive(TiXmlElement* pElement, const ADDON::DriverPrimitive& primitive) const
+void CButtonMapRecordXml::SerializePrimitive(TiXmlElement* pElement, const ADDON::DriverPrimitive& primitive)
 {
   switch (primitive.Type())
   {
@@ -210,11 +211,8 @@ void CButtonMapXml::SerializePrimitive(TiXmlElement* pElement, const ADDON::Driv
   }
 }
 
-bool CButtonMapXml::Deserialize(const TiXmlElement* pElement)
+bool CButtonMapRecordXml::Deserialize(const TiXmlElement* pElement, CButtonMapRecord& record)
 {
-
-  Reset();
-
   const TiXmlElement* pFeature = pElement->FirstChildElement(BUTTONMAP_XML_ELEM_FEATURE);
 
   if (!pFeature)
@@ -369,7 +367,7 @@ bool CButtonMapXml::Deserialize(const TiXmlElement* pElement)
     }
 
     if (feature)
-      m_buttons[name] = feature;
+      record.MapFeature(feature);
 
     pFeature = pFeature->NextSiblingElement(BUTTONMAP_XML_ELEM_FEATURE);
   }
@@ -377,7 +375,7 @@ bool CButtonMapXml::Deserialize(const TiXmlElement* pElement)
   return true;
 }
 
-bool CButtonMapXml::DeserializePrimitive(const TiXmlElement* pElement, ADDON::DriverPrimitive& primitive, const std::string& featureName) const
+bool CButtonMapRecordXml::DeserializePrimitive(const TiXmlElement* pElement, ADDON::DriverPrimitive& primitive, const std::string& featureName)
 {
   const char* button = pElement->Attribute(BUTTONMAP_XML_ATTR_FEATURE_BUTTON);
   const char* hat = pElement->Attribute(BUTTONMAP_XML_ATTR_FEATURE_HAT);
