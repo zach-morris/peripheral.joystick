@@ -19,7 +19,6 @@
  */
 
 #include "StorageManager.h"
-#include "storage/web/DatabaseWeb.h"
 #include "storage/xml/DatabaseXml.h"
 
 #include "kodi/libKODI_peripheral.h"
