@@ -1,5 +1,4 @@
 /*
-/*
  *      Copyright (C) 2015 Garrett Brown
  *      Copyright (C) 2015 Team XBMC
  *
