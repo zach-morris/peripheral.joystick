@@ -230,6 +230,9 @@ bool CDatabaseXml::Deserialize(const TiXmlElement* pElement)
 
     ButtonMaps& buttonMaps = m_records[driverRecord];
 
+    // For logging purposes
+    unsigned int totalFeatureCount = 0;
+
     while (pController)
     {
       const char* id = pController->Attribute(BUTTONMAP_XML_ATTR_CONTROLLER_ID);
@@ -245,13 +248,16 @@ bool CDatabaseXml::Deserialize(const TiXmlElement* pElement)
         return false;
 
       if (!buttonMap.IsEmpty())
+      {
+        totalFeatureCount += buttonMap.GetButtonMap().size();
         buttonMaps[id] = std::move(buttonMap);
+      }
 
       pController = pController->NextSiblingElement(BUTTONMAP_XML_ELEM_CONTROLLER);
     }
 
     if (!buttonMaps.empty())
-      dsyslog("Button map: loaded device \"%s\" with %u controller profiles", driverRecord.Properties().Name().c_str(), buttonMaps.size());
+      dsyslog("Button map: loaded device \"%s\" with %u controller profiles and %u total features", driverRecord.Properties().Name().c_str(), buttonMaps.size(), totalFeatureCount);
 
     pDevice = pDevice->NextSiblingElement(BUTTONMAP_XML_ELEM_DEVICE);
   }
