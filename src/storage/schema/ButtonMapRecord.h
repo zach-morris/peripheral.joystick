@@ -36,6 +36,8 @@ namespace JOYSTICK
     CButtonMapRecord(const ADDON::Joystick& driverInfo, const std::string& controllerId);
     virtual ~CButtonMapRecord(void);
 
+    CButtonMapRecord& operator=(CButtonMapRecord&& rhs);
+
     bool IsEmpty(void) const { return m_buttonMap.empty(); }
 
     void GetFeatures(std::vector<ADDON::JoystickFeature*>& features) const;

@@ -245,7 +245,7 @@ bool CDatabaseXml::Deserialize(const TiXmlElement* pElement)
         return false;
 
       if (!buttonMap.IsEmpty())
-        buttonMaps[id] = buttonMap;
+        buttonMaps[id] = std::move(buttonMap);
 
       pController = pController->NextSiblingElement(BUTTONMAP_XML_ELEM_CONTROLLER);
     }

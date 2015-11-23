@@ -41,6 +41,17 @@ CButtonMapRecord::~CButtonMapRecord(void)
     delete it->second;
 }
 
+CButtonMapRecord& CButtonMapRecord::operator=(CButtonMapRecord&& rhs)
+{
+  if (this != &rhs)
+  {
+    m_driverProperties = rhs.m_driverProperties; // TODO: possible optimization here
+    m_controllerId = std::move(rhs.m_controllerId);
+    m_buttonMap = std::move(rhs.m_buttonMap);
+  }
+  return *this;
+}
+
 void CButtonMapRecord::GetFeatures(std::vector<ADDON::JoystickFeature*>& features) const
 {
   for (ButtonMap::const_iterator itButton = m_buttonMap.begin(); itButton != m_buttonMap.end(); ++itButton)
