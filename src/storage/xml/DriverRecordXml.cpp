@@ -39,14 +39,12 @@ bool CDriverRecordXml::Serialize(const CDriverRecord& record, TiXmlElement* pEle
     pElement->SetAttribute(BUTTONMAP_XML_ATTR_DEVICE_VID, record.Properties().VendorID());
     pElement->SetAttribute(BUTTONMAP_XML_ATTR_DEVICE_PID, record.Properties().ProductID());
   }
-  if (record.Properties().ButtonCount() != 0 &&
-      record.Properties().HatCount() != 0 &&
-      record.Properties().AxisCount() != 0)
-  {
+  if (record.Properties().ButtonCount() != 0)
     pElement->SetAttribute(BUTTONMAP_XML_ATTR_DEVICE_BUTTONCOUNT, record.Properties().ButtonCount());
+  if (record.Properties().HatCount() != 0)
     pElement->SetAttribute(BUTTONMAP_XML_ATTR_DEVICE_HATCOUNT, record.Properties().HatCount());
+  if (record.Properties().AxisCount() != 0)
     pElement->SetAttribute(BUTTONMAP_XML_ATTR_DEVICE_AXISCOUNT, record.Properties().AxisCount());
-  }
   return true;
 }
 
