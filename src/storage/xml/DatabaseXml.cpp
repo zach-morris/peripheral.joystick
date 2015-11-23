@@ -220,9 +220,9 @@ bool CDatabaseXml::Deserialize(const TiXmlElement* pElement)
       return false;
     }
 
-    const TiXmlElement* pProfile = pDevice->FirstChildElement(BUTTONMAP_XML_ELEM_CONTROLLER);
+    const TiXmlElement* pController = pDevice->FirstChildElement(BUTTONMAP_XML_ELEM_CONTROLLER);
 
-    if (!pProfile)
+    if (!pController)
     {
       esyslog("Device \"%s\": can't find <%s> tag", driverRecord.Properties().Name().c_str(), BUTTONMAP_XML_ELEM_CONTROLLER);
       return false;
@@ -230,9 +230,9 @@ bool CDatabaseXml::Deserialize(const TiXmlElement* pElement)
 
     ButtonMaps& buttonMaps = m_records[driverRecord];
 
-    while (pProfile)
+    while (pController)
     {
-      const char* id = pProfile->Attribute(BUTTONMAP_XML_ATTR_CONTROLLER_ID);
+      const char* id = pController->Attribute(BUTTONMAP_XML_ATTR_CONTROLLER_ID);
       if (!id)
       {
         esyslog("Device \"%s\": <%s> tag has no attribute \"%s\"", driverRecord.Properties().Name().c_str(),
@@ -241,13 +241,13 @@ bool CDatabaseXml::Deserialize(const TiXmlElement* pElement)
       }
 
       CButtonMapRecord buttonMap(driverRecord.Properties(), id);
-      if (!CButtonMapRecordXml::Deserialize(pProfile, buttonMap))
+      if (!CButtonMapRecordXml::Deserialize(pController, buttonMap))
         return false;
 
       if (!buttonMap.IsEmpty())
         buttonMaps[id] = buttonMap;
 
-      pProfile = pProfile->NextSiblingElement(BUTTONMAP_XML_ELEM_CONTROLLER);
+      pController = pController->NextSiblingElement(BUTTONMAP_XML_ELEM_CONTROLLER);
     }
 
     if (!buttonMaps.empty())
