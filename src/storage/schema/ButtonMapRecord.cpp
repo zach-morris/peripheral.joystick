@@ -22,6 +22,7 @@
 #include "log/Log.h"
 
 using namespace JOYSTICK;
+using namespace PLATFORM;
 
 // Helper function
 JOYSTICK_DRIVER_SEMIAXIS_DIRECTION operator*(JOYSTICK_DRIVER_SEMIAXIS_DIRECTION dir, int i)
@@ -37,12 +38,14 @@ CButtonMapRecord::CButtonMapRecord(const ADDON::Joystick& driverInfo, const std:
 
 CButtonMapRecord::~CButtonMapRecord(void)
 {
+  CLockObject lock(m_mutex);
   for (ButtonMap::iterator it = m_buttonMap.begin(); it != m_buttonMap.end(); ++it)
     delete it->second;
 }
 
 CButtonMapRecord& CButtonMapRecord::operator=(CButtonMapRecord&& rhs)
 {
+  CLockObject lock(m_mutex);
   if (this != &rhs)
   {
     m_driverProperties = rhs.m_driverProperties; // TODO: possible optimization here
@@ -52,14 +55,28 @@ CButtonMapRecord& CButtonMapRecord::operator=(CButtonMapRecord&& rhs)
   return *this;
 }
 
+bool CButtonMapRecord::IsEmpty(void) const
+{
+  CLockObject lock(m_mutex);
+  return m_buttonMap.empty();
+}
+
+size_t CButtonMapRecord::FeatureCount(void) const
+{
+  CLockObject lock(m_mutex);
+  return m_buttonMap.size();
+}
+
 void CButtonMapRecord::GetFeatures(FeatureVector& features) const
 {
+  CLockObject lock(m_mutex);
   for (ButtonMap::const_iterator itButton = m_buttonMap.begin(); itButton != m_buttonMap.end(); ++itButton)
     features.push_back(FeaturePtr(itButton->second->Clone()));
 }
 
 bool CButtonMapRecord::MapFeature(const ADDON::JoystickFeature* feature)
 {
+  CLockObject lock(m_mutex);
   bool bModified = false;
 
   if (feature && !feature->Name().empty())

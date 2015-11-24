@@ -22,6 +22,7 @@
 #include "storage/ButtonMapTypes.h"
 
 #include "kodi/kodi_peripheral_utils.hpp"
+#include "platform/threads/mutex.h"
 
 #include <map>
 #include <string>
@@ -31,23 +32,23 @@ namespace JOYSTICK
   class CButtonMapRecord
   {
   public:
-    typedef std::string                                    FeatureName;
-    typedef std::map<FeatureName, ADDON::JoystickFeature*> ButtonMap;
-
     CButtonMapRecord(void) { }
     CButtonMapRecord(const ADDON::Joystick& driverInfo, const std::string& controllerId);
     virtual ~CButtonMapRecord(void);
 
     CButtonMapRecord& operator=(CButtonMapRecord&& rhs);
 
-    bool IsEmpty(void) const { return m_buttonMap.empty(); }
+    bool IsEmpty(void) const;
+    size_t FeatureCount(void) const;
 
     void GetFeatures(FeatureVector& features) const;
-    const ButtonMap& GetButtonMap(void) const { return m_buttonMap; }
 
     bool MapFeature(const ADDON::JoystickFeature* feature);
 
   private:
+    typedef std::string                                    FeatureName;
+    typedef std::map<FeatureName, ADDON::JoystickFeature*> ButtonMap;
+
     bool UnmapPrimitive(const ADDON::DriverPrimitive& primitive);
 
     // Helper function
@@ -56,5 +57,6 @@ namespace JOYSTICK
     ADDON::Joystick m_driverProperties;
     std::string     m_controllerId;
     ButtonMap       m_buttonMap;
+    mutable PLATFORM::CMutex m_mutex;
   };
 }

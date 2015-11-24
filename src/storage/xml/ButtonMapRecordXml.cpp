@@ -38,10 +38,12 @@ bool CButtonMapRecordXml::Serialize(const CButtonMapRecord& record, TiXmlElement
   if (pElement == NULL)
     return false;
 
-  for (CButtonMapRecord::ButtonMap::const_iterator it = record.GetButtonMap().begin(); it != record.GetButtonMap().end(); ++it)
+  FeatureVector features;
+  record.GetFeatures(features);
+
+  for (FeatureVector::const_iterator it = features.begin(); it != features.end(); ++it)
   {
-    const std::string& strFeatureName = it->first;
-    const ADDON::JoystickFeature* feature = it->second;
+    const ADDON::JoystickFeature* feature = it->get();
 
     if (!IsValid(feature))
       continue;
@@ -55,7 +57,7 @@ bool CButtonMapRecordXml::Serialize(const CButtonMapRecord& record, TiXmlElement
     if (featureElem == NULL)
       return false;
 
-    featureElem->SetAttribute(BUTTONMAP_XML_ATTR_FEATURE_NAME, strFeatureName);
+    featureElem->SetAttribute(BUTTONMAP_XML_ATTR_FEATURE_NAME, feature->Name());
 
     switch (feature->Type())
     {

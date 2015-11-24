@@ -249,7 +249,7 @@ bool CDatabaseXml::Deserialize(const TiXmlElement* pElement)
 
       if (!buttonMap.IsEmpty())
       {
-        totalFeatureCount += buttonMap.GetButtonMap().size();
+        totalFeatureCount += buttonMap.FeatureCount();
         buttonMaps[id] = std::move(buttonMap);
       }
 
