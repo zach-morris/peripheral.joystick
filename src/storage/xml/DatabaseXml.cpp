@@ -32,12 +32,19 @@
 using namespace JOYSTICK;
 using namespace PLATFORM;
 
-CDatabaseXml::CDatabaseXml(const std::string& strXmlPath, bool bReadOnly)
-  : m_strPath(strXmlPath),
+#define USER_BUTTONMAP_XML   "/buttonmap.xml"
+#define ADDON_BUTTONMAP_XML  "/resources/buttonmap.xml"
+
+CDatabaseXml::CDatabaseXml(const std::string& strAddonPath, bool bReadOnly)
+  : m_strPath(strAddonPath),
     m_bReadOnly(bReadOnly),
     m_bLoadAttempted(false),
     m_bLoaded(false)
 {
+  if (bReadOnly)
+    m_strPath += ADDON_BUTTONMAP_XML;
+  else
+    m_strPath += USER_BUTTONMAP_XML;
 }
 
 bool CDatabaseXml::GetFeatures(const CDriverRecord& driverInfo, const std::string& controllerId,

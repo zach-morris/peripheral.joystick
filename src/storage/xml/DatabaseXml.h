@@ -33,6 +33,7 @@ namespace JOYSTICK
   class CDatabaseXml : public CDatabase
   {
   public:
+    // bReadOnly determines whether we use user or add-on data
     CDatabaseXml(const std::string& strXmlPath, bool bReadOnly);
 
     virtual ~CDatabaseXml(void) { }

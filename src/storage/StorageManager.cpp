@@ -25,9 +25,6 @@
 
 using namespace JOYSTICK;
 
-#define USER_BUTTONMAP   "/buttonmap.xml"
-#define ADDON_BUTTONMAP  "/resources/buttonmap.xml"
-
 // --- RemoveSlashAtEnd --------------------------------------------------------
 
 namespace JOYSTICK
@@ -75,14 +72,10 @@ bool CStorageManager::Initialize(ADDON::CHelper_libKODI_peripheral* peripheralLi
   RemoveSlashAtEnd(strUserPath);
   RemoveSlashAtEnd(strAddonPath);
 
-  std::string strUserXml = strUserPath + USER_BUTTONMAP;
-  std::string strAddonXml = strAddonPath + ADDON_BUTTONMAP;
-
-  CDatabase* userDatabase = new CDatabaseXml(strUserXml, false);
-  CDatabase* addonDatabase = new CDatabaseXml(strAddonXml, true);
+  CDatabase* userDatabase = new CDatabaseXml(strUserPath, false);
+  CDatabase* addonDatabase = new CDatabaseXml(strAddonPath, true);
 
   m_databases.push_back(userDatabase);
-  //m_databases.push_back(new CDatabaseWeb(this, userDatabase, strUserPath)); // TODO: Fix crash on exit
   m_databases.push_back(addonDatabase);
 
   return true;
