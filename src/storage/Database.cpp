@@ -39,7 +39,7 @@ void CDatabase::Disable(void)
 }
 
 bool CDatabase::GetFeatures(const CDriverRecord& driverInfo, const std::string& controllerId,
-                            std::vector<ADDON::JoystickFeature*>& features)
+                            FeatureVector& features)
 {
   Records::const_iterator itDevice = m_records.find(driverInfo);
   if (itDevice != m_records.end())

@@ -19,6 +19,8 @@
  */
 #pragma once
 
+#include "storage/ButtonMapTypes.h"
+
 #include "kodi/kodi_peripheral_utils.hpp"
 
 #include <map>
@@ -40,7 +42,7 @@ namespace JOYSTICK
 
     bool IsEmpty(void) const { return m_buttonMap.empty(); }
 
-    void GetFeatures(std::vector<ADDON::JoystickFeature*>& features) const;
+    void GetFeatures(FeatureVector& features) const;
     const ButtonMap& GetButtonMap(void) const { return m_buttonMap; }
 
     bool MapFeature(const ADDON::JoystickFeature* feature);

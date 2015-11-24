@@ -52,10 +52,10 @@ CButtonMapRecord& CButtonMapRecord::operator=(CButtonMapRecord&& rhs)
   return *this;
 }
 
-void CButtonMapRecord::GetFeatures(std::vector<ADDON::JoystickFeature*>& features) const
+void CButtonMapRecord::GetFeatures(FeatureVector& features) const
 {
   for (ButtonMap::const_iterator itButton = m_buttonMap.begin(); itButton != m_buttonMap.end(); ++itButton)
-    features.push_back(itButton->second);
+    features.push_back(FeaturePtr(itButton->second->Clone()));
 }
 
 bool CButtonMapRecord::MapFeature(const ADDON::JoystickFeature* feature)

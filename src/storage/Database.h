@@ -19,6 +19,7 @@
  */
 #pragma once
 
+#include "ButtonMapTypes.h"
 #include "storage/schema/ButtonMapRecord.h"
 #include "storage/schema/DriverRecord.h"
 
@@ -41,7 +42,7 @@ namespace JOYSTICK
     virtual bool IsEnabled(void) const { return m_bEnabled; }
 
     virtual bool GetFeatures(const CDriverRecord& driverInfo, const std::string& controllerId,
-                             std::vector<ADDON::JoystickFeature*>& features);
+                             FeatureVector& features);
 
     virtual bool MapFeature(const CDriverRecord& driverInfo, const std::string& controllerId,
                             const ADDON::JoystickFeature* feature);

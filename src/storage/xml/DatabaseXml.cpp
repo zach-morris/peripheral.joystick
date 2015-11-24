@@ -41,7 +41,7 @@ CDatabaseXml::CDatabaseXml(const std::string& strXmlPath, bool bReadOnly)
 }
 
 bool CDatabaseXml::GetFeatures(const CDriverRecord& driverInfo, const std::string& controllerId,
-                               std::vector<ADDON::JoystickFeature*>& features)
+                               FeatureVector& features)
 {
   CLockObject lock(m_mutex);
 

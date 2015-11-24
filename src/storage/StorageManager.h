@@ -19,6 +19,8 @@
  */
 #pragma once
 
+#include "ButtonMapTypes.h"
+
 #include "kodi/kodi_peripheral_types.h"
 #include "kodi/kodi_peripheral_utils.hpp"
 
@@ -49,7 +51,7 @@ namespace JOYSTICK
     void Deinitialize(void);
 
     bool GetFeatures(const ADDON::Joystick& joystick, const std::string& strDeviceId,
-                     std::vector<ADDON::JoystickFeature*>& features);
+                     FeatureVector& features);
 
     bool MapFeature(const ADDON::Joystick& joystick, const std::string& strDeviceId,
                     const ADDON::JoystickFeature* feature);

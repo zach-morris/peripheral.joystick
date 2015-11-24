@@ -38,7 +38,7 @@ namespace JOYSTICK
     virtual ~CDatabaseXml(void) { }
 
     virtual bool GetFeatures(const CDriverRecord& driverInfo, const std::string& controllerId,
-                             std::vector<ADDON::JoystickFeature*>& features);
+                             FeatureVector& features);
 
     virtual bool MapFeature(const CDriverRecord& driverInfo, const std::string& controllerId,
                             const ADDON::JoystickFeature* feature);

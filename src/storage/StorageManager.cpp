@@ -98,7 +98,7 @@ void CStorageManager::Deinitialize(void)
 }
 
 bool CStorageManager::GetFeatures(const ADDON::Joystick& joystick, const std::string& strControllerId,
-                                  std::vector<ADDON::JoystickFeature*>& features)
+                                  FeatureVector& features)
 {
   for (std::vector<CDatabase*>::const_iterator it = m_databases.begin(); it != m_databases.end(); ++it)
   {

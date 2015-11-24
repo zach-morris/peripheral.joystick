@@ -36,6 +36,7 @@
 #include "kodi/kodi_peripheral_dll.h"
 #include "kodi/kodi_peripheral_utils.hpp"
 
+#include <algorithm>
 #include <vector>
 
 using namespace JOYSTICK;
@@ -234,9 +235,18 @@ PERIPHERAL_ERROR GetFeatures(const JOYSTICK_INFO* joystick, const char* controll
   if (!joystick || !controller_id || !feature_count || !features)
     return PERIPHERAL_ERROR_INVALID_PARAMETERS;
 
-  std::vector<ADDON::JoystickFeature*> joystickFeatures;
-  if (CStorageManager::Get().GetFeatures(ADDON::Joystick(*joystick), controller_id,  joystickFeatures))
+  FeatureVector featureVector;
+  if (CStorageManager::Get().GetFeatures(ADDON::Joystick(*joystick), controller_id,  featureVector))
   {
+    // Convert to vector of raw pointers
+    std::vector<ADDON::JoystickFeature*> joystickFeatures;
+    joystickFeatures.reserve(featureVector.size());
+    std::transform(featureVector.begin(), featureVector.end(), std::back_inserter(joystickFeatures),
+      [](const FeaturePtr& feature)
+      {
+        return feature.get();
+      });
+
     *feature_count = joystickFeatures.size();
     ADDON::JoystickFeatures::ToStructs(joystickFeatures, features);
     return PERIPHERAL_NO_ERROR;
