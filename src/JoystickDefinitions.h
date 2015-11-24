@@ -19,10 +19,10 @@
  */
 #pragma once
 
-#define BUTTONMAP_XML_ROOT                     "buttonmap"
+#define DEVICES_XML_ROOT                       "devices"
+#define DEVICES_XML_ELEM_DEVICE                "device"
 
-#define BUTTONMAP_XML_ELEM_DEVICES             "devices"
-#define BUTTONMAP_XML_ELEM_DEVICE              "device"
+#define BUTTONMAP_XML_ROOT                     "device"
 #define BUTTONMAP_XML_ELEM_CONTROLLER          "controller"
 #define BUTTONMAP_XML_ELEM_FEATURE             "feature"
 
@@ -42,6 +42,7 @@
 #define BUTTONMAP_XML_ATTR_DEVICE_BUTTONCOUNT  "buttoncount"
 #define BUTTONMAP_XML_ATTR_DEVICE_HATCOUNT     "hatcount"
 #define BUTTONMAP_XML_ATTR_DEVICE_AXISCOUNT    "axiscount"
+#define BUTTONMAP_XML_ATTR_DATA_PATH           "path"
 
 #define BUTTONMAP_XML_ATTR_CONTROLLER_ID       "id"
 

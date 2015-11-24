@@ -33,8 +33,7 @@ namespace JOYSTICK
   class CDatabaseXml : public CDatabase
   {
   public:
-    // bReadOnly determines whether we use user or add-on data
-    CDatabaseXml(const std::string& strXmlPath, bool bReadOnly);
+    CDatabaseXml(const std::string& strBasePath, bool bReadOnly);
 
     virtual ~CDatabaseXml(void) { }
 
@@ -51,7 +50,16 @@ namespace JOYSTICK
     bool Deserialize(const TiXmlElement* pElement);
     bool Serialize(TiXmlElement* pElement) const;
 
+    bool LoadButtonMaps(const std::string& strPath, const CDriverRecord& driverRecord);
+    bool SaveButtonMaps(const std::map<std::string, CButtonMapRecord>& buttonMaps,
+                        const std::string& strPath) const;
+
+    bool SerializeButtonMaps(const std::map<std::string, CButtonMapRecord>& buttonMaps,
+                             TiXmlElement* pElement) const;
+
     std::string      m_strPath;
+    std::string      m_strDevicesXmlPath;
+    std::string      m_strDataPath;
     bool             m_bReadOnly;
     bool             m_bLoadAttempted;
     bool             m_bLoaded;

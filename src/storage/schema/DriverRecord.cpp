@@ -19,6 +19,9 @@
  */
 
 #include "DriverRecord.h"
+#include "utils/StringUtils.h"
+
+#include <sstream>
 
 using namespace JOYSTICK;
 
@@ -82,3 +85,15 @@ void CDriverRecord::MergeProperties(const CDriverRecord& record)
     m_driverProperties.SetAxisCount(record.m_driverProperties.AxisCount());
   }
 }
+
+std::string CDriverRecord::RootFileName(void) const
+{
+  std::stringstream filename;
+
+  filename << StringUtils::MakeSafeUrl(m_driverProperties.Name());
+
+  //filename << "_" << md5(m_driverProperties); // TODO
+
+  return filename.str();
+}
+

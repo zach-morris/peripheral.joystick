@@ -38,6 +38,9 @@ namespace JOYSTICK
 
     void MergeProperties(const CDriverRecord& record);
 
+    // File name for this record, minus extension
+    std::string RootFileName(void) const;
+
   private:
     ADDON::Joystick m_driverProperties;
   };
