@@ -303,6 +303,8 @@ bool CDatabaseXml::Deserialize(const TiXmlElement* pElement)
 
     if (!LoadButtonMaps(strDataPath, driverRecord))
       return false;
+
+    pDevice = pDevice->NextSiblingElement(DEVICES_XML_ELEM_DEVICE);
   }
 
   return true;
