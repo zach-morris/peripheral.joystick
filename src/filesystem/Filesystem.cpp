@@ -17,18 +17,21 @@
  *  <http://www.gnu.org/licenses/>.
  *
  */
-#pragma once
 
-#include <memory>
+#include "Filesystem.h"
+#include "DirectoryUtils.h"
+#include "FileUtils.h"
 
-namespace JOYSTICK
+using namespace JOYSTICK;
+
+bool CFilesystem::Initialize(ADDON::CHelper_libXBMC_addon* frontend)
 {
-  class IFile;
-  typedef std::shared_ptr<IFile> FilePtr;
+  return CFileUtils::Initialize(frontend) &&
+         CDirectoryUtils::Initialize(frontend);
+}
 
-  class IFileUtils;
-  typedef std::shared_ptr<IFileUtils> FileUtilsPtr;
-
-  class IDirectoryUtils;
-  typedef std::shared_ptr<IDirectoryUtils> DirectoryUtilsPtr;
+void CFilesystem::Deinitialize(void)
+{
+  CFileUtils::Deinitialize();
+  CDirectoryUtils::Deinitialize();
 }

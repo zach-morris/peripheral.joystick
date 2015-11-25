@@ -19,16 +19,25 @@
  */
 #pragma once
 
-#include <memory>
+#include "filesystem/IDirectoryUtils.h"
+
+namespace ADDON { class CHelper_libXBMC_addon; }
 
 namespace JOYSTICK
 {
-  class IFile;
-  typedef std::shared_ptr<IFile> FilePtr;
+  class CVFSDirectoryUtils : public IDirectoryUtils
+  {
+  public:
+    CVFSDirectoryUtils(ADDON::CHelper_libXBMC_addon* frontend);
 
-  class IFileUtils;
-  typedef std::shared_ptr<IFileUtils> FileUtilsPtr;
+    virtual ~CVFSDirectoryUtils(void) { }
 
-  class IDirectoryUtils;
-  typedef std::shared_ptr<IDirectoryUtils> DirectoryUtilsPtr;
+    // implementation of IDirectoryUtils
+    virtual bool Create(const std::string& path);
+    virtual bool Exists(const std::string& path);
+    virtual bool Remove(const std::string& path);
+
+  private:
+    ADDON::CHelper_libXBMC_addon* const m_frontend;
+  };
 }

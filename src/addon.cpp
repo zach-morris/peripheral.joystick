@@ -23,7 +23,7 @@
 #include "api/Joystick.h"
 #include "api/JoystickManager.h"
 #include "api/PeripheralScanner.h"
-#include "filesystem/FileUtils.h"
+#include "filesystem/Filesystem.h"
 #include "log/Log.h"
 #include "log/LogAddon.h"
 #include "settings/Settings.h"
@@ -81,7 +81,7 @@ ADDON_STATUS ADDON_Create(void* callbacks, void* props)
   if (!CStorageManager::Get().Initialize(PERIPHERAL, *peripheralProps))
     return ADDON_STATUS_PERMANENT_FAILURE;
 
-  if (!CFileUtils::Initialize(FRONTEND))
+  if (!CFilesystem::Initialize(FRONTEND))
     return ADDON_STATUS_PERMANENT_FAILURE;
 
   return ADDON_GetStatus();
@@ -95,6 +95,7 @@ void ADDON_Destroy()
 {
   CJoystickManager::Get().Deinitialize();
   CStorageManager::Get().Deinitialize();
+  CFilesystem::Deinitialize();
 
   CLog::Get().SetType(SYS_LOG_TYPE_CONSOLE);
 

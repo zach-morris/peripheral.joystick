@@ -17,18 +17,32 @@
  *  <http://www.gnu.org/licenses/>.
  *
  */
-#pragma once
 
-#include <memory>
+#include "VFSDirectoryUtils.h"
 
-namespace JOYSTICK
+#include "kodi/libXBMC_addon.h"
+
+#include <assert.h>
+
+using namespace JOYSTICK;
+
+CVFSDirectoryUtils::CVFSDirectoryUtils(ADDON::CHelper_libXBMC_addon* frontend)
+  : m_frontend(frontend)
 {
-  class IFile;
-  typedef std::shared_ptr<IFile> FilePtr;
+  assert(m_frontend);
+}
 
-  class IFileUtils;
-  typedef std::shared_ptr<IFileUtils> FileUtilsPtr;
+bool CVFSDirectoryUtils::Create(const std::string& path)
+{
+  return m_frontend->CreateDirectory(path.c_str());
+}
 
-  class IDirectoryUtils;
-  typedef std::shared_ptr<IDirectoryUtils> DirectoryUtilsPtr;
+bool CVFSDirectoryUtils::Exists(const std::string& path)
+{
+  return m_frontend->DirectoryExists(path.c_str());
+}
+
+bool CVFSDirectoryUtils::Remove(const std::string& path)
+{
+  return m_frontend->RemoveDirectory(path.c_str());
 }

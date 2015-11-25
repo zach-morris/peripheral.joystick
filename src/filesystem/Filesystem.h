@@ -19,16 +19,14 @@
  */
 #pragma once
 
-#include <memory>
+namespace ADDON { class CHelper_libXBMC_addon; }
 
 namespace JOYSTICK
 {
-  class IFile;
-  typedef std::shared_ptr<IFile> FilePtr;
-
-  class IFileUtils;
-  typedef std::shared_ptr<IFileUtils> FileUtilsPtr;
-
-  class IDirectoryUtils;
-  typedef std::shared_ptr<IDirectoryUtils> DirectoryUtilsPtr;
+  class CFilesystem
+  {
+  public:
+    static bool Initialize(ADDON::CHelper_libXBMC_addon* frontend);
+    static void Deinitialize(void);
+  };
 }

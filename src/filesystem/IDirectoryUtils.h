@@ -19,16 +19,34 @@
  */
 #pragma once
 
-#include <memory>
+#include <string>
 
 namespace JOYSTICK
 {
-  class IFile;
-  typedef std::shared_ptr<IFile> FilePtr;
+  class IDirectoryUtils
+  {
+  public:
+    virtual ~IDirectoryUtils(void) { }
 
-  class IFileUtils;
-  typedef std::shared_ptr<IFileUtils> FileUtilsPtr;
+    /*!
+     * \brief Create a directory
+     * \param path Path to the directory
+     * \return True if path is created, false otherwise
+     */
+    virtual bool Create(const std::string& path);
 
-  class IDirectoryUtils;
-  typedef std::shared_ptr<IDirectoryUtils> DirectoryUtilsPtr;
+    /*!
+     * \brief Check if a directory exists
+     * \param path Directory to check
+     * \return True if the directory exists, false otherwise
+     */
+    virtual bool Exists(const std::string& path);
+
+    /*!
+     * \brief Remove a directory
+     * \param path The directory to remove
+     * \return True if the directory was removed, false otherwise
+     */
+    virtual bool Remove(const std::string& path);
+  };
 }
