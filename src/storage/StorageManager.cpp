@@ -20,6 +20,7 @@
 
 #include "StorageManager.h"
 #include "filesystem/DirectoryUtils.h"
+#include "log/Log.h"
 #include "storage/xml/DatabaseXml.h"
 
 #include "kodi/libKODI_peripheral.h"
@@ -82,7 +83,11 @@ bool CStorageManager::Initialize(ADDON::CHelper_libKODI_peripheral* peripheralLi
 
   // Ensure resources path exists in user data
   if (!CDirectoryUtils::Exists(strUserPath))
-    CDirectoryUtils::Create(strUserPath);
+  {
+    dsyslog("Creating directory %s", strUserPath.c_str());
+    if (!CDirectoryUtils::Create(strUserPath))
+      esyslog("Failed to create directory!");
+  }
 
   CDatabase* userDatabase = new CDatabaseXml(strUserPath, false);
   CDatabase* addonDatabase = new CDatabaseXml(strAddonPath, true);
