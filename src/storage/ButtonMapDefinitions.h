@@ -22,7 +22,7 @@
 #define DEVICES_XML_ROOT                       "devices"
 #define DEVICES_XML_ELEM_DEVICE                "device"
 
-#define BUTTONMAP_XML_ROOT                     "device"
+#define BUTTONMAP_XML_ROOT                     "buttonmap"
 #define BUTTONMAP_XML_ELEM_CONTROLLER          "controller"
 #define BUTTONMAP_XML_ELEM_FEATURE             "feature"
 

@@ -132,7 +132,7 @@ bool CDatabaseXml::Save(void) const
   TiXmlDeclaration* decl = new TiXmlDeclaration("1.0", "", "");
   xmlFile.LinkEndChild(decl);
 
-  TiXmlElement rootElement(BUTTONMAP_XML_ROOT);
+  TiXmlElement rootElement(DEVICES_XML_ROOT);
   TiXmlNode* root = xmlFile.InsertEndChild(rootElement);
   if (root == NULL)
     return false;
@@ -213,11 +213,22 @@ bool CDatabaseXml::SaveButtonMaps(const CDriverRecord& driverRecord, const std::
   if (root == NULL)
     return false;
 
-  TiXmlElement* devicesElem = root->ToElement();
-  if (!devicesElem)
+  TiXmlElement* pElem = root->ToElement();
+  if (!pElem)
     return false;
 
-  if (!SerializeButtonMaps(driverRecord, devicesElem))
+  TiXmlElement deviceElement(DEVICES_XML_ELEM_DEVICE);
+  TiXmlNode* deviceNode = pElem->InsertEndChild(deviceElement);
+  if (deviceNode == NULL)
+    return false;
+
+  TiXmlElement* deviceElem = deviceNode->ToElement();
+  if (deviceElem == NULL)
+    return false;
+
+  CDriverRecordXml::Serialize(driverRecord, deviceElem);
+
+  if (!SerializeButtonMaps(driverRecord, deviceElem))
     return false;
 
   return xmlFile.SaveFile(strPath);
@@ -309,7 +320,15 @@ bool CDatabaseXml::LoadButtonMaps(const std::string& strPath, const CDriverRecor
     return false;
   }
 
-  const TiXmlElement* pController = pRootElement->FirstChildElement(BUTTONMAP_XML_ELEM_CONTROLLER);
+  const TiXmlElement* pDevice = pRootElement->FirstChildElement(DEVICES_XML_ELEM_DEVICE);
+
+  if (!pDevice)
+  {
+    esyslog("Device \"%s\": can't find <%s> tag", driverRecord.Properties().Name().c_str(), DEVICES_XML_ELEM_DEVICE);
+    return false;
+  }
+
+  const TiXmlElement* pController = pDevice->FirstChildElement(BUTTONMAP_XML_ELEM_CONTROLLER);
 
   if (!pController)
   {
