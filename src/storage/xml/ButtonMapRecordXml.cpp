@@ -19,8 +19,8 @@
  */
 
 #include "ButtonMapRecordXml.h"
+#include "storage/ButtonMapDefinitions.h"
 #include "storage/schema/ButtonMapRecord.h"
-#include "JoystickDefinitions.h"
 #include "JoystickTranslator.h"
 #include "log/Log.h"
 

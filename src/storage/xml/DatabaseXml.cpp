@@ -22,7 +22,7 @@
 #include "ButtonMapRecordXml.h"
 #include "DriverRecordXml.h"
 #include "filesystem/DirectoryUtils.h"
-#include "JoystickDefinitions.h"
+#include "storage/ButtonMapDefinitions.h"
 #include "log/Log.h"
 
 #include "kodi/libXBMC_addon.h"

@@ -19,8 +19,8 @@
  */
 
 #include "DriverRecordXml.h"
+#include "storage/ButtonMapDefinitions.h"
 #include "storage/schema/DriverRecord.h"
-#include "JoystickDefinitions.h"
 #include "log/Log.h"
 
 #include "tinyxml.h"
