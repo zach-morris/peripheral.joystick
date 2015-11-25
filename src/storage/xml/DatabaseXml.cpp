@@ -105,7 +105,10 @@ bool CDatabaseXml::Load(void)
 
   TiXmlDocument xmlFile;
   if (!xmlFile.LoadFile(m_strDevicesXmlPath))
+  {
+    esyslog("Error opening file: %s", xmlFile.ErrorDesc());
     return false;
+  }
 
   TiXmlElement* pRootElement = xmlFile.RootElement();
   if (!pRootElement || pRootElement->NoChildren() || pRootElement->ValueStr() != DEVICES_XML_ROOT)
@@ -311,7 +314,10 @@ bool CDatabaseXml::LoadButtonMaps(const std::string& strPath, const CDriverRecor
 
   TiXmlDocument xmlFile;
   if (!xmlFile.LoadFile(strPath))
+  {
+    esyslog("Error opening %s: %s", strPath.c_str(), xmlFile.ErrorDesc());
     return false;
+  }
 
   TiXmlElement* pRootElement = xmlFile.RootElement();
   if (!pRootElement || pRootElement->NoChildren() || pRootElement->ValueStr() != BUTTONMAP_XML_ROOT)
@@ -353,7 +359,11 @@ bool CDatabaseXml::LoadButtonMaps(const std::string& strPath, const CDriverRecor
     if (!CButtonMapRecordXml::Deserialize(pController, buttonMap))
       return false;
 
-    if (!buttonMap.IsEmpty())
+    if (buttonMap.IsEmpty())
+    {
+      esyslog("Device \"%s\" has no features for controller %s", driverRecord.Properties().Name().c_str(), id);
+    }
+    else
     {
       totalFeatureCount += buttonMap.FeatureCount();
       buttonMaps[id] = std::move(buttonMap);
@@ -362,8 +372,7 @@ bool CDatabaseXml::LoadButtonMaps(const std::string& strPath, const CDriverRecor
     pController = pController->NextSiblingElement(BUTTONMAP_XML_ELEM_CONTROLLER);
   }
 
-  if (!buttonMaps.empty())
-    dsyslog("Button map: loaded device \"%s\" with %u controller profiles and %u total features", driverRecord.Properties().Name().c_str(), buttonMaps.size(), totalFeatureCount);
+  dsyslog("Loaded device \"%s\" with %u controller profiles and %u total features", driverRecord.Properties().Name().c_str(), buttonMaps.size(), totalFeatureCount);
 
   return true;
 }
