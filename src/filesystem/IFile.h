@@ -43,6 +43,7 @@ namespace JOYSTICK
     READ_MULTI_STREAM = 0x20,
   };
 
+  // Helper function to combine read flags
   inline READ_FLAG operator|(READ_FLAG lhs, READ_FLAG rhs)
   {
     return static_cast<READ_FLAG>(static_cast<unsigned int>(lhs) | static_cast<unsigned int>(rhs));

@@ -25,9 +25,7 @@ namespace JOYSTICK
 {
   class IFile;
   typedef std::shared_ptr<IFile> FilePtr;
-  //typedef IFile* FilePtr;
 
   class IFileUtils;
   typedef std::shared_ptr<IFileUtils> FileUtilsPtr;
-  //typedef IFileUtils* FileUtilsPtr;
 }
