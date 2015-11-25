@@ -42,7 +42,8 @@ set(JOYSTICK_SOURCES src/addon.cpp
                      src/storage/StorageManager.cpp
                      src/storage/xml/ButtonMapRecordXml.cpp
                      src/storage/xml/DatabaseXml.cpp
-                     src/storage/xml/DriverRecordXml.cpp)
+                     src/storage/xml/DriverRecordXml.cpp
+                     src/utils/StringUtils.cpp)
 
 check_include_files("syslog.h" HAVE_SYSLOG)
 
