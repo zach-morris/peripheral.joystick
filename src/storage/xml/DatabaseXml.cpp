@@ -32,8 +32,8 @@
 using namespace JOYSTICK;
 using namespace PLATFORM;
 
-#define USER_BUTTONMAP_XML   "/resources/buttonmap.xml"
-#define ADDON_BUTTONMAP_XML  "/resources/buttonmap.xml"
+#define USER_BUTTONMAP_XML   "/buttonmap.xml"
+#define ADDON_BUTTONMAP_XML  "/buttonmap.xml"
 
 CDatabaseXml::CDatabaseXml(const std::string& strAddonPath, bool bReadOnly)
   : m_strPath(strAddonPath),

@@ -19,11 +19,16 @@
  */
 
 #include "StorageManager.h"
+#include "filesystem/DirectoryUtils.h"
 #include "storage/xml/DatabaseXml.h"
 
 #include "kodi/libKODI_peripheral.h"
 
 using namespace JOYSTICK;
+
+// Resources subfolder for add-on and user data
+#define USER_RESOURCES_FOLDER   "resources"
+#define ADDON_RESOURCES_FOLDER  "resources"
 
 // --- RemoveSlashAtEnd --------------------------------------------------------
 
@@ -71,6 +76,13 @@ bool CStorageManager::Initialize(ADDON::CHelper_libKODI_peripheral* peripheralLi
 
   RemoveSlashAtEnd(strUserPath);
   RemoveSlashAtEnd(strAddonPath);
+
+  strUserPath += "/" USER_RESOURCES_FOLDER;
+  strAddonPath += "/" ADDON_RESOURCES_FOLDER;
+
+  // Ensure resources path exists in user data
+  if (!CDirectoryUtils::Exists(strUserPath))
+    CDirectoryUtils::Create(strUserPath);
 
   CDatabase* userDatabase = new CDatabaseXml(strUserPath, false);
   CDatabase* addonDatabase = new CDatabaseXml(strAddonPath, true);
