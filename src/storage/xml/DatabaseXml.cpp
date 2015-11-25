@@ -194,15 +194,14 @@ bool CDatabaseXml::Serialize(TiXmlElement* pElement) const
     deviceElem->SetAttribute(BUTTONMAP_XML_ATTR_DATA_PATH, strFileName);
 
     std::string strButtonMapPath = strProviderDir + "/" + strFileName;
-    if (!SaveButtonMaps(buttonMaps, strButtonMapPath))
+    if (!SaveButtonMaps(driverRecord, strButtonMapPath))
       return false;
   }
 
   return true;
 }
 
-bool CDatabaseXml::SaveButtonMaps(const std::map<ControllerID, CButtonMapRecord>& buttonMaps,
-                                  const std::string& strPath) const
+bool CDatabaseXml::SaveButtonMaps(const CDriverRecord& driverRecord, const std::string& strPath) const
 {
   TiXmlDocument xmlFile;
 
@@ -218,15 +217,19 @@ bool CDatabaseXml::SaveButtonMaps(const std::map<ControllerID, CButtonMapRecord>
   if (!devicesElem)
     return false;
 
-  if (!SerializeButtonMaps(buttonMaps, devicesElem))
+  if (!SerializeButtonMaps(driverRecord, devicesElem))
     return false;
 
   return xmlFile.SaveFile(strPath);
 }
 
-bool CDatabaseXml::SerializeButtonMaps(const std::map<std::string, CButtonMapRecord>& buttonMaps,
-                                       TiXmlElement* pElement) const
+bool CDatabaseXml::SerializeButtonMaps(const CDriverRecord& driverRecord, TiXmlElement* pElement) const
 {
+  Records::const_iterator itRecord = m_records.find(driverRecord);
+  if (itRecord == m_records.end())
+    return false;
+
+  const ButtonMaps& buttonMaps = itRecord->second;
   for (ButtonMaps::const_iterator it = buttonMaps.begin(); it != buttonMaps.end(); ++it)
   {
     const ControllerID& controllerId = it->first;

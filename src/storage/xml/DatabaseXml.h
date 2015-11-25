@@ -51,11 +51,9 @@ namespace JOYSTICK
     bool Serialize(TiXmlElement* pElement) const;
 
     bool LoadButtonMaps(const std::string& strPath, const CDriverRecord& driverRecord);
-    bool SaveButtonMaps(const std::map<std::string, CButtonMapRecord>& buttonMaps,
-                        const std::string& strPath) const;
+    bool SaveButtonMaps(const CDriverRecord& driverRecord, const std::string& strPath) const;
 
-    bool SerializeButtonMaps(const std::map<std::string, CButtonMapRecord>& buttonMaps,
-                             TiXmlElement* pElement) const;
+    bool SerializeButtonMaps(const CDriverRecord& driverRecord, TiXmlElement* pElement) const;
 
     std::string      m_strPath;
     std::string      m_strDevicesXmlPath;
