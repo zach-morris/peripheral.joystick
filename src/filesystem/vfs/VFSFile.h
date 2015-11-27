@@ -50,7 +50,7 @@ namespace JOYSTICK
 
   private:
     ADDON::CHelper_libXBMC_addon* const m_frontend;
-    ADDON::VFSFile                      m_file;
+    ADDON::CVFSFile                     m_file;
     bool                                m_bOpen;
   };
 }
