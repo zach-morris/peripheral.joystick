@@ -70,7 +70,7 @@ void CDriverRecord::MergeProperties(const CDriverRecord& record)
   if (!record.m_driverProperties.Provider().empty())
     m_driverProperties.SetProvider(record.m_driverProperties.Provider());
 
-  if ((record.m_driverProperties.VendorID() != 0 || record.m_driverProperties.ProductID() != 0))
+  if (m_driverProperties.IsVidPidKnown())
   {
     m_driverProperties.SetVendorID(record.m_driverProperties.VendorID());
     m_driverProperties.SetProductID(record.m_driverProperties.ProductID());
@@ -104,7 +104,7 @@ std::string CDriverRecord::RootFileName(void) const
   std::stringstream filename;
 
   filename << baseFilename;
-  if (m_driverProperties.VendorID() != 0 || m_driverProperties.ProductID() != 0)
+  if (m_driverProperties.IsVidPidKnown())
   {
     filename << "_v" << m_driverProperties.VendorID();
     filename << "_p" << m_driverProperties.ProductID();

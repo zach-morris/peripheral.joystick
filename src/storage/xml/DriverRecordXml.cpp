@@ -33,8 +33,7 @@ bool CDriverRecordXml::Serialize(const CDriverRecord& record, TiXmlElement* pEle
 {
   pElement->SetAttribute(BUTTONMAP_XML_ATTR_DEVICE_NAME, record.Properties().Name());
   pElement->SetAttribute(BUTTONMAP_XML_ATTR_DEVICE_PROVIDER, record.Properties().Provider());
-  if (record.Properties().VendorID() != 0 &&
-      record.Properties().ProductID() != 0)
+  if (record.Properties().IsVidPidKnown())
   {
     pElement->SetAttribute(BUTTONMAP_XML_ATTR_DEVICE_VID, record.Properties().VendorID());
     pElement->SetAttribute(BUTTONMAP_XML_ATTR_DEVICE_PID, record.Properties().ProductID());
