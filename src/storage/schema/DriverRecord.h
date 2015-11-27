@@ -38,7 +38,20 @@ namespace JOYSTICK
 
     void MergeProperties(const CDriverRecord& record);
 
-    // File name for this record, minus extension
+    /*!
+     * \brief Build a filename out of the record's properties
+     * \return A sensible filename, lacking an extension (which can be added by
+     *         the caller)
+     *
+     * The filename is derived from all driver properties. This avoids
+     * collisions in the storage backend. An example filename is:
+     *
+     * Gamepad_F310_v1133_p1133_15b_6a
+     *
+     * Currently, the properties are concatenated by underscores. This may
+     * change in the future by simply appending a hash of the data to the
+     * driver name.
+     */
     std::string RootFileName(void) const;
 
   private:

@@ -88,12 +88,33 @@ void CDriverRecord::MergeProperties(const CDriverRecord& record)
 
 std::string CDriverRecord::RootFileName(void) const
 {
+  std::string baseFilename = StringUtils::MakeSafeUrl(m_driverProperties.Name());
+
+  // TODO: Combine successive runs of underscores (fits more information in
+  // smaller space)
+
+  // Limit filename to a sane number of characters.
+  if (baseFilename.length() > 40)
+    baseFilename.erase(baseFilename.begin() + 40, baseFilename.end());
+
+  // Trim trailing underscores left over from chopping the string
+  baseFilename = StringUtils::Trim(baseFilename, "_");
+
+  // Append remaining properties
   std::stringstream filename;
 
-  filename << StringUtils::MakeSafeUrl(m_driverProperties.Name());
-
-  //filename << "_" << md5(m_driverProperties); // TODO
+  filename << baseFilename;
+  if (m_driverProperties.VendorID() != 0 || m_driverProperties.ProductID() != 0)
+  {
+    filename << "_v" << m_driverProperties.VendorID();
+    filename << "_p" << m_driverProperties.ProductID();
+  }
+  if (m_driverProperties.ButtonCount() != 0)
+    filename << "_" << m_driverProperties.ButtonCount() << "b";
+  if (m_driverProperties.HatCount() != 0)
+    filename << "_" << m_driverProperties.HatCount() << "h";
+  if (m_driverProperties.AxisCount() != 0)
+    filename << "_" << m_driverProperties.AxisCount() << "a";
 
   return filename.str();
 }
-
