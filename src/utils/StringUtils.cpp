@@ -21,8 +21,21 @@
 #include "StringUtils.h"
 
 #include <algorithm>
+#include <cctype>
+#include <functional>
 
 using namespace JOYSTICK;
+
+// --- isspace_c() -------------------------------------------------------------
+
+// Hack to check only first byte of UTF-8 character
+// without this hack "TrimX" functions failed on Win32 and OS X with UTF-8 strings
+static int isspace_c(char c)
+{
+  return (c & 0x80) == 0 && std::isspace(c);
+}
+
+// --- StringUtils -------------------------------------------------------------
 
 std::string StringUtils::MakeSafeUrl(const std::string& str)
 {
@@ -47,4 +60,40 @@ std::string StringUtils::MakeSafeUrl(const std::string& str)
     });
 
   return safeUrl;
+}
+
+std::string& StringUtils::Trim(std::string& str)
+{
+  return TrimRight(TrimLeft(str));
+}
+
+std::string& StringUtils::TrimLeft(std::string& str)
+{
+  str.erase(str.begin(), std::find_if(str.begin(), str.end(), std::not1(std::ptr_fun(isspace_c))));
+  return str;
+}
+
+std::string& StringUtils::TrimRight(std::string& str)
+{
+  str.erase(std::find_if(str.rbegin(), str.rend(), std::not1(std::ptr_fun(isspace_c))).base(), str.end());
+  return str;
+}
+
+std::string& StringUtils::Trim(std::string& str, const char* chars)
+{
+  return TrimRight(TrimLeft(str, chars), chars);
+}
+
+std::string& StringUtils::TrimLeft(std::string& str, const char* chars)
+{
+  size_t nidx = str.find_first_not_of(chars);
+  str.erase(0, nidx);
+  return str;
+}
+
+std::string& StringUtils::TrimRight(std::string& str, const char* chars)
+{
+  size_t nidx = str.find_last_not_of(chars);
+  str.erase(nidx == str.npos ? 0 : ++nidx);
+  return str;
 }

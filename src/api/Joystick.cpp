@@ -22,6 +22,7 @@
 #include "log/Log.h"
 #include "settings/Settings.h"
 #include "utils/CommonMacros.h"
+#include "utils/StringUtils.h"
 
 #include "platform/util/timeutils.h"
 
@@ -50,6 +51,15 @@ bool CJoystick::Equals(const CJoystick* rhs) const
          ButtonCount()   == rhs->ButtonCount()   &&
          HatCount()      == rhs->HatCount()      &&
          AxisCount()     == rhs->AxisCount();
+}
+
+void CJoystick::SetName(const std::string& strName)
+{
+  std::string strSanitizedFilename(strName);
+
+  StringUtils::Trim(strSanitizedFilename);
+
+  ADDON::Joystick::SetName(strSanitizedFilename);
 }
 
 bool CJoystick::Initialize(void)

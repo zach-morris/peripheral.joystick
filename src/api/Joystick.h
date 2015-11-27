@@ -39,6 +39,11 @@ namespace JOYSTICK
     virtual bool Equals(const CJoystick* rhs) const;
 
     /*!
+     * Override subclass to sanitize name (strip trailing whitespace, etc)
+     */
+    void SetName(const std::string& strName);
+
+    /*!
      * The time that this joystick was discovered
      */
     int64_t DiscoverTimeMs(void) const { return m_discoverTimeMs; }

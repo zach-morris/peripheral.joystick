@@ -39,5 +39,13 @@ namespace JOYSTICK
      * Characters outside of this set will be replaced by "_".
      */
     static std::string MakeSafeUrl(const std::string& str);
+
+    static std::string& Trim(std::string& str);
+    static std::string& TrimLeft(std::string& str);
+    static std::string& TrimRight(std::string& str);
+
+    static std::string& Trim(std::string& str, const char* chars);
+    static std::string& TrimLeft(std::string& str, const char* chars);
+    static std::string& TrimRight(std::string& str, const char* chars);
   };
 }
