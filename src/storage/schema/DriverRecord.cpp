@@ -30,6 +30,17 @@ CDriverRecord::CDriverRecord(const ADDON::Joystick& driverInfo)
 {
 }
 
+bool CDriverRecord::operator==(const CDriverRecord& rhs) const
+{
+  return m_driverProperties.Name() == rhs.m_driverProperties.Name() &&
+         m_driverProperties.Provider() == rhs.m_driverProperties.Provider() &&
+         m_driverProperties.VendorID() == rhs.m_driverProperties.VendorID() &&
+         m_driverProperties.ProductID() == rhs.m_driverProperties.ProductID() &&
+         m_driverProperties.ButtonCount() == rhs.m_driverProperties.ButtonCount() &&
+         m_driverProperties.HatCount() == rhs.m_driverProperties.HatCount() &&
+         m_driverProperties.AxisCount() == rhs.m_driverProperties.AxisCount();
+}
+
 bool CDriverRecord::operator<(const CDriverRecord& rhs) const
 {
   if (m_driverProperties.Name() < rhs.m_driverProperties.Name()) return true;
@@ -56,6 +67,39 @@ bool CDriverRecord::operator<(const CDriverRecord& rhs) const
   return false;
 }
 
+bool CDriverRecord::SimilarTo(const CDriverRecord& other) const
+{
+  if (m_driverProperties.Provider() != other.m_driverProperties.Provider())
+    return false;
+
+  if (!m_driverProperties.Name().empty() && !other.m_driverProperties.Name().empty())
+  {
+    if (m_driverProperties.Name() != other.m_driverProperties.Name())
+      return false;
+  }
+
+  if (m_driverProperties.IsVidPidKnown() && other.m_driverProperties.IsVidPidKnown())
+  {
+    if (m_driverProperties.VendorID() != other.m_driverProperties.VendorID() ||
+        m_driverProperties.ProductID() != other.m_driverProperties.ProductID())
+    {
+      return false;
+    }
+  }
+
+  if (m_driverProperties.AreElementCountsKnown() && other.m_driverProperties.AreElementCountsKnown())
+  {
+    if (m_driverProperties.ButtonCount() != other.m_driverProperties.ButtonCount() ||
+        m_driverProperties.HatCount() != other.m_driverProperties.HatCount() ||
+        m_driverProperties.AxisCount() != other.m_driverProperties.AxisCount())
+    {
+      return false;
+    }
+  }
+
+  return true;
+}
+
 bool CDriverRecord::IsValid(void) const
 {
   return !m_driverProperties.Name().empty() &&
@@ -76,9 +120,7 @@ void CDriverRecord::MergeProperties(const CDriverRecord& record)
     m_driverProperties.SetProductID(record.m_driverProperties.ProductID());
   }
 
-  if (record.m_driverProperties.ButtonCount() != 0 ||
-      record.m_driverProperties.HatCount() != 0 ||
-      record.m_driverProperties.AxisCount() != 0)
+  if (record.m_driverProperties.AreElementCountsKnown())
   {
     m_driverProperties.SetButtonCount(record.m_driverProperties.ButtonCount());
     m_driverProperties.SetHatCount(record.m_driverProperties.HatCount());
@@ -117,4 +159,9 @@ std::string CDriverRecord::RootFileName(void) const
     filename << "_" << m_driverProperties.AxisCount() << "a";
 
   return filename.str();
+}
+
+std::string CDriverRecord::BuildPath(const std::string& strBaseDir, const std::string& strExtension) const
+{
+  return strBaseDir + "/" + Folder() + "/" + RootFileName() + strExtension;
 }

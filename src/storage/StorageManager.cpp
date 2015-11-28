@@ -19,6 +19,7 @@
  */
 
 #include "StorageManager.h"
+#include "DriverDatabase.h" // TODO
 #include "filesystem/DirectoryUtils.h"
 #include "log/Log.h"
 #include "storage/xml/DatabaseXml.h"
@@ -95,6 +96,8 @@ bool CStorageManager::Initialize(ADDON::CHelper_libKODI_peripheral* peripheralLi
   m_databases.push_back(userDatabase);
   m_databases.push_back(addonDatabase);
 
+  CDriverDatabase* m_driverDatabase;
+
   return true;
 }
 
@@ -112,8 +115,12 @@ bool CStorageManager::GetFeatures(const ADDON::Joystick& joystick, const std::st
 {
   for (std::vector<CDatabase*>::const_iterator it = m_databases.begin(); it != m_databases.end(); ++it)
   {
-    if ((*it)->IsEnabled() && (*it)->GetFeatures(joystick, strControllerId, features))
-      break;
+    CDriverRecord driverInfo;
+    if ((*it)->m_driverDatabase->GetDriverRecord(joystick, driverInfo)) // TODO
+    {
+      if ((*it)->IsEnabled() && (*it)->GetFeatures(joystick, strControllerId, features))
+        break;
+    }
   }
 
   return true;

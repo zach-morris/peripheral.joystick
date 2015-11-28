@@ -23,14 +23,19 @@
 using namespace JOYSTICK;
 
 CDatabase::CDatabase(void)
-  : m_bEnabled(true)
+  : m_driverDatabase(nullptr),
+    m_bEnabled(true)
 {
 }
 
 bool CDatabase::Enable(void)
 {
-  m_bEnabled = true;
-  return true;
+  if (m_driverDatabase)
+  {
+    m_bEnabled = true;
+    return true;
+  }
+  return false;
 }
 
 void CDatabase::Disable(void)

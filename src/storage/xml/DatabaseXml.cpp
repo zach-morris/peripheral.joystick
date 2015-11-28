@@ -20,8 +20,10 @@
 
 #include "DatabaseXml.h"
 #include "ButtonMapRecordXml.h"
+#include "DriverDatabaseXml.h"
 #include "DriverRecordXml.h"
 #include "filesystem/DirectoryUtils.h"
+#include "filesystem/FileUtils.h"
 #include "storage/ButtonMapDefinitions.h"
 #include "log/Log.h"
 
@@ -37,28 +39,19 @@ using namespace PLATFORM;
 // Subfolder for XML data
 #define RESOURCES_XML_FOLDER  "xml"
 
-// XML file to store devices
-#define DEVICES_XML           "devices.xml"
-
-// Subfolder for button map data
-#define BUTTON_MAPS_FOLDER    "buttonmaps"
-
 CDatabaseXml::CDatabaseXml(const std::string& strBasePath, bool bReadOnly)
  :  m_bReadOnly(bReadOnly),
     m_bLoadAttempted(false),
     m_bLoaded(false)
 {
-  std::string strXmlPath = strBasePath + "/" RESOURCES_XML_FOLDER;
+  m_strDataPath = strBasePath + "/" RESOURCES_XML_FOLDER;
 
   // Ensure directory exists
-  if (!bReadOnly && !CDirectoryUtils::Exists(strXmlPath))
-    CDirectoryUtils::Create(strXmlPath);
-
-  m_strDevicesXmlPath = strXmlPath + "/" DEVICES_XML;
-  m_strDataPath = strXmlPath + "/" BUTTON_MAPS_FOLDER;
-
   if (!bReadOnly && !CDirectoryUtils::Exists(m_strDataPath))
     CDirectoryUtils::Create(m_strDataPath);
+
+  // Initialize CDatabase
+  m_driverDatabase = new CDriverDatabaseXml(m_strDataPath, bReadOnly);
 }
 
 bool CDatabaseXml::GetFeatures(const CDriverRecord& driverInfo, const std::string& controllerId,
@@ -66,7 +59,7 @@ bool CDatabaseXml::GetFeatures(const CDriverRecord& driverInfo, const std::strin
 {
   CLockObject lock(m_mutex);
 
-  if (!Load())
+  if (!Load(driverInfo))
     return false;
 
   return CDatabase::GetFeatures(driverInfo, controllerId, features);
@@ -94,8 +87,35 @@ bool CDatabaseXml::MapFeature(const CDriverRecord& driverInfo, const std::string
   return false;
 }
 
-bool CDatabaseXml::Load(void)
+bool CDatabaseXml::Load(const CDriverRecord& driverInfo)
 {
+  std::string strButtonMapPath = driverInfo.BuildPath(m_strDataPath, ".xml");
+
+  bool bStalePath = false;
+
+  STAT_STRUCTURE fileProps = { };
+  if (CFileUtils::Stat(strButtonMapPath, fileProps))
+  {
+    (void)fileProps.modificationTime; // TODO
+  }
+  else
+  {
+    if (CFileUtils::Exists(strButtonMapPath))
+    {
+      esyslog("Failed to stat file, but it exists! - %s", strButtonMapPath.c_str());
+      return false;
+    }
+  }
+
+  if (bStalePath)
+  {
+    // Handle stale path
+  }
+
+  // TODO: Check timestamp (and rate limit Stat() call every second or so)
+
+  // For now, assume file is stale
+
   if (m_bLoadAttempted)
     return m_bLoaded;
 
@@ -140,9 +160,9 @@ bool CDatabaseXml::Save(void) const
   if (!Serialize(devicesElem))
     return false;
 
-  dsyslog("Saving devices: %s", m_strDevicesXmlPath.c_str());
+  //dsyslog("Saving devices: %s", m_strDevicesXmlPath.c_str()); // TODO
 
-  return xmlFile.SaveFile(m_strDevicesXmlPath);
+  return true; // xmlFile.SaveFile(m_strDevicesXmlPath); // TODO
 }
 
 bool CDatabaseXml::Serialize(TiXmlElement* pElement) const

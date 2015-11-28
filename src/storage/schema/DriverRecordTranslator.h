@@ -28,8 +28,6 @@
 
 namespace JOYSTICK
 {
-  class CDriverDatabase;
-
   class CDatabase
   {
   public:
@@ -54,10 +52,7 @@ namespace JOYSTICK
     typedef std::map<ControllerID, CButtonMapRecord> ButtonMaps;
     typedef std::map<CDriverRecord, ButtonMaps>      Records;
 
-    Records          m_records;
-
-  public: // TODO
-    CDriverDatabase* m_driverDatabase; // Must be set by derived class
+    Records m_records;
 
   private:
     bool m_bEnabled;

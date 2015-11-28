@@ -34,6 +34,7 @@ namespace ADDON { class CHelper_libKODI_peripheral; }
 namespace JOYSTICK
 {
   class CDatabase;
+  class CDriverDatabase; // TODO
 
   class CStorageManager
   {

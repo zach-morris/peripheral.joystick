@@ -44,7 +44,7 @@ namespace JOYSTICK
                             const ADDON::JoystickFeature* feature);
 
   private:
-    bool Load(void);
+    bool Load(const CDriverRecord& driverInfo);
     bool Save(void) const;
 
     bool Serialize(TiXmlElement* pElement) const;
@@ -54,8 +54,6 @@ namespace JOYSTICK
 
     bool SerializeButtonMaps(const CDriverRecord& driverRecord, TiXmlElement* pElement) const;
 
-    std::string      m_strPath;
-    std::string      m_strDevicesXmlPath;
     std::string      m_strDataPath;
     bool             m_bReadOnly;
     bool             m_bLoadAttempted;

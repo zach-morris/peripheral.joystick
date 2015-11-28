@@ -42,9 +42,11 @@ set(JOYSTICK_SOURCES src/addon.cpp
                      src/storage/schema/ButtonMapRecord.cpp
                      src/storage/schema/DriverRecord.cpp
                      src/storage/Database.cpp
+                     src/storage/DriverDatabase.cpp
                      src/storage/StorageManager.cpp
                      src/storage/xml/ButtonMapRecordXml.cpp
                      src/storage/xml/DatabaseXml.cpp
+                     src/storage/xml/DriverDatabaseXml.cpp
                      src/storage/xml/DriverRecordXml.cpp
                      src/utils/StringUtils.cpp)
 
