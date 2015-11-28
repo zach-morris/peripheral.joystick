@@ -36,6 +36,7 @@ namespace JOYSTICK
     virtual bool Create(const std::string& path);
     virtual bool Exists(const std::string& path);
     virtual bool Remove(const std::string& path);
+    virtual bool GetDirectory(const std::string& path, const std::string& mask, std::vector<ADDON::CVFSDirEntry>& items);
 
   private:
     ADDON::CHelper_libXBMC_addon* const m_frontend;

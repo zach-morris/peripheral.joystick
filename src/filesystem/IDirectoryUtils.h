@@ -19,6 +19,8 @@
  */
 #pragma once
 
+#include "kodi/kodi_vfs_utils.hpp"
+
 #include <string>
 
 namespace JOYSTICK
@@ -48,5 +50,21 @@ namespace JOYSTICK
      * \return True if the directory was removed, false otherwise
      */
     virtual bool Remove(const std::string& path) = 0;
+
+    /*!
+     * \brief Get the contents of a directory
+     * \param path The directory
+     * \param mask The mask of file extensions that are allowed
+     * \param[out] items The resulting contents, or empty if false is returned
+     * \return True if the directory listing succeeded, even if no items are returned
+     *
+     * The mask has to look like the following:
+     *
+     *     .m4a|.flac|.aac
+     *
+     * In this case, only *.m4a, *.flac, *.aac files will be retrieved with
+     * GetDirectory().
+     */
+    virtual bool GetDirectory(const std::string& path, const std::string& mask, std::vector<ADDON::CVFSDirEntry>& items) = 0;
   };
 }

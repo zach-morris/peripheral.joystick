@@ -22,6 +22,8 @@
 #include "FilesystemTypes.h"
 #include "IDirectoryUtils.h"
 
+#include "kodi/kodi_vfs_utils.hpp"
+
 #include <string>
 
 namespace ADDON { class CHelper_libXBMC_addon; }
@@ -38,6 +40,7 @@ namespace JOYSTICK
     static bool Create(const std::string& path);
     static bool Exists(const std::string& path);
     static bool Remove(const std::string& path);
+    static bool GetDirectory(const std::string& path, const std::string& mask, std::vector<ADDON::CVFSDirEntry>& items);
 
   private:
     /*!

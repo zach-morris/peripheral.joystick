@@ -46,3 +46,8 @@ bool CVFSDirectoryUtils::Remove(const std::string& path)
 {
   return m_frontend->RemoveDirectory(path.c_str());
 }
+
+bool CVFSDirectoryUtils::GetDirectory(const std::string& path, const std::string& mask, std::vector<ADDON::CVFSDirEntry>& items)
+{
+  return ADDON::VFSUtils::GetDirectory(m_frontend, path, mask, items);
+}

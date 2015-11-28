@@ -71,6 +71,16 @@ bool CDirectoryUtils::Remove(const std::string& path)
   return false;
 }
 
+bool CDirectoryUtils::GetDirectory(const std::string& path, const std::string& mask, std::vector<ADDON::CVFSDirEntry>& items)
+{
+  // Create directory utils
+  DirectoryUtilsPtr dirUtils = CreateDirectoryUtils(path);
+  if (dirUtils)
+    return dirUtils->GetDirectory(path, mask, items);
+
+  return false;
+}
+
 DirectoryUtilsPtr CDirectoryUtils::CreateDirectoryUtils(const std::string& url)
 {
   DirectoryUtilsPtr dirUtils;
