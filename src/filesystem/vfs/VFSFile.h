@@ -19,8 +19,8 @@
  */
 #pragma once
 
-#include "filesystem/ReadableFile.h"
 #include "VFSFileUtils.h"
+#include "filesystem/generic/ReadableFile.h"
 
 #include "kodi/kodi_vfs_utils.hpp"
 

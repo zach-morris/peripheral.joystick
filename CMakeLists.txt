@@ -29,8 +29,8 @@ set(JOYSTICK_SOURCES src/addon.cpp
                      src/filesystem/DirectoryUtils.cpp
                      src/filesystem/Filesystem.cpp
                      src/filesystem/FileUtils.cpp
-                     src/filesystem/ReadableFile.cpp
-                     src/filesystem/SeekableFile.cpp
+                     src/filesystem/generic/ReadableFile.cpp
+                     src/filesystem/generic/SeekableFile.cpp
                      src/filesystem/vfs/VFSDirectoryUtils.cpp
                      src/filesystem/vfs/VFSFile.cpp
                      src/filesystem/vfs/VFSFileUtils.cpp

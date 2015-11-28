@@ -19,23 +19,23 @@
  */
 #pragma once
 
-#include "IFile.h"
+#include "filesystem/IFile.h"
 
 namespace JOYSTICK
 {
   /*!
-   * \brief Generic implementation of GetLength() through other IFile methods
+   * \brief Generic implementation of ReadFile() through other IFile methods
    *
-   * NOTE: Derived class must implement IFile::Seek() and IFile::GetPosition()
+   * NOTE: Derived class must implement IFile::Read()
    */
-  class CSeekableFile : public IFile
+  class CReadableFile : public IFile
   {
   public:
-    virtual ~CSeekableFile(void) { }
+    virtual ~CReadableFile(void) { }
 
     /*!
-     * \brief Determine the length by seeking to the end and getting the position
+     * \brief Read an entire file in chunks through calls to IFile::Read()
      */
-    virtual int64_t GetLength(void);
+    virtual int64_t ReadFile(std::string& buffer, const uint64_t maxBytes = 0);
   };
 }
