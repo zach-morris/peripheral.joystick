@@ -101,24 +101,17 @@ bool CDatabaseXml::Load(void)
 
   m_bLoadAttempted = true;
 
-  dsyslog("Loading devices: %s", m_strDevicesXmlPath.c_str());
-
-  TiXmlDocument xmlFile;
-  if (!xmlFile.LoadFile(m_strDevicesXmlPath))
+  std::vector<ADDON::CVFSDirEntry> items;
+  if (CDirectoryUtils::GetDirectory(m_strDataPath, "*.xml", items))
   {
-    esyslog("Error opening file: %s", xmlFile.ErrorDesc());
-    return false;
+    for (std::vector<ADDON::CVFSDirEntry>::const_iterator it = items.begin(); it != items.end(); ++it)
+    {
+      if (!LoadButtonMaps(it->Path()))
+        return false;
+    }
   }
 
-  TiXmlElement* pRootElement = xmlFile.RootElement();
-  if (!pRootElement || pRootElement->NoChildren() || pRootElement->ValueStr() != DEVICES_XML_ROOT)
-  {
-    esyslog("Can't find root <%s> tag", DEVICES_XML_ROOT);
-    return false;
-  }
-
-  if (!Deserialize(pRootElement))
-    return false;
+  dsyslog("Loaded %u devices", m_records.size());
 
   m_bLoaded = true;
 
@@ -268,56 +261,12 @@ bool CDatabaseXml::SerializeButtonMaps(const CDriverRecord& driverRecord, TiXmlE
   return true;
 }
 
-bool CDatabaseXml::Deserialize(const TiXmlElement* pElement)
+bool CDatabaseXml::LoadButtonMaps(const std::string& strXmlPath)
 {
-  if (!pElement)
-    return false;
-
-  const TiXmlElement* pDevice = pElement->FirstChildElement(DEVICES_XML_ELEM_DEVICE);
-
-  if (!pDevice)
-  {
-    esyslog("Can't find <%s> tag", DEVICES_XML_ELEM_DEVICE);
-    return false;
-  }
-
-  while (pDevice)
-  {
-    CDriverRecord driverRecord;
-    if (!CDriverRecordXml::Deserialize(pDevice, driverRecord))
-      return false;
-
-    if (!driverRecord.IsValid())
-    {
-      esyslog("<%s> tag with name=\"%s\" is invalid", DEVICES_XML_ELEM_DEVICE, driverRecord.Properties().Name().c_str());
-      return false;
-    }
-
-    const char* path = pDevice->Attribute(BUTTONMAP_XML_ATTR_DATA_PATH);
-    if (!path)
-    {
-      esyslog("<%s> tag has no \"%s\" attribute", DEVICES_XML_ELEM_DEVICE, BUTTONMAP_XML_ATTR_DATA_PATH);
-      return false;
-    }
-    std::string strDataPath = m_strDataPath + "/" + driverRecord.Properties().Provider() + "/" + path;
-
-    if (!LoadButtonMaps(strDataPath, driverRecord))
-      return false;
-
-    pDevice = pDevice->NextSiblingElement(DEVICES_XML_ELEM_DEVICE);
-  }
-
-  return true;
-}
-
-bool CDatabaseXml::LoadButtonMaps(const std::string& strPath, const CDriverRecord& driverRecord)
-{
-  ButtonMaps& buttonMaps = m_records[driverRecord];
-
   TiXmlDocument xmlFile;
-  if (!xmlFile.LoadFile(strPath))
+  if (!xmlFile.LoadFile(strXmlPath))
   {
-    esyslog("Error opening %s: %s", strPath.c_str(), xmlFile.ErrorDesc());
+    esyslog("Error opening %s: %s", strXmlPath.c_str(), xmlFile.ErrorDesc());
     return false;
   }
 
@@ -332,9 +281,15 @@ bool CDatabaseXml::LoadButtonMaps(const std::string& strPath, const CDriverRecor
 
   if (!pDevice)
   {
-    esyslog("Device \"%s\": can't find <%s> tag", driverRecord.Properties().Name().c_str(), DEVICES_XML_ELEM_DEVICE);
+    esyslog("Can't find <%s> tag", DEVICES_XML_ELEM_DEVICE);
     return false;
   }
+
+  CDriverRecord driverRecord;
+  if (!CDriverRecordXml::Deserialize(pDevice, driverRecord))
+    return false;
+
+  ButtonMaps& buttonMaps = m_records[driverRecord];
 
   const TiXmlElement* pController = pDevice->FirstChildElement(BUTTONMAP_XML_ELEM_CONTROLLER);
 
