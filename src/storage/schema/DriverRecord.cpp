@@ -70,7 +70,7 @@ void CDriverRecord::MergeProperties(const CDriverRecord& record)
   if (!record.m_driverProperties.Provider().empty())
     m_driverProperties.SetProvider(record.m_driverProperties.Provider());
 
-  if (m_driverProperties.IsVidPidKnown())
+  if (record.m_driverProperties.IsVidPidKnown())
   {
     m_driverProperties.SetVendorID(record.m_driverProperties.VendorID());
     m_driverProperties.SetProductID(record.m_driverProperties.ProductID());
