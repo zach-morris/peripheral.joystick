@@ -332,7 +332,7 @@ bool CDatabaseXml::LoadButtonMaps(const std::string& strXmlPath)
       return false;
     }
 
-    CButtonMapRecord buttonMap(driverRecord.Properties(), id);
+    CButtonMapRecord buttonMap;
     if (!CButtonMapRecordXml::Deserialize(pController, buttonMap))
       return false;
 

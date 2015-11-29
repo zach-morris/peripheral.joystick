@@ -32,19 +32,11 @@ JOYSTICK_DRIVER_SEMIAXIS_DIRECTION operator*(JOYSTICK_DRIVER_SEMIAXIS_DIRECTION 
   return static_cast<JOYSTICK_DRIVER_SEMIAXIS_DIRECTION>(static_cast<int>(dir) * i);
 }
 
-CButtonMapRecord::CButtonMapRecord(const ADDON::Joystick& driverInfo, const std::string& controllerId)
- : m_driverProperties(driverInfo),
-   m_controllerId(controllerId)
-{
-}
-
 CButtonMapRecord& CButtonMapRecord::operator=(CButtonMapRecord&& rhs)
 {
   CLockObject lock(m_mutex);
   if (this != &rhs)
   {
-    m_driverProperties = rhs.m_driverProperties; // TODO: possible optimization here
-    m_controllerId = std::move(rhs.m_controllerId);
     m_buttonMap = std::move(rhs.m_buttonMap);
   }
   return *this;

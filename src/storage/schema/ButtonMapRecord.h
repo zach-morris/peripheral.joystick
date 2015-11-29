@@ -33,7 +33,6 @@ namespace JOYSTICK
   {
   public:
     CButtonMapRecord(void) { }
-    CButtonMapRecord(const ADDON::Joystick& driverInfo, const std::string& controllerId);
     virtual ~CButtonMapRecord(void) { }
 
     CButtonMapRecord& operator=(CButtonMapRecord&& rhs);
@@ -52,9 +51,7 @@ namespace JOYSTICK
     // Helper function
     ADDON::DriverPrimitive Opposite(const ADDON::DriverPrimitive& semiaxis);
 
-    ADDON::Joystick m_driverProperties;
-    std::string     m_controllerId;
-    FeatureVector   m_buttonMap;
+    FeatureVector            m_buttonMap;
     mutable PLATFORM::CMutex m_mutex;
   };
 }
