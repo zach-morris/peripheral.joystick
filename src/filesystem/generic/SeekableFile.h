@@ -36,6 +36,6 @@ namespace JOYSTICK
     /*!
      * \brief Determine the length by seeking to the end and getting the position
      */
-    virtual int64_t GetLength(void);
+    virtual int64_t GetLength(void) override;
   };
 }

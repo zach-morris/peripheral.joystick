@@ -36,17 +36,17 @@ namespace JOYSTICK
     virtual ~CVFSFile(void) { Close(); }
 
     // implementation of IFile
-    virtual bool Open(const std::string& url, READ_FLAG flags = READ_FLAG::READ_FLAG_NONE);
-    virtual bool OpenForWrite(const std::string& url, bool bOverWrite = false);
-    virtual int64_t Read(uint64_t byteCount, std::string& buffer);
-    virtual int64_t ReadLine(std::string& buffer);
-    virtual int64_t Write(uint64_t byteCount, const std::string& buffer);
-    virtual void Flush(void);
-    virtual int64_t Seek(int64_t filePosition, SEEK_FLAG whence = SEEK_FLAG_SET);
-    virtual bool Truncate(uint64_t size);
-    virtual int64_t GetPosition(void);
-    virtual int64_t GetLength(void);
-    virtual void Close(void);
+    virtual bool Open(const std::string& url, READ_FLAG flags = READ_FLAG::READ_FLAG_NONE) override;
+    virtual bool OpenForWrite(const std::string& url, bool bOverWrite = false) override;
+    virtual int64_t Read(uint64_t byteCount, std::string& buffer) override;
+    virtual int64_t ReadLine(std::string& buffer) override;
+    virtual int64_t Write(uint64_t byteCount, const std::string& buffer) override;
+    virtual void Flush(void) override;
+    virtual int64_t Seek(int64_t filePosition, SEEK_FLAG whence = SEEK_FLAG_SET) override;
+    virtual bool Truncate(uint64_t size) override;
+    virtual int64_t GetPosition(void) override;
+    virtual int64_t GetLength(void) override;
+    virtual void Close(void) override;
 
   private:
     ADDON::CHelper_libXBMC_addon* const m_frontend;

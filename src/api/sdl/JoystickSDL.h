@@ -33,7 +33,7 @@ namespace JOYSTICK
     virtual ~CJoystickSDL(void);
 
   protected:
-    virtual bool ScanEvents(void);
+    virtual bool ScanEvents(void) override;
 
   private:
     SDL_Joystick* m_pJoystick;

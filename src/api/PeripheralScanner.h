@@ -34,7 +34,7 @@ namespace JOYSTICK
     /*!
      * \brief Trigger a scan through the Peripheral API
      */
-    virtual void TriggerScan(void);
+    virtual void TriggerScan(void) override;
 
   private:
     ADDON::CHelper_libKODI_peripheral* const m_peripheralLib;

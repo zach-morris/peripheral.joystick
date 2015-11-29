@@ -36,6 +36,6 @@ namespace JOYSTICK
     /*!
      * \brief Read an entire file in chunks through calls to IFile::Read()
      */
-    virtual int64_t ReadFile(std::string& buffer, const uint64_t maxBytes = 0);
+    virtual int64_t ReadFile(std::string& buffer, const uint64_t maxBytes = 0) override;
   };
 }

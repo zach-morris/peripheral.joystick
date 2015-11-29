@@ -51,7 +51,7 @@ namespace JOYSTICK
     CAnomalousTriggerFilter(unsigned int axisIndex);
 
     // implementation of IJoystickAxisFilter
-    virtual float Filter(float value);
+    virtual float Filter(float value) override;
 
   private:
     enum AXIS_STATE

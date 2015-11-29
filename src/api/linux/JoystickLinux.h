@@ -33,11 +33,11 @@ namespace JOYSTICK
     virtual ~CJoystickLinux(void) { Deinitialize(); }
 
     // implementation of CJoystick
-    virtual void Deinitialize(void);
-    virtual bool Equals(const CJoystick* rhs) const;
+    virtual void Deinitialize(void) override;
+    virtual bool Equals(const CJoystick* rhs) const override;
 
   protected:
-    virtual bool ScanEvents(void);
+    virtual bool ScanEvents(void) override;
 
   private:
     int         m_fd;

@@ -31,10 +31,10 @@ namespace JOYSTICK
     CJoystickXInput(unsigned int controllerID);
     virtual ~CJoystickXInput(void) { }
 
-    virtual bool Equals(const CJoystick* rhs) const;
+    virtual bool Equals(const CJoystick* rhs) const override;
 
   protected:
-    virtual bool ScanEvents(void);
+    virtual bool ScanEvents(void) override;
 
   private:
     unsigned int m_controllerID;   // XInput port, in the range (0, 3)

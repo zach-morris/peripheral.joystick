@@ -57,10 +57,10 @@ namespace JOYSTICK
     virtual ~CJoystickInterfaceCocoa(void) { Deinitialize(); }
 
     // implementation of IJoystickInterface
-    virtual const char* Name(void) const;
-    virtual bool Initialize(void);
-    virtual void Deinitialize(void);
-    virtual bool ScanForJoysticks(JoystickVector& joysticks);
+    virtual const char* Name(void) const override;
+    virtual bool Initialize(void) override;
+    virtual void Deinitialize(void) override;
+    virtual bool ScanForJoysticks(JoystickVector& joysticks) override;
 
     void RegisterInputCallback(ICocoaInputCallback* callback, IOHIDDeviceRef device);
     void UnregisterInputCallback(ICocoaInputCallback* callback);

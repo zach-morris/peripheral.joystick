@@ -35,12 +35,12 @@ namespace JOYSTICK
 
     virtual ~CJoystickDirectInput(void) { }
 
-    virtual bool Equals(const CJoystick* rhs) const;
+    virtual bool Equals(const CJoystick* rhs) const override;
 
-    virtual bool Initialize(void);
+    virtual bool Initialize(void) override;
 
   protected:
-    virtual bool ScanEvents(void);
+    virtual bool ScanEvents(void) override;
 
   private:
     static BOOL CALLBACK EnumObjectsCallback(const DIDEVICEOBJECTINSTANCE *pdidoi, VOID *pContext);

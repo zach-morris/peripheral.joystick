@@ -37,15 +37,15 @@ namespace JOYSTICK
     CJoystickCocoa(IOHIDDeviceRef device, CJoystickInterfaceCocoa* api);
     virtual ~CJoystickCocoa(void);
 
-    virtual bool Equals(const CJoystick* rhs) const;
+    virtual bool Equals(const CJoystick* rhs) const override;
 
     bool Initialize(void);
     void Deinitialize(void);
 
-    virtual void InputValueChanged(IOHIDValueRef value);
+    virtual void InputValueChanged(IOHIDValueRef value) override;
 
   protected:
-    virtual bool ScanEvents(void);
+    virtual bool ScanEvents(void) override;
 
   private:
     IOHIDDeviceRef m_device;

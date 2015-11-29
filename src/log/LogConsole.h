@@ -31,8 +31,8 @@ namespace JOYSTICK
   public:
     virtual ~CLogConsole(void) { }
 
-    virtual void Log(SYS_LOG_LEVEL level, const char* logline);
-    virtual SYS_LOG_TYPE Type(void) const { return SYS_LOG_TYPE_CONSOLE; }
+    virtual void Log(SYS_LOG_LEVEL level, const char* logline) override;
+    virtual SYS_LOG_TYPE Type(void) const override { return SYS_LOG_TYPE_CONSOLE; }
 
   private:
     PLATFORM::CMutex m_mutex;

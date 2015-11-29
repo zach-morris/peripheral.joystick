@@ -30,7 +30,7 @@ namespace JOYSTICK
     CLogSyslog(void);
     virtual ~CLogSyslog(void);
 
-    virtual void Log(SYS_LOG_LEVEL level, const char* logline);
-    virtual SYS_LOG_TYPE Type(void) const { return SYS_LOG_TYPE_SYSLOG; }
+    virtual void Log(SYS_LOG_LEVEL level, const char* logline) override;
+    virtual SYS_LOG_TYPE Type(void) const override { return SYS_LOG_TYPE_SYSLOG; }
   };
 }

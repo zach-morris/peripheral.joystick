@@ -35,8 +35,8 @@ namespace JOYSTICK
     virtual ~CJoystickInterfaceSDL(void) { Deinitialize(); }
 
     // implementation of IJoystickInterface
-    virtual const char* Name(void) const;
-    virtual void Deinitialize(void);
-    virtual bool ScanForJoysticks(JoystickVector& joysticks);
+    virtual const char* Name(void) const override;
+    virtual void Deinitialize(void) override;
+    virtual bool ScanForJoysticks(JoystickVector& joysticks) override;
   };
 }

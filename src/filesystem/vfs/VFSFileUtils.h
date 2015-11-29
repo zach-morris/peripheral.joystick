@@ -33,10 +33,10 @@ namespace JOYSTICK
     virtual ~CVFSFileUtils(void) { }
 
     // implementation of IFileUtils
-    virtual bool Exists(const std::string& url);
-    virtual bool Stat(const std::string& url, STAT_STRUCTURE& buffer);
-    virtual bool Rename(const std::string& url, const std::string& newUrl);
-    virtual bool Delete(const std::string& url);
+    virtual bool Exists(const std::string& url) override;
+    virtual bool Stat(const std::string& url, STAT_STRUCTURE& buffer) override;
+    virtual bool Rename(const std::string& url, const std::string& newUrl) override;
+    virtual bool Delete(const std::string& url) override;
 
   private:
     ADDON::CHelper_libXBMC_addon* const m_frontend;

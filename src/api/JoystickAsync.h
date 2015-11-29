@@ -35,14 +35,14 @@ namespace JOYSTICK
     CJoystickAsync(const std::string& strProvider);
     virtual ~CJoystickAsync(void) { }
 
-    virtual bool GetEvents(std::vector<ADDON::PeripheralEvent>& events);
+    virtual bool GetEvents(std::vector<ADDON::PeripheralEvent>& events) override;
 
   protected:
-    virtual bool ScanEvents(void) { return true; } // Events arrive asynchronously
+    virtual bool ScanEvents(void) override { return true; } // Events arrive asynchronously
 
-    virtual void SetButtonValue(unsigned int buttonIndex, JOYSTICK_STATE_BUTTON buttonValue);
-    virtual void SetHatValue(unsigned int hatIndex, JOYSTICK_STATE_HAT hatValue);
-    virtual void SetAxisValue(unsigned int axisIndex, JOYSTICK_STATE_AXIS axisValue);
+    virtual void SetButtonValue(unsigned int buttonIndex, JOYSTICK_STATE_BUTTON buttonValue) override;
+    virtual void SetHatValue(unsigned int hatIndex, JOYSTICK_STATE_HAT hatValue) override;
+    virtual void SetAxisValue(unsigned int axisIndex, JOYSTICK_STATE_AXIS axisValue) override;
 
   private:
     PLATFORM::CMutex m_mutex;

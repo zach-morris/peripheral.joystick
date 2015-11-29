@@ -35,8 +35,8 @@ namespace JOYSTICK
     CLogAddon(ADDON::CHelper_libXBMC_addon* frontend);
     virtual ~CLogAddon(void) { }
 
-    virtual void Log(SYS_LOG_LEVEL level, const char* logline);
-    virtual SYS_LOG_TYPE Type(void) const { return SYS_LOG_TYPE_ADDON; }
+    virtual void Log(SYS_LOG_LEVEL level, const char* logline) override;
+    virtual SYS_LOG_TYPE Type(void) const override { return SYS_LOG_TYPE_ADDON; }
 
   private:
     ADDON::CHelper_libXBMC_addon* m_frontend;

@@ -33,7 +33,7 @@ namespace JOYSTICK
     virtual ~CJoystickInterfaceLinux(void) { }
 
     // implementation of IJoystickInterface
-    virtual const char* Name(void) const;
-    virtual bool ScanForJoysticks(JoystickVector& joysticks);
+    virtual const char* Name(void) const override;
+    virtual bool ScanForJoysticks(JoystickVector& joysticks) override;
   };
 }

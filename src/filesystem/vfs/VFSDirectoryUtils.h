@@ -33,10 +33,10 @@ namespace JOYSTICK
     virtual ~CVFSDirectoryUtils(void) { }
 
     // implementation of IDirectoryUtils
-    virtual bool Create(const std::string& path);
-    virtual bool Exists(const std::string& path);
-    virtual bool Remove(const std::string& path);
-    virtual bool GetDirectory(const std::string& path, const std::string& mask, std::vector<ADDON::CVFSDirEntry>& items);
+    virtual bool Create(const std::string& path) override;
+    virtual bool Exists(const std::string& path) override;
+    virtual bool Remove(const std::string& path) override;
+    virtual bool GetDirectory(const std::string& path, const std::string& mask, std::vector<ADDON::CVFSDirEntry>& items) override;
 
   private:
     ADDON::CHelper_libXBMC_addon* const m_frontend;
