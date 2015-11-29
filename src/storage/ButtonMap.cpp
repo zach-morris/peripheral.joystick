@@ -135,7 +135,7 @@ bool CButtonMap::UnmapFeature(const ADDON::JoystickFeature& feature)
 
   switch (feature.Type())
   {
-    case JOYSTICK_FEATURE_TYPE_PRIMITIVE:
+    case JOYSTICK_FEATURE_TYPE_SCALAR:
     {
       bModified = UnmapPrimitive(feature.Primitive());
       break;
@@ -175,7 +175,7 @@ bool CButtonMap::UnmapPrimitive(const ADDON::DriverPrimitive& primitive)
     ADDON::JoystickFeature& feature = *it;
     switch (feature.Type())
     {
-      case JOYSTICK_FEATURE_TYPE_PRIMITIVE:
+      case JOYSTICK_FEATURE_TYPE_SCALAR:
       {
         if (primitive == feature.Primitive())
         {

@@ -61,7 +61,7 @@ bool CButtonMapXml::Serialize(const CButtonMap& record, TiXmlElement* pElement)
 
     switch (feature.Type())
     {
-      case JOYSTICK_FEATURE_TYPE_PRIMITIVE:
+      case JOYSTICK_FEATURE_TYPE_SCALAR:
       {
         SerializePrimitive(featureElem, feature.Primitive());
 
@@ -110,7 +110,7 @@ bool CButtonMapXml::IsValid(const ADDON::JoystickFeature& feature)
 
   switch (feature.Type())
   {
-    case JOYSTICK_FEATURE_TYPE_PRIMITIVE:
+    case JOYSTICK_FEATURE_TYPE_SCALAR:
     {
       if (feature.Primitive().Type() != JOYSTICK_DRIVER_PRIMITIVE_TYPE_UNKNOWN)
         bIsValid = true;
@@ -118,10 +118,10 @@ bool CButtonMapXml::IsValid(const ADDON::JoystickFeature& feature)
     }
     case JOYSTICK_FEATURE_TYPE_ANALOG_STICK:
     {
-      if (feature.Up().Type()    != JOYSTICK_DRIVER_PRIMITIVE_TYPE_UNKNOWN ||
-          feature.Down().Type()  != JOYSTICK_DRIVER_PRIMITIVE_TYPE_UNKNOWN ||
+      if (feature.Up().Type() != JOYSTICK_DRIVER_PRIMITIVE_TYPE_UNKNOWN ||
+          feature.Down().Type() != JOYSTICK_DRIVER_PRIMITIVE_TYPE_UNKNOWN ||
           feature.Right().Type() != JOYSTICK_DRIVER_PRIMITIVE_TYPE_UNKNOWN ||
-          feature.Left().Type()  != JOYSTICK_DRIVER_PRIMITIVE_TYPE_UNKNOWN)
+          feature.Left().Type() != JOYSTICK_DRIVER_PRIMITIVE_TYPE_UNKNOWN)
       {
         bIsValid = true;
       }
@@ -233,7 +233,7 @@ bool CButtonMapXml::Deserialize(const TiXmlElement* pElement, CButtonMap& record
     ADDON::DriverPrimitive primitive;
     if (DeserializePrimitive(pFeature, primitive, strName))
     {
-      type = JOYSTICK_FEATURE_TYPE_PRIMITIVE;
+      type = JOYSTICK_FEATURE_TYPE_SCALAR;
     }
     else
     {
@@ -269,7 +269,7 @@ bool CButtonMapXml::Deserialize(const TiXmlElement* pElement, CButtonMap& record
     // Deserialize according to type
     switch (type)
     {
-      case JOYSTICK_FEATURE_TYPE_PRIMITIVE:
+      case JOYSTICK_FEATURE_TYPE_SCALAR:
       {
         feature.SetPrimitive(primitive);
         break;
