@@ -39,10 +39,10 @@ namespace JOYSTICK
 
     void GetFeatures(FeatureVector& features) const;
 
-    bool MapFeature(const FeaturePtr& feature);
+    bool MapFeature(const ADDON::JoystickFeature& feature);
 
   private:
-    bool UnmapFeature(const FeaturePtr& feature);
+    bool UnmapFeature(const ADDON::JoystickFeature& feature);
     bool UnmapPrimitive(const ADDON::DriverPrimitive& primitive);
 
     // Helper function

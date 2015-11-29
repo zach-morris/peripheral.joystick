@@ -63,7 +63,7 @@ bool CDatabase::GetFeatures(const CDevice& driverInfo, const std::string& contro
 }
 
 bool CDatabase::MapFeature(const CDevice& driverInfo, const std::string& controllerId,
-                           const FeaturePtr& feature)
+                           const ADDON::JoystickFeature& feature)
 {
   ButtonMaps& buttonMaps = m_records[driverInfo];
 

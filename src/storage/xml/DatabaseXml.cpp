@@ -66,7 +66,7 @@ bool CDatabaseXml::GetFeatures(const CDevice& driverInfo, const std::string& con
 }
 
 bool CDatabaseXml::MapFeature(const CDevice& driverInfo, const std::string& controllerId,
-                              const FeaturePtr& feature)
+                              const ADDON::JoystickFeature& feature)
 {
   CLockObject lock(m_mutex);
 

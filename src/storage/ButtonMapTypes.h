@@ -18,13 +18,11 @@
  */
 #pragma once
 
-#include <memory>
 #include <vector>
 
 namespace ADDON { class JoystickFeature; }
 
 namespace JOYSTICK
 {
-  typedef std::shared_ptr<ADDON::JoystickFeature> FeaturePtr;
-  typedef std::vector<FeaturePtr>                 FeatureVector;
+  typedef std::vector<ADDON::JoystickFeature> FeatureVector;
 }

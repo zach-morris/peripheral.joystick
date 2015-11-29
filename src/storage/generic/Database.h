@@ -47,7 +47,7 @@ namespace JOYSTICK
                              FeatureVector& features);
 
     virtual bool MapFeature(const CDevice& driverInfo, const std::string& controllerId,
-                            const FeaturePtr& feature);
+                            const ADDON::JoystickFeature& feature);
 
   protected:
     typedef std::string                        ControllerID;

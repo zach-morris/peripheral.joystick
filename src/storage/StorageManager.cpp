@@ -127,7 +127,7 @@ bool CStorageManager::GetFeatures(const ADDON::Joystick& joystick, const std::st
 }
 
 bool CStorageManager::MapFeature(const ADDON::Joystick& joystick, const std::string& strControllerId,
-                                 const FeaturePtr& feature)
+                                 const ADDON::JoystickFeature& feature)
 {
   for (std::vector<CDatabase*>::const_iterator it = m_databases.begin(); it != m_databases.end(); ++it)
     (*it)->MapFeature(joystick, strControllerId, feature);

@@ -43,7 +43,7 @@ bool CButtonMapXml::Serialize(const CButtonMap& record, TiXmlElement* pElement)
 
   for (FeatureVector::const_iterator it = features.begin(); it != features.end(); ++it)
   {
-    const ADDON::JoystickFeature* feature = it->get();
+    const ADDON::JoystickFeature& feature = *it;
 
     if (!IsValid(feature))
       continue;
@@ -57,47 +57,41 @@ bool CButtonMapXml::Serialize(const CButtonMap& record, TiXmlElement* pElement)
     if (featureElem == NULL)
       return false;
 
-    featureElem->SetAttribute(BUTTONMAP_XML_ATTR_FEATURE_NAME, feature->Name());
+    featureElem->SetAttribute(BUTTONMAP_XML_ATTR_FEATURE_NAME, feature.Name());
 
-    switch (feature->Type())
+    switch (feature.Type())
     {
       case JOYSTICK_FEATURE_TYPE_PRIMITIVE:
       {
-        const ADDON::PrimitiveFeature* primitiveFeature = static_cast<const ADDON::PrimitiveFeature*>(feature);
-
-        SerializePrimitive(featureElem, primitiveFeature->Primitive());
+        SerializePrimitive(featureElem, feature.Primitive());
 
         break;
       }
       case JOYSTICK_FEATURE_TYPE_ANALOG_STICK:
       {
-        const ADDON::AnalogStick* analogStick = static_cast<const ADDON::AnalogStick*>(feature);
-
-        if (!SerializePrimitiveTag(featureElem, analogStick->Up(), BUTTONMAP_XML_ELEM_UP))
+        if (!SerializePrimitiveTag(featureElem, feature.Up(), BUTTONMAP_XML_ELEM_UP))
           return false;
 
-        if (!SerializePrimitiveTag(featureElem, analogStick->Down(), BUTTONMAP_XML_ELEM_DOWN))
+        if (!SerializePrimitiveTag(featureElem, feature.Down(), BUTTONMAP_XML_ELEM_DOWN))
           return false;
 
-        if (!SerializePrimitiveTag(featureElem, analogStick->Right(), BUTTONMAP_XML_ELEM_RIGHT))
+        if (!SerializePrimitiveTag(featureElem, feature.Right(), BUTTONMAP_XML_ELEM_RIGHT))
           return false;
 
-        if (!SerializePrimitiveTag(featureElem, analogStick->Left(), BUTTONMAP_XML_ELEM_LEFT))
+        if (!SerializePrimitiveTag(featureElem, feature.Left(), BUTTONMAP_XML_ELEM_LEFT))
           return false;
 
         break;
       }
       case JOYSTICK_FEATURE_TYPE_ACCELEROMETER:
       {
-        const ADDON::Accelerometer* accelerometer = static_cast<const ADDON::Accelerometer*>(feature);
-
-        if (!SerializePrimitiveTag(featureElem, accelerometer->PositiveX(), BUTTONMAP_XML_ELEM_POSITIVE_X))
+        if (!SerializePrimitiveTag(featureElem, feature.PositiveX(), BUTTONMAP_XML_ELEM_POSITIVE_X))
           return false;
 
-        if (!SerializePrimitiveTag(featureElem, accelerometer->PositiveY(), BUTTONMAP_XML_ELEM_POSITIVE_Y))
+        if (!SerializePrimitiveTag(featureElem, feature.PositiveY(), BUTTONMAP_XML_ELEM_POSITIVE_Y))
           return false;
 
-        if (!SerializePrimitiveTag(featureElem, accelerometer->PositiveZ(), BUTTONMAP_XML_ELEM_POSITIVE_Z))
+        if (!SerializePrimitiveTag(featureElem, feature.PositiveZ(), BUTTONMAP_XML_ELEM_POSITIVE_Z))
           return false;
 
         break;
@@ -110,46 +104,37 @@ bool CButtonMapXml::Serialize(const CButtonMap& record, TiXmlElement* pElement)
   return true;
 }
 
-bool CButtonMapXml::IsValid(const ADDON::JoystickFeature* feature)
+bool CButtonMapXml::IsValid(const ADDON::JoystickFeature& feature)
 {
   bool bIsValid = false;
 
-  switch (feature->Type())
+  switch (feature.Type())
   {
     case JOYSTICK_FEATURE_TYPE_PRIMITIVE:
     {
-      const ADDON::PrimitiveFeature* primitiveFeature = static_cast<const ADDON::PrimitiveFeature*>(feature);
-
-      if (primitiveFeature->Primitive().Type() != JOYSTICK_DRIVER_PRIMITIVE_TYPE_UNKNOWN)
+      if (feature.Primitive().Type() != JOYSTICK_DRIVER_PRIMITIVE_TYPE_UNKNOWN)
         bIsValid = true;
-
       break;
     }
     case JOYSTICK_FEATURE_TYPE_ANALOG_STICK:
     {
-      const ADDON::AnalogStick* analogStick = static_cast<const ADDON::AnalogStick*>(feature);
-
-      if (analogStick->Up().Type()    != JOYSTICK_DRIVER_PRIMITIVE_TYPE_UNKNOWN ||
-          analogStick->Down().Type()  != JOYSTICK_DRIVER_PRIMITIVE_TYPE_UNKNOWN ||
-          analogStick->Right().Type() != JOYSTICK_DRIVER_PRIMITIVE_TYPE_UNKNOWN ||
-          analogStick->Left().Type()  != JOYSTICK_DRIVER_PRIMITIVE_TYPE_UNKNOWN)
+      if (feature.Up().Type()    != JOYSTICK_DRIVER_PRIMITIVE_TYPE_UNKNOWN ||
+          feature.Down().Type()  != JOYSTICK_DRIVER_PRIMITIVE_TYPE_UNKNOWN ||
+          feature.Right().Type() != JOYSTICK_DRIVER_PRIMITIVE_TYPE_UNKNOWN ||
+          feature.Left().Type()  != JOYSTICK_DRIVER_PRIMITIVE_TYPE_UNKNOWN)
       {
         bIsValid = true;
       }
-
       break;
     }
     case JOYSTICK_FEATURE_TYPE_ACCELEROMETER:
     {
-      const ADDON::Accelerometer* accelerometer = static_cast<const ADDON::Accelerometer*>(feature);
-
-      if (accelerometer->PositiveX().Type() != JOYSTICK_DRIVER_PRIMITIVE_TYPE_UNKNOWN ||
-          accelerometer->PositiveY().Type() != JOYSTICK_DRIVER_PRIMITIVE_TYPE_UNKNOWN ||
-          accelerometer->PositiveZ().Type() != JOYSTICK_DRIVER_PRIMITIVE_TYPE_UNKNOWN)
+      if (feature.PositiveX().Type() != JOYSTICK_DRIVER_PRIMITIVE_TYPE_UNKNOWN ||
+          feature.PositiveY().Type() != JOYSTICK_DRIVER_PRIMITIVE_TYPE_UNKNOWN ||
+          feature.PositiveZ().Type() != JOYSTICK_DRIVER_PRIMITIVE_TYPE_UNKNOWN)
       {
         bIsValid = true;
       }
-
       break;
     }
     default:
@@ -225,9 +210,6 @@ bool CButtonMapXml::Deserialize(const TiXmlElement* pElement, CButtonMap& record
 
   while (pFeature)
   {
-    // The deserialized feature
-    FeaturePtr feature;
-
     const char* name = pFeature->Attribute(BUTTONMAP_XML_ATTR_FEATURE_NAME);
     if (!name)
     {
@@ -246,7 +228,7 @@ bool CButtonMapXml::Deserialize(const TiXmlElement* pElement, CButtonMap& record
     const TiXmlElement* pPositiveZ = nullptr;
 
     // Determine the feature type
-    JOYSTICK_FEATURE_TYPE type = JOYSTICK_FEATURE_TYPE_UNKNOWN;
+    JOYSTICK_FEATURE_TYPE type;
 
     ADDON::DriverPrimitive primitive;
     if (DeserializePrimitive(pFeature, primitive, strName))
@@ -282,13 +264,14 @@ bool CButtonMapXml::Deserialize(const TiXmlElement* pElement, CButtonMap& record
       }
     }
 
+    ADDON::JoystickFeature feature(strName, type);
+
     // Deserialize according to type
     switch (type)
     {
       case JOYSTICK_FEATURE_TYPE_PRIMITIVE:
       {
-        // Already deserialized
-        feature = FeaturePtr(new ADDON::PrimitiveFeature(strName, primitive));
+        feature.SetPrimitive(primitive);
         break;
       }
       case JOYSTICK_FEATURE_TYPE_ANALOG_STICK:
@@ -327,7 +310,10 @@ bool CButtonMapXml::Deserialize(const TiXmlElement* pElement, CButtonMap& record
         if (!bSuccess)
           return false;
 
-        feature = FeaturePtr(new ADDON::AnalogStick(strName, up, down, right, left));
+        feature.SetUp(up);
+        feature.SetDown(down);
+        feature.SetRight(right);
+        feature.SetLeft(left);
 
         break;
       }
@@ -360,7 +346,9 @@ bool CButtonMapXml::Deserialize(const TiXmlElement* pElement, CButtonMap& record
         if (!bSuccess)
           return false;
 
-        feature = FeaturePtr(new ADDON::Accelerometer(strName, positiveX, positiveY, positiveZ));
+        feature.SetPositiveX(positiveX);
+        feature.SetPositiveY(positiveY);
+        feature.SetPositiveZ(positiveZ);
 
         break;
       }
@@ -368,8 +356,7 @@ bool CButtonMapXml::Deserialize(const TiXmlElement* pElement, CButtonMap& record
         break;
     }
 
-    if (feature)
-      record.MapFeature(feature);
+    record.MapFeature(feature);
 
     pFeature = pFeature->NextSiblingElement(BUTTONMAP_XML_ELEM_FEATURE);
   }

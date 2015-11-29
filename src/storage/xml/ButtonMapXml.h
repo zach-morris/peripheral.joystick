@@ -40,7 +40,7 @@ namespace JOYSTICK
     static bool Deserialize(const TiXmlElement* pElement, CButtonMap& record);
 
   private:
-    static bool IsValid(const ADDON::JoystickFeature* feature);
+    static bool IsValid(const ADDON::JoystickFeature& feature);
     static bool SerializeFeature(TiXmlElement* pElement, const ADDON::DriverPrimitive& primitive, const char* tagName);
     static bool SerializePrimitiveTag(TiXmlElement* pElement, const ADDON::DriverPrimitive& primitive, const char* tagName);
     static void SerializePrimitive(TiXmlElement* pElement, const ADDON::DriverPrimitive& primitive);

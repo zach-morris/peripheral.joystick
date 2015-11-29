@@ -60,34 +60,34 @@ void CButtonMap::GetFeatures(FeatureVector& features) const
   features = m_buttonMap;
 }
 
-bool CButtonMap::MapFeature(const FeaturePtr& feature)
+bool CButtonMap::MapFeature(const ADDON::JoystickFeature& feature)
 {
   CLockObject lock(m_mutex);
 
   bool bModified = false; // Return value
 
-  if (!feature || feature->Name().empty())
+  if (feature.Name().empty())
     return bModified;
 
   // Alias feature name
-  const std::string& strFeatureName = feature->Name();
+  const std::string& strFeatureName = feature.Name();
 
   // Look up existing feature by name
   FeatureVector::iterator itFeature = std::find_if(m_buttonMap.begin(), m_buttonMap.end(),
-    [&strFeatureName](const FeaturePtr& existingFeature)
+    [&strFeatureName](const ADDON::JoystickFeature& existingFeature)
     {
-      return existingFeature->Name() == strFeatureName;
+      return existingFeature.Name() == strFeatureName;
     });
 
   // Calculate properties of new feature
   bool bExists = (itFeature != m_buttonMap.end());
-  bool bIsValid = (feature->Type() != JOYSTICK_FEATURE_TYPE_UNKNOWN);
+  bool bIsValid = (feature.Type() != JOYSTICK_FEATURE_TYPE_UNKNOWN);
   bool bIsUnchanged = false;
 
   if (bExists)
   {
-    const FeaturePtr& existingFeature = *itFeature;
-    bIsUnchanged = existingFeature->Equals(feature.get());
+    const ADDON::JoystickFeature& existingFeature = *itFeature;
+    bIsUnchanged = (existingFeature == feature);
   }
 
   // Process changes
@@ -113,13 +113,13 @@ bool CButtonMap::MapFeature(const FeaturePtr& feature)
 
     *itFeature = feature;
 
-    // UnmapFeature() may have deleted a feature in the button map
+    // UnmapFeature() may have invalidated a feature in the button map
     if (bUnmapped)
     {
       m_buttonMap.erase(std::remove_if(m_buttonMap.begin(), m_buttonMap.end(),
-        [](const FeaturePtr& feature)
+        [](const ADDON::JoystickFeature& feature)
         {
-          return feature.get() == nullptr;
+          return feature.Type() == JOYSTICK_FEATURE_TYPE_UNKNOWN;
         }), m_buttonMap.end());
     }
 
@@ -129,34 +129,31 @@ bool CButtonMap::MapFeature(const FeaturePtr& feature)
   return bModified;
 }
 
-bool CButtonMap::UnmapFeature(const FeaturePtr& feature)
+bool CButtonMap::UnmapFeature(const ADDON::JoystickFeature& feature)
 {
   bool bModified = false;
 
-  switch (feature->Type())
+  switch (feature.Type())
   {
     case JOYSTICK_FEATURE_TYPE_PRIMITIVE:
     {
-      const ADDON::PrimitiveFeature* primitive = static_cast<const ADDON::PrimitiveFeature*>(feature.get());
-      bModified = UnmapPrimitive(primitive->Primitive());
+      bModified = UnmapPrimitive(feature.Primitive());
       break;
     }
     case JOYSTICK_FEATURE_TYPE_ANALOG_STICK:
     {
-      const ADDON::AnalogStick* analogStick = static_cast<const ADDON::AnalogStick*>(feature.get());
-      bModified = UnmapPrimitive(analogStick->Up()) ||
-                  UnmapPrimitive(analogStick->Down()) ||
-                  UnmapPrimitive(analogStick->Right()) ||
-                  UnmapPrimitive(analogStick->Left());
+      bModified = UnmapPrimitive(feature.Up()) ||
+                  UnmapPrimitive(feature.Down()) ||
+                  UnmapPrimitive(feature.Right()) ||
+                  UnmapPrimitive(feature.Left());
       break;
     }
     case JOYSTICK_FEATURE_TYPE_ACCELEROMETER:
     {
       // TODO: Unmap complementary semiaxes
-      const ADDON::Accelerometer* accelerometer = static_cast<const ADDON::Accelerometer*>(feature.get());
-      bModified = UnmapPrimitive(accelerometer->PositiveX()) ||
-                  UnmapPrimitive(accelerometer->PositiveY()) ||
-                  UnmapPrimitive(accelerometer->PositiveZ());
+      bModified = UnmapPrimitive(feature.PositiveX()) ||
+                  UnmapPrimitive(feature.PositiveY()) ||
+                  UnmapPrimitive(feature.PositiveZ());
       break;
     }
     default:
@@ -175,16 +172,15 @@ bool CButtonMap::UnmapPrimitive(const ADDON::DriverPrimitive& primitive)
 
   for (FeatureVector::iterator it = m_buttonMap.begin(); it != m_buttonMap.end(); ++it)
   {
-    const FeaturePtr& feature = *it;
-    switch (feature->Type())
+    ADDON::JoystickFeature& feature = *it;
+    switch (feature.Type())
     {
       case JOYSTICK_FEATURE_TYPE_PRIMITIVE:
       {
-        ADDON::PrimitiveFeature* primitiveFeature = static_cast<ADDON::PrimitiveFeature*>(feature.get());
-        if (primitive.Equals(primitiveFeature->Primitive()))
+        if (primitive == feature.Primitive())
         {
-          dsyslog("Removing \"%s\" from button map due to conflict", feature->Name().c_str());
-          it->reset();
+          dsyslog("Removing \"%s\" from button map due to conflict", feature.Name().c_str());
+          it->SetType(JOYSTICK_FEATURE_TYPE_UNKNOWN);
           bModified = true;
         }
 
@@ -192,37 +188,36 @@ bool CButtonMap::UnmapPrimitive(const ADDON::DriverPrimitive& primitive)
       }
       case JOYSTICK_FEATURE_TYPE_ANALOG_STICK:
       {
-        ADDON::AnalogStick* analogStick = static_cast<ADDON::AnalogStick*>(feature.get());
-        if (primitive.Equals(analogStick->Up()))
+        if (primitive == feature.Up())
         {
-          analogStick->SetUp(ADDON::DriverPrimitive());
+          feature.SetUp(ADDON::DriverPrimitive());
           bModified = true;
         }
-        else if (primitive.Equals(analogStick->Down()))
+        else if (primitive == feature.Down())
         {
-          analogStick->SetDown(ADDON::DriverPrimitive());
+          feature.SetDown(ADDON::DriverPrimitive());
           bModified = true;
         }
-        else if (primitive.Equals(analogStick->Right()))
+        else if (primitive == feature.Right())
         {
-          analogStick->SetRight(ADDON::DriverPrimitive());
+          feature.SetRight(ADDON::DriverPrimitive());
           bModified = true;
         }
-        else if (primitive.Equals(analogStick->Left()))
+        else if (primitive == feature.Left())
         {
-          analogStick->SetLeft(ADDON::DriverPrimitive());
+          feature.SetLeft(ADDON::DriverPrimitive());
           bModified = true;
         }
 
         if (bModified)
         {
-          if (analogStick->Up().Type() == JOYSTICK_DRIVER_PRIMITIVE_TYPE_UNKNOWN &&
-              analogStick->Down().Type() == JOYSTICK_DRIVER_PRIMITIVE_TYPE_UNKNOWN &&
-              analogStick->Right().Type() == JOYSTICK_DRIVER_PRIMITIVE_TYPE_UNKNOWN &&
-              analogStick->Left().Type() == JOYSTICK_DRIVER_PRIMITIVE_TYPE_UNKNOWN)
+          if (feature.Up().Type() == JOYSTICK_DRIVER_PRIMITIVE_TYPE_UNKNOWN &&
+              feature.Down().Type() == JOYSTICK_DRIVER_PRIMITIVE_TYPE_UNKNOWN &&
+              feature.Right().Type() == JOYSTICK_DRIVER_PRIMITIVE_TYPE_UNKNOWN &&
+              feature.Left().Type() == JOYSTICK_DRIVER_PRIMITIVE_TYPE_UNKNOWN)
           {
-            dsyslog("Removing \"%s\" from button map due to conflict", feature->Name().c_str());
-            it->reset();
+            dsyslog("Removing \"%s\" from button map due to conflict", feature.Name().c_str());
+            it->SetType(JOYSTICK_FEATURE_TYPE_UNKNOWN);
           }
         }
 
@@ -230,34 +225,33 @@ bool CButtonMap::UnmapPrimitive(const ADDON::DriverPrimitive& primitive)
       }
       case JOYSTICK_FEATURE_TYPE_ACCELEROMETER:
       {
-        ADDON::Accelerometer* accelerometer = static_cast<ADDON::Accelerometer*>(feature.get());
-        if (primitive.Equals(accelerometer->PositiveX()) ||
-            primitive.Equals(Opposite(accelerometer->PositiveX())))
+        if (primitive == feature.PositiveX() ||
+            primitive == Opposite(feature.PositiveX()))
         {
-          accelerometer->SetPositiveX(ADDON::DriverPrimitive());
+          feature.SetPositiveX(ADDON::DriverPrimitive());
           bModified = true;
         }
-        else if (primitive.Equals(accelerometer->PositiveY()) ||
-                 primitive.Equals(Opposite(accelerometer->PositiveY())))
+        else if (primitive == feature.PositiveY() ||
+                 primitive == Opposite(feature.PositiveY()))
         {
-          accelerometer->SetPositiveY(ADDON::DriverPrimitive());
+          feature.SetPositiveY(ADDON::DriverPrimitive());
           bModified = true;
         }
-        else if (primitive.Equals(accelerometer->PositiveZ()) ||
-                 primitive.Equals(Opposite(accelerometer->PositiveZ())))
+        else if (primitive == feature.PositiveZ() ||
+                 primitive == Opposite(feature.PositiveZ()))
         {
-          accelerometer->SetPositiveZ(ADDON::DriverPrimitive());
+          feature.SetPositiveZ(ADDON::DriverPrimitive());
           bModified = true;
         }
 
         if (bModified)
         {
-          if (accelerometer->PositiveX().Type() == JOYSTICK_DRIVER_PRIMITIVE_TYPE_UNKNOWN &&
-              accelerometer->PositiveY().Type() == JOYSTICK_DRIVER_PRIMITIVE_TYPE_UNKNOWN &&
-              accelerometer->PositiveZ().Type() == JOYSTICK_DRIVER_PRIMITIVE_TYPE_UNKNOWN)
+          if (feature.PositiveX().Type() == JOYSTICK_DRIVER_PRIMITIVE_TYPE_UNKNOWN &&
+              feature.PositiveY().Type() == JOYSTICK_DRIVER_PRIMITIVE_TYPE_UNKNOWN &&
+              feature.PositiveZ().Type() == JOYSTICK_DRIVER_PRIMITIVE_TYPE_UNKNOWN)
           {
-            dsyslog("Removing \"%s\" from button map due to conflict", feature->Name().c_str());
-            it->reset();
+            dsyslog("Removing \"%s\" from button map due to conflict", feature.Name().c_str());
+            it->SetType(JOYSTICK_FEATURE_TYPE_UNKNOWN);
           }
         }
 

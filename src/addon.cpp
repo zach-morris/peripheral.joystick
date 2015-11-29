@@ -239,17 +239,8 @@ PERIPHERAL_ERROR GetFeatures(const JOYSTICK_INFO* joystick, const char* controll
   FeatureVector featureVector;
   if (CStorageManager::Get().GetFeatures(ADDON::Joystick(*joystick), controller_id,  featureVector))
   {
-    // Convert to vector of raw pointers
-    std::vector<ADDON::JoystickFeature*> joystickFeatures;
-    joystickFeatures.reserve(featureVector.size());
-    std::transform(featureVector.begin(), featureVector.end(), std::back_inserter(joystickFeatures),
-      [](const FeaturePtr& feature)
-      {
-        return feature.get();
-      });
-
-    *feature_count = joystickFeatures.size();
-    ADDON::JoystickFeatures::ToStructs(joystickFeatures, features);
+    *feature_count = featureVector.size();
+    ADDON::JoystickFeatures::ToStructs(featureVector, features);
     return PERIPHERAL_NO_ERROR;
   }
 
@@ -267,11 +258,9 @@ PERIPHERAL_ERROR AddFeature(const JOYSTICK_INFO* joystick, const char* controlle
   if (!joystick || !controller_id || !feature)
     return PERIPHERAL_ERROR_INVALID_PARAMETERS;
 
-  FeaturePtr joystickFeature = FeaturePtr(ADDON::JoystickFeatureFactory::Create(*feature));
-  if (!joystickFeature)
-    return PERIPHERAL_ERROR_INVALID_PARAMETERS;
-
-  bool bSuccess = CStorageManager::Get().MapFeature(ADDON::Joystick(*joystick), controller_id, joystickFeature);
+  bool bSuccess = CStorageManager::Get().MapFeature(ADDON::Joystick(*joystick),
+                                                    controller_id,
+                                                    ADDON::JoystickFeature(*feature));
 
   return bSuccess ? PERIPHERAL_NO_ERROR : PERIPHERAL_ERROR_FAILED;
 }
