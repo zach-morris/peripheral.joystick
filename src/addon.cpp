@@ -125,7 +125,7 @@ unsigned int ADDON_GetSettings(ADDON_StructSetting ***sSet)
   return 0;
 }
 
-ADDON_STATUS ADDON_SetSetting(const char *settingName, const void *settingValue)
+ADDON_STATUS ADDON_SetSetting(const char* settingName, const void* settingValue)
 {
   if (settingName && settingValue)
     CSettings::Get().SetSetting(settingName, settingValue);
@@ -137,7 +137,7 @@ void ADDON_FreeSettings()
 {
 }
 
-void ADDON_Announce(const char *flag, const char *sender, const char *message, const void *data)
+void ADDON_Announce(const char* flag, const char* sender, const char* message, const void* data)
 {
 }
 
@@ -231,7 +231,7 @@ void FreeJoystickInfo(JOYSTICK_INFO* info)
 }
 
 PERIPHERAL_ERROR GetFeatures(const JOYSTICK_INFO* joystick, const char* controller_id,
-                              unsigned int* feature_count, JOYSTICK_FEATURE** features)
+                             unsigned int* feature_count, JOYSTICK_FEATURE** features)
 {
   if (!joystick || !controller_id || !feature_count || !features)
     return PERIPHERAL_ERROR_INVALID_PARAMETERS;
@@ -262,18 +262,16 @@ void FreeFeatures(unsigned int feature_count, JOYSTICK_FEATURE* features)
 }
 
 PERIPHERAL_ERROR AddFeature(const JOYSTICK_INFO* joystick, const char* controller_id,
-                                    JOYSTICK_FEATURE* feature)
+                            JOYSTICK_FEATURE* feature)
 {
   if (!joystick || !controller_id || !feature)
     return PERIPHERAL_ERROR_INVALID_PARAMETERS;
 
-  ADDON::JoystickFeature* joystickFeature = ADDON::JoystickFeatureFactory::Create(*feature);
+  FeaturePtr joystickFeature = FeaturePtr(ADDON::JoystickFeatureFactory::Create(*feature));
   if (!joystickFeature)
     return PERIPHERAL_ERROR_INVALID_PARAMETERS;
 
   bool bSuccess = CStorageManager::Get().MapFeature(ADDON::Joystick(*joystick), controller_id, joystickFeature);
-
-  delete joystickFeature;
 
   return bSuccess ? PERIPHERAL_NO_ERROR : PERIPHERAL_ERROR_FAILED;
 }

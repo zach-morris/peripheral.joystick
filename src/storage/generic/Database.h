@@ -19,15 +19,17 @@
  */
 #pragma once
 
-#include "ButtonMapTypes.h"
-#include "storage/schema/ButtonMapRecord.h"
-#include "storage/schema/DriverRecord.h"
+#include "storage/ButtonMap.h"
+#include "storage/ButtonMapTypes.h"
+#include "storage/Device.h"
 
 #include <map>
 #include <string>
 
 namespace JOYSTICK
 {
+  class CDeviceDatabase;
+
   class CDatabase
   {
   public:
@@ -41,18 +43,21 @@ namespace JOYSTICK
 
     virtual bool IsEnabled(void) const { return m_bEnabled; }
 
-    virtual bool GetFeatures(const CDriverRecord& driverInfo, const std::string& controllerId,
+    virtual bool GetFeatures(const CDevice& driverInfo, const std::string& controllerId,
                              FeatureVector& features);
 
-    virtual bool MapFeature(const CDriverRecord& driverInfo, const std::string& controllerId,
-                            const ADDON::JoystickFeature* feature);
+    virtual bool MapFeature(const CDevice& driverInfo, const std::string& controllerId,
+                            const FeaturePtr& feature);
 
   protected:
-    typedef std::string                              ControllerID;
-    typedef std::map<ControllerID, CButtonMapRecord> ButtonMaps;
-    typedef std::map<CDriverRecord, ButtonMaps>      Records;
+    typedef std::string                        ControllerID;
+    typedef std::map<ControllerID, CButtonMap> ButtonMaps;
+    typedef std::map<CDevice, ButtonMaps>      Records;
 
     Records m_records;
+
+  public: // TODO
+    CDeviceDatabase* m_driverDatabase; // Must be set by derived class
 
   private:
     bool m_bEnabled;

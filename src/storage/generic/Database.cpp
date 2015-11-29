@@ -43,7 +43,7 @@ void CDatabase::Disable(void)
   m_bEnabled = false;
 }
 
-bool CDatabase::GetFeatures(const CDriverRecord& driverInfo, const std::string& controllerId,
+bool CDatabase::GetFeatures(const CDevice& driverInfo, const std::string& controllerId,
                             FeatureVector& features)
 {
   Records::const_iterator itDevice = m_records.find(driverInfo);
@@ -53,7 +53,7 @@ bool CDatabase::GetFeatures(const CDriverRecord& driverInfo, const std::string& 
     ButtonMaps::const_iterator itButtonMap = buttonMaps.find(controllerId);
     if (itButtonMap != buttonMaps.end())
     {
-      const CButtonMapRecord& buttonMap = itButtonMap->second;
+      const CButtonMap& buttonMap = itButtonMap->second;
       buttonMap.GetFeatures(features);
       return true;
     }
@@ -62,12 +62,12 @@ bool CDatabase::GetFeatures(const CDriverRecord& driverInfo, const std::string& 
   return false;
 }
 
-bool CDatabase::MapFeature(const CDriverRecord& driverInfo, const std::string& controllerId,
-                           const ADDON::JoystickFeature* feature)
+bool CDatabase::MapFeature(const CDevice& driverInfo, const std::string& controllerId,
+                           const FeaturePtr& feature)
 {
   ButtonMaps& buttonMaps = m_records[driverInfo];
 
-  CButtonMapRecord& buttonMap = buttonMaps[controllerId];
+  CButtonMap& buttonMap = buttonMaps[controllerId];
 
   return buttonMap.MapFeature(feature);
 }

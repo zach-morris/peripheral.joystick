@@ -39,15 +39,15 @@ set(JOYSTICK_SOURCES src/addon.cpp
                      src/log/LogAddon.cpp
                      src/log/LogConsole.cpp
                      src/settings/Settings.cpp
-                     src/storage/schema/ButtonMapRecord.cpp
-                     src/storage/schema/DriverRecord.cpp
-                     src/storage/Database.cpp
-                     src/storage/DriverDatabase.cpp
+                     src/storage/ButtonMap.cpp
+                     src/storage/Device.cpp
+                     src/storage/generic/Database.cpp
+                     src/storage/generic/DeviceDatabase.cpp
                      src/storage/StorageManager.cpp
-                     src/storage/xml/ButtonMapRecordXml.cpp
+                     src/storage/xml/ButtonMapXml.cpp
                      src/storage/xml/DatabaseXml.cpp
-                     src/storage/xml/DriverDatabaseXml.cpp
-                     src/storage/xml/DriverRecordXml.cpp
+                     src/storage/xml/DeviceDatabaseXml.cpp
+                     src/storage/xml/DeviceXml.cpp
                      src/utils/StringUtils.cpp)
 
 check_include_files("syslog.h" HAVE_SYSLOG)

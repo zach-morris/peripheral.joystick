@@ -17,23 +17,38 @@
  *  <http://www.gnu.org/licenses/>.
  *
  */
+#pragma once
 
-#include "DriverDatabase.h"
+#include "ButtonMapTypes.h"
 
-using namespace JOYSTICK;
+#include "kodi/kodi_peripheral_utils.hpp"
+#include "platform/threads/mutex.h"
 
-bool CDriverDatabase::GetDriverRecord(const ADDON::Joystick& joystick, CDriverRecord& record)
+namespace JOYSTICK
 {
-  bool bFound = false;
-
-  CDriverRecord needle(joystick);
-
-  DriverRecordMap::const_iterator it = m_driverRecords.find(needle);
-  if (it != m_driverRecords.end())
+  class CButtonMap
   {
-    bFound = true;
-    record = it->second;
-  }
+  public:
+    CButtonMap(void) { }
 
-  return bFound;
+    CButtonMap& operator=(CButtonMap&& rhs);
+
+    bool IsEmpty(void) const;
+
+    size_t FeatureCount(void) const;
+
+    void GetFeatures(FeatureVector& features) const;
+
+    bool MapFeature(const FeaturePtr& feature);
+
+  private:
+    bool UnmapFeature(const FeaturePtr& feature);
+    bool UnmapPrimitive(const ADDON::DriverPrimitive& primitive);
+
+    // Helper function
+    ADDON::DriverPrimitive Opposite(const ADDON::DriverPrimitive& semiaxis);
+
+    FeatureVector            m_buttonMap;
+    mutable PLATFORM::CMutex m_mutex;
+  };
 }

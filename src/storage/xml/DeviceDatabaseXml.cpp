@@ -18,8 +18,8 @@
  *
  */
 
-#include "DriverDatabaseXml.h"
-#include "DriverRecordXml.h"
+#include "DeviceDatabaseXml.h"
+#include "DeviceXml.h"
 #include "filesystem/FileUtils.h"
 #include "storage/ButtonMapDefinitions.h"
 #include "log/Log.h"
@@ -31,21 +31,21 @@ using namespace JOYSTICK;
 // XML file to store devices
 #define DEVICES_XML  "devices.xml"
 
-CDriverDatabaseXml::CDriverDatabaseXml(const std::string& strBasePath, bool bReadOnly) :
+CDeviceDatabaseXml::CDeviceDatabaseXml(const std::string& strBasePath, bool bReadOnly) :
   m_bReadOnly(bReadOnly),
   m_strBasePath(strBasePath)
 {
   m_strDevicesXmlPath = m_strBasePath + "/" DEVICES_XML;
 }
 
-bool CDriverDatabaseXml::GetDriverRecord(const ADDON::Joystick& joystick, CDriverRecord& record)
+bool CDeviceDatabaseXml::GetDevice(const ADDON::Joystick& joystick, CDevice& record)
 {
-  CDriverRecord retVal;
+  CDevice retVal;
 
   // First check local cache
-  if (!CDriverDatabase::GetDriverRecord(joystick, retVal))
+  if (!CDeviceDatabase::GetDevice(joystick, retVal))
   {
-    CDriverRecord needle(joystick);
+    CDevice needle(joystick);
 
     // See if the record is similar to one in drivers.xml
     dsyslog("Loading devices.xml: %s", m_strDevicesXmlPath.c_str());
@@ -74,13 +74,13 @@ bool CDriverDatabaseXml::GetDriverRecord(const ADDON::Joystick& joystick, CDrive
 
     while (pDevice)
     {
-      CDriverRecord driverRecord;
-      if (!CDriverRecordXml::Deserialize(pDevice, driverRecord))
+      CDevice driverRecord;
+      if (!CDeviceXml::Deserialize(pDevice, driverRecord))
         return false;
 
       if (!driverRecord.IsValid())
       {
-        esyslog("<%s> tag with name=\"%s\" is invalid", DEVICES_XML_ELEM_DEVICE, driverRecord.Properties().Name().c_str());
+        esyslog("<%s> tag with name=\"%s\" is invalid", DEVICES_XML_ELEM_DEVICE, driverRecord.Name().c_str());
         return false;
       }
 
@@ -92,7 +92,7 @@ bool CDriverDatabaseXml::GetDriverRecord(const ADDON::Joystick& joystick, CDrive
         // If not read only, check to see if new information was observed
         if (!m_bReadOnly)
         {
-          CDriverRecord combinedRecord = driverRecord;
+          CDevice combinedRecord = driverRecord;
           combinedRecord.MergeProperties(needle);
 
           bool bNewInformation = (driverRecord != combinedRecord);

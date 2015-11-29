@@ -31,13 +31,13 @@ namespace ADDON
 
 namespace JOYSTICK
 {
-  class CButtonMapRecord;
+  class CButtonMap;
 
-  class CButtonMapRecordXml
+  class CButtonMapXml
   {
   public:
-    static bool Serialize(const CButtonMapRecord& record, TiXmlElement* pElement);
-    static bool Deserialize(const TiXmlElement* pElement, CButtonMapRecord& record);
+    static bool Serialize(const CButtonMap& record, TiXmlElement* pElement);
+    static bool Deserialize(const TiXmlElement* pElement, CButtonMap& record);
 
   private:
     static bool IsValid(const ADDON::JoystickFeature* feature);

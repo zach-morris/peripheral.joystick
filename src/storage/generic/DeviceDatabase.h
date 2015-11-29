@@ -19,39 +19,32 @@
  */
 #pragma once
 
-#include "storage/ButtonMapTypes.h"
+#include "storage/Device.h"
 
 #include "kodi/kodi_peripheral_utils.hpp"
-#include "platform/threads/mutex.h"
 
 #include <map>
-#include <string>
 
 namespace JOYSTICK
 {
-  class CButtonMapRecord
+  class CDeviceDatabase
   {
   public:
-    CButtonMapRecord(void) { }
-    virtual ~CButtonMapRecord(void) { }
+    CDeviceDatabase(void) { }
+    virtual ~CDeviceDatabase(void) { }
 
-    CButtonMapRecord& operator=(CButtonMapRecord&& rhs);
+    /*!
+     * \brief Get the driver record associated with the given driver info
+     * \param joystick The known driver info
+     * \return The driver record
+     *
+     * If joystick is missing fields, the returned record
+     */
+    virtual bool GetDevice(const ADDON::Joystick& joystick, CDevice& record);
 
-    bool IsEmpty(void) const;
-    size_t FeatureCount(void) const;
+  protected:
+    typedef std::map<CDevice, CDevice> DeviceMap; // Partial driver information -> full driver information
 
-    void GetFeatures(FeatureVector& features) const;
-
-    bool MapFeature(const ADDON::JoystickFeature* feature);
-
-  private:
-    bool UnmapFeature(const ADDON::JoystickFeature* feature);
-    bool UnmapPrimitive(const ADDON::DriverPrimitive& primitive);
-
-    // Helper function
-    ADDON::DriverPrimitive Opposite(const ADDON::DriverPrimitive& semiaxis);
-
-    FeatureVector            m_buttonMap;
-    mutable PLATFORM::CMutex m_mutex;
+    DeviceMap m_driverRecords;
   };
 }

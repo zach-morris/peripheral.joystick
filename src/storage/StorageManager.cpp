@@ -19,7 +19,7 @@
  */
 
 #include "StorageManager.h"
-#include "DriverDatabase.h" // TODO
+#include "storage/generic/DeviceDatabase.h" // TODO
 #include "filesystem/DirectoryUtils.h"
 #include "log/Log.h"
 #include "storage/xml/DatabaseXml.h"
@@ -115,8 +115,8 @@ bool CStorageManager::GetFeatures(const ADDON::Joystick& joystick, const std::st
 {
   for (std::vector<CDatabase*>::const_iterator it = m_databases.begin(); it != m_databases.end(); ++it)
   {
-    CDriverRecord driverInfo;
-    if ((*it)->m_driverDatabase->GetDriverRecord(joystick, driverInfo)) // TODO
+    CDevice driverInfo;
+    if ((*it)->m_driverDatabase->GetDevice(joystick, driverInfo)) // TODO
     {
       if ((*it)->IsEnabled() && (*it)->GetFeatures(joystick, strControllerId, features))
         break;
@@ -127,7 +127,7 @@ bool CStorageManager::GetFeatures(const ADDON::Joystick& joystick, const std::st
 }
 
 bool CStorageManager::MapFeature(const ADDON::Joystick& joystick, const std::string& strControllerId,
-                                 const ADDON::JoystickFeature* feature)
+                                 const FeaturePtr& feature)
 {
   for (std::vector<CDatabase*>::const_iterator it = m_databases.begin(); it != m_databases.end(); ++it)
     (*it)->MapFeature(joystick, strControllerId, feature);

@@ -23,27 +23,27 @@
 
 namespace JOYSTICK
 {
-  class CDriverRecord
+  class CDevice : public ADDON::Joystick
   {
   public:
-    CDriverRecord(void) { }
-    CDriverRecord(const ADDON::Joystick& driverInfo);
+    CDevice(void) { }
+    CDevice(const ADDON::Joystick& joystick);
 
     /*!
      * \brief Define a comparison operator for driver records
      */
-    bool operator==(const CDriverRecord& rhs) const;
-    bool operator!=(const CDriverRecord& rhs) const { return !(*this == rhs); }
+    bool operator==(const CDevice& rhs) const;
+    bool operator!=(const CDevice& rhs) const { return !(*this == rhs); }
 
     /*!
      * \brief Define a total order for driver records
      */
-    bool operator<(const CDriverRecord& rhs) const;
+    bool operator<(const CDevice& rhs) const;
 
     /*!
      * \brief Define a similarity metric for driver records
      */
-    bool SimilarTo(const CDriverRecord& rhs) const;
+    bool SimilarTo(const CDevice& rhs) const;
 
     /*!
      * \brief Define a validity test for driver records
@@ -51,15 +51,9 @@ namespace JOYSTICK
     bool IsValid(void) const;
 
     /*!
-     * \brief Access the underlying properties of the driver record
-     */
-    ADDON::Joystick& Properties(void) { return m_driverProperties; }
-    const ADDON::Joystick& Properties(void) const { return m_driverProperties; }
-
-    /*!
      * \brief Merge valid (known) properties of given record into this record
      */
-    void MergeProperties(const CDriverRecord& record);
+    void MergeProperties(const CDevice& record);
 
     /*!
      * \brief Build a filename out of the record's properties
@@ -81,15 +75,12 @@ namespace JOYSTICK
      * \brief Get a folder name to avoid clashes between different joystick drivers
      * \return A folder name based on the provider
      */
-    const std::string& Folder(void) const { return m_driverProperties.Provider(); }
+    const std::string& Folder(void) const { return Provider(); }
 
     /*!
      * \brief Build a complete path to this joystick's button maps
      * \return A path to the button maps for this driver info
      */
     std::string BuildPath(const std::string& strBaseDir, const std::string& strExtension) const;
-
-  private:
-    ADDON::Joystick m_driverProperties;
   };
 }

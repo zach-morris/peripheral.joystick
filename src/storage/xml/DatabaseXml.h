@@ -19,7 +19,7 @@
  */
 #pragma once
 
-#include "storage/Database.h"
+#include "storage/generic/Database.h"
 
 #include "platform/threads/mutex.h"
 
@@ -37,22 +37,22 @@ namespace JOYSTICK
 
     virtual ~CDatabaseXml(void) { }
 
-    virtual bool GetFeatures(const CDriverRecord& driverInfo, const std::string& controllerId,
-                             FeatureVector& features);
+    virtual bool GetFeatures(const CDevice& driverInfo, const std::string& controllerId,
+                             FeatureVector& features) override;
 
-    virtual bool MapFeature(const CDriverRecord& driverInfo, const std::string& controllerId,
-                            const ADDON::JoystickFeature* feature);
+    virtual bool MapFeature(const CDevice& driverInfo, const std::string& controllerId,
+                            const FeaturePtr& feature) override;
 
   private:
-    bool Load(const CDriverRecord& driverInfo);
+    bool Load(const CDevice& driverInfo);
     bool Save(void) const;
 
     bool Serialize(TiXmlElement* pElement) const;
 
     bool LoadButtonMaps(const std::string& strXmlPath);
-    bool SaveButtonMaps(const CDriverRecord& driverRecord, const std::string& strPath) const;
+    bool SaveButtonMaps(const CDevice& driverRecord, const std::string& strPath) const;
 
-    bool SerializeButtonMaps(const CDriverRecord& driverRecord, TiXmlElement* pElement) const;
+    bool SerializeButtonMaps(const CDevice& driverRecord, TiXmlElement* pElement) const;
 
     std::string      m_strDataPath;
     bool             m_bReadOnly;

@@ -18,9 +18,9 @@
  *
  */
 
-#include "DriverRecordXml.h"
+#include "DeviceXml.h"
 #include "storage/ButtonMapDefinitions.h"
-#include "storage/schema/DriverRecord.h"
+#include "storage/Device.h"
 #include "log/Log.h"
 
 #include "tinyxml.h"
@@ -29,25 +29,25 @@
 
 using namespace JOYSTICK;
 
-bool CDriverRecordXml::Serialize(const CDriverRecord& record, TiXmlElement* pElement)
+bool CDeviceXml::Serialize(const CDevice& record, TiXmlElement* pElement)
 {
-  pElement->SetAttribute(BUTTONMAP_XML_ATTR_DEVICE_NAME, record.Properties().Name());
-  pElement->SetAttribute(BUTTONMAP_XML_ATTR_DEVICE_PROVIDER, record.Properties().Provider());
-  if (record.Properties().IsVidPidKnown())
+  pElement->SetAttribute(BUTTONMAP_XML_ATTR_DEVICE_NAME, record.Name());
+  pElement->SetAttribute(BUTTONMAP_XML_ATTR_DEVICE_PROVIDER, record.Provider());
+  if (record.IsVidPidKnown())
   {
-    pElement->SetAttribute(BUTTONMAP_XML_ATTR_DEVICE_VID, record.Properties().VendorID());
-    pElement->SetAttribute(BUTTONMAP_XML_ATTR_DEVICE_PID, record.Properties().ProductID());
+    pElement->SetAttribute(BUTTONMAP_XML_ATTR_DEVICE_VID, record.VendorID());
+    pElement->SetAttribute(BUTTONMAP_XML_ATTR_DEVICE_PID, record.ProductID());
   }
-  if (record.Properties().ButtonCount() != 0)
-    pElement->SetAttribute(BUTTONMAP_XML_ATTR_DEVICE_BUTTONCOUNT, record.Properties().ButtonCount());
-  if (record.Properties().HatCount() != 0)
-    pElement->SetAttribute(BUTTONMAP_XML_ATTR_DEVICE_HATCOUNT, record.Properties().HatCount());
-  if (record.Properties().AxisCount() != 0)
-    pElement->SetAttribute(BUTTONMAP_XML_ATTR_DEVICE_AXISCOUNT, record.Properties().AxisCount());
+  if (record.ButtonCount() != 0)
+    pElement->SetAttribute(BUTTONMAP_XML_ATTR_DEVICE_BUTTONCOUNT, record.ButtonCount());
+  if (record.HatCount() != 0)
+    pElement->SetAttribute(BUTTONMAP_XML_ATTR_DEVICE_HATCOUNT, record.HatCount());
+  if (record.AxisCount() != 0)
+    pElement->SetAttribute(BUTTONMAP_XML_ATTR_DEVICE_AXISCOUNT, record.AxisCount());
   return true;
 }
 
-bool CDriverRecordXml::Deserialize(const TiXmlElement* pElement, CDriverRecord& record)
+bool CDeviceXml::Deserialize(const TiXmlElement* pElement, CDevice& record)
 {
   const char* name = pElement->Attribute(BUTTONMAP_XML_ATTR_DEVICE_NAME);
   if (!name)
@@ -55,7 +55,7 @@ bool CDriverRecordXml::Deserialize(const TiXmlElement* pElement, CDriverRecord& 
     esyslog("<%s> tag has no \"%s\" attribute", DEVICES_XML_ELEM_DEVICE, BUTTONMAP_XML_ATTR_DEVICE_NAME);
     return false;
   }
-  record.Properties().SetName(name);
+  record.SetName(name);
 
   const char* provider = pElement->Attribute(BUTTONMAP_XML_ATTR_DEVICE_PROVIDER);
   if (!provider)
@@ -63,27 +63,27 @@ bool CDriverRecordXml::Deserialize(const TiXmlElement* pElement, CDriverRecord& 
     esyslog("<%s> tag has no \"%s\" attribute", DEVICES_XML_ELEM_DEVICE, BUTTONMAP_XML_ATTR_DEVICE_PROVIDER);
     return false;
   }
-  record.Properties().SetProvider(provider);
+  record.SetProvider(provider);
 
   const char* vid = pElement->Attribute(BUTTONMAP_XML_ATTR_DEVICE_VID);
   if (vid)
-    record.Properties().SetVendorID(std::atoi(vid));
+    record.SetVendorID(std::atoi(vid));
 
   const char* pid = pElement->Attribute(BUTTONMAP_XML_ATTR_DEVICE_PID);
   if (pid)
-    record.Properties().SetProductID(std::atoi(pid));
+    record.SetProductID(std::atoi(pid));
 
   const char* buttonCount = pElement->Attribute(BUTTONMAP_XML_ATTR_DEVICE_BUTTONCOUNT);
   if (buttonCount)
-    record.Properties().SetButtonCount(std::atoi(buttonCount));
+    record.SetButtonCount(std::atoi(buttonCount));
 
   const char* hatCount = pElement->Attribute(BUTTONMAP_XML_ATTR_DEVICE_HATCOUNT);
   if (hatCount)
-    record.Properties().SetHatCount(std::atoi(hatCount));
+    record.SetHatCount(std::atoi(hatCount));
 
   const char* axisCount = pElement->Attribute(BUTTONMAP_XML_ATTR_DEVICE_AXISCOUNT);
   if (axisCount)
-    record.Properties().SetAxisCount(std::atoi(axisCount));
+    record.SetAxisCount(std::atoi(axisCount));
 
   return true;
 }

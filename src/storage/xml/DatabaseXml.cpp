@@ -19,9 +19,9 @@
  */
 
 #include "DatabaseXml.h"
-#include "ButtonMapRecordXml.h"
-#include "DriverDatabaseXml.h"
-#include "DriverRecordXml.h"
+#include "ButtonMapXml.h"
+#include "DeviceDatabaseXml.h"
+#include "DeviceXml.h"
 #include "filesystem/DirectoryUtils.h"
 #include "filesystem/FileUtils.h"
 #include "storage/ButtonMapDefinitions.h"
@@ -51,10 +51,10 @@ CDatabaseXml::CDatabaseXml(const std::string& strBasePath, bool bReadOnly)
     CDirectoryUtils::Create(m_strDataPath);
 
   // Initialize CDatabase
-  m_driverDatabase = new CDriverDatabaseXml(m_strDataPath, bReadOnly);
+  m_driverDatabase = new CDeviceDatabaseXml(m_strDataPath, bReadOnly);
 }
 
-bool CDatabaseXml::GetFeatures(const CDriverRecord& driverInfo, const std::string& controllerId,
+bool CDatabaseXml::GetFeatures(const CDevice& driverInfo, const std::string& controllerId,
                                FeatureVector& features)
 {
   CLockObject lock(m_mutex);
@@ -65,8 +65,8 @@ bool CDatabaseXml::GetFeatures(const CDriverRecord& driverInfo, const std::strin
   return CDatabase::GetFeatures(driverInfo, controllerId, features);
 }
 
-bool CDatabaseXml::MapFeature(const CDriverRecord& driverInfo, const std::string& controllerId,
-                              const ADDON::JoystickFeature* feature)
+bool CDatabaseXml::MapFeature(const CDevice& driverInfo, const std::string& controllerId,
+                              const FeaturePtr& feature)
 {
   CLockObject lock(m_mutex);
 
@@ -87,7 +87,7 @@ bool CDatabaseXml::MapFeature(const CDriverRecord& driverInfo, const std::string
   return false;
 }
 
-bool CDatabaseXml::Load(const CDriverRecord& driverInfo)
+bool CDatabaseXml::Load(const CDevice& driverInfo)
 {
   std::string strButtonMapPath = driverInfo.BuildPath(m_strDataPath, ".xml");
 
@@ -175,7 +175,7 @@ bool CDatabaseXml::Serialize(TiXmlElement* pElement) const
 
   for (Records::const_iterator it = m_records.begin(); it != m_records.end(); ++it)
   {
-    const CDriverRecord& driverRecord = it->first;
+    const CDevice& driverRecord = it->first;
     const ButtonMaps& buttonMaps = it->second;
 
     if (buttonMaps.empty())
@@ -190,9 +190,9 @@ bool CDatabaseXml::Serialize(TiXmlElement* pElement) const
     if (deviceElem == NULL)
       return false;
 
-    CDriverRecordXml::Serialize(driverRecord, deviceElem);
+    CDeviceXml::Serialize(driverRecord, deviceElem);
 
-    const std::string& strProvider = driverRecord.Properties().Provider();
+    const std::string& strProvider = driverRecord.Provider();
 
     std::string strProviderDir = m_strDataPath + "/" + strProvider;
 
@@ -217,7 +217,7 @@ bool CDatabaseXml::Serialize(TiXmlElement* pElement) const
   return true;
 }
 
-bool CDatabaseXml::SaveButtonMaps(const CDriverRecord& driverRecord, const std::string& strPath) const
+bool CDatabaseXml::SaveButtonMaps(const CDevice& driverRecord, const std::string& strPath) const
 {
   TiXmlDocument xmlFile;
 
@@ -242,7 +242,7 @@ bool CDatabaseXml::SaveButtonMaps(const CDriverRecord& driverRecord, const std::
   if (deviceElem == NULL)
     return false;
 
-  CDriverRecordXml::Serialize(driverRecord, deviceElem);
+  CDeviceXml::Serialize(driverRecord, deviceElem);
 
   if (!SerializeButtonMaps(driverRecord, deviceElem))
     return false;
@@ -250,7 +250,7 @@ bool CDatabaseXml::SaveButtonMaps(const CDriverRecord& driverRecord, const std::
   return xmlFile.SaveFile(strPath);
 }
 
-bool CDatabaseXml::SerializeButtonMaps(const CDriverRecord& driverRecord, TiXmlElement* pElement) const
+bool CDatabaseXml::SerializeButtonMaps(const CDevice& driverRecord, TiXmlElement* pElement) const
 {
   Records::const_iterator itRecord = m_records.find(driverRecord);
   if (itRecord == m_records.end())
@@ -260,7 +260,7 @@ bool CDatabaseXml::SerializeButtonMaps(const CDriverRecord& driverRecord, TiXmlE
   for (ButtonMaps::const_iterator it = buttonMaps.begin(); it != buttonMaps.end(); ++it)
   {
     const ControllerID& controllerId = it->first;
-    const CButtonMapRecord& buttonMap = it->second;
+    const CButtonMap& buttonMap = it->second;
 
     if (buttonMap.IsEmpty())
       continue;
@@ -276,7 +276,7 @@ bool CDatabaseXml::SerializeButtonMaps(const CDriverRecord& driverRecord, TiXmlE
 
     profileElem->SetAttribute(BUTTONMAP_XML_ATTR_CONTROLLER_ID, controllerId);
 
-    CButtonMapRecordXml::Serialize(buttonMap, profileElem);
+    CButtonMapXml::Serialize(buttonMap, profileElem);
   }
   return true;
 }
@@ -305,8 +305,8 @@ bool CDatabaseXml::LoadButtonMaps(const std::string& strXmlPath)
     return false;
   }
 
-  CDriverRecord driverRecord;
-  if (!CDriverRecordXml::Deserialize(pDevice, driverRecord))
+  CDevice driverRecord;
+  if (!CDeviceXml::Deserialize(pDevice, driverRecord))
     return false;
 
   ButtonMaps& buttonMaps = m_records[driverRecord];
@@ -315,7 +315,7 @@ bool CDatabaseXml::LoadButtonMaps(const std::string& strXmlPath)
 
   if (!pController)
   {
-    esyslog("Device \"%s\": can't find <%s> tag", driverRecord.Properties().Name().c_str(), BUTTONMAP_XML_ELEM_CONTROLLER);
+    esyslog("Device \"%s\": can't find <%s> tag", driverRecord.Name().c_str(), BUTTONMAP_XML_ELEM_CONTROLLER);
     return false;
   }
 
@@ -327,18 +327,18 @@ bool CDatabaseXml::LoadButtonMaps(const std::string& strXmlPath)
     const char* id = pController->Attribute(BUTTONMAP_XML_ATTR_CONTROLLER_ID);
     if (!id)
     {
-      esyslog("Device \"%s\": <%s> tag has no attribute \"%s\"", driverRecord.Properties().Name().c_str(),
+      esyslog("Device \"%s\": <%s> tag has no attribute \"%s\"", driverRecord.Name().c_str(),
               BUTTONMAP_XML_ELEM_CONTROLLER, BUTTONMAP_XML_ATTR_CONTROLLER_ID);
       return false;
     }
 
-    CButtonMapRecord buttonMap;
-    if (!CButtonMapRecordXml::Deserialize(pController, buttonMap))
+    CButtonMap buttonMap;
+    if (!CButtonMapXml::Deserialize(pController, buttonMap))
       return false;
 
     if (buttonMap.IsEmpty())
     {
-      esyslog("Device \"%s\" has no features for controller %s", driverRecord.Properties().Name().c_str(), id);
+      esyslog("Device \"%s\" has no features for controller %s", driverRecord.Name().c_str(), id);
     }
     else
     {
@@ -349,7 +349,7 @@ bool CDatabaseXml::LoadButtonMaps(const std::string& strXmlPath)
     pController = pController->NextSiblingElement(BUTTONMAP_XML_ELEM_CONTROLLER);
   }
 
-  dsyslog("Loaded device \"%s\" with %u controller profiles and %u total features", driverRecord.Properties().Name().c_str(), buttonMaps.size(), totalFeatureCount);
+  dsyslog("Loaded device \"%s\" with %u controller profiles and %u total features", driverRecord.Name().c_str(), buttonMaps.size(), totalFeatureCount);
 
   return true;
 }

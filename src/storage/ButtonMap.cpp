@@ -18,7 +18,7 @@
  *
  */
 
-#include "ButtonMapRecord.h"
+#include "ButtonMap.h"
 #include "log/Log.h"
 
 #include <algorithm>
@@ -32,7 +32,7 @@ JOYSTICK_DRIVER_SEMIAXIS_DIRECTION operator*(JOYSTICK_DRIVER_SEMIAXIS_DIRECTION 
   return static_cast<JOYSTICK_DRIVER_SEMIAXIS_DIRECTION>(static_cast<int>(dir) * i);
 }
 
-CButtonMapRecord& CButtonMapRecord::operator=(CButtonMapRecord&& rhs)
+CButtonMap& CButtonMap::operator=(CButtonMap&& rhs)
 {
   CLockObject lock(m_mutex);
   if (this != &rhs)
@@ -42,25 +42,25 @@ CButtonMapRecord& CButtonMapRecord::operator=(CButtonMapRecord&& rhs)
   return *this;
 }
 
-bool CButtonMapRecord::IsEmpty(void) const
+bool CButtonMap::IsEmpty(void) const
 {
   CLockObject lock(m_mutex);
   return m_buttonMap.empty();
 }
 
-size_t CButtonMapRecord::FeatureCount(void) const
+size_t CButtonMap::FeatureCount(void) const
 {
   CLockObject lock(m_mutex);
   return m_buttonMap.size();
 }
 
-void CButtonMapRecord::GetFeatures(FeatureVector& features) const
+void CButtonMap::GetFeatures(FeatureVector& features) const
 {
   CLockObject lock(m_mutex);
   features = m_buttonMap;
 }
 
-bool CButtonMapRecord::MapFeature(const ADDON::JoystickFeature* feature)
+bool CButtonMap::MapFeature(const FeaturePtr& feature)
 {
   CLockObject lock(m_mutex);
 
@@ -74,9 +74,9 @@ bool CButtonMapRecord::MapFeature(const ADDON::JoystickFeature* feature)
 
   // Look up existing feature by name
   FeatureVector::iterator itFeature = std::find_if(m_buttonMap.begin(), m_buttonMap.end(),
-    [&strFeatureName](const FeaturePtr& feature)
+    [&strFeatureName](const FeaturePtr& existingFeature)
     {
-      return feature->Name() == strFeatureName;
+      return existingFeature->Name() == strFeatureName;
     });
 
   // Calculate properties of new feature
@@ -87,14 +87,14 @@ bool CButtonMapRecord::MapFeature(const ADDON::JoystickFeature* feature)
   if (bExists)
   {
     const FeaturePtr& existingFeature = *itFeature;
-    bIsUnchanged = existingFeature->Equals(feature);
+    bIsUnchanged = existingFeature->Equals(feature.get());
   }
 
   // Process changes
   if (!bExists)
   {
     dsyslog("Button map: adding new feature \"%s\"", strFeatureName.c_str());
-    m_buttonMap.push_back(FeaturePtr(feature->Clone()));
+    m_buttonMap.push_back(feature);
     bModified = true;
   }
   else if (!bIsValid)
@@ -111,7 +111,7 @@ bool CButtonMapRecord::MapFeature(const ADDON::JoystickFeature* feature)
   {
     bool bUnmapped = UnmapFeature(feature);
 
-    *itFeature = FeaturePtr(feature->Clone());
+    *itFeature = feature;
 
     // UnmapFeature() may have deleted a feature in the button map
     if (bUnmapped)
@@ -129,7 +129,7 @@ bool CButtonMapRecord::MapFeature(const ADDON::JoystickFeature* feature)
   return bModified;
 }
 
-bool CButtonMapRecord::UnmapFeature(const ADDON::JoystickFeature* feature)
+bool CButtonMap::UnmapFeature(const FeaturePtr& feature)
 {
   bool bModified = false;
 
@@ -137,13 +137,13 @@ bool CButtonMapRecord::UnmapFeature(const ADDON::JoystickFeature* feature)
   {
     case JOYSTICK_FEATURE_TYPE_PRIMITIVE:
     {
-      const ADDON::PrimitiveFeature* primitive = static_cast<const ADDON::PrimitiveFeature*>(feature);
+      const ADDON::PrimitiveFeature* primitive = static_cast<const ADDON::PrimitiveFeature*>(feature.get());
       bModified = UnmapPrimitive(primitive->Primitive());
       break;
     }
     case JOYSTICK_FEATURE_TYPE_ANALOG_STICK:
     {
-      const ADDON::AnalogStick* analogStick = static_cast<const ADDON::AnalogStick*>(feature);
+      const ADDON::AnalogStick* analogStick = static_cast<const ADDON::AnalogStick*>(feature.get());
       bModified = UnmapPrimitive(analogStick->Up()) ||
                   UnmapPrimitive(analogStick->Down()) ||
                   UnmapPrimitive(analogStick->Right()) ||
@@ -153,7 +153,7 @@ bool CButtonMapRecord::UnmapFeature(const ADDON::JoystickFeature* feature)
     case JOYSTICK_FEATURE_TYPE_ACCELEROMETER:
     {
       // TODO: Unmap complementary semiaxes
-      const ADDON::Accelerometer* accelerometer = static_cast<const ADDON::Accelerometer*>(feature);
+      const ADDON::Accelerometer* accelerometer = static_cast<const ADDON::Accelerometer*>(feature.get());
       bModified = UnmapPrimitive(accelerometer->PositiveX()) ||
                   UnmapPrimitive(accelerometer->PositiveY()) ||
                   UnmapPrimitive(accelerometer->PositiveZ());
@@ -166,7 +166,7 @@ bool CButtonMapRecord::UnmapFeature(const ADDON::JoystickFeature* feature)
   return bModified;
 }
 
-bool CButtonMapRecord::UnmapPrimitive(const ADDON::DriverPrimitive& primitive)
+bool CButtonMap::UnmapPrimitive(const ADDON::DriverPrimitive& primitive)
 {
   bool bModified = false;
 
@@ -274,7 +274,7 @@ bool CButtonMapRecord::UnmapPrimitive(const ADDON::DriverPrimitive& primitive)
   return bModified;
 }
 
-ADDON::DriverPrimitive CButtonMapRecord::Opposite(const ADDON::DriverPrimitive& primitive)
+ADDON::DriverPrimitive CButtonMap::Opposite(const ADDON::DriverPrimitive& primitive)
 {
   return ADDON::DriverPrimitive(primitive.DriverIndex(), primitive.SemiAxisDirection() * -1);
 }

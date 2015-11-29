@@ -23,12 +23,12 @@ class TiXmlElement;
 
 namespace JOYSTICK
 {
-  class CDriverRecord;
+  class CDevice;
 
-  class CDriverRecordXml
+  class CDeviceXml
   {
   public:
-    static bool Serialize(const CDriverRecord& record, TiXmlElement* pElement);
-    static bool Deserialize(const TiXmlElement* pElement, CDriverRecord& record);
+    static bool Serialize(const CDevice& record, TiXmlElement* pElement);
+    static bool Deserialize(const TiXmlElement* pElement, CDevice& record);
   };
 }

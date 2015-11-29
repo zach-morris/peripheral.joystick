@@ -17,34 +17,23 @@
  *  <http://www.gnu.org/licenses/>.
  *
  */
-#pragma once
 
-#include "storage/schema/DriverRecord.h"
+#include "DeviceDatabase.h"
 
-#include "kodi/kodi_peripheral_utils.hpp"
+using namespace JOYSTICK;
 
-#include <map>
-
-namespace JOYSTICK
+bool CDeviceDatabase::GetDevice(const ADDON::Joystick& joystick, CDevice& record)
 {
-  class CDriverDatabase
+  bool bFound = false;
+
+  CDevice needle(joystick);
+
+  DeviceMap::const_iterator it = m_driverRecords.find(needle);
+  if (it != m_driverRecords.end())
   {
-  public:
-    CDriverDatabase(void) { }
-    virtual ~CDriverDatabase(void) { }
+    bFound = true;
+    record = it->second;
+  }
 
-    /*!
-     * \brief Get the driver record associated with the given driver info
-     * \param joystick The known driver info
-     * \return The driver record
-     *
-     * If joystick is missing fields, the returned record
-     */
-    virtual bool GetDriverRecord(const ADDON::Joystick& joystick, CDriverRecord& record);
-
-  protected:
-    typedef std::map<CDriverRecord, CDriverRecord> DriverRecordMap; // Partial driver information -> full driver information
-
-    DriverRecordMap m_driverRecords;
-  };
+  return bFound;
 }

@@ -19,20 +19,20 @@
  */
 #pragma once
 
-#include "storage/DriverDatabase.h"
+#include "storage/generic/DeviceDatabase.h"
 
 #include <string>
 
 namespace JOYSTICK
 {
-  class CDriverDatabaseXml : public CDriverDatabase
+  class CDeviceDatabaseXml : public CDeviceDatabase
   {
   public:
-    CDriverDatabaseXml(const std::string& strBasePath, bool bReadOnly);
-    virtual ~CDriverDatabaseXml(void) { }
+    CDeviceDatabaseXml(const std::string& strBasePath, bool bReadOnly);
+    virtual ~CDeviceDatabaseXml(void) { }
 
-    // implementation of CDriverDatabase
-    virtual bool GetDriverRecord(const ADDON::Joystick& joystick, CDriverRecord& record);
+    // implementation of CDeviceDatabase
+    virtual bool GetDevice(const ADDON::Joystick& joystick, CDevice& record) override;
 
   private:
     std::string m_strBasePath;
