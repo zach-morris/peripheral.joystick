@@ -21,7 +21,7 @@
 #include "ButtonMapXml.h"
 #include "storage/ButtonMap.h"
 #include "storage/ButtonMapDefinitions.h"
-#include "JoystickTranslator.h"
+#include "storage/ButtonMapTranslator.h"
 #include "log/Log.h"
 
 #include "tinyxml.h"
@@ -168,33 +168,29 @@ bool CButtonMapXml::SerializePrimitiveTag(TiXmlElement* pElement, const ADDON::D
 
 void CButtonMapXml::SerializePrimitive(TiXmlElement* pElement, const ADDON::DriverPrimitive& primitive)
 {
-  switch (primitive.Type())
+  std::string strPrimitive = ButtonMapTranslator::ToString(primitive);
+  if (!strPrimitive.empty())
   {
-    case JOYSTICK_DRIVER_PRIMITIVE_TYPE_BUTTON:
+    switch (primitive.Type())
     {
-      pElement->SetAttribute(BUTTONMAP_XML_ATTR_FEATURE_BUTTON, primitive.DriverIndex());
-      break;
+      case JOYSTICK_DRIVER_PRIMITIVE_TYPE_BUTTON:
+      {
+        pElement->SetAttribute(BUTTONMAP_XML_ATTR_FEATURE_BUTTON, strPrimitive);
+        break;
+      }
+      case JOYSTICK_DRIVER_PRIMITIVE_TYPE_HAT_DIRECTION:
+      {
+        pElement->SetAttribute(BUTTONMAP_XML_ATTR_FEATURE_HAT, strPrimitive);
+        break;
+      }
+      case JOYSTICK_DRIVER_PRIMITIVE_TYPE_SEMIAXIS:
+      {
+        pElement->SetAttribute(BUTTONMAP_XML_ATTR_FEATURE_AXIS, strPrimitive);
+        break;
+      }
+      default:
+        break;
     }
-    case JOYSTICK_DRIVER_PRIMITIVE_TYPE_HAT_DIRECTION:
-    {
-      pElement->SetAttribute(BUTTONMAP_XML_ATTR_FEATURE_HAT, JoystickTranslator::TranslateHatDir(primitive.HatDirection()));
-      break;
-    }
-
-    case JOYSTICK_DRIVER_PRIMITIVE_TYPE_SEMIAXIS:
-    {
-      std::ostringstream strAxis;
-      if (primitive.SemiAxisDirection() == JOYSTICK_DRIVER_SEMIAXIS_DIRECTION_NEGATIVE)
-        strAxis << "-";
-      else
-        strAxis << "+";
-      strAxis << primitive.DriverIndex();
-
-      pElement->SetAttribute(BUTTONMAP_XML_ATTR_FEATURE_AXIS, strAxis.str());
-      break;
-    }
-    default:
-      break;
   }
 }
 
@@ -367,68 +363,29 @@ bool CButtonMapXml::Deserialize(const TiXmlElement* pElement, CButtonMap& record
 bool CButtonMapXml::DeserializePrimitive(const TiXmlElement* pElement, ADDON::DriverPrimitive& primitive, const std::string& featureName)
 {
   const char* button = pElement->Attribute(BUTTONMAP_XML_ATTR_FEATURE_BUTTON);
-  const char* hat = pElement->Attribute(BUTTONMAP_XML_ATTR_FEATURE_HAT);
-  const char* axis = pElement->Attribute(BUTTONMAP_XML_ATTR_FEATURE_AXIS);
-
-  JOYSTICK_DRIVER_PRIMITIVE_TYPE primitiveType = JOYSTICK_DRIVER_PRIMITIVE_TYPE_UNKNOWN;
-
   if (button)
-    primitiveType = JOYSTICK_DRIVER_PRIMITIVE_TYPE_BUTTON;
-  else if (hat)
-    primitiveType = JOYSTICK_DRIVER_PRIMITIVE_TYPE_HAT_DIRECTION;
-  else if (axis)
-    primitiveType = JOYSTICK_DRIVER_PRIMITIVE_TYPE_SEMIAXIS;
-
-  switch (primitiveType)
   {
-    case JOYSTICK_DRIVER_PRIMITIVE_TYPE_BUTTON:
+    primitive = ButtonMapTranslator::ToDriverPrimitive(button);
+  }
+  else
+  {
+    const char* hat = pElement->Attribute(BUTTONMAP_XML_ATTR_FEATURE_HAT);
+    if (hat)
     {
-      int buttonIndex = std::atoi(button);
-
-      primitive = ADDON::DriverPrimitive(buttonIndex);
-
-      break;
+      primitive = ButtonMapTranslator::ToDriverPrimitive(hat);
     }
-    case JOYSTICK_DRIVER_PRIMITIVE_TYPE_HAT_DIRECTION:
+    else
     {
-      const int hatIndex = 0;
-
-      JOYSTICK_DRIVER_HAT_DIRECTION dir = JoystickTranslator::TranslateHatDir(hat);
-      if (dir == JOYSTICK_DRIVER_HAT_UNKNOWN)
+      const char* axis = pElement->Attribute(BUTTONMAP_XML_ATTR_FEATURE_AXIS);
+      if (axis)
       {
-        esyslog("<%s> tag name=\"%s\" attribute \"%s\" is invalid: \"%s\"",
-                BUTTONMAP_XML_ELEM_FEATURE, featureName.c_str(), BUTTONMAP_XML_ATTR_FEATURE_HAT, hat);
+        primitive = ButtonMapTranslator::ToDriverPrimitive(axis);
+      }
+      else
+      {
         return false;
       }
-
-      primitive = ADDON::DriverPrimitive(hatIndex, dir);
-
-      break;
     }
-    case JOYSTICK_DRIVER_PRIMITIVE_TYPE_SEMIAXIS:
-    {
-      int axisIndex = std::abs(std::atoi(axis));
-
-      JOYSTICK_DRIVER_SEMIAXIS_DIRECTION dir = JOYSTICK_DRIVER_SEMIAXIS_DIRECTION_UNKNOWN;
-
-      if (axis[0] == '+')
-        dir = JOYSTICK_DRIVER_SEMIAXIS_DIRECTION_POSITIVE;
-      else if (axis[0] == '-')
-        dir = JOYSTICK_DRIVER_SEMIAXIS_DIRECTION_NEGATIVE;
-
-      if (dir == JOYSTICK_DRIVER_SEMIAXIS_DIRECTION_UNKNOWN)
-      {
-        esyslog("<%s> tag name=\"%s\" attribute \"%s\" is invalid: \"%s\"",
-                BUTTONMAP_XML_ELEM_FEATURE, featureName.c_str(), BUTTONMAP_XML_ATTR_FEATURE_AXIS, axis);
-        return false;
-      }
-
-      primitive = ADDON::DriverPrimitive(axisIndex, dir);
-
-      break;
-    }
-    default:
-      break;
   }
 
   return true;

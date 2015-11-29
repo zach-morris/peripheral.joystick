@@ -45,3 +45,27 @@ const char* JoystickTranslator::TranslateHatDir(JOYSTICK_DRIVER_HAT_DIRECTION ha
   }
   return "";
 }
+
+JOYSTICK_DRIVER_SEMIAXIS_DIRECTION JoystickTranslator::TranslateSemiAxisDir(char axisSign)
+{
+  switch (axisSign)
+  {
+  case '+': return JOYSTICK_DRIVER_SEMIAXIS_DIRECTION_POSITIVE;
+  case '-': return JOYSTICK_DRIVER_SEMIAXIS_DIRECTION_NEGATIVE;
+  default:
+    break;
+  }
+  return JOYSTICK_DRIVER_SEMIAXIS_DIRECTION_UNKNOWN;
+}
+
+const char* JoystickTranslator::TranslateSemiAxisDir(JOYSTICK_DRIVER_SEMIAXIS_DIRECTION dir)
+{
+  switch (dir)
+  {
+    case JOYSTICK_DRIVER_SEMIAXIS_DIRECTION_POSITIVE: return "+";
+    case JOYSTICK_DRIVER_SEMIAXIS_DIRECTION_NEGATIVE: return "-";
+    default:
+      break;
+  }
+  return "";
+}

@@ -40,6 +40,7 @@ set(JOYSTICK_SOURCES src/addon.cpp
                      src/log/LogConsole.cpp
                      src/settings/Settings.cpp
                      src/storage/ButtonMap.cpp
+                     src/storage/ButtonMapTranslator.cpp
                      src/storage/Device.cpp
                      src/storage/generic/Database.cpp
                      src/storage/generic/DeviceDatabase.cpp
