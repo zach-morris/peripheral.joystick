@@ -23,6 +23,8 @@
 #include "storage/ButtonMapTypes.h"
 #include "storage/Device.h"
 
+#include "platform/threads/mutex.h"
+
 #include <map>
 #include <string>
 
@@ -61,5 +63,6 @@ namespace JOYSTICK
 
   private:
     bool m_bEnabled;
+    PLATFORM::CMutex m_mutex;
   };
 }

@@ -21,6 +21,7 @@
 #include "Database.h"
 
 using namespace JOYSTICK;
+using namespace PLATFORM;
 
 CDatabase::CDatabase(void)
   : m_driverDatabase(nullptr),
@@ -46,6 +47,8 @@ void CDatabase::Disable(void)
 bool CDatabase::GetFeatures(const CDevice& driverInfo, const std::string& controllerId,
                             FeatureVector& features)
 {
+  CLockObject lock(m_mutex);
+
   Records::const_iterator itDevice = m_records.find(driverInfo);
   if (itDevice != m_records.end())
   {
@@ -65,6 +68,8 @@ bool CDatabase::GetFeatures(const CDevice& driverInfo, const std::string& contro
 bool CDatabase::MapFeature(const CDevice& driverInfo, const std::string& controllerId,
                            const ADDON::JoystickFeature& feature)
 {
+  CLockObject lock(m_mutex);
+
   ButtonMaps& buttonMaps = m_records[driverInfo];
 
   CButtonMap& buttonMap = buttonMaps[controllerId];

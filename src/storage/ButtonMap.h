@@ -22,7 +22,6 @@
 #include "ButtonMapTypes.h"
 
 #include "kodi/kodi_peripheral_utils.hpp"
-#include "platform/threads/mutex.h"
 
 namespace JOYSTICK
 {
@@ -33,13 +32,13 @@ namespace JOYSTICK
 
     CButtonMap& operator=(CButtonMap&& rhs);
 
-    bool IsEmpty(void) const;
-
-    size_t FeatureCount(void) const;
-
-    void GetFeatures(FeatureVector& features) const;
+    void GetFeatures(FeatureVector& features) const { features = m_buttonMap; }
 
     bool MapFeature(const ADDON::JoystickFeature& feature);
+
+    bool IsEmpty(void) const { return m_buttonMap.empty(); }
+
+    size_t FeatureCount(void) const { return m_buttonMap.size(); }
 
   private:
     bool UnmapFeature(const ADDON::JoystickFeature& feature);
@@ -48,7 +47,6 @@ namespace JOYSTICK
     // Helper function
     ADDON::DriverPrimitive Opposite(const ADDON::DriverPrimitive& semiaxis);
 
-    FeatureVector            m_buttonMap;
-    mutable PLATFORM::CMutex m_mutex;
+    FeatureVector m_buttonMap;
   };
 }

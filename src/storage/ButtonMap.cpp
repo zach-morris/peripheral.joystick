@@ -34,7 +34,6 @@ JOYSTICK_DRIVER_SEMIAXIS_DIRECTION operator*(JOYSTICK_DRIVER_SEMIAXIS_DIRECTION 
 
 CButtonMap& CButtonMap::operator=(CButtonMap&& rhs)
 {
-  CLockObject lock(m_mutex);
   if (this != &rhs)
   {
     m_buttonMap = std::move(rhs.m_buttonMap);
@@ -42,34 +41,13 @@ CButtonMap& CButtonMap::operator=(CButtonMap&& rhs)
   return *this;
 }
 
-bool CButtonMap::IsEmpty(void) const
-{
-  CLockObject lock(m_mutex);
-  return m_buttonMap.empty();
-}
-
-size_t CButtonMap::FeatureCount(void) const
-{
-  CLockObject lock(m_mutex);
-  return m_buttonMap.size();
-}
-
-void CButtonMap::GetFeatures(FeatureVector& features) const
-{
-  CLockObject lock(m_mutex);
-  features = m_buttonMap;
-}
-
 bool CButtonMap::MapFeature(const ADDON::JoystickFeature& feature)
 {
-  CLockObject lock(m_mutex);
-
   bool bModified = false; // Return value
 
   if (feature.Name().empty())
     return bModified;
 
-  // Alias feature name
   const std::string& strFeatureName = feature.Name();
 
   // Look up existing feature by name
@@ -80,8 +58,8 @@ bool CButtonMap::MapFeature(const ADDON::JoystickFeature& feature)
     });
 
   // Calculate properties of new feature
-  bool bExists = (itFeature != m_buttonMap.end());
-  bool bIsValid = (feature.Type() != JOYSTICK_FEATURE_TYPE_UNKNOWN);
+  bool bExists      = (itFeature != m_buttonMap.end());
+  bool bIsValid     = (feature.Type() != JOYSTICK_FEATURE_TYPE_UNKNOWN);
   bool bIsUnchanged = false;
 
   if (bExists)
