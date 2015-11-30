@@ -50,20 +50,20 @@ JOYSTICK_DRIVER_SEMIAXIS_DIRECTION JoystickTranslator::TranslateSemiAxisDir(char
 {
   switch (axisSign)
   {
-  case '+': return JOYSTICK_DRIVER_SEMIAXIS_DIRECTION_POSITIVE;
-  case '-': return JOYSTICK_DRIVER_SEMIAXIS_DIRECTION_NEGATIVE;
+  case '+': return JOYSTICK_DRIVER_SEMIAXIS_POSITIVE;
+  case '-': return JOYSTICK_DRIVER_SEMIAXIS_NEGATIVE;
   default:
     break;
   }
-  return JOYSTICK_DRIVER_SEMIAXIS_DIRECTION_UNKNOWN;
+  return JOYSTICK_DRIVER_SEMIAXIS_UNKNOWN;
 }
 
 const char* JoystickTranslator::TranslateSemiAxisDir(JOYSTICK_DRIVER_SEMIAXIS_DIRECTION dir)
 {
   switch (dir)
   {
-    case JOYSTICK_DRIVER_SEMIAXIS_DIRECTION_POSITIVE: return "+";
-    case JOYSTICK_DRIVER_SEMIAXIS_DIRECTION_NEGATIVE: return "-";
+    case JOYSTICK_DRIVER_SEMIAXIS_POSITIVE: return "+";
+    case JOYSTICK_DRIVER_SEMIAXIS_NEGATIVE: return "-";
     default:
       break;
   }

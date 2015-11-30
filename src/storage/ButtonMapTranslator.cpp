@@ -43,11 +43,12 @@ std::string ButtonMapTranslator::ToString(const ADDON::DriverPrimitive& primitiv
     }
     case JOYSTICK_DRIVER_PRIMITIVE_TYPE_SEMIAXIS:
     {
-      if (primitive.SemiAxisDirection() == JOYSTICK_DRIVER_SEMIAXIS_DIRECTION_NEGATIVE)
-        strPrimitive << "-";
-      else
-        strPrimitive << "+";
-      strPrimitive << primitive.DriverIndex();
+      const char* dir = JoystickTranslator::TranslateSemiAxisDir(primitive.SemiAxisDirection());
+      if (*dir != '\0')
+      {
+        strPrimitive << dir;
+        strPrimitive << primitive.DriverIndex();
+      }
       break;
     }
     default:
@@ -63,7 +64,7 @@ ADDON::DriverPrimitive ButtonMapTranslator::ToDriverPrimitive(const std::string&
   if (!strPrimitive.empty())
   {
     JOYSTICK_DRIVER_SEMIAXIS_DIRECTION dir = JoystickTranslator::TranslateSemiAxisDir(strPrimitive[0]);
-    if (dir != JOYSTICK_DRIVER_SEMIAXIS_DIRECTION_UNKNOWN)
+    if (dir != JOYSTICK_DRIVER_SEMIAXIS_UNKNOWN)
     {
       primitive = ADDON::DriverPrimitive(std::atoi(strPrimitive.substr(1).c_str()), dir);
     }
