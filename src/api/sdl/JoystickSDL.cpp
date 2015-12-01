@@ -23,6 +23,9 @@
 #include "api/JoystickTypes.h"
 #include "utils/CommonMacros.h"
 
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_joystick.h>
+
 #define MAX_AXISAMOUNT    32768
 
 using namespace JOYSTICK;

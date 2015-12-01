@@ -21,8 +21,7 @@
 
 #include "api/Joystick.h"
 
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_joystick.h>
+typedef struct _SDL_Joystick SDL_Joystick;
 
 namespace JOYSTICK
 {
