@@ -21,6 +21,7 @@
 #include "Device.h"
 #include "utils/StringUtils.h"
 
+#include <algorithm>
 #include <sstream>
 
 using namespace JOYSTICK;
@@ -132,12 +133,17 @@ std::string CDevice::RootFileName(void) const
 {
   std::string baseFilename = StringUtils::MakeSafeUrl(Name());
 
-  // TODO: Combine successive runs of underscores (fits more information in
-  // smaller space)
+  // Combine successive runs of underscores (fits more information in smaller
+  // space)
+  baseFilename.erase(std::unique(baseFilename.begin(), baseFilename.end(),
+    [](char a, char b)
+    {
+      return a == '_' && b == '_';
+    }), baseFilename.end());
 
   // Limit filename to a sane number of characters.
-  if (baseFilename.length() > 40)
-    baseFilename.erase(baseFilename.begin() + 40, baseFilename.end());
+  if (baseFilename.length() > 50)
+    baseFilename.erase(baseFilename.begin() + 50, baseFilename.end());
 
   // Trim trailing underscores left over from chopping the string
   baseFilename = StringUtils::Trim(baseFilename, "_");
