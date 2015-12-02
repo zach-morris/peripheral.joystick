@@ -40,8 +40,8 @@ namespace JOYSTICK
     virtual bool GetFeatures(const CDevice& driverInfo, const std::string& controllerId,
                              FeatureVector& features) override;
 
-    virtual bool MapFeature(const CDevice& driverInfo, const std::string& controllerId,
-                            const ADDON::JoystickFeature& feature) override;
+    virtual bool MapFeatures(const CDevice& driverInfo, const std::string& controllerId,
+                             const FeatureVector& features) override;
 
   private:
     bool Load(const CDevice& driverInfo);

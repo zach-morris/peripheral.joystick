@@ -252,15 +252,14 @@ void FreeFeatures(unsigned int feature_count, JOYSTICK_FEATURE* features)
   ADDON::JoystickFeatures::FreeStructs(feature_count, features);
 }
 
-PERIPHERAL_ERROR AddFeature(const JOYSTICK_INFO* joystick, const char* controller_id,
-                            JOYSTICK_FEATURE* feature)
+PERIPHERAL_ERROR MapFeatures(const JOYSTICK_INFO* joystick, const char* controller_id,
+                             unsigned int feature_count, JOYSTICK_FEATURE* features)
 {
-  if (!joystick || !controller_id || !feature)
+  if (!joystick || !controller_id || (feature_count > 0 && !features))
     return PERIPHERAL_ERROR_INVALID_PARAMETERS;
 
-  bool bSuccess = CStorageManager::Get().MapFeature(ADDON::Joystick(*joystick),
-                                                    controller_id,
-                                                    ADDON::JoystickFeature(*feature));
+  FeatureVector featureVector(features, features + feature_count);
+  bool bSuccess = CStorageManager::Get().MapFeatures(ADDON::Joystick(*joystick), controller_id, featureVector);
 
   return bSuccess ? PERIPHERAL_NO_ERROR : PERIPHERAL_ERROR_FAILED;
 }

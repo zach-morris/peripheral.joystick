@@ -54,8 +54,8 @@ namespace JOYSTICK
     bool GetFeatures(const ADDON::Joystick& joystick, const std::string& strDeviceId,
                      FeatureVector& features);
 
-    bool MapFeature(const ADDON::Joystick& joystick, const std::string& strDeviceId,
-                    const ADDON::JoystickFeature& feature);
+    bool MapFeatures(const ADDON::Joystick& joystick, const std::string& strDeviceId,
+                     const FeatureVector& features);
 
     void RefreshButtonMaps(const std::string& strDeviceName = "");
 

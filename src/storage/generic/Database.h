@@ -19,7 +19,6 @@
  */
 #pragma once
 
-#include "storage/ButtonMap.h"
 #include "storage/ButtonMapTypes.h"
 #include "storage/Device.h"
 
@@ -48,13 +47,13 @@ namespace JOYSTICK
     virtual bool GetFeatures(const CDevice& driverInfo, const std::string& controllerId,
                              FeatureVector& features);
 
-    virtual bool MapFeature(const CDevice& driverInfo, const std::string& controllerId,
-                            const ADDON::JoystickFeature& feature);
+    virtual bool MapFeatures(const CDevice& driverInfo, const std::string& controllerId,
+                             const FeatureVector& features);
 
   protected:
-    typedef std::string                        ControllerID;
-    typedef std::map<ControllerID, CButtonMap> ButtonMaps;
-    typedef std::map<CDevice, ButtonMaps>      Records;
+    typedef std::string                           ControllerID;
+    typedef std::map<ControllerID, FeatureVector> ButtonMaps;
+    typedef std::map<CDevice, ButtonMaps>         Records;
 
     Records m_records;
 

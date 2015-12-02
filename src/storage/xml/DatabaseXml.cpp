@@ -65,15 +65,15 @@ bool CDatabaseXml::GetFeatures(const CDevice& driverInfo, const std::string& con
   return CDatabase::GetFeatures(driverInfo, controllerId, features);
 }
 
-bool CDatabaseXml::MapFeature(const CDevice& driverInfo, const std::string& controllerId,
-                              const ADDON::JoystickFeature& feature)
+bool CDatabaseXml::MapFeatures(const CDevice& driverInfo, const std::string& controllerId,
+                               const FeatureVector& features)
 {
   CLockObject lock(m_mutex);
 
   if (m_bReadOnly)
     return false;
 
-  if (CDatabase::MapFeature(driverInfo, controllerId, feature))
+  if (CDatabase::MapFeatures(driverInfo, controllerId, features))
   {
     // Loading might have failed because button map didn't exist. The database
     // is no longer empty, so consider it loaded.
@@ -260,9 +260,9 @@ bool CDatabaseXml::SerializeButtonMaps(const CDevice& driverRecord, TiXmlElement
   for (ButtonMaps::const_iterator it = buttonMaps.begin(); it != buttonMaps.end(); ++it)
   {
     const ControllerID& controllerId = it->first;
-    const CButtonMap& buttonMap = it->second;
+    const FeatureVector& features = it->second;
 
-    if (buttonMap.IsEmpty())
+    if (features.empty())
       continue;
 
     TiXmlElement profileElement(BUTTONMAP_XML_ELEM_CONTROLLER);
@@ -276,7 +276,7 @@ bool CDatabaseXml::SerializeButtonMaps(const CDevice& driverRecord, TiXmlElement
 
     profileElem->SetAttribute(BUTTONMAP_XML_ATTR_CONTROLLER_ID, controllerId);
 
-    CButtonMapXml::Serialize(buttonMap, profileElem);
+    CButtonMapXml::Serialize(features, profileElem);
   }
   return true;
 }
@@ -332,18 +332,18 @@ bool CDatabaseXml::LoadButtonMaps(const std::string& strXmlPath)
       return false;
     }
 
-    CButtonMap buttonMap;
-    if (!CButtonMapXml::Deserialize(pController, buttonMap))
+    FeatureVector features;
+    if (!CButtonMapXml::Deserialize(pController, features))
       return false;
 
-    if (buttonMap.IsEmpty())
+    if (features.empty())
     {
       esyslog("Device \"%s\" has no features for controller %s", driverRecord.Name().c_str(), id);
     }
     else
     {
-      totalFeatureCount += buttonMap.FeatureCount();
-      buttonMaps[id] = std::move(buttonMap);
+      totalFeatureCount += features.size();
+      buttonMaps[id].swap(features);
     }
 
     pController = pController->NextSiblingElement(BUTTONMAP_XML_ELEM_CONTROLLER);

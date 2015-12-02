@@ -19,7 +19,6 @@
  */
 
 #include "ButtonMapXml.h"
-#include "storage/ButtonMap.h"
 #include "storage/ButtonMapDefinitions.h"
 #include "storage/ButtonMapTranslator.h"
 #include "log/Log.h"
@@ -33,13 +32,10 @@
 
 using namespace JOYSTICK;
 
-bool CButtonMapXml::Serialize(const CButtonMap& record, TiXmlElement* pElement)
+bool CButtonMapXml::Serialize(const FeatureVector& features, TiXmlElement* pElement)
 {
   if (pElement == NULL)
     return false;
-
-  FeatureVector features;
-  record.GetFeatures(features);
 
   for (FeatureVector::const_iterator it = features.begin(); it != features.end(); ++it)
   {
@@ -194,7 +190,7 @@ void CButtonMapXml::SerializePrimitive(TiXmlElement* pElement, const ADDON::Driv
   }
 }
 
-bool CButtonMapXml::Deserialize(const TiXmlElement* pElement, CButtonMap& record)
+bool CButtonMapXml::Deserialize(const TiXmlElement* pElement, FeatureVector& features)
 {
   const TiXmlElement* pFeature = pElement->FirstChildElement(BUTTONMAP_XML_ELEM_FEATURE);
 
@@ -352,7 +348,7 @@ bool CButtonMapXml::Deserialize(const TiXmlElement* pElement, CButtonMap& record
         break;
     }
 
-    record.MapFeature(feature);
+    features.push_back(feature);
 
     pFeature = pFeature->NextSiblingElement(BUTTONMAP_XML_ELEM_FEATURE);
   }

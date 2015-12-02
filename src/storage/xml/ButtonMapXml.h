@@ -19,6 +19,8 @@
  */
 #pragma once
 
+#include "storage/ButtonMapTypes.h"
+
 #include <string>
 
 class TiXmlElement;
@@ -36,8 +38,8 @@ namespace JOYSTICK
   class CButtonMapXml
   {
   public:
-    static bool Serialize(const CButtonMap& record, TiXmlElement* pElement);
-    static bool Deserialize(const TiXmlElement* pElement, CButtonMap& record);
+    static bool Serialize(const FeatureVector& features, TiXmlElement* pElement);
+    static bool Deserialize(const TiXmlElement* pElement, FeatureVector& features);
 
   private:
     static bool IsValid(const ADDON::JoystickFeature& feature);

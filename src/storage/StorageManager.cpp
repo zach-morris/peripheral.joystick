@@ -126,11 +126,11 @@ bool CStorageManager::GetFeatures(const ADDON::Joystick& joystick, const std::st
   return true;
 }
 
-bool CStorageManager::MapFeature(const ADDON::Joystick& joystick, const std::string& strControllerId,
-                                 const ADDON::JoystickFeature& feature)
+bool CStorageManager::MapFeatures(const ADDON::Joystick& joystick, const std::string& strControllerId,
+                                  const FeatureVector& features)
 {
   for (std::vector<CDatabase*>::const_iterator it = m_databases.begin(); it != m_databases.end(); ++it)
-    (*it)->MapFeature(joystick, strControllerId, feature);
+    (*it)->MapFeatures(joystick, strControllerId, features);
 
   return true;
 }

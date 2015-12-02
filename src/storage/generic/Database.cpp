@@ -56,8 +56,7 @@ bool CDatabase::GetFeatures(const CDevice& driverInfo, const std::string& contro
     ButtonMaps::const_iterator itButtonMap = buttonMaps.find(controllerId);
     if (itButtonMap != buttonMaps.end())
     {
-      const CButtonMap& buttonMap = itButtonMap->second;
-      buttonMap.GetFeatures(features);
+      features = itButtonMap->second;
       return true;
     }
   }
@@ -65,14 +64,14 @@ bool CDatabase::GetFeatures(const CDevice& driverInfo, const std::string& contro
   return false;
 }
 
-bool CDatabase::MapFeature(const CDevice& driverInfo, const std::string& controllerId,
-                           const ADDON::JoystickFeature& feature)
+bool CDatabase::MapFeatures(const CDevice& driverInfo, const std::string& controllerId,
+                            const FeatureVector& features)
 {
   CLockObject lock(m_mutex);
 
   ButtonMaps& buttonMaps = m_records[driverInfo];
 
-  CButtonMap& buttonMap = buttonMaps[controllerId];
+  buttonMaps[controllerId] = features;
 
-  return buttonMap.MapFeature(feature);
+  return true;
 }
