@@ -57,7 +57,7 @@ namespace JOYSTICK
     bool MapFeatures(const ADDON::Joystick& joystick, const std::string& strDeviceId,
                      const FeatureVector& features);
 
-    void RefreshButtonMaps(const std::string& strDeviceName = "");
+    void RefreshButtonMaps(const std::string& strDeviceName = "", const std::string& strControllerId = "");
 
   private:
     ADDON::CHelper_libKODI_peripheral* m_peripheralLib;
