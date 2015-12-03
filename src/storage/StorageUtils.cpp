@@ -17,26 +17,33 @@
  *  <http://www.gnu.org/licenses/>.
  *
  */
-#pragma once
 
-#include "storage/generic/DeviceDatabase.h"
+#include "StorageUtils.h"
+#include "filesystem/DirectoryUtils.h"
+#include "log/Log.h"
 
-#include <string>
+#include <set>
 
-namespace JOYSTICK
+using namespace JOYSTICK;
+
+std::set<std::string> CStorageUtils::m_existingDirs;
+
+bool CStorageUtils::EnsureDirectoryExists(const std::string& path)
 {
-  class CDeviceDatabaseXml : public CDeviceDatabase
+  if (m_existingDirs.find(path) != m_existingDirs.end())
+    return true; // Already exists
+
+  if (!CDirectoryUtils::Exists(path))
   {
-  public:
-    CDeviceDatabaseXml(const std::string& strBasePath, bool bReadOnly);
-    virtual ~CDeviceDatabaseXml(void) { }
+    dsyslog("Creating directory: %s", path.c_str());
+    if (!CDirectoryUtils::Create(path))
+    {
+      esyslog("Failed to create directory!");
+      return false;
+    }
+  }
 
-    // implementation of CDeviceDatabase
-    virtual bool GetDevice(const ADDON::Joystick& joystick, CDevice& record) override;
+  m_existingDirs.insert(path);
 
-  private:
-    std::string m_strBasePath;
-    std::string m_strDevicesXmlPath;
-    bool        m_bReadOnly;
-  };
+  return true;
 }

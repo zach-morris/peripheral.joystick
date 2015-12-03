@@ -70,17 +70,5 @@ namespace JOYSTICK
      * driver name.
      */
     std::string RootFileName(void) const;
-
-    /*!
-     * \brief Get a folder name to avoid clashes between different joystick drivers
-     * \return A folder name based on the provider
-     */
-    const std::string& Folder(void) const { return Provider(); }
-
-    /*!
-     * \brief Build a complete path to this joystick's button maps
-     * \return A path to the button maps for this driver info
-     */
-    std::string BuildPath(const std::string& strBaseDir, const std::string& strExtension) const;
   };
 }

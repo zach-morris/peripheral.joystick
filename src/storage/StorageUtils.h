@@ -1,6 +1,6 @@
 /*
- *      Copyright (C) 2014-2015 Garrett Brown
- *      Copyright (C) 2014-2015 Team XBMC
+ *      Copyright (C) 2015 Garrett Brown
+ *      Copyright (C) 2015 Team XBMC
  *
  *  This Program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -17,23 +17,19 @@
  *  <http://www.gnu.org/licenses/>.
  *
  */
+#pragma once
 
-#include "DeviceDatabase.h"
+#include <set>
+#include <string>
 
-using namespace JOYSTICK;
-
-bool CDeviceDatabase::GetDevice(const ADDON::Joystick& joystick, CDevice& record)
+namespace JOYSTICK
 {
-  bool bFound = false;
-
-  CDevice needle(joystick);
-
-  DeviceMap::const_iterator it = m_driverRecords.find(needle);
-  if (it != m_driverRecords.end())
+  class CStorageUtils
   {
-    bFound = true;
-    record = it->second;
-  }
+  public:
+    static bool EnsureDirectoryExists(const std::string& path);
 
-  return bFound;
+  private:
+    static std::set<std::string> m_existingDirs; // Cache list of existing dirs
+  };
 }

@@ -47,5 +47,7 @@ namespace JOYSTICK
     static std::string& Trim(std::string& str, const char* chars);
     static std::string& TrimLeft(std::string& str, const char* chars);
     static std::string& TrimRight(std::string& str, const char* chars);
+
+    static bool EndsWith(const std::string& str, const std::string& suffix);
   };
 }

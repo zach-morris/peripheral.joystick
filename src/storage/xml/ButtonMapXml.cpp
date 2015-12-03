@@ -19,6 +19,7 @@
  */
 
 #include "ButtonMapXml.h"
+#include "DeviceXml.h"
 #include "storage/ButtonMapDefinitions.h"
 #include "storage/ButtonMapTranslator.h"
 #include "log/Log.h"
@@ -31,6 +32,146 @@
 #include <string>
 
 using namespace JOYSTICK;
+
+CButtonMapXml::CButtonMapXml(const std::string& strResourcePath) :
+  CButtonMap(strResourcePath)
+{
+  Refresh();
+}
+
+CButtonMapXml::CButtonMapXml(const std::string& strResourcePath, const CDevice& device) :
+  CButtonMap(strResourcePath, device)
+{
+}
+
+bool CButtonMapXml::Load(void)
+{
+  TiXmlDocument xmlFile;
+  if (!xmlFile.LoadFile(m_strResourcePath))
+  {
+    esyslog("Error opening %s: %s", m_strResourcePath.c_str(), xmlFile.ErrorDesc());
+    return false;
+  }
+
+  TiXmlElement* pRootElement = xmlFile.RootElement();
+  if (!pRootElement || pRootElement->NoChildren() || pRootElement->ValueStr() != BUTTONMAP_XML_ROOT)
+  {
+    esyslog("Can't find root <%s> tag", BUTTONMAP_XML_ROOT);
+    return false;
+  }
+
+  const TiXmlElement* pDevice = pRootElement->FirstChildElement(DEVICES_XML_ELEM_DEVICE);
+
+  if (!pDevice)
+  {
+    esyslog("Can't find <%s> tag", DEVICES_XML_ELEM_DEVICE);
+    return false;
+  }
+
+  if (!CDeviceXml::Deserialize(pDevice, m_device))
+    return false;
+
+  const TiXmlElement* pController = pDevice->FirstChildElement(BUTTONMAP_XML_ELEM_CONTROLLER);
+
+  if (!pController)
+  {
+    esyslog("Device \"%s\": can't find <%s> tag", m_device.Name().c_str(), BUTTONMAP_XML_ELEM_CONTROLLER);
+    return false;
+  }
+
+  // For logging purposes
+  unsigned int totalFeatureCount = 0;
+
+  while (pController)
+  {
+    const char* id = pController->Attribute(BUTTONMAP_XML_ATTR_CONTROLLER_ID);
+    if (!id)
+    {
+      esyslog("Device \"%s\": <%s> tag has no attribute \"%s\"", m_device.Name().c_str(),
+              BUTTONMAP_XML_ELEM_CONTROLLER, BUTTONMAP_XML_ATTR_CONTROLLER_ID);
+      return false;
+    }
+
+    FeatureVector features;
+    if (!Deserialize(pController, features))
+      return false;
+
+    if (features.empty())
+    {
+      esyslog("Device \"%s\" has no features for controller %s", m_device.Name().c_str(), id);
+    }
+    else
+    {
+      totalFeatureCount += features.size();
+      m_buttonMap[id] = std::move(features);
+    }
+
+    pController = pController->NextSiblingElement(BUTTONMAP_XML_ELEM_CONTROLLER);
+  }
+
+  dsyslog("Loaded device \"%s\" with %u controller profiles and %u total features", m_device.Name().c_str(), m_buttonMap.size(), totalFeatureCount);
+
+  return true;
+}
+
+bool CButtonMapXml::Save(void) const
+{
+  TiXmlDocument xmlFile;
+
+  TiXmlDeclaration* decl = new TiXmlDeclaration("1.0", "", "");
+  xmlFile.LinkEndChild(decl);
+
+  TiXmlElement rootElement(BUTTONMAP_XML_ROOT);
+  TiXmlNode* root = xmlFile.InsertEndChild(rootElement);
+  if (root == NULL)
+    return false;
+
+  TiXmlElement* pElem = root->ToElement();
+  if (!pElem)
+    return false;
+
+  TiXmlElement deviceElement(DEVICES_XML_ELEM_DEVICE);
+  TiXmlNode* deviceNode = pElem->InsertEndChild(deviceElement);
+  if (deviceNode == NULL)
+    return false;
+
+  TiXmlElement* deviceElem = deviceNode->ToElement();
+  if (deviceElem == NULL)
+    return false;
+
+  CDeviceXml::Serialize(m_device, deviceElem);
+
+  if (!SerializeButtonMaps(deviceElem))
+    return false;
+
+  return xmlFile.SaveFile(m_strResourcePath);
+}
+
+bool CButtonMapXml::SerializeButtonMaps(TiXmlElement* pElement) const
+{
+  for (ButtonMap::const_iterator it = m_buttonMap.begin(); it != m_buttonMap.end(); ++it)
+  {
+    const ControllerID& controllerId = it->first;
+    const FeatureVector& features = it->second;
+
+    if (features.empty())
+      continue;
+
+    TiXmlElement profileElement(BUTTONMAP_XML_ELEM_CONTROLLER);
+    TiXmlNode* profileNode = pElement->InsertEndChild(profileElement);
+    if (profileNode == NULL)
+      continue;
+
+    TiXmlElement* profileElem = profileNode->ToElement();
+    if (profileElem == NULL)
+      continue;
+
+    profileElem->SetAttribute(BUTTONMAP_XML_ATTR_CONTROLLER_ID, controllerId);
+
+    Serialize(features, profileElem);
+  }
+  return true;
+}
 
 bool CButtonMapXml::Serialize(const FeatureVector& features, TiXmlElement* pElement)
 {

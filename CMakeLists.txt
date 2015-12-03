@@ -26,6 +26,7 @@ set(JOYSTICK_SOURCES src/addon.cpp
                      src/api/JoystickInterfaceCallback.cpp
                      src/api/JoystickManager.cpp
                      src/api/PeripheralScanner.cpp
+                     src/filesystem/DirectoryCache.cpp
                      src/filesystem/DirectoryUtils.cpp
                      src/filesystem/Filesystem.cpp
                      src/filesystem/FileUtils.cpp
@@ -39,14 +40,14 @@ set(JOYSTICK_SOURCES src/addon.cpp
                      src/log/LogAddon.cpp
                      src/log/LogConsole.cpp
                      src/settings/Settings.cpp
+                     src/storage/ButtonMap.cpp
                      src/storage/ButtonMapTranslator.cpp
                      src/storage/Device.cpp
-                     src/storage/generic/Database.cpp
-                     src/storage/generic/DeviceDatabase.cpp
+                     src/storage/JustABunchOfFiles.cpp
                      src/storage/StorageManager.cpp
+                     src/storage/StorageUtils.cpp
                      src/storage/xml/ButtonMapXml.cpp
                      src/storage/xml/DatabaseXml.cpp
-                     src/storage/xml/DeviceDatabaseXml.cpp
                      src/storage/xml/DeviceXml.cpp
                      src/utils/StringUtils.cpp)
 

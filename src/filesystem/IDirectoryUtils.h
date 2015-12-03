@@ -60,10 +60,12 @@ namespace JOYSTICK
      *
      * The mask has to look like the following:
      *
-     *     .m4a|.flac|.aac
+     *     .m4a|.flac|.aac|
      *
      * In this case, only *.m4a, *.flac, *.aac files will be retrieved with
      * GetDirectory().
+     *
+     * The trailing slash after .aac ensures a match at the end of the filename.
      */
     virtual bool GetDirectory(const std::string& path, const std::string& mask, std::vector<ADDON::CVFSDirEntry>& items) = 0;
   };

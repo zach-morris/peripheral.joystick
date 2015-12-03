@@ -1,6 +1,6 @@
 /*
- *      Copyright (C) 2014-2015 Garrett Brown
- *      Copyright (C) 2014-2015 Team XBMC
+ *      Copyright (C) 2015 Garrett Brown
+ *      Copyright (C) 2015 Team XBMC
  *
  *  This Program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -19,32 +19,31 @@
  */
 #pragma once
 
-#include "storage/Device.h"
+#include "ButtonMapTypes.h"
 
-#include "kodi/kodi_peripheral_utils.hpp"
-
-#include <map>
+#include <string>
 
 namespace JOYSTICK
 {
-  class CDeviceDatabase
+  class CDevice;
+
+  class IDatabase
   {
   public:
-    CDeviceDatabase(void) { }
-    virtual ~CDeviceDatabase(void) { }
+    virtual ~IDatabase(void) { }
 
     /*!
-     * \brief Get the driver record associated with the given driver info
-     * \param joystick The known driver info
-     * \return The driver record
-     *
-     * If joystick is missing fields, the returned record
+     * \copydoc CStorageManager::GetFeatures()
      */
-    virtual bool GetDevice(const ADDON::Joystick& joystick, CDevice& record);
+    virtual bool GetFeatures(const CDevice& driverInfo,
+                             const std::string& controllerId,
+                             FeatureVector& features) = 0;
 
-  protected:
-    typedef std::map<CDevice, CDevice> DeviceMap; // Partial driver information -> full driver information
-
-    DeviceMap m_driverRecords;
+    /*!
+     * \copydoc CStorageManager::MapFeatures()
+     */
+    virtual bool MapFeatures(const CDevice& driverInfo,
+                             const std::string& controllerId,
+                             const FeatureVector& features) = 0;
   };
 }

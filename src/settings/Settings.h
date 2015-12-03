@@ -50,8 +50,14 @@ namespace JOYSTICK
      */
     float Deadzone(void) const { return m_deadzone; }
 
+    /*!
+     * \brief Generate .cfg files compatible with RetroArch's joypad autoconfig
+     */
+    bool GenerateRetroArchConfigs(void) const { return m_bGenerateRetroArchConfigs; }
+
   private:
     bool        m_bInitialized;
     float       m_deadzone;
+    bool        m_bGenerateRetroArchConfigs;
   };
 }

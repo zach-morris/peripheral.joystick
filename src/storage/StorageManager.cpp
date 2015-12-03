@@ -19,43 +19,26 @@
  */
 
 #include "StorageManager.h"
-#include "storage/generic/DeviceDatabase.h" // TODO
-#include "filesystem/DirectoryUtils.h"
+#include "JustABunchOfFiles.h"
+#include "StorageUtils.h"
 #include "log/Log.h"
+//#include "storage/retroarch/DatabaseRetroarch.h" // TODO
 #include "storage/xml/DatabaseXml.h"
+#include "utils/StringUtils.h"
 
 #include "kodi/libKODI_peripheral.h"
 
 using namespace JOYSTICK;
 
-// Resources subfolder for add-on and user data
+// Resources folder for add-on and user data
 #define USER_RESOURCES_FOLDER   "resources"
 #define ADDON_RESOURCES_FOLDER  "resources"
 
-// --- RemoveSlashAtEnd --------------------------------------------------------
+// Subdirectory under resources folder for storing button maps
+#define BUTTONMAP_FOLDER        "buttonmaps"
 
-namespace JOYSTICK
-{
-  bool IsSlash(char c)
-  {
-    return c == '/' || c == '\\';
-  }
-
-  void RemoveSlashAtEnd(std::string& strPath)
-  {
-    if (!strPath.empty())
-    {
-      char end = strPath[strPath.size() - 1];
-      if (IsSlash(end))
-        strPath.erase(strPath.end() - 1);
-    }
-  }
-}
-
-// --- CStorageManager ---------------------------------------------------------
-
-CStorageManager::CStorageManager(void)
-  : m_peripheralLib(NULL)
+CStorageManager::CStorageManager(void) :
+  m_peripheralLib(NULL)
 {
 }
 
@@ -76,63 +59,65 @@ bool CStorageManager::Initialize(ADDON::CHelper_libKODI_peripheral* peripheralLi
 
   m_peripheralLib = peripheralLib;
 
-  RemoveSlashAtEnd(strUserPath);
-  RemoveSlashAtEnd(strAddonPath);
+  // Remove slash at end
+  StringUtils::TrimRight(strUserPath, "\\/");
+  StringUtils::TrimRight(strAddonPath, "\\/");
 
   strUserPath += "/" USER_RESOURCES_FOLDER;
   strAddonPath += "/" ADDON_RESOURCES_FOLDER;
 
   // Ensure resources path exists in user data
-  if (!CDirectoryUtils::Exists(strUserPath))
-  {
-    dsyslog("Creating directory %s", strUserPath.c_str());
-    if (!CDirectoryUtils::Create(strUserPath))
-      esyslog("Failed to create directory!");
-  }
+  CStorageUtils::EnsureDirectoryExists(strUserPath);
 
-  CDatabase* userDatabase = new CDatabaseXml(strUserPath, false);
-  CDatabase* addonDatabase = new CDatabaseXml(strAddonPath, true);
+  strUserPath += "/" BUTTONMAP_FOLDER;
+  strAddonPath += "/" BUTTONMAP_FOLDER;
 
-  m_databases.push_back(userDatabase);
-  m_databases.push_back(addonDatabase);
+  // Ensure button map path exists in user data
+  CStorageUtils::EnsureDirectoryExists(strUserPath);
 
-  CDriverDatabase* m_driverDatabase;
+  m_databases.push_back(DatabasePtr(new CDatabaseXml(strUserPath, true)));
+  //m_databases.push_back(DatabasePtr(new CDatabaseRetroArch(strUserPath, true))); // TODO
+  m_databases.push_back(DatabasePtr(new CDatabaseXml(strAddonPath, false)));
+  //m_databases.push_back(DatabasePtr(new CDatabaseRetroArch(strAddonPath, false))); // TODO
 
   return true;
 }
 
 void CStorageManager::Deinitialize(void)
 {
-  // Delete in reverse order
-  for (std::vector<CDatabase*>::iterator it = m_databases.begin(); it != m_databases.end(); ++it)
-    delete *it;
-
   m_peripheralLib = NULL;
 }
 
-bool CStorageManager::GetFeatures(const ADDON::Joystick& joystick, const std::string& strControllerId,
+bool CStorageManager::GetFeatures(const ADDON::Joystick& joystick,
+                                  const std::string& strControllerId,
                                   FeatureVector& features)
 {
-  for (std::vector<CDatabase*>::const_iterator it = m_databases.begin(); it != m_databases.end(); ++it)
+  CDevice deviceInfo(joystick);
+
+  for (DatabaseVector::const_iterator it = m_databases.begin(); it != m_databases.end(); ++it)
   {
-    CDevice driverInfo;
-    if ((*it)->m_driverDatabase->GetDevice(joystick, driverInfo)) // TODO
-    {
-      if ((*it)->IsEnabled() && (*it)->GetFeatures(joystick, strControllerId, features))
-        break;
-    }
+    if ((*it)->GetFeatures(deviceInfo, strControllerId, features))
+      return true;
   }
 
   return true;
 }
 
-bool CStorageManager::MapFeatures(const ADDON::Joystick& joystick, const std::string& strControllerId,
+bool CStorageManager::MapFeatures(const ADDON::Joystick& joystick,
+                                  const std::string& strControllerId,
                                   const FeatureVector& features)
 {
-  for (std::vector<CDatabase*>::const_iterator it = m_databases.begin(); it != m_databases.end(); ++it)
-    (*it)->MapFeatures(joystick, strControllerId, features);
+  CDevice deviceInfo(joystick);
 
-  return true;
+  bool bModified = false;
+
+  for (DatabaseVector::const_iterator it = m_databases.begin(); it != m_databases.end(); ++it)
+    bModified |= (*it)->MapFeatures(deviceInfo, strControllerId, features);
+
+  if (bModified)
+    RefreshButtonMaps(deviceInfo.Name(), strControllerId);
+
+  return bModified;
 }
 
 void CStorageManager::RefreshButtonMaps(const std::string& strDeviceName /* = "" */,

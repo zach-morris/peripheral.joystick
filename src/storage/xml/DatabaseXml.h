@@ -19,9 +19,7 @@
  */
 #pragma once
 
-#include "storage/generic/Database.h"
-
-#include "platform/threads/mutex.h"
+#include "storage/JustABunchOfFiles.h"
 
 #include <string>
 #include <vector>
@@ -30,34 +28,16 @@ class TiXmlElement;
 
 namespace JOYSTICK
 {
-  class CDatabaseXml : public CDatabase
+  class CDatabaseXml : public CJustABunchOfFiles
   {
   public:
-    CDatabaseXml(const std::string& strBasePath, bool bReadOnly);
+    CDatabaseXml(const std::string& strBasePath, bool bReadWrite);
 
     virtual ~CDatabaseXml(void) { }
 
-    virtual bool GetFeatures(const CDevice& driverInfo, const std::string& controllerId,
-                             FeatureVector& features) override;
-
-    virtual bool MapFeatures(const CDevice& driverInfo, const std::string& controllerId,
-                             const FeatureVector& features) override;
-
-  private:
-    bool Load(const CDevice& driverInfo);
-    bool Save(void) const;
-
-    bool Serialize(TiXmlElement* pElement) const;
-
-    bool LoadButtonMaps(const std::string& strXmlPath);
-    bool SaveButtonMaps(const CDevice& driverRecord, const std::string& strPath) const;
-
-    bool SerializeButtonMaps(const CDevice& driverRecord, TiXmlElement* pElement) const;
-
-    std::string      m_strDataPath;
-    bool             m_bReadOnly;
-    bool             m_bLoadAttempted;
-    bool             m_bLoaded;
-    PLATFORM::CMutex m_mutex;
+  protected:
+    // implementation of CJustABunchOfFiles
+    virtual CButtonMap* CreateResource(const std::string& resourcePath) override;
+    virtual CButtonMap* CreateResource(const std::string& resourcePath, const CDevice& deviceInfo) override;
   };
 }

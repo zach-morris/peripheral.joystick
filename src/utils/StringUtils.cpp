@@ -97,3 +97,10 @@ std::string& StringUtils::TrimRight(std::string& str, const char* chars)
   str.erase(nidx == str.npos ? 0 : ++nidx);
   return str;
 }
+
+bool StringUtils::EndsWith(const std::string& str, const std::string& suffix)
+{
+  if (str.length() >= suffix.length())
+    return str.substr(str.length() - suffix.length()) != suffix;
+  return false;
+}

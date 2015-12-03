@@ -18,6 +18,7 @@
  */
 #pragma once
 
+#include <memory>
 #include <vector>
 
 namespace ADDON { class JoystickFeature; }
@@ -25,4 +26,8 @@ namespace ADDON { class JoystickFeature; }
 namespace JOYSTICK
 {
   typedef std::vector<ADDON::JoystickFeature> FeatureVector;
+
+  class IDatabase;
+  typedef std::shared_ptr<IDatabase> DatabasePtr;
+  typedef std::vector<DatabasePtr>   DatabaseVector;
 }

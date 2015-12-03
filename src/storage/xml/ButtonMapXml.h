@@ -19,7 +19,7 @@
  */
 #pragma once
 
-#include "storage/ButtonMapTypes.h"
+#include "storage/ButtonMap.h"
 
 #include <string>
 
@@ -35,13 +35,25 @@ namespace JOYSTICK
 {
   class CButtonMap;
 
-  class CButtonMapXml
+  class CButtonMapXml : public CButtonMap
   {
   public:
+    CButtonMapXml(const std::string& strResourcePath);
+    CButtonMapXml(const std::string& strResourcePath, const CDevice& device);
+
+    virtual ~CButtonMapXml(void) { }
+
+  protected:
+    // implementation of CButtonMap
+    virtual bool Load(void) override;
+    virtual bool Save(void) const override;
+
+  private:
+    bool SerializeButtonMaps(TiXmlElement* pElement) const;
+
     static bool Serialize(const FeatureVector& features, TiXmlElement* pElement);
     static bool Deserialize(const TiXmlElement* pElement, FeatureVector& features);
 
-  private:
     static bool IsValid(const ADDON::JoystickFeature& feature);
     static bool SerializeFeature(TiXmlElement* pElement, const ADDON::DriverPrimitive& primitive, const char* tagName);
     static bool SerializePrimitiveTag(TiXmlElement* pElement, const ADDON::DriverPrimitive& primitive, const char* tagName);

@@ -166,8 +166,3 @@ std::string CDevice::RootFileName(void) const
 
   return filename.str();
 }
-
-std::string CDevice::BuildPath(const std::string& strBaseDir, const std::string& strExtension) const
-{
-  return strBaseDir + "/" + Folder() + "/" + RootFileName() + strExtension;
-}
