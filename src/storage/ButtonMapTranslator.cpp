@@ -22,9 +22,12 @@
 #include "JoystickTranslator.h"
 
 #include <cstdlib>
+#include <cctype>
 #include <sstream>
 
 using namespace JOYSTICK;
+
+#define HAT_CHAR  'h'
 
 std::string ButtonMapTranslator::ToString(const ADDON::DriverPrimitive& primitive)
 {
@@ -38,6 +41,8 @@ std::string ButtonMapTranslator::ToString(const ADDON::DriverPrimitive& primitiv
     }
     case JOYSTICK_DRIVER_PRIMITIVE_TYPE_HAT_DIRECTION:
     {
+      strPrimitive << HAT_CHAR;
+      strPrimitive << primitive.DriverIndex();
       strPrimitive << JoystickTranslator::TranslateHatDir(primitive.HatDirection());
       break;
     }
@@ -63,23 +68,33 @@ ADDON::DriverPrimitive ButtonMapTranslator::ToDriverPrimitive(const std::string&
 
   if (!strPrimitive.empty())
   {
-    JOYSTICK_DRIVER_SEMIAXIS_DIRECTION dir = JoystickTranslator::TranslateSemiAxisDir(strPrimitive[0]);
-    if (dir != JOYSTICK_DRIVER_SEMIAXIS_UNKNOWN)
+    bool bIsButton = std::isdigit(strPrimitive[0]);
+    bool bIsHat = (strPrimitive[0] == HAT_CHAR);
+    bool bIsAxis = (JoystickTranslator::TranslateSemiAxisDir(strPrimitive[0]) != JOYSTICK_DRIVER_SEMIAXIS_UNKNOWN);
+
+    if (bIsButton)
     {
-      primitive = ADDON::DriverPrimitive(std::atoi(strPrimitive.substr(1).c_str()), dir);
+      primitive = ADDON::DriverPrimitive(std::atoi(strPrimitive.c_str()));
     }
-    else
+    else if (bIsHat)
     {
-      JOYSTICK_DRIVER_HAT_DIRECTION hatDir = JoystickTranslator::TranslateHatDir(strPrimitive);
-      if (hatDir != JOYSTICK_DRIVER_HAT_UNKNOWN)
+      unsigned int hatIndex = std::atoi(strPrimitive.substr(1).c_str());
+
+      size_t dirPos = strPrimitive.find_first_not_of("0123456789", 1);
+      if (dirPos != std::string::npos)
       {
-        primitive = ADDON::DriverPrimitive(0, hatDir);
+        JOYSTICK_DRIVER_HAT_DIRECTION hatDir = JoystickTranslator::TranslateHatDir(strPrimitive.substr(dirPos));
+
+        if (hatDir != JOYSTICK_DRIVER_HAT_UNKNOWN)
+          primitive = ADDON::DriverPrimitive(hatIndex, hatDir);
       }
-      else
-      {
-        primitive = ADDON::DriverPrimitive(std::atoi(strPrimitive.c_str()));
-      }
+    }
+    else if (bIsAxis)
+    {
+      primitive = ADDON::DriverPrimitive(std::atoi(strPrimitive.substr(1).c_str()),
+                                         JoystickTranslator::TranslateSemiAxisDir(strPrimitive[0]));
     }
   }
+
   return primitive;
 }
