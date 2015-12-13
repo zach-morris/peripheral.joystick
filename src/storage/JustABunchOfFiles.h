@@ -38,7 +38,7 @@ namespace JOYSTICK
     ~CResources(void);
 
     CButtonMap* GetResource(const CDevice& deviceInfo);
-    void AddResource(CButtonMap* resource);
+    bool AddResource(CButtonMap* resource);
     void RemoveResource(const std::string& strPath);
 
   private:

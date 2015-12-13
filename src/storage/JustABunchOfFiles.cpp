@@ -26,7 +26,6 @@
 #include "utils/StringUtils.h"
 
 #include <algorithm>
-#include <assert.h>
 
 using namespace JOYSTICK;
 using namespace PLATFORM;
@@ -50,12 +49,19 @@ CButtonMap* CResources::GetResource(const CDevice& deviceInfo)
   return nullptr;
 }
 
-void CResources::AddResource(CButtonMap* resource)
+bool CResources::AddResource(CButtonMap* resource)
 {
-  assert(resource != nullptr);
-
-  if (resource->Device().IsValid())
-    m_resources[resource->Device()] = resource;
+  if (resource != nullptr)
+  {
+    if (resource->Device().IsValid())
+    {
+      CButtonMap* oldResource = m_resources[resource->Device()];
+      delete oldResource;
+      m_resources[resource->Device()] = resource;
+      return true;
+    }
+  }
+  return false;
 }
 
 void CResources::RemoveResource(const std::string& strPath)
@@ -124,7 +130,11 @@ bool CJustABunchOfFiles::MapFeatures(const CDevice& driverInfo,
     if (GetResourcePath(driverInfo, resourcePath))
     {
       resource = CreateResource(resourcePath, driverInfo);
-      m_resources.AddResource(resource);
+      if (!m_resources.AddResource(resource))
+      {
+        delete resource;
+        resource = nullptr;
+      }
     }
   }
 
@@ -168,7 +178,8 @@ void CJustABunchOfFiles::OnAdd(const ADDON::CVFSDirEntry& item)
   if (!item.IsFolder())
   {
     CButtonMap* resource = CreateResource(item.Path());
-    m_resources.AddResource(resource);
+    if (!m_resources.AddResource(resource))
+      delete resource;
   }
 }
 
