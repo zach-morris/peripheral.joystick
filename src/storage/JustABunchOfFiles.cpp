@@ -127,14 +127,13 @@ bool CJustABunchOfFiles::MapFeatures(const CDevice& driverInfo,
   {
     // Resource doesn't exist yet, try to create it now
     std::string resourcePath;
-    if (GetResourcePath(driverInfo, resourcePath))
+    GetResourcePath(driverInfo, resourcePath);
+
+    resource = CreateResource(resourcePath, driverInfo);
+    if (!m_resources.AddResource(resource))
     {
-      resource = CreateResource(resourcePath, driverInfo);
-      if (!m_resources.AddResource(resource))
-      {
-        delete resource;
-        resource = nullptr;
-      }
+      delete resource;
+      resource = nullptr;
     }
   }
 
@@ -178,6 +177,10 @@ void CJustABunchOfFiles::OnAdd(const ADDON::CVFSDirEntry& item)
   if (!item.IsFolder())
   {
     CButtonMap* resource = CreateResource(item.Path());
+
+    // Load device info
+    resource->Refresh();
+
     if (!m_resources.AddResource(resource))
       delete resource;
   }
@@ -190,14 +193,12 @@ void CJustABunchOfFiles::OnRemove(const ADDON::CVFSDirEntry& item)
 
 bool CJustABunchOfFiles::GetResourcePath(const CDevice& deviceInfo, std::string& resourcePath) const
 {
-  std::string strProviderFolder = m_strResourcePath + "/" + deviceInfo.Provider();
+  // Calculate folder path
+  std::string strFolder = m_strResourcePath + "/" + deviceInfo.Provider();
 
-  // Ensure provider path exists
-  if (CStorageUtils::EnsureDirectoryExists(strProviderFolder))
-  {
-    resourcePath = strProviderFolder + "/" + deviceInfo.RootFileName() + m_strExtension;
-    return true;
-  }
+  // Calculate resource path
+  resourcePath = strFolder + "/" + deviceInfo.RootFileName() + m_strExtension;
 
-  return false;
+  // Ensure folder path exists
+  return CStorageUtils::EnsureDirectoryExists(strFolder);
 }

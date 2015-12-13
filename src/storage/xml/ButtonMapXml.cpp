@@ -36,7 +36,6 @@ using namespace JOYSTICK;
 CButtonMapXml::CButtonMapXml(const std::string& strResourcePath) :
   CButtonMap(strResourcePath)
 {
-  Refresh();
 }
 
 CButtonMapXml::CButtonMapXml(const std::string& strResourcePath, const CDevice& device) :

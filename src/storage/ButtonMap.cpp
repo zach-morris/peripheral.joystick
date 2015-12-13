@@ -35,7 +35,7 @@ CButtonMap::CButtonMap(const std::string& strResourcePath) :
 CButtonMap::CButtonMap(const std::string& strResourcePath, const CDevice& device) :
   m_strResourcePath(strResourcePath),
   m_device(device),
-  m_timestamp(PLATFORM::GetTimeMs())
+  m_timestamp(-1)
 {
 }
 
@@ -56,15 +56,19 @@ bool CButtonMap::GetFeatures(const std::string& controllerId, FeatureVector& fea
 bool CButtonMap::MapFeatures(const std::string& controllerId, const FeatureVector& features)
 {
   FeatureVector& oldFeatures = m_buttonMap[controllerId];
-  if (oldFeatures != features)
+
+  // TODO: Optimize case when features are unchanged
+  bool bChanged = true; // TODO
+
+  if (bChanged)
   {
     oldFeatures = features;
 
-    Save();
-
-    m_timestamp = PLATFORM::GetTimeMs();
-
-    return true;
+    if (Save())
+    {
+      m_timestamp = PLATFORM::GetTimeMs();
+      return true;
+    }
   }
 
   return false;

@@ -35,17 +35,18 @@ namespace JOYSTICK
     virtual ~CButtonMap(void) { }
 
     const std::string& Path(void) const { return m_strResourcePath; }
+
     const CDevice& Device(void) const { return m_device; }
 
     bool GetFeatures(const std::string& controllerId, FeatureVector& features);
 
     bool MapFeatures(const std::string& controllerId, const FeatureVector& features);
 
+    bool Refresh(void);
+
   protected:
     virtual bool Load(void) = 0;
     virtual bool Save(void) const = 0;
-
-    bool Refresh(void);
 
     typedef std::string                           ControllerID;
     typedef std::map<ControllerID, FeatureVector> ButtonMap;
