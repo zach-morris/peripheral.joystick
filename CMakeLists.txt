@@ -25,6 +25,7 @@ set(JOYSTICK_SOURCES src/addon.cpp
                      src/api/JoystickAsync.cpp
                      src/api/JoystickInterfaceCallback.cpp
                      src/api/JoystickManager.cpp
+                     src/api/JoystickTranslator.cpp
                      src/api/PeripheralScanner.cpp
                      src/filesystem/DirectoryCache.cpp
                      src/filesystem/DirectoryUtils.cpp
@@ -35,7 +36,6 @@ set(JOYSTICK_SOURCES src/addon.cpp
                      src/filesystem/vfs/VFSDirectoryUtils.cpp
                      src/filesystem/vfs/VFSFile.cpp
                      src/filesystem/vfs/VFSFileUtils.cpp
-                     src/JoystickTranslator.cpp
                      src/log/Log.cpp
                      src/log/LogAddon.cpp
                      src/log/LogConsole.cpp

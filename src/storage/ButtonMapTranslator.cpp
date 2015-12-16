@@ -19,7 +19,7 @@
  */
 
 #include "ButtonMapTranslator.h"
-#include "JoystickTranslator.h"
+#include "api/JoystickTranslator.h"
 
 #include <cstdlib>
 #include <cctype>
