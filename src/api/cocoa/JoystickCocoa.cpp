@@ -118,7 +118,7 @@ bool CJoystickCocoa::Initialize(void)
     CFNumberGetValue(productIdRef, kCFNumberIntType, &productId);
 
     SetVendorID(vendorId);
-    SetProductID(vendorId);
+    SetProductID(productId);
 
     return CJoystick::Initialize();
   }
