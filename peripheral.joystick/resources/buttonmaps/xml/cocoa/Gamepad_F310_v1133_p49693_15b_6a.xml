@@ -1,6 +1,6 @@
 <?xml version="1.0" ?>
 <buttonmap>
-    <device name="Wireless 360 Controller" provider="cocoa" vid="1118" pid="1118" buttoncount="15" axiscount="6">
+    <device name="Gamepad F310" provider="cocoa" vid="1133" pid="49693" buttoncount="15" axiscount="6">
         <controller id="game.controller.default">
             <feature name="a" button="0" />
             <feature name="b" button="1" />
@@ -27,18 +27,6 @@
             <feature name="up" button="11" />
             <feature name="x" button="2" />
             <feature name="y" button="3" />
-        </controller>
-        <controller id="game.controller.gba">
-            <feature name="a" button="0" />
-            <feature name="b" button="1" />
-            <feature name="down" button="12" />
-            <feature name="left" button="13" />
-            <feature name="leftbumper" button="4" />
-            <feature name="right" button="14" />
-            <feature name="rightbumper" button="5" />
-            <feature name="select" button="9" />
-            <feature name="start" button="8" />
-            <feature name="up" button="11" />
         </controller>
         <controller id="game.controller.genesis">
             <feature name="a" button="0" />
@@ -85,8 +73,8 @@
             <feature name="up" button="11" />
         </controller>
         <controller id="game.controller.ps">
-            <feature name="circle" button="1" />
-            <feature name="cross" button="0" />
+            <feature name="circle" button="0" />
+            <feature name="cross" button="1" />
             <feature name="down" button="12" />
             <feature name="left" button="13" />
             <feature name="leftbumper" button="4" />
