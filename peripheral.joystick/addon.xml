@@ -18,7 +18,7 @@
     library_android="libperipheral.joystick.so" />
   <extension point="xbmc.addon.metadata">
     <summary lang="en">Kodi Joystick Library</summary>
-    <description lang="en">This library enables joystick support through various APIs, including DirectX, XInput, SDL and the Linux Joystick API.</description>
+    <description lang="en">This library provides joystick drivers and button maps. Multiple joystick APIs are supported, including DirectX, XInput, SDL and the Linux Joystick API.</description>
     <platform>all</platform>
     <noicon>true</noicon>
     <nofanart>true</nofanart>
