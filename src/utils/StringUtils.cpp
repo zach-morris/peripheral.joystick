@@ -23,6 +23,7 @@
 #include <algorithm>
 #include <cctype>
 #include <functional>
+#include <pcrecpp.h>
 
 using namespace JOYSTICK;
 
@@ -60,6 +61,13 @@ std::string StringUtils::MakeSafeUrl(const std::string& str)
     });
 
   return safeUrl;
+}
+
+std::string& StringUtils::RemoveMACAddress(std::string& str)
+{
+  pcrecpp::RE re("[\\(\\[]?([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})[\\)\\]]?");
+  re.GlobalReplace("", &str);
+  return str;
 }
 
 std::string& StringUtils::Trim(std::string& str)
