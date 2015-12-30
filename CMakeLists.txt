@@ -12,12 +12,14 @@ include(CheckIncludeFiles)
 find_package(kodi REQUIRED)
 find_package(kodiplatform REQUIRED)
 find_package(platform REQUIRED)
+find_package(PCRE REQUIRED)
 
 include_directories(${INCLUDES}
                     ${PROJECT_SOURCE_DIR}/src
                     ${KODI_INCLUDE_DIR}
                     ${kodiplatform_INCLUDE_DIRS}
-                    ${platform_INCLUDE_DIRS})
+                    ${platform_INCLUDE_DIRS}
+                    ${PCRE_INCLUDE_DIRS})
 
 set(JOYSTICK_SOURCES src/addon.cpp
                      src/api/AnomalousTriggerFilter.cpp
@@ -57,7 +59,10 @@ if(HAVE_SYSLOG)
   list(APPEND JOYSTICK_SOURCES src/log/LogSyslog.cpp)
 endif()
 
-list(APPEND DEPLIBS ${kodiplatform_LIBRARIES} ${platform_LIBRARIES})
+list(APPEND DEPLIBS ${kodiplatform_LIBRARIES}
+                    ${platform_LIBRARIES}
+                    ${PCRE_LIBRARIES})
+add_definitions(${PCRE_DEFINITIONS})
 
 # --- Cocoa --------------------------------------------------------------------
 
