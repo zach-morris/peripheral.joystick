@@ -20,7 +20,7 @@
 
 #include "Joystick.h"
 
-#include "platform/threads/mutex.h"
+#include "p8-platform/threads/mutex.h"
 
 namespace JOYSTICK
 {
@@ -45,6 +45,6 @@ namespace JOYSTICK
     virtual void SetAxisValue(unsigned int axisIndex, JOYSTICK_STATE_AXIS axisValue) override;
 
   private:
-    PLATFORM::CMutex m_mutex;
+    P8PLATFORM::CMutex m_mutex;
   };
 }

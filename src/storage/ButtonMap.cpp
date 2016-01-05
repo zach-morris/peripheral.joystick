@@ -20,7 +20,7 @@
 
 #include "ButtonMap.h"
 
-#include "platform/util/timeutils.h"
+#include "p8-platform/util/timeutils.h"
 
 using namespace JOYSTICK;
 
@@ -66,7 +66,7 @@ bool CButtonMap::MapFeatures(const std::string& controllerId, const FeatureVecto
 
     if (Save())
     {
-      m_timestamp = PLATFORM::GetTimeMs();
+      m_timestamp = P8PLATFORM::GetTimeMs();
       return true;
     }
   }
@@ -77,7 +77,7 @@ bool CButtonMap::MapFeatures(const std::string& controllerId, const FeatureVecto
 bool CButtonMap::Refresh(void)
 {
   const int64_t expires = m_timestamp + RESOURCE_LIFETIME_MS;
-  const int64_t now = PLATFORM::GetTimeMs();
+  const int64_t now = P8PLATFORM::GetTimeMs();
 
   if (now >= expires)
   {

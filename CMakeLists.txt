@@ -11,7 +11,7 @@ include(CheckIncludeFiles)
 
 find_package(kodi REQUIRED)
 find_package(kodiplatform REQUIRED)
-find_package(platform REQUIRED)
+find_package(p8-platform REQUIRED)
 find_package(PCRE REQUIRED)
 
 include_directories(${INCLUDES}

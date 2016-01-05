@@ -28,7 +28,7 @@
 #include <algorithm>
 
 using namespace JOYSTICK;
-using namespace PLATFORM;
+using namespace P8PLATFORM;
 
 #define FOLDER_DEPTH  1  // Recurse into max 1 subdirectories (provider)
 

@@ -22,7 +22,7 @@
 #include "JoystickTypes.h"
 
 #include "kodi/kodi_peripheral_utils.hpp"
-#include "platform/threads/mutex.h"
+#include "p8-platform/threads/mutex.h"
 
 #include <vector>
 
@@ -88,7 +88,7 @@ namespace JOYSTICK
     std::vector<IJoystickInterface*> m_interfaces;
     JoystickVector                   m_joysticks;
     unsigned int                     m_nextJoystickIndex;
-    mutable PLATFORM::CMutex         m_interfacesMutex;
-    mutable PLATFORM::CMutex         m_joystickMutex;
+    mutable P8PLATFORM::CMutex         m_interfacesMutex;
+    mutable P8PLATFORM::CMutex         m_joystickMutex;
   };
 }

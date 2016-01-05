@@ -20,7 +20,7 @@
 
 #include "DirectoryCache.h"
 
-#include "platform/util/timeutils.h"
+#include "p8-platform/util/timeutils.h"
 
 #include <algorithm>
 
@@ -66,7 +66,7 @@ bool CDirectoryCache::GetDirectory(const std::string& path, std::vector<ADDON::C
     const int64_t timestamp = record.first;
     const int64_t expires = timestamp + DIRECTORY_LIFETIME_MS;
 
-    if (expires <= PLATFORM::GetTimeMs())
+    if (expires <= P8PLATFORM::GetTimeMs())
     {
       items = record.second;
       return true;
@@ -106,6 +106,6 @@ void CDirectoryCache::UpdateDirectory(const std::string& path, const std::vector
     }
   }
 
-  timestamp = PLATFORM::GetTimeMs();
+  timestamp = P8PLATFORM::GetTimeMs();
   cachedItems = items;
 }

@@ -22,7 +22,7 @@
 
 #include "ILog.h"
 
-#include "platform/threads/mutex.h"
+#include "p8-platform/threads/mutex.h"
 
 #ifndef esyslog
 #define esyslog(...) JOYSTICK::CLog::Get().Log(SYS_LOG_ERROR, __VA_ARGS__)
@@ -61,6 +61,6 @@ namespace JOYSTICK
   private:
     ILog*            m_pipe;
     SYS_LOG_LEVEL    m_level;
-    PLATFORM::CMutex m_mutex;
+    P8PLATFORM::CMutex m_mutex;
   };
 }
