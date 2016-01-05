@@ -24,14 +24,14 @@
 #include "utils/CommonMacros.h"
 #include "utils/StringUtils.h"
 
-#include "platform/util/timeutils.h"
+#include "p8-platform/util/timeutils.h"
 
 using namespace JOYSTICK;
 
 #define ANALOG_EPSILON  0.0001f
 
 CJoystick::CJoystick(const std::string& strProvider)
- : m_discoverTimeMs(PLATFORM::GetTimeMs()),
+ : m_discoverTimeMs(P8PLATFORM::GetTimeMs()),
    m_activateTimeMs(-1),
    m_firstEventTimeMs(-1),
    m_lastEventTimeMs(-1)
@@ -161,7 +161,7 @@ void CJoystick::GetAxisEvents(std::vector<ADDON::PeripheralEvent>& events)
 void CJoystick::SetButtonValue(unsigned int buttonIndex, JOYSTICK_STATE_BUTTON buttonValue)
 {
   if (m_activateTimeMs < 0)
-    m_activateTimeMs = PLATFORM::GetTimeMs();
+    m_activateTimeMs = P8PLATFORM::GetTimeMs();
 
   if (buttonIndex < ButtonCount())
     m_stateBuffer.buttons[buttonIndex] = buttonValue;
@@ -170,7 +170,7 @@ void CJoystick::SetButtonValue(unsigned int buttonIndex, JOYSTICK_STATE_BUTTON b
 void CJoystick::SetHatValue(unsigned int hatIndex, JOYSTICK_STATE_HAT hatValue)
 {
   if (m_activateTimeMs < 0)
-    m_activateTimeMs = PLATFORM::GetTimeMs();
+    m_activateTimeMs = P8PLATFORM::GetTimeMs();
 
   if (hatIndex < HatCount())
     m_stateBuffer.hats[hatIndex] = hatValue;
@@ -179,7 +179,7 @@ void CJoystick::SetHatValue(unsigned int hatIndex, JOYSTICK_STATE_HAT hatValue)
 void CJoystick::SetAxisValue(unsigned int axisIndex, JOYSTICK_STATE_AXIS axisValue)
 {
   if (m_activateTimeMs < 0)
-    m_activateTimeMs = PLATFORM::GetTimeMs();
+    m_activateTimeMs = P8PLATFORM::GetTimeMs();
 
   axisValue = CONSTRAIN(-1.0f, axisValue, 1.0f);
 
@@ -195,8 +195,8 @@ void CJoystick::SetAxisValue(unsigned int axisIndex, long value, long maxAxisAmo
 void CJoystick::UpdateTimers(void)
 {
   if (m_firstEventTimeMs < 0)
-    m_firstEventTimeMs = PLATFORM::GetTimeMs();
-  m_lastEventTimeMs = PLATFORM::GetTimeMs();
+    m_firstEventTimeMs = P8PLATFORM::GetTimeMs();
+  m_lastEventTimeMs = P8PLATFORM::GetTimeMs();
 }
 
 float CJoystick::NormalizeAxis(long value, long maxAxisAmount)

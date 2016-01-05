@@ -24,7 +24,7 @@
 #include <stdio.h>
 
 using namespace JOYSTICK;
-using namespace PLATFORM;
+using namespace P8PLATFORM;
 
 void CLogConsole::Log(SYS_LOG_LEVEL level, const char* logline)
 {
