@@ -56,7 +56,9 @@
             <feature name="a" button="1" />
             <feature name="analogstick">
                 <up axis="-1" />
+                <down axis="+1" />
                 <right axis="+0" />
+                <left axis="-0" />
             </feature>
             <feature name="b" button="2" />
             <feature name="cdown" axis="+3" />
