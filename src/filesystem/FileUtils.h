@@ -35,12 +35,6 @@ namespace JOYSTICK
     static bool Initialize(ADDON::CHelper_libXBMC_addon* frontend);
     static void Deinitialize(void);
 
-    // File operations
-    static bool ExistsOnVFS(const std::string& url);
-    static FilePtr OpenFile(const std::string& url, READ_FLAG flags = READ_FLAG_NONE);
-    static FilePtr OpenFileForWrite(const std::string& url, bool bOverWrite = false);
-
-    // File utility operations
     static bool Exists(const std::string& url);
     static bool Stat(const std::string& url, STAT_STRUCTURE& buffer);
     static bool Rename(const std::string& url, const std::string& newUrl);
@@ -48,13 +42,6 @@ namespace JOYSTICK
     static bool SetHidden(const std::string& url, bool bHidden);
 
   private:
-    /*!
-     * \brief Create a file to handle the specified URL
-     *
-     * \return The file, or empty if no file implementations can handle the URL
-     */
-    static FilePtr CreateFile(const std::string& url);
-
     /*!
      * \brief Create a file utilities instance to handle the specified URL
      *

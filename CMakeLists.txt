@@ -36,7 +36,6 @@ set(JOYSTICK_SOURCES src/addon.cpp
                      src/filesystem/generic/ReadableFile.cpp
                      src/filesystem/generic/SeekableFile.cpp
                      src/filesystem/vfs/VFSDirectoryUtils.cpp
-                     src/filesystem/vfs/VFSFile.cpp
                      src/filesystem/vfs/VFSFileUtils.cpp
                      src/log/Log.cpp
                      src/log/LogAddon.cpp

@@ -19,7 +19,6 @@
  */
 
 #include "FileUtils.h"
-#include "filesystem/vfs/VFSFile.h"
 #include "filesystem/vfs/VFSFileUtils.h"
 
 #include "kodi/libXBMC_addon.h"
@@ -39,40 +38,6 @@ void CFileUtils::Deinitialize(void)
 {
   m_frontend = NULL;
 }
-
-// --- File operations ---------------------------------------------------------
-
-bool CFileUtils::ExistsOnVFS(const std::string& url)
-{
-  // Create file
-  FilePtr file = CreateFile(url);
-  if (file.get() != NULL)
-    return true;
-
-  return false;
-}
-
-FilePtr CFileUtils::OpenFile(const std::string& url, READ_FLAG flags /* = READ_FLAG_NONE */)
-{
-  // Create file
-  FilePtr file = CreateFile(url);
-  if (file && file->Open(url, flags))
-    return file;
-
-  return FilePtr();
-}
-
-FilePtr CFileUtils::OpenFileForWrite(const std::string& url, bool bOverWrite /* = false */)
-{
-  // Create file
-  FilePtr file = CreateFile(url);
-  if (file && file->OpenForWrite(url, bOverWrite))
-    return file;
-
-  return FilePtr();
-}
-
-// --- File utility operations -------------------------------------------------
 
 bool CFileUtils::Exists(const std::string& url)
 {
@@ -122,16 +87,6 @@ bool CFileUtils::SetHidden(const std::string& url, bool bHidden)
     return fileUtils->SetHidden(url, bHidden);
 
   return false;
-}
-
-FilePtr CFileUtils::CreateFile(const std::string& url)
-{
-  FilePtr file;
-
-  if (m_frontend)
-    file = FilePtr(new CVFSFile(m_frontend));
-
-  return file;
 }
 
 FileUtilsPtr CFileUtils::CreateFileUtils(const std::string& url)
