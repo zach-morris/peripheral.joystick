@@ -266,7 +266,10 @@ PERIPHERAL_ERROR MapFeatures(const JOYSTICK_INFO* joystick, const char* controll
 
 void ResetButtonMap(const JOYSTICK_INFO* joystick, const char* controller_id)
 {
-  // TODO
+  if (!joystick || !controller_id)
+    return;
+
+  CStorageManager::Get().ResetButtonMap(ADDON::Joystick(*joystick), controller_id);
 }
 
 } // extern "C"

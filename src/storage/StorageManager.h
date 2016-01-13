@@ -86,6 +86,14 @@ namespace JOYSTICK
                      const FeatureVector& features);
 
     /*!
+     * \brief Reset the button map for the specified device and controller profile
+     *
+     * \param deviceName The name of the device to reset
+     * \param controllerId The controller ID to reset
+     */
+    void ResetButtonMap(const ADDON::Joystick& joystick, const std::string& strControllerId);
+
+    /*!
      * \brief Notify the frontend that button maps have changed
      *
      * \param[optional] deviceName The name of the device to refresh, or empty for all devices

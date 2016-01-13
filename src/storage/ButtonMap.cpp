@@ -74,6 +74,24 @@ bool CButtonMap::MapFeatures(const std::string& controllerId, const FeatureVecto
   return false;
 }
 
+bool CButtonMap::ResetButtonMap(const std::string& controllerId)
+{
+  FeatureVector& features = m_buttonMap[controllerId];
+
+  if (!features.empty())
+  {
+    features.clear();
+
+    if (Save())
+    {
+      m_timestamp = P8PLATFORM::GetTimeMs();
+      return true;
+    }
+  }
+
+  return false;
+}
+
 bool CButtonMap::Refresh(void)
 {
   const int64_t expires = m_timestamp + RESOURCE_LIFETIME_MS;

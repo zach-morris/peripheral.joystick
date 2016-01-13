@@ -45,5 +45,11 @@ namespace JOYSTICK
     virtual bool MapFeatures(const CDevice& driverInfo,
                              const std::string& controllerId,
                              const FeatureVector& features) = 0;
+
+    /*!
+     * \copydoc CStorageManager::ResetButtonMap()
+     */
+    virtual bool ResetButtonMap(const CDevice& driverInfo,
+                                const std::string& controllerId) = 0;
   };
 }

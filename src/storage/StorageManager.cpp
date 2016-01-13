@@ -120,6 +120,19 @@ bool CStorageManager::MapFeatures(const ADDON::Joystick& joystick,
   return bModified;
 }
 
+void CStorageManager::ResetButtonMap(const ADDON::Joystick& joystick, const std::string& strControllerId)
+{
+  CDevice deviceInfo(joystick);
+
+  bool bModified = false;
+
+  for (DatabaseVector::const_iterator it = m_databases.begin(); it != m_databases.end(); ++it)
+    bModified |= (*it)->ResetButtonMap(deviceInfo, strControllerId);
+
+  if (bModified)
+    RefreshButtonMaps(deviceInfo.Name(), strControllerId);
+}
+
 void CStorageManager::RefreshButtonMaps(const std::string& strDeviceName /* = "" */,
                                         const std::string& strControllerId /* = "" */)
 {

@@ -61,6 +61,8 @@ namespace JOYSTICK
     virtual bool MapFeatures(const CDevice& driverInfo,
                              const std::string& controllerId,
                              const FeatureVector& features) override;
+    virtual bool ResetButtonMap(const CDevice& driverInfo,
+                                const std::string& controllerId) override;
 
     // implementation of IDirectoryCacheCallback
     virtual void OnAdd(const ADDON::CVFSDirEntry& item) override;

@@ -42,6 +42,8 @@ namespace JOYSTICK
 
     bool MapFeatures(const std::string& controllerId, const FeatureVector& features);
 
+    bool ResetButtonMap(const std::string& controllerId);
+
     bool Refresh(void);
 
   protected:

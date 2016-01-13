@@ -143,6 +143,22 @@ bool CJustABunchOfFiles::MapFeatures(const CDevice& driverInfo,
   return false;
 }
 
+bool CJustABunchOfFiles::ResetButtonMap(const CDevice& driverInfo, const std::string& controllerId)
+{
+  if (!m_bReadWrite)
+    return false;
+
+  CLockObject lock(m_mutex);
+
+  CButtonMap* resource = m_resources.GetResource(driverInfo);
+
+  if (resource)
+    return resource->ResetButtonMap(controllerId);
+
+  return false;
+
+}
+
 void CJustABunchOfFiles::IndexDirectory(const std::string& path, unsigned int folderDepth)
 {
   std::vector<ADDON::CVFSDirEntry> items;
