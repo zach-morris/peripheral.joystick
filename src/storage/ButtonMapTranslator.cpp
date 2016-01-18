@@ -68,7 +68,7 @@ ADDON::DriverPrimitive ButtonMapTranslator::ToDriverPrimitive(const std::string&
 
   if (!strPrimitive.empty())
   {
-    bool bIsButton = std::isdigit(strPrimitive[0]);
+    bool bIsButton = std::isdigit(strPrimitive[0]) ? true : false;
     bool bIsHat = (strPrimitive[0] == HAT_CHAR);
     bool bIsAxis = (JoystickTranslator::TranslateSemiAxisDir(strPrimitive[0]) != JOYSTICK_DRIVER_SEMIAXIS_UNKNOWN);
 
