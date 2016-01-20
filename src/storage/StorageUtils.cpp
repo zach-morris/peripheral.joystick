@@ -21,8 +21,10 @@
 #include "StorageUtils.h"
 #include "filesystem/DirectoryUtils.h"
 #include "log/Log.h"
+#include "utils/StringUtils.h"
 
 #include <set>
+#include <stdio.h>
 
 using namespace JOYSTICK;
 
@@ -47,3 +49,20 @@ bool CStorageUtils::EnsureDirectoryExists(const std::string& path)
 
   return true;
 }
+
+int CStorageUtils::HexStringToInt(const char* strHex)
+{
+  int iVal;
+  sscanf(strHex, "%x", &iVal);
+  return iVal;
+};
+
+std::string CStorageUtils::FormatHexString(int iVal)
+{
+  if (iVal < 0)
+    iVal = 0;
+  if (iVal > 65536)
+    iVal = 65536;
+
+  return StringUtils::Format("%04X", iVal);
+};

@@ -19,6 +19,7 @@
  */
 #pragma once
 
+#include <stdarg.h>
 #include <string>
 
 namespace JOYSTICK
@@ -56,5 +57,20 @@ namespace JOYSTICK
     static std::string& TrimRight(std::string& str, const char* chars);
 
     static bool EndsWith(const std::string& str, const std::string& suffix);
+
+    /*!
+     * \brief Get a formatted string similar to sprintf
+     *
+     * Beware that this does not support directly passing in
+     * std::string objects. You need to call c_str() to pass
+     * the const char* buffer representing the value of the
+     * std::string object.
+     *
+     * \param fmt Format of the resulting string
+     * \param ... variable number of value type arguments
+     * \return Formatted string
+    */
+    static std::string Format(const char* fmt, ...);
+    static std::string FormatV(const char* fmt, va_list args);
   };
 }

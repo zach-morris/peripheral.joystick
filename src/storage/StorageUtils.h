@@ -29,6 +29,16 @@ namespace JOYSTICK
   public:
     static bool EnsureDirectoryExists(const std::string& path);
 
+    /*!
+     * From PeripheralTypes.h of Kodi
+     */
+    static int HexStringToInt(const char* strHex);
+
+    /*!
+     * From PeripheralTypes.h of Kodi
+     */
+    static std::string FormatHexString(int iVal);
+
   private:
     static std::set<std::string> m_existingDirs; // Cache list of existing dirs
   };

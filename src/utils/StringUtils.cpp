@@ -24,8 +24,11 @@
 #include <cctype>
 #include <functional>
 #include <pcrecpp.h>
+#include <stdio.h>
 
 using namespace JOYSTICK;
+
+#define FORMAT_BLOCK_SIZE  512 // # of bytes for initial allocation for printf
 
 // --- isspace_c() -------------------------------------------------------------
 
@@ -111,4 +114,58 @@ bool StringUtils::EndsWith(const std::string& str, const std::string& suffix)
   if (str.length() >= suffix.length())
     return str.substr(str.length() - suffix.length()) == suffix;
   return false;
+}
+
+std::string StringUtils::Format(const char *fmt, ...)
+{
+  va_list args;
+  va_start(args, fmt);
+  std::string str = FormatV(fmt, args);
+  va_end(args);
+
+  return str;
+}
+
+std::string StringUtils::FormatV(const char* fmt, va_list args)
+{
+  if (!fmt || !fmt[0])
+    return "";
+
+  int size = FORMAT_BLOCK_SIZE;
+  va_list argCopy;
+
+  while (1)
+  {
+    char* cstr = reinterpret_cast<char*>(malloc(sizeof(char) * size));
+    if (!cstr)
+      return "";
+
+    va_copy(argCopy, args);
+    int nActual = vsnprintf(cstr, size, fmt, argCopy);
+    va_end(argCopy);
+
+    if (nActual > -1 && nActual < size) // We got a valid result
+    {
+      std::string str(cstr, nActual);
+      free(cstr);
+      return str;
+    }
+    free(cstr);
+#ifndef __WIN32__
+    if (nActual > -1)                   // Exactly what we will need (glibc 2.1)
+      size = nActual + 1;
+    else                                // Let's try to double the size (glibc 2.0)
+      size *= 2;
+#else  // __WIN32__
+    va_copy(argCopy, args);
+    size = _vscprintf(fmt, argCopy);
+    va_end(argCopy);
+    if (size < 0)
+      return "";
+    else
+      size++; // increment for null-termination
+#endif // __WIN32__
+  }
+
+  return ""; // unreachable
 }
