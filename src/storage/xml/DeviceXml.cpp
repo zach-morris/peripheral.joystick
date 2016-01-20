@@ -30,7 +30,7 @@
 
 using namespace JOYSTICK;
 
-bool CDeviceXml::Serialize(const CDevice& record, TiXmlElement* pElement)
+void CDeviceXml::Serialize(const CDevice& record, TiXmlElement* pElement)
 {
   pElement->SetAttribute(BUTTONMAP_XML_ATTR_DEVICE_NAME, record.Name());
   pElement->SetAttribute(BUTTONMAP_XML_ATTR_DEVICE_PROVIDER, record.Provider());
@@ -45,10 +45,9 @@ bool CDeviceXml::Serialize(const CDevice& record, TiXmlElement* pElement)
     pElement->SetAttribute(BUTTONMAP_XML_ATTR_DEVICE_HATCOUNT, record.HatCount());
   if (record.AxisCount() != 0)
     pElement->SetAttribute(BUTTONMAP_XML_ATTR_DEVICE_AXISCOUNT, record.AxisCount());
-  return true;
 }
 
-bool CDeviceXml::Deserialize(const TiXmlElement* pElement, CDevice& record)
+void CDeviceXml::Deserialize(const TiXmlElement* pElement, CDevice& record)
 {
   const char* name = pElement->Attribute(BUTTONMAP_XML_ATTR_DEVICE_NAME);
   if (!name)
@@ -85,6 +84,4 @@ bool CDeviceXml::Deserialize(const TiXmlElement* pElement, CDevice& record)
   const char* axisCount = pElement->Attribute(BUTTONMAP_XML_ATTR_DEVICE_AXISCOUNT);
   if (axisCount)
     record.SetAxisCount(std::atoi(axisCount));
-
-  return true;
 }

@@ -67,8 +67,7 @@ bool CButtonMapXml::Load(void)
     return false;
   }
 
-  if (!CDeviceXml::Deserialize(pDevice, m_device))
-    return false;
+  CDeviceXml::Deserialize(pDevice, m_device);
 
   const TiXmlElement* pController = pDevice->FirstChildElement(BUTTONMAP_XML_ELEM_CONTROLLER);
 

@@ -28,7 +28,7 @@ namespace JOYSTICK
   class CDeviceXml
   {
   public:
-    static bool Serialize(const CDevice& record, TiXmlElement* pElement);
-    static bool Deserialize(const TiXmlElement* pElement, CDevice& record);
+    static void Serialize(const CDevice& record, TiXmlElement* pElement);
+    static void Deserialize(const TiXmlElement* pElement, CDevice& record);
   };
 }
