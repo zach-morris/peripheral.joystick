@@ -42,7 +42,6 @@ bool CXInputDLL::Load(void)
 {
   CLockObject lock(m_mutex);
 
-
   m_strVersion = "1.4";
   dsyslog("Attempting to load XInput1_4.dll...");
   m_dll = LoadLibrary("XInput1_4.dll");  // 1.4 Ships with Windows 8
@@ -51,37 +50,42 @@ bool CXInputDLL::Load(void)
     m_strVersion = "1.3";
     dsyslog("Attempting to load XInput1_3.dll...");
     m_dll = LoadLibrary("XInput1_3.dll");  // 1.3 Ships with Vista and Win7, can be installed as a redistributable component
+    if (!m_dll)
+    {
+      dsyslog("Attempting to load bin\\XInput1_3.dll...");
+      m_dll = LoadLibrary("bin\\XInput1_3.dll");
+    }
   }
-
-  if (!m_dll)
-    dsyslog("Attempting to load bin\\XInput1_3.dll...");
-    m_dll = LoadLibrary("bin\\XInput1_3.dll");
 
   if (!m_dll)
   {
     esyslog("Failed to load XInput DLL");
-    Unload();
   }
-
-  dsyslog("Loaded XInput DLL version %s", m_strVersion.c_str());
-
-  // 100 is the ordinal for _XInputGetStateEx, which returns the same struct as
-  // XinputGetState, but with extra data in wButtons for the guide button, we think...
-  m_getState = (FnXInputGetState)GetProcAddress(m_dll, reinterpret_cast<LPCSTR>(100));
-  m_setState = (FnXInputSetState)GetProcAddress(m_dll, "XInputSetState");
-  m_getCaps  = (FnXInputGetCapabilities)GetProcAddress(m_dll, "XInputGetCapabilities");
-
-  if (!m_getState || !m_setState || !m_getCaps)
+  else
   {
-    esyslog("Failed to load one or more symbols (GetState=%p, SetState=%p, GetCaps=%p)",
-      m_getState, m_setState, m_getCaps);
-    Unload();
+    dsyslog("Loaded XInput DLL version %s", m_strVersion.c_str());
+
+    // 100 is the ordinal for _XInputGetStateEx, which returns the same struct as
+    // XinputGetState, but with extra data in wButtons for the guide button, we think...
+    m_getState = (FnXInputGetState)GetProcAddress(m_dll, reinterpret_cast<LPCSTR>(100));
+    m_setState = (FnXInputSetState)GetProcAddress(m_dll, "XInputSetState");
+    m_getCaps  = (FnXInputGetCapabilities)GetProcAddress(m_dll, "XInputGetCapabilities");
+
+    if (m_getState && m_setState && m_getCaps)
+    {
+      dsyslog("Loaded XInput symbols (GetState=%p, SetState=%p, GetCaps=%p)",
+              m_getState, m_setState, m_getCaps);
+      return true;
+    }
+    else
+    {
+      esyslog("Failed to load one or more symbols (GetState=%p, SetState=%p, GetCaps=%p)",
+              m_getState, m_setState, m_getCaps);
+    }
   }
 
-  dsyslog("Loaded XInput symbols (GetState=%p, SetState=%p, GetCaps=%p)",
-      m_getState, m_setState, m_getCaps);
-
-  return true;
+  Unload();
+  return false;
 }
 
 void CXInputDLL::Unload(void)
