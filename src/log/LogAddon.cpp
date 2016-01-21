@@ -20,9 +20,8 @@
  */
 
 #include "LogAddon.h"
+#include "utils/CommonIncludes.h" // for libXBMC_addon.h
 #include "utils/CommonMacros.h"
-
-#include "kodi/libXBMC_addon.h"
 
 using namespace JOYSTICK;
 

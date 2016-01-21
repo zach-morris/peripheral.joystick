@@ -19,8 +19,7 @@
  */
 
 #include "VFSDirectoryUtils.h"
-
-#include "kodi/libXBMC_addon.h"
+#include "utils/CommonIncludes.h" // for libXBMC_addon.h
 
 #include <assert.h>
 

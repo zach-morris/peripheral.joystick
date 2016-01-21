@@ -20,8 +20,7 @@
 
 #include "DirectoryUtils.h"
 #include "filesystem/vfs/VFSDirectoryUtils.h"
-
-#include "kodi/libXBMC_addon.h"
+#include "utils/CommonIncludes.h" // for libXBMC_addon.h
 
 using namespace JOYSTICK;
 

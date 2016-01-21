@@ -18,15 +18,8 @@
  *
  */
 
-// This must be #defined before libXBMC_addon.h to fix compile
-#if !defined(_WIN32)
-  #include <sys/stat.h>
-  #define __stat64 stat64
-#endif
-
 #include "VFSFileUtils.h"
-
-#include "kodi/libXBMC_addon.h"
+#include "utils/CommonIncludes.h" // for libXBMC_addon.h
 
 #include <assert.h>
 
