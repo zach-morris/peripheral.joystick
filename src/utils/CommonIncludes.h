@@ -25,8 +25,4 @@
   #define __stat64 stat64
 #endif
 
-#if !defined (BUILD_KODI_ADDON)
-  #define BUILD_KODI_ADDON
-#endif
-
 #include "kodi/libXBMC_addon.h"

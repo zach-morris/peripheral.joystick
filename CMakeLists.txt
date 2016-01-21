@@ -18,7 +18,7 @@ include_directories(${INCLUDES}
                     ${PROJECT_SOURCE_DIR}/src
                     ${KODI_INCLUDE_DIR}
                     ${kodiplatform_INCLUDE_DIRS}
-                    ${platform_INCLUDE_DIRS}
+                    ${p8-platform_INCLUDE_DIRS}
                     ${PCRE_INCLUDE_DIRS})
 
 set(JOYSTICK_SOURCES src/addon.cpp
@@ -59,7 +59,7 @@ if(HAVE_SYSLOG)
 endif()
 
 list(APPEND DEPLIBS ${kodiplatform_LIBRARIES}
-                    ${platform_LIBRARIES}
+                    ${p8-platform_LIBRARIES}
                     ${PCRE_LIBRARIES})
 add_definitions(${PCRE_DEFINITIONS})
 
