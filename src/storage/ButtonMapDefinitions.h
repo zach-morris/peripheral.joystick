@@ -48,6 +48,7 @@
 #define BUTTONMAP_XML_ATTR_DEVICE_BUTTONCOUNT  "buttoncount"
 #define BUTTONMAP_XML_ATTR_DEVICE_HATCOUNT     "hatcount"
 #define BUTTONMAP_XML_ATTR_DEVICE_AXISCOUNT    "axiscount"
+#define BUTTONMAP_XML_ATTR_DEVICE_INDEX        "index"
 #define BUTTONMAP_XML_ATTR_DATA_PATH           "path"
 
 #define BUTTONMAP_XML_ATTR_CONTROLLER_ID       "id"
