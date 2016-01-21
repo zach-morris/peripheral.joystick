@@ -19,6 +19,7 @@
  */
 
 #include "Device.h"
+#include "StorageUtils.h"
 #include "utils/StringUtils.h"
 
 #include <algorithm>
@@ -154,8 +155,8 @@ std::string CDevice::RootFileName(void) const
   filename << baseFilename;
   if (IsVidPidKnown())
   {
-    filename << "_v" << VendorID();
-    filename << "_p" << ProductID();
+    filename << "_v" << CStorageUtils::FormatHexString(VendorID());
+    filename << "_p" << CStorageUtils::FormatHexString(ProductID());
   }
   if (ButtonCount() != 0)
     filename << "_" << ButtonCount() << "b";
