@@ -22,7 +22,7 @@
 #include "log/Log.h"
 
 using namespace JOYSTICK;
-using namespace PLATFORM;
+using namespace P8PLATFORM;
 
 CXInputDLL::CXInputDLL(void)
  : m_dll(NULL),
