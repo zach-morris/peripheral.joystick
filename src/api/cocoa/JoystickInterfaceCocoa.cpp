@@ -26,7 +26,7 @@
 #include <algorithm>
 
 using namespace JOYSTICK;
-using namespace PLATFORM;
+using namespace P8PLATFORM;
 
 // --- MatchingDictionary ------------------------------------------------------
 
