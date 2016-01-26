@@ -124,18 +124,41 @@ bool CXInputDLL::GetState(unsigned int controllerId, XINPUT_STATE_EX& state)
 
 bool CXInputDLL::SetState(unsigned int controllerId, XINPUT_VIBRATION& vibration)
 {
+  CLockObject lock(m_mutex);
+
   if (!m_setState)
     return false;
 
-  // TODO
-  return false;
+  DWORD result = m_setState(controllerId, &vibration);
+  if (result != ERROR_SUCCESS)
+  {
+    if (result == ERROR_DEVICE_NOT_CONNECTED)
+      dsyslog("No XInput devices on port %u", controllerId);
+    else
+      esyslog("Failed to set XInput state on port %u (result=%u)", controllerId, result);
+    return false;
+  }
+
+  return true;
 }
 
 bool CXInputDLL::GetCapabilities(unsigned int controllerId, XINPUT_CAPABILITIES& caps)
 {
+  CLockObject lock(m_mutex);
+
   if (!m_getCaps)
     return false;
 
-  // TODO
-  return false;
+  // currently no other value than XINPUT_FLAG_GAMEPAD is supported for the second parameter
+  DWORD result = m_getCaps(controllerId, XINPUT_FLAG_GAMEPAD, &caps);
+  if (result != ERROR_SUCCESS)
+  {
+    if (result == ERROR_DEVICE_NOT_CONNECTED)
+      dsyslog("No XInput devices on port %u", controllerId);
+    else
+      esyslog("Failed to get XInput capabilities on port %u (result=%u)", controllerId, result);
+    return false;
+  }
+
+  return true;
 }
