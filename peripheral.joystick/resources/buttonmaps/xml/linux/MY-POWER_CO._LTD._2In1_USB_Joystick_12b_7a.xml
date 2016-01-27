@@ -1,9 +1,9 @@
 <?xml version="1.0" ?>
 <buttonmap>
-    <device name="GreenAsia Inc.    USB Joystick" provider="linux" buttoncount="12" axiscount="7">
+    <device name="MY-POWER CO.,LTD. 2In1 USB Joystick" provider="linux" buttoncount="12" axiscount="7">
         <controller id="game.controller.default">
             <feature name="a" button="2" />
-            <feature name="b" button="3" />
+            <feature name="b" button="1" />
             <feature name="back" button="8" />
             <feature name="down" axis="+5" />
             <feature name="left" axis="-4" />
@@ -19,17 +19,17 @@
             <feature name="right" axis="+4" />
             <feature name="rightbumper" button="5" />
             <feature name="rightstick">
-                <up axis="-2" />
-                <down axis="+2" />
-                <right axis="+3" />
-                <left axis="-3" />
+                <up axis="-3" />
+                <down axis="+3" />
+                <right axis="+2" />
+                <left axis="-2" />
             </feature>
             <feature name="rightthumb" button="11" />
             <feature name="righttrigger" button="7" />
             <feature name="start" button="9" />
             <feature name="up" axis="-5" />
-            <feature name="x" button="0" />
-            <feature name="y" button="1" />
+            <feature name="x" button="3" />
+            <feature name="y" button="0" />
         </controller>
         <controller id="game.controller.dreamcast">
             <feature name="a" button="2" />
@@ -39,20 +39,20 @@
                 <right axis="+0" />
                 <left axis="-0" />
             </feature>
-            <feature name="b" button="3" />
+            <feature name="b" button="1" />
             <feature name="down" axis="+5" />
             <feature name="left" axis="-4" />
-            <feature name="lefttrigger" button="4" />
+            <feature name="lefttrigger" button="6" />
             <feature name="right" axis="+4" />
-            <feature name="righttrigger" button="5" />
+            <feature name="righttrigger" button="7" />
             <feature name="start" button="9" />
             <feature name="up" axis="-5" />
-            <feature name="x" button="0" />
-            <feature name="y" button="1" />
+            <feature name="x" button="3" />
+            <feature name="y" button="0" />
         </controller>
         <controller id="game.controller.gba">
             <feature name="a" button="2" />
-            <feature name="b" button="3" />
+            <feature name="b" button="1" />
             <feature name="down" axis="+5" />
             <feature name="left" axis="-4" />
             <feature name="leftbumper" button="4" />
@@ -64,7 +64,7 @@
         </controller>
         <controller id="game.controller.genesis">
             <feature name="a" button="2" />
-            <feature name="b" button="3" />
+            <feature name="b" button="1" />
             <feature name="c" button="5" />
             <feature name="down" axis="+5" />
             <feature name="left" axis="-4" />
@@ -72,8 +72,8 @@
             <feature name="right" axis="+4" />
             <feature name="start" button="9" />
             <feature name="up" axis="-5" />
-            <feature name="x" button="0" />
-            <feature name="y" button="1" />
+            <feature name="x" button="3" />
+            <feature name="y" button="0" />
             <feature name="z" button="4" />
         </controller>
         <controller id="game.controller.n64">
@@ -84,11 +84,11 @@
                 <right axis="+0" />
                 <left axis="-0" />
             </feature>
-            <feature name="b" button="3" />
-            <feature name="cdown" axis="+2" />
-            <feature name="cleft" axis="-3" />
-            <feature name="cright" axis="+3" />
-            <feature name="cup" axis="-2" />
+            <feature name="b" button="1" />
+            <feature name="cdown" axis="+3" />
+            <feature name="cleft" axis="-2" />
+            <feature name="cright" axis="+2" />
+            <feature name="cup" axis="-3" />
             <feature name="down" axis="+5" />
             <feature name="left" axis="-4" />
             <feature name="leftbumper" button="4" />
@@ -100,7 +100,7 @@
         </controller>
         <controller id="game.controller.nes">
             <feature name="a" button="2" />
-            <feature name="b" button="3" />
+            <feature name="b" button="1" />
             <feature name="down" axis="+5" />
             <feature name="left" axis="-4" />
             <feature name="right" axis="+4" />
@@ -109,7 +109,7 @@
             <feature name="up" axis="-5" />
         </controller>
         <controller id="game.controller.ps">
-            <feature name="circle" button="3" />
+            <feature name="circle" button="1" />
             <feature name="cross" button="2" />
             <feature name="down" axis="+5" />
             <feature name="l3" button="10" />
@@ -126,20 +126,20 @@
             <feature name="right" axis="+4" />
             <feature name="rightbumper" button="5" />
             <feature name="rightstick">
-                <up axis="-2" />
-                <down axis="+2" />
-                <right axis="+3" />
-                <left axis="-3" />
+                <up axis="-3" />
+                <down axis="+3" />
+                <right axis="+2" />
+                <left axis="-2" />
             </feature>
             <feature name="righttrigger" button="7" />
             <feature name="select" button="8" />
-            <feature name="square" button="0" />
+            <feature name="square" button="3" />
             <feature name="start" button="9" />
-            <feature name="triangle" button="1" />
+            <feature name="triangle" button="0" />
             <feature name="up" axis="-5" />
         </controller>
         <controller id="game.controller.snes">
-            <feature name="a" button="3" />
+            <feature name="a" button="1" />
             <feature name="b" button="2" />
             <feature name="down" axis="+5" />
             <feature name="left" axis="-4" />
@@ -149,8 +149,8 @@
             <feature name="select" button="8" />
             <feature name="start" button="9" />
             <feature name="up" axis="-5" />
-            <feature name="x" button="1" />
-            <feature name="y" button="0" />
+            <feature name="x" button="0" />
+            <feature name="y" button="3" />
         </controller>
     </device>
 </buttonmap>
