@@ -67,6 +67,15 @@ namespace JOYSTICK
     bool SetState(unsigned int controllerId, XINPUT_VIBRATION& vibration);
     bool GetCapabilities(unsigned int controllerId, XINPUT_CAPABILITIES& caps);
 
+    enum class BatteryDeviceType
+    {
+      Controller,
+      Headset
+    };
+    bool GetBatteryInformation(unsigned int controllerId, BatteryDeviceType deviceType, XINPUT_BATTERY_INFORMATION& battery);
+
+    bool PowerOff(unsigned int controllerId);
+
   private:
     // Forward decl's for XInput API's we load dynamically and use if available
     // [in] Index of the gamer associated with the device
@@ -82,11 +91,20 @@ namespace JOYSTICK
     // [out] Receives the capabilities
     typedef DWORD (WINAPI* FnXInputGetCapabilities)(DWORD dwUserIndex, DWORD dwFlags, XINPUT_CAPABILITIES* pCapabilities);
 
-    HMODULE                 m_dll;
-    std::string             m_strVersion;
-    FnXInputGetState        m_getState;
-    FnXInputSetState        m_setState;
+    // [in] Index of the gamer associated with the device
+    // [in] Device associated with this user index to be queried. Must be BATTERY_DEVTYPE_GAMEPAD or BATTERY_DEVTYPE_HEADSET.
+    typedef DWORD (WINAPI* FnXInputGetBatteryInformation)(DWORD dwUserIndex, BYTE devType, XINPUT_BATTERY_INFORMATION *pBatteryInformation);
+
+    // [in] Index of the gamer associated with the device
+    typedef DWORD (WINAPI* FnXInputPowerOffController)(DWORD dwUserIndex);
+
+    HMODULE m_dll;
+    std::string m_strVersion;
+    FnXInputGetState m_getState;
+    FnXInputSetState m_setState;
     FnXInputGetCapabilities m_getCaps;
-    P8PLATFORM::CMutex        m_mutex;
+    FnXInputGetBatteryInformation m_getBatteryInfo;
+    FnXInputPowerOffController m_powerOff;
+    P8PLATFORM::CMutex m_mutex;
   };
 }

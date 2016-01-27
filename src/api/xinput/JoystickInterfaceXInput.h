@@ -19,7 +19,6 @@
  */
 #pragma once
 
-#include "XInputDLL.h"
 #include "api/IJoystickInterface.h"
 
 namespace JOYSTICK
