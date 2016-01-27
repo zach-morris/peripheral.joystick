@@ -29,7 +29,8 @@ CXInputDLL::CXInputDLL(void)
    m_getState(NULL),
    m_setState(NULL),
    m_getCaps(NULL),
-   m_getBatteryInfo(NULL)
+   m_getBatteryInfo(NULL),
+   m_powerOff(NULL)
 {
 }
 
@@ -72,17 +73,18 @@ bool CXInputDLL::Load(void)
     m_setState = (FnXInputSetState)GetProcAddress(m_dll, "XInputSetState");
     m_getCaps  = (FnXInputGetCapabilities)GetProcAddress(m_dll, "XInputGetCapabilities");
     m_getBatteryInfo = (FnXInputGetBatteryInformation)GetProcAddress(m_dll, "XInputGetBatteryInformation");
+    m_powerOff = (FnXInputPowerOffController)GetProcAddress(m_dll, reinterpret_cast<LPCSTR>(103));
 
-    if (m_getState && m_setState && m_getCaps && m_getBatteryInfo)
+    if (m_getState && m_setState && m_getCaps && m_getBatteryInfo && m_powerOff)
     {
-      dsyslog("Loaded XInput symbols (GetState=%p, SetState=%p, GetCaps=%p, GetBatteryInformation=%p)",
-              m_getState, m_setState, m_getCaps, m_getBatteryInfo);
+      dsyslog("Loaded XInput symbols (GetState=%p, SetState=%p, GetCaps=%p, GetBatteryInformation=%p, PowerOff=%p)",
+              m_getState, m_setState, m_getCaps, m_getBatteryInfo, m_powerOff);
       return true;
     }
     else
     {
-      esyslog("Failed to load one or more symbols (GetState=%p, SetState=%p, GetCaps=%p, GetBatteryInformation=%p)",
-              m_getState, m_setState, m_getCaps, m_getBatteryInfo);
+      esyslog("Failed to load one or more symbols (GetState=%p, SetState=%p, GetCaps=%p, GetBatteryInformation=%p, PowerOff=%p)",
+              m_getState, m_setState, m_getCaps, m_getBatteryInfo, m_powerOff);
     }
   }
 
@@ -102,6 +104,7 @@ void CXInputDLL::Unload(void)
   m_setState = NULL;
   m_getCaps  = NULL;
   m_getBatteryInfo  = NULL;
+  m_powerOff = NULL;
   m_dll      = NULL;
 }
 
@@ -196,6 +199,26 @@ bool CXInputDLL::GetBatteryInformation(unsigned int controllerId, BatteryDeviceT
       dsyslog("No XInput devices on port %u", controllerId);
     else
       esyslog("Failed to get XInput battery information on port %u (result=%u)", controllerId, result);
+    return false;
+  }
+
+  return true;
+}
+
+bool CXInputDLL::PowerOff(unsigned int controllerId)
+{
+  CLockObject lock(m_mutex);
+
+  if (!m_powerOff)
+    return false;
+
+  DWORD result = m_powerOff(controllerId);
+  if (result != ERROR_SUCCESS)
+  {
+    if (result == ERROR_DEVICE_NOT_CONNECTED)
+      dsyslog("No XInput devices on port %u", controllerId);
+    else
+      esyslog("Failed to power off XInput device on port %u (result=%u)", controllerId, result);
     return false;
   }
 
