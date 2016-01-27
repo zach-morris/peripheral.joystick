@@ -9,7 +9,7 @@ mkdir peripheral.joystick-build
 cd peripheral.joystick-build
 ```
 
-Generate a build environment with config for debugging (assuming you cloned Kodi into the folder `$HOME/workspace/kodi`)
+Generate a build environment with config for debugging (assuming `$HOME/workspace/kodi` symlinks to the folder you cloned Kodi into)
 
 ```shell
 cmake -DADDONS_TO_BUILD=peripheral.joystick \
@@ -37,11 +37,11 @@ make
 make install
 ```
 
-Clone kodi-platform and create a CMake build directory
+Clone p8-platform and create a CMake build directory
 
 ```shell
-git clone https://github.com/xbmc/kodi-platform.git
-cd kodi-platform
+git clone https://github.com/Pulse-Eight/platform.git
+cd platform
 mkdir build
 cd build
 cmake -DCMAKE_BUILD_TYPE=Debug \
@@ -51,14 +51,17 @@ make
 make install
 ```
 
-The platform library was split from kodi-platform. Do the same as above for the new platform library:
+The kodi-platform library was split from p8-platform. Do the same as above for this library:
 
 ```
-git clone https://github.com/Pulse-Eight/platform.git
+git clone https://github.com/xbmc/kodi-platform.git
 ...
 ```
 
-With these dependencies in place, the add-on can be built. Use the CMake command for kodi-platform above, or use this command to copy add-ons to your Kodi source tree:
+With these dependencies in place, the add-on can be built. You have two options:
+
+* Use the same CMake command for p8-platform above to install into the `--configure` prefix
+* Use this command to copy add-ons to your Kodi source tree:
 
 ```shell
 cmake -DCMAKE_BUILD_TYPE=Debug \
