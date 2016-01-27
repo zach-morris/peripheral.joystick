@@ -1,6 +1,6 @@
 <?xml version="1.0" ?>
 <buttonmap>
-    <device name="Generic   USB  Joystick" provider="directinput" vid="121" pid="6" buttoncount="12" hatcount="1" axiscount="5">
+    <device name="Generic   USB  Joystick" provider="directinput" vid="0079" pid="0006" buttoncount="12" hatcount="1" axiscount="5">
         <controller id="game.controller.default">
             <feature name="a" button="2" />
             <feature name="b" button="1" />

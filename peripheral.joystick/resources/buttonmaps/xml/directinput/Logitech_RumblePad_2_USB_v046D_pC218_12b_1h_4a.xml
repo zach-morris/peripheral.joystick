@@ -1,6 +1,6 @@
 <?xml version="1.0" ?>
 <buttonmap>
-    <device name="Logitech RumblePad 2 USB" provider="directinput" vid="1133" pid="49688" buttoncount="12" hatcount="1" axiscount="4">
+    <device name="Logitech RumblePad 2 USB" provider="directinput" vid="046D" pid="C218" buttoncount="12" hatcount="1" axiscount="4">
         <controller id="game.controller.default">
             <feature name="a" button="1" />
             <feature name="b" button="2" />

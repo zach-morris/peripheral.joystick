@@ -1,6 +1,6 @@
 <?xml version="1.0" ?>
 <buttonmap>
-    <device name="GamePad Pro USB" provider="directinput" vid="1064" pid="16385" buttoncount="10" axiscount="2">
+    <device name="GamePad Pro USB" provider="directinput" vid="0428" pid="4001" buttoncount="10" axiscount="2">
         <controller id="game.controller.default">
             <feature name="a" button="1" />
             <feature name="b" button="2" />
