@@ -123,6 +123,4 @@ prepare-binary-addons-dev.bat peripheral.joystick
 
 Open `project\cmake\addons\build\kodi-addons.sln` and build the solution. This downloads the add-on from the version specified in its text file (see above) and creates a Visual Studio project for it. If the build fails, try running it twice.
 
-Open the generated solution `project\cmake\addons\build\<addon-id>-prefix\src\<addon-id>-build\<addon-id>.sln` and build the add-on.
-
-This should package and copy the add-on to the `addons/` directory. If not, you can try building the INSTALL project or, worse case, copy by hand.
+This should package and copy the add-on to the `addons/` directory. If not, you can try opening the solution `project\cmake\addons\build\<addon-id>-prefix\src\<addon-id>-build\<addon-id>.sln` and building the INSTALL project or, worse case, copy by hand.
