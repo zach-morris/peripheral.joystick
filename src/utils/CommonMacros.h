@@ -41,7 +41,8 @@
 #endif
 
 #ifndef CONSTRAIN
-  #define CONSTRAIN(min, value, max)  ((value) < (min) ? (min) : (max) < (value) ? (max) : (value))
+  // Credit: https://stackoverflow.com/questions/8941262/constrain-function-port-from-arduino
+  #define CONSTRAIN(amt, low, high)  ((amt) < (low) ? (low) : ((amt) > (high) ? (high) : (amt)))
 #endif
 
 #ifndef ARRAY_SIZE
