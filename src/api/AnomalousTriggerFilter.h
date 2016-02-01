@@ -62,7 +62,12 @@ namespace JOYSTICK
       STATE_UNKNOWN,
 
       /*!
-       * \brief Axis is not a dpad with discrete values -1.0, 0.0, 1.0
+       * \brief Axis is a dpad with discrete values -1.0, 0.0, 1.0
+       */
+      STATE_DISCRETE_DPAD,
+
+      /*!
+       * \brief Axis is not a discrete dpad, but is otherwise unknown
        */
       STATE_NOT_DISCRETE_DPAD,
 
@@ -104,5 +109,8 @@ namespace JOYSTICK
     AXIS_STATE         m_state;
     AXIS_CENTER        m_center;
     TRIGGER_RANGE      m_range;
+    bool               m_bCenterSeen;
+    bool               m_bPositiveOneSeen;
+    bool               m_bNegativeOneSeen;
   };
 }

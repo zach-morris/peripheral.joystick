@@ -28,17 +28,31 @@ CAnomalousTriggerFilter::CAnomalousTriggerFilter(unsigned int axisIndex)
   : axisIndex(axisIndex),
     m_state(STATE_UNKNOWN),
     m_center(CENTER_ZERO),
-    m_range(TRIGGER_RANGE_HALF)
+    m_range(TRIGGER_RANGE_HALF),
+    m_bCenterSeen(false),
+    m_bPositiveOneSeen(false),
+    m_bNegativeOneSeen(false)
 {
 }
 
 float CAnomalousTriggerFilter::Filter(float value)
 {
+  // First, check for discrete D-pad
   if (m_state == STATE_UNKNOWN)
   {
+    // Is value a discrete integer?
     if (value == -1.0f || value == 0.0f || value == 1.0f)
     {
       // Might be a discrete dpad
+      if      (value ==  0.0f) m_bCenterSeen      = true;
+      else if (value ==  1.0f) m_bPositiveOneSeen = true;
+      else if (value == -1.0f) m_bNegativeOneSeen = true;
+
+      if (m_bCenterSeen && m_bPositiveOneSeen && m_bNegativeOneSeen)
+      {
+        m_state = STATE_DISCRETE_DPAD;
+        dsyslog("Discrete D-pad detected on axis %u", axisIndex);
+      }
     }
     else
     {
@@ -46,6 +60,7 @@ float CAnomalousTriggerFilter::Filter(float value)
     }
   }
 
+  // Calculate center position
   if (m_state == STATE_NOT_DISCRETE_DPAD)
   {
     if (value < -ANOMOLOUS_MAGNITUDE)
@@ -61,6 +76,7 @@ float CAnomalousTriggerFilter::Filter(float value)
     m_state = STATE_CENTER_KNOWN;
   }
 
+  // Process anomalous trigger
   if (IsAnomalousTrigger())
   {
     // Adjust range if value enters opposite semiaxis
