@@ -100,9 +100,9 @@ bool CJoystickCocoa::Initialize(void)
     SetAxisCount(m_axes.size());
 
     // Gather some identifying information
+    CFStringRef productRef = (CFStringRef)IOHIDDeviceGetProperty(m_device, CFSTR(kIOHIDProductKey));
     CFNumberRef vendorIdRef = (CFNumberRef)IOHIDDeviceGetProperty(m_device, CFSTR(kIOHIDVendorIDKey));
     CFNumberRef productIdRef = (CFNumberRef)IOHIDDeviceGetProperty(m_device, CFSTR(kIOHIDProductIDKey));
-    CFStringRef productRef = (CFStringRef)IOHIDDeviceGetProperty(m_device, CFSTR(kIOHIDProductKey));
 
     if (productRef)
     {
@@ -111,14 +111,17 @@ bool CJoystickCocoa::Initialize(void)
       SetName(product_name);
     }
 
-    int vendorId = 0;
-    int productId = 0;
+    if (vendorIdRef && productIdRef)
+    {
+      int vendorId = 0;
+      int productId = 0;
 
-    CFNumberGetValue(vendorIdRef, kCFNumberIntType, &vendorId);
-    CFNumberGetValue(productIdRef, kCFNumberIntType, &productId);
+      CFNumberGetValue(vendorIdRef, kCFNumberIntType, &vendorId);
+      CFNumberGetValue(productIdRef, kCFNumberIntType, &productId);
 
-    SetVendorID(vendorId);
-    SetProductID(productId);
+      SetVendorID(vendorId);
+      SetProductID(productId);
+    }
 
     return CJoystick::Initialize();
   }
