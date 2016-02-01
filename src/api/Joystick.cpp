@@ -208,6 +208,9 @@ float CJoystick::ScaleDeadzone(float value)
 {
   const float deadzone = CSettings::Get().Deadzone();
 
+  if (deadzone >= 1.0f)
+    return 0.0f;
+
   if (value > deadzone)
     return (float)(value - deadzone) / (float)(1.0f - deadzone);
   else if (value < -deadzone)
