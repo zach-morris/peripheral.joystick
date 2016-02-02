@@ -44,8 +44,6 @@ CJoystickXInput::CJoystickXInput(unsigned int controllerID)
   SetButtonCount(BUTTON_COUNT);
   SetHatCount(HAT_COUNT);
   SetAxisCount(AXIS_COUNT);
- 
-  SetSupportsPowerOff(true);
 }
 
 bool CJoystickXInput::Equals(const CJoystick* rhs) const

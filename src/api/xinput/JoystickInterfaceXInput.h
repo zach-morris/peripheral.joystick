@@ -21,9 +21,6 @@
 
 #include "api/IJoystickInterface.h"
 
-#define MOTOR_LEFT    0
-#define MOTOR_RIGHT   1
-
 namespace JOYSTICK
 {
   class CJoystickInterfaceXInput : public IJoystickInterface
@@ -37,6 +34,5 @@ namespace JOYSTICK
     virtual bool Initialize(void) override;
     virtual void Deinitialize(void) override;
     virtual bool ScanForJoysticks(JoystickVector& joysticks) override;
-    virtual void GetFeatures(const std::string& controllerId, FeatureVector& features) override;
   };
 }

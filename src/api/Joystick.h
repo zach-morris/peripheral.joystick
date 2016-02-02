@@ -80,6 +80,11 @@ namespace JOYSTICK
      */
     virtual bool GetEvents(std::vector<ADDON::PeripheralEvent>& events);
 
+    /*!
+     * Tries to power off the joystick.
+     */
+    virtual void PowerOff() { }
+
   protected:
     /*!
      * Implemented by derived class to scan for events
