@@ -85,6 +85,11 @@ namespace JOYSTICK
      */
     virtual bool SendEvent(const ADDON::PeripheralEvent& event);
 
+    /*!
+     * Tries to power off the joystick.
+     */
+    virtual void PowerOff() { }
+
   protected:
     /*!
      * Implemented by derived class to scan for events
