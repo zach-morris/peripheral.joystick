@@ -48,6 +48,8 @@ CJoystickXInput::CJoystickXInput(unsigned int controllerID)
 
   m_motorSpeeds[MOTOR_LEFT] = 0.0f;
   m_motorSpeeds[MOTOR_RIGHT] = 0.0f;
+
+  SetSupportsPowerOff(true);
 }
 
 bool CJoystickXInput::Equals(const CJoystick* rhs) const
