@@ -50,6 +50,8 @@ CJoystickXInput::CJoystickXInput(unsigned int controllerID)
 
   m_motorSpeeds[MOTOR_LEFT] = 0.0f;
   m_motorSpeeds[MOTOR_RIGHT] = 0.0f;
+ 
+  SetSupportsPowerOff(true);
 }
 
 bool CJoystickXInput::Equals(const CJoystick* rhs) const
@@ -62,6 +64,11 @@ bool CJoystickXInput::Equals(const CJoystick* rhs) const
     return false;
 
   return m_controllerID == rhsXInput->m_controllerID;
+}
+
+void CJoystickXInput::PowerOff()
+{
+  CXInputDLL::Get().PowerOff(m_controllerID);
 }
 
 bool CJoystickXInput::ScanEvents(void)
