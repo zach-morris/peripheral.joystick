@@ -58,8 +58,6 @@ bool CJoystickCocoa::Initialize(void)
 {
   if (!m_bInitialized)
   {
-    m_bInitialized = true;
-
     CFArrayRef elements = IOHIDDeviceCopyMatchingElements(m_device, NULL, kIOHIDOptionsTypeNone);
 
     CFIndex n = CFArrayGetCount(elements);
@@ -123,7 +121,8 @@ bool CJoystickCocoa::Initialize(void)
       SetProductID(productId);
     }
 
-    return CJoystick::Initialize();
+    if (CJoystick::Initialize())
+      m_bInitialized = true;
   }
 
   return m_bInitialized;
