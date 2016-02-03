@@ -6,11 +6,12 @@
   provider-name="Team-Kodi">
   <requires>
     <c-pluff version="0.1"/>
-    <import addon="kodi.peripheral" version="1.0.16"/>
+    <import addon="kodi.peripheral" version="1.0.17"/>
   </requires>
   <extension
     point="kodi.peripheral"
     provides_joysticks="true"
+    provides_buttonmaps="true"
     library_linux="peripheral.joystick.so"
     library_osx="peripheral.joystick.dylib"
     library_wingl="peripheral.joystick.dll"
