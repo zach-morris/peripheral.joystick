@@ -28,7 +28,9 @@ cd tools/depends/target/binary-addons
 make PREFIX=$HOME/kodi ADDONS="peripheral.joystick"
 ```
 
-On Linux this performs a cross-compile install, so to package the add-on you'll need to copy the library and auxiliary files manually:
+You can specify multiple add-ons, and wildcards are accepted too. For example, `ADDONS="pvr.*"` will build all pvr add-ons.
+
+On Linux this performs a cross-compile install, so to package the add-on you'll need to copy the library and add-on files manually:
 
 ```shell
 mkdir peripheral.joystick
@@ -44,7 +46,7 @@ make clean
 
 ### Building on OSX
 
-Building on OSX is similar to Linux, but all the paths are determined for you. This command will download, build and install the add-on to the `addons/` directory in your Kodi workspace:
+Building on OSX is similar to Linux, but all the paths are determined for you. This command will download, build and install the add-on to the `addons/` directory in your Kodi repo:
 
 ```shell
 cd tools/depends/target/binary-addons
