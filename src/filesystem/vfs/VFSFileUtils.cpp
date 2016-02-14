@@ -51,14 +51,21 @@ bool CVFSFileUtils::Stat(const std::string& url, STAT_STRUCTURE& buffer)
   {
     buffer.deviceId         = frontendBuffer.st_dev;
     buffer.size             = frontendBuffer.st_size;
-#if defined(__APPLE__)
+#if defined(TARGET_DARWIN)
     buffer.accessTime       = frontendBuffer.st_atimespec;
     buffer.modificationTime = frontendBuffer.st_mtimespec;
     buffer.statusTime       = frontendBuffer.st_ctimespec;
-#elif defined(_WIN32)
+#elif defined(TARGET_WINDOWS)
     buffer.accessTime       = frontendBuffer.st_atime;
     buffer.modificationTime = frontendBuffer.st_mtime;
     buffer.statusTime       = frontendBuffer.st_ctime;
+#elif defined(TARGET_ANDROID)
+    buffer.accessTime.tv_sec = frontendBuffer.st_atime;
+    buffer.accessTime.tv_nsec = frontendBuffer.st_atime_nsec;
+    buffer.modificationTime.tv_sec = frontendBuffer.st_mtime;
+    buffer.modificationTime.tv_nsec = frontendBuffer.st_mtime_nsec;
+    buffer.statusTime.tv_sec = frontendBuffer.st_ctime;
+    buffer.statusTime.tv_nsec = frontendBuffer.st_ctime_nsec;
 #else
     buffer.accessTime       = frontendBuffer.st_atim;
     buffer.modificationTime = frontendBuffer.st_mtim;
