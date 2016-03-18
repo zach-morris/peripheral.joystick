@@ -21,6 +21,7 @@
 #include "StringUtils.h"
 
 #include <algorithm>
+#include <iterator>
 #include <cctype>
 #include <functional>
 #include <pcrecpp.h>
