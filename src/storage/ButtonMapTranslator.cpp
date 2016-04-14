@@ -74,7 +74,7 @@ ADDON::DriverPrimitive ButtonMapTranslator::ToDriverPrimitive(const std::string&
 
     if (bIsButton)
     {
-      primitive = ADDON::DriverPrimitive(std::atoi(strPrimitive.c_str()));
+      primitive = ADDON::DriverPrimitive::CreateButton(std::atoi(strPrimitive.c_str()));
     }
     else if (bIsHat)
     {

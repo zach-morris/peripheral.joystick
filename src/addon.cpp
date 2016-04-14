@@ -207,6 +207,16 @@ void FreeEvents(unsigned int event_count, PERIPHERAL_EVENT* events)
   ADDON::PeripheralEvents::FreeStructs(event_count, events);
 }
 
+bool SendEvent(const PERIPHERAL_EVENT* event)
+{
+  bool bHandled = false;
+
+  if (event != nullptr)
+    bHandled = CJoystickManager::Get().SendEvent(*event);
+
+  return bHandled;
+}
+
 PERIPHERAL_ERROR GetJoystickInfo(unsigned int index, JOYSTICK_INFO* info)
 {
   if (!info)

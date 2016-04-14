@@ -79,6 +79,15 @@ namespace JOYSTICK
     bool GetEvents(std::vector<ADDON::PeripheralEvent>& events);
 
     /*!
+     * \brief Send an event to a joystick
+     *
+     * \param event The event
+     *
+     * \return True if the event was handled
+     */
+    bool SendEvent(const ADDON::PeripheralEvent& event);
+
+    /*!
      * \brief Trigger a scan for joysticks through the callback
      */
     void TriggerScan(void);
