@@ -28,7 +28,7 @@ namespace JOYSTICK
   class CJoystickXInput : public CJoystick
   {
   public:
-    const unsigned int MOTOR_COUNT = 2;
+    enum { MOTOR_COUNT = 2 };
 
     CJoystickXInput(unsigned int controllerID);
     virtual ~CJoystickXInput(void) { }
