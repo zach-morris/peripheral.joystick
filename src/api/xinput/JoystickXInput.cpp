@@ -33,6 +33,7 @@ using namespace JOYSTICK;
 #define AXIS_COUNT    6
 #define MAX_AXIS      32768
 #define MAX_TRIGGER   255
+#define MAX_MOTOR     65535
 
 CJoystickXInput::CJoystickXInput(unsigned int controllerID)
  : CJoystick(INTERFACE_XINPUT),
@@ -44,6 +45,9 @@ CJoystickXInput::CJoystickXInput(unsigned int controllerID)
   SetButtonCount(BUTTON_COUNT);
   SetHatCount(HAT_COUNT);
   SetAxisCount(AXIS_COUNT);
+
+  m_motorSpeeds[MOTOR_LEFT] = 0.0f;
+  m_motorSpeeds[MOTOR_RIGHT] = 0.0f;
 }
 
 bool CJoystickXInput::Equals(const CJoystick* rhs) const
@@ -96,4 +100,24 @@ bool CJoystickXInput::ScanEvents(void)
   SetAxisValue(5, (long)controllerState.Gamepad.bRightTrigger, MAX_TRIGGER);
 
   return true;
+}
+
+bool CJoystickXInput::SetMotor(unsigned int motorIndex, float magnitude)
+{
+  bool bSuccess = false;
+
+  if (motorIndex < MOTOR_COUNT && 0.0f <= magnitude && magnitude <= 1.0f)
+  {
+    m_motorSpeeds[motorIndex] = magnitude;
+
+    XINPUT_VIBRATION vibrationState;
+
+    vibrationState.wLeftMotorSpeed = static_cast<WORD>(m_motorSpeeds[MOTOR_LEFT] * MAX_MOTOR);
+    vibrationState.wRightMotorSpeed = static_cast<WORD>(m_motorSpeeds[MOTOR_RIGHT] * MAX_MOTOR);
+
+    // TODO: Only dispatch after both left and right events have been received
+    bSuccess = CXInputDLL::Get().SetState(m_controllerID, vibrationState);
+  }
+
+  return bSuccess;
 }

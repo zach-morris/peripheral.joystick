@@ -57,3 +57,4 @@
 #define BUTTONMAP_XML_ATTR_FEATURE_BUTTON      "button"
 #define BUTTONMAP_XML_ATTR_FEATURE_HAT         "hat"
 #define BUTTONMAP_XML_ATTR_FEATURE_AXIS        "axis"
+#define BUTTONMAP_XML_ATTR_FEATURE_MOTOR       "motor"

@@ -34,5 +34,6 @@ namespace JOYSTICK
     virtual bool Initialize(void) override;
     virtual void Deinitialize(void) override;
     virtual bool ScanForJoysticks(JoystickVector& joysticks) override;
+    virtual void GetFeatures(const std::string& controllerId, FeatureVector& features) override;
   };
 }
