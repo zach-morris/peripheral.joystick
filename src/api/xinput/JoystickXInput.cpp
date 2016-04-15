@@ -36,9 +36,6 @@ using namespace JOYSTICK;
 #define MAX_TRIGGER   255
 #define MAX_MOTOR     65535
 
-#define MOTOR_LEFT    0
-#define MOTOR_RIGHT   1
-
 CJoystickXInput::CJoystickXInput(unsigned int controllerID)
  : CJoystick(INTERFACE_XINPUT),
    m_controllerID(controllerID),

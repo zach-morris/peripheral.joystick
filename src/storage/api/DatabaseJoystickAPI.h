@@ -1,6 +1,6 @@
 /*
- *      Copyright (C) 2014-2015 Garrett Brown
- *      Copyright (C) 2014-2015 Team XBMC
+ *      Copyright (C) 2015 Garrett Brown
+ *      Copyright (C) 2015 Team XBMC
  *
  *  This Program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -19,24 +19,20 @@
  */
 #pragma once
 
-#include "api/IJoystickInterface.h"
-
-#define MOTOR_LEFT    0
-#define MOTOR_RIGHT   1
+#include "storage/IDatabase.h"
 
 namespace JOYSTICK
 {
-  class CJoystickInterfaceXInput : public IJoystickInterface
+  class CDatabaseJoystickAPI : public IDatabase
   {
   public:
-    CJoystickInterfaceXInput(void) { }
-    virtual ~CJoystickInterfaceXInput(void) { Deinitialize(); }
+    CDatabaseJoystickAPI(void);
 
-    // Implementation of IJoystickInterface
-    virtual const char* Name(void) const override;
-    virtual bool Initialize(void) override;
-    virtual void Deinitialize(void) override;
-    virtual bool ScanForJoysticks(JoystickVector& joysticks) override;
-    virtual void GetFeatures(const std::string& controllerId, FeatureVector& features) override;
+    virtual ~CDatabaseJoystickAPI(void) { }
+
+    // implementation of IDatabase
+    virtual bool GetFeatures(const CDevice& driverInfo, const std::string& controllerId, FeatureVector& features) override;
+    virtual bool MapFeatures(const CDevice& driverInfo, const std::string& controllerId, const FeatureVector& features) override;
+    virtual bool ResetButtonMap(const CDevice& driverInfo, const std::string& controllerId) override;
   };
 }

@@ -22,6 +22,7 @@
 #include "JustABunchOfFiles.h"
 #include "StorageUtils.h"
 #include "log/Log.h"
+#include "storage/api/DatabaseJoystickAPI.h"
 //#include "storage/retroarch/DatabaseRetroarch.h" // TODO
 #include "storage/xml/DatabaseXml.h"
 #include "utils/StringUtils.h"
@@ -79,6 +80,8 @@ bool CStorageManager::Initialize(ADDON::CHelper_libKODI_peripheral* peripheralLi
   //m_databases.push_back(DatabasePtr(new CDatabaseRetroArch(strUserPath, true))); // TODO
   m_databases.push_back(DatabasePtr(new CDatabaseXml(strAddonPath, false)));
   //m_databases.push_back(DatabasePtr(new CDatabaseRetroArch(strAddonPath, false))); // TODO
+
+  m_databases.push_back(DatabasePtr(new CDatabaseJoystickAPI));
 
   return true;
 }

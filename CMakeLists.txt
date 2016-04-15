@@ -47,6 +47,7 @@ set(JOYSTICK_SOURCES src/addon.cpp
                      src/storage/JustABunchOfFiles.cpp
                      src/storage/StorageManager.cpp
                      src/storage/StorageUtils.cpp
+                     src/storage/api/DatabaseJoystickAPI.cpp
                      src/storage/xml/ButtonMapXml.cpp
                      src/storage/xml/DatabaseXml.cpp
                      src/storage/xml/DeviceXml.cpp
