@@ -232,6 +232,12 @@ bool CButtonMapXml::Serialize(const FeatureVector& features, TiXmlElement* pElem
 
         break;
       }
+      case JOYSTICK_FEATURE_TYPE_MOTOR:
+      {
+        SerializePrimitive(featureElem, feature.Primitive());
+
+        break;
+      }
       default:
         break;
     }
@@ -247,6 +253,7 @@ bool CButtonMapXml::IsValid(const ADDON::JoystickFeature& feature)
   switch (feature.Type())
   {
     case JOYSTICK_FEATURE_TYPE_SCALAR:
+    case JOYSTICK_FEATURE_TYPE_MOTOR:
     {
       if (feature.Primitive().Type() != JOYSTICK_DRIVER_PRIMITIVE_TYPE_UNKNOWN)
         bIsValid = true;
@@ -322,6 +329,11 @@ void CButtonMapXml::SerializePrimitive(TiXmlElement* pElement, const ADDON::Driv
       case JOYSTICK_DRIVER_PRIMITIVE_TYPE_SEMIAXIS:
       {
         pElement->SetAttribute(BUTTONMAP_XML_ATTR_FEATURE_AXIS, strPrimitive);
+        break;
+      }
+      case JOYSTICK_DRIVER_PRIMITIVE_TYPE_MOTOR:
+      {
+        pElement->SetAttribute(BUTTONMAP_XML_ATTR_FEATURE_MOTOR, strPrimitive);
         break;
       }
       default:
