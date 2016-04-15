@@ -161,6 +161,7 @@ bool CJustABunchOfFiles::ResetButtonMap(const CDevice& driverInfo, const std::st
 
 void CJustABunchOfFiles::IndexDirectory(const std::string& path, unsigned int folderDepth)
 {
+  // Enumerate the directory
   std::vector<ADDON::CVFSDirEntry> items;
   if (!m_directoryCache.GetDirectory(path, items))
     CDirectoryUtils::GetDirectory(path, m_strExtension + "|", items);
