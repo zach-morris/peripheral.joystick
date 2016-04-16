@@ -54,8 +54,8 @@ namespace JOYSTICK
           { "rightmotor", JOYSTICK_FEATURE_TYPE_MOTOR, MOTOR_RIGHT },
       },
       { "game.controller.ps",
-          { "strong", JOYSTICK_FEATURE_TYPE_MOTOR, MOTOR_LEFT },
-          { "weak",   JOYSTICK_FEATURE_TYPE_MOTOR, MOTOR_RIGHT },
+          { "strongmotor", JOYSTICK_FEATURE_TYPE_MOTOR, MOTOR_LEFT },
+          { "weakmotor",   JOYSTICK_FEATURE_TYPE_MOTOR, MOTOR_RIGHT },
       },
   };
 }
