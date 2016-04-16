@@ -27,7 +27,7 @@ class TiXmlElement;
 
 namespace ADDON
 {
-  class DriverPrimitive;
+  struct DriverPrimitive;
   class JoystickFeature;
 }
 
