@@ -26,7 +26,7 @@ namespace JOYSTICK
   class CDatabaseJoystickAPI : public IDatabase
   {
   public:
-    CDatabaseJoystickAPI(void) { }
+    CDatabaseJoystickAPI(void) = default;
 
     virtual ~CDatabaseJoystickAPI(void) { }
 
