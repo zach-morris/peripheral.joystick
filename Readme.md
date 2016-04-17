@@ -33,7 +33,8 @@ You can specify multiple add-ons, and wildcards are accepted too. For example, `
 On Linux this performs a cross-compile install, so to package the add-on you'll need to copy the library and add-on files manually:
 
 ```shell
-mkdir peripheral.joystick
+cd $HOME/workspace/kodi/addons
+mkdir -p peripheral.joystick
 cp -r $HOME/kodi/share/kodi/addons/peripheral.joystick/ .
 cp -r $HOME/kodi/lib/kodi/addons/peripheral.joystick/ .
 ```
