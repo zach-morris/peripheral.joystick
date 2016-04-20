@@ -123,15 +123,12 @@ bool CJoystick::SendEvent(const ADDON::PeripheralEvent& event)
 {
   bool bHandled = false;
 
-  if (event.DriverIndex() == Index())
+  switch (event.Type())
   {
-    switch (event.Type())
+    case PERIPHERAL_EVENT_TYPE_SET_MOTOR:
     {
-      case PERIPHERAL_EVENT_TYPE_SET_MOTOR:
-      {
-        bHandled = SetMotor(event.DriverIndex(), event.MotorState());
-        break;
-      }
+      bHandled = SetMotor(event.DriverIndex(), event.MotorState());
+      break;
     }
   }
 

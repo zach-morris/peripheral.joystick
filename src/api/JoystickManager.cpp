@@ -229,11 +229,14 @@ bool CJoystickManager::SendEvent(const ADDON::PeripheralEvent& event)
 
   CLockObject lock(m_joystickMutex);
 
-  for (JoystickVector::iterator it = m_joysticks.begin(); it != m_joysticks.end(); ++it)
+  for (const JoystickPtr& joystick : m_joysticks)
   {
-    bHandled = (*it)->SendEvent(event);
-    if (bHandled)
-      break;
+    if (joystick->Index() == event.PeripheralIndex())
+    {
+      bHandled = joystick->SendEvent(event);
+      if (bHandled)
+        break;
+    }
   }
 
   return bHandled;
