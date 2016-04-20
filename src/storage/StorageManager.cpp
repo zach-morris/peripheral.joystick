@@ -29,6 +29,8 @@
 
 #include "kodi/libKODI_peripheral.h"
 
+#include <algorithm>
+
 using namespace JOYSTICK;
 
 // Resources folder for add-on and user data
@@ -99,11 +101,12 @@ bool CStorageManager::GetFeatures(const ADDON::Joystick& joystick,
 
   for (DatabaseVector::const_iterator it = m_databases.begin(); it != m_databases.end(); ++it)
   {
-    if ((*it)->GetFeatures(deviceInfo, strControllerId, features))
-      return true;
+    FeatureVector newFeatures;
+    if ((*it)->GetFeatures(deviceInfo, strControllerId, newFeatures))
+      MergeFeatures(features, newFeatures);
   }
 
-  return true;
+  return !features.empty();
 }
 
 bool CStorageManager::MapFeatures(const ADDON::Joystick& joystick,
@@ -142,4 +145,19 @@ void CStorageManager::RefreshButtonMaps(const std::string& strDeviceName /* = ""
   // Request the frontend to refresh its button maps
   if (m_peripheralLib)
     m_peripheralLib->RefreshButtonMaps(strDeviceName, strControllerId);
+}
+
+void CStorageManager::MergeFeatures(FeatureVector& features, const FeatureVector& newFeatures)
+{
+  for (const ADDON::JoystickFeature& newFeature : newFeatures)
+  {
+    const bool bFound = std::find_if(features.begin(), features.end(),
+      [newFeature](const ADDON::JoystickFeature& feature)
+      {
+        return feature.Name() == newFeature.Name();
+      }) != features.end();
+
+    if (!bFound)
+      features.push_back(newFeature);
+  }
 }
