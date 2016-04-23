@@ -130,6 +130,8 @@ bool CJoystick::SendEvent(const ADDON::PeripheralEvent& event)
       bHandled = SetMotor(event.DriverIndex(), event.MotorState());
       break;
     }
+    default:
+      break;
   }
 
   return bHandled;
