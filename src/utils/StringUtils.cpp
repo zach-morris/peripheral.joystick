@@ -26,6 +26,7 @@
 #include <functional>
 #include <regex>
 #include <stdio.h>
+#include <stdlib.h>
 
 using namespace JOYSTICK;
 
@@ -137,7 +138,7 @@ std::string StringUtils::FormatV(const char* fmt, va_list args)
 
   while (1)
   {
-    char* cstr = reinterpret_cast<char*>(malloc(sizeof(char) * size));
+    char* cstr = static_cast<char*>(malloc(sizeof(char) * size));
     if (!cstr)
       return "";
 
