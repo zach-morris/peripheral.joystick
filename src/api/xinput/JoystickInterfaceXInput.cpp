@@ -22,7 +22,6 @@
 #include "JoystickXInput.h"
 #include "XInputDLL.h"
 #include "api/JoystickTypes.h"
-#include "log/Log.h"
 
 #include <array>
 #include <Xinput.h>
@@ -79,7 +78,6 @@ bool CJoystickInterfaceXInput::ScanForJoysticks(JoystickVector& joysticks)
     if (!CXInputDLL::Get().GetState(i, controllerState))
       continue;
 
-    isyslog("Found a XInput controller on port %u", i);
     joysticks.push_back(JoystickPtr(new CJoystickXInput(i)));
   }
 

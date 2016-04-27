@@ -22,7 +22,6 @@
 #include "JoystickInterfaceXInput.h"
 #include "XInputDLL.h"
 #include "api/JoystickTypes.h"
-#include "log/Log.h"
 
 #include <Xinput.h>
 
