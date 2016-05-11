@@ -181,7 +181,7 @@ void CJoystick::SetButtonValue(unsigned int buttonIndex, JOYSTICK_STATE_BUTTON b
   if (m_activateTimeMs < 0)
     m_activateTimeMs = P8PLATFORM::GetTimeMs();
 
-  if (buttonIndex < ButtonCount())
+  if (buttonIndex < m_stateBuffer.buttons.size())
     m_stateBuffer.buttons[buttonIndex] = buttonValue;
 }
 
@@ -190,7 +190,7 @@ void CJoystick::SetHatValue(unsigned int hatIndex, JOYSTICK_STATE_HAT hatValue)
   if (m_activateTimeMs < 0)
     m_activateTimeMs = P8PLATFORM::GetTimeMs();
 
-  if (hatIndex < HatCount())
+  if (hatIndex < m_stateBuffer.hats.size())
     m_stateBuffer.hats[hatIndex] = hatValue;
 }
 
@@ -201,7 +201,7 @@ void CJoystick::SetAxisValue(unsigned int axisIndex, JOYSTICK_STATE_AXIS axisVal
 
   axisValue = CONSTRAIN(-1.0f, axisValue, 1.0f);
 
-  if (axisIndex < AxisCount())
+  if (axisIndex < m_stateBuffer.axes.size())
     m_stateBuffer.axes[axisIndex] = ScaleDeadzone(m_axisFilters[axisIndex]->Filter(axisValue));
 }
 
