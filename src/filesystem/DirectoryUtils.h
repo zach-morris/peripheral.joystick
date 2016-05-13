@@ -22,7 +22,7 @@
 #include "FilesystemTypes.h"
 #include "IDirectoryUtils.h"
 
-#include "kodi/kodi_vfs_utils.hpp"
+#include "kodi_vfs_utils.hpp"
 
 #include <string>
 

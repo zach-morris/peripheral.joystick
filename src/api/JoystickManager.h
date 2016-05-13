@@ -21,7 +21,7 @@
 
 #include "JoystickTypes.h"
 
-#include "kodi/kodi_peripheral_utils.hpp"
+#include "kodi_peripheral_utils.hpp"
 #include "p8-platform/threads/mutex.h"
 
 #include <vector>
