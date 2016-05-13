@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <addon
   id="peripheral.joystick"
-  version="1.0.0"
+  version="1.0.1"
   name="Joystick Support"
   provider-name="Team-Kodi">
   <requires>
@@ -12,15 +12,11 @@
     point="kodi.peripheral"
     provides_joysticks="true"
     provides_buttonmaps="true"
-    library_linux="peripheral.joystick.so"
-    library_osx="peripheral.joystick.dylib"
-    library_wingl="peripheral.joystick.dll"
-    library_windx="peripheral.joystick.dll"
-    library_android="libperipheral.joystick.so" />
+    library_@PLATFORM@="@LIBRARY_FILENAME@"/>
   <extension point="xbmc.addon.metadata">
     <summary lang="en">Kodi Joystick Library</summary>
     <description lang="en">This library provides joystick drivers and button maps. Multiple joystick APIs are supported, including DirectX, XInput, SDL and the Linux Joystick API.</description>
-    <platform>all</platform>
+    <platform>@PLATFORM@</platform>
     <noicon>true</noicon>
     <nofanart>true</nofanart>
   </extension>

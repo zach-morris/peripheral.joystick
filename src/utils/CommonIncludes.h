@@ -29,4 +29,4 @@
 #include "posix/os-types.h"
 #endif
 
-#include "kodi/libXBMC_addon.h"
+#include "libXBMC_addon.h"

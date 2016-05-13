@@ -21,8 +21,8 @@
 
 #include "ButtonMapTypes.h"
 
-#include "kodi/kodi_peripheral_types.h"
-#include "kodi/kodi_peripheral_utils.hpp"
+#include "kodi_peripheral_types.h"
+#include "kodi_peripheral_utils.hpp"
 
 #include <string>
 #include <vector>
