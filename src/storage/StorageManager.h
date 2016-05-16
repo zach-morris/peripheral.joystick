@@ -102,6 +102,8 @@ namespace JOYSTICK
     void RefreshButtonMaps(const std::string& strDeviceName = "", const std::string& strControllerId = "");
 
   private:
+    static void MergeFeatures(FeatureVector& features, const FeatureVector& newFeatures);
+
     ADDON::CHelper_libKODI_peripheral* m_peripheralLib;
 
     DatabaseVector m_databases;

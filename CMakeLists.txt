@@ -12,14 +12,12 @@ include(CheckIncludeFiles)
 find_package(kodi REQUIRED)
 find_package(kodiplatform REQUIRED)
 find_package(p8-platform REQUIRED)
-find_package(PCRE REQUIRED)
 
 include_directories(${INCLUDES}
                     ${PROJECT_SOURCE_DIR}/src
                     ${KODI_INCLUDE_DIR}
                     ${kodiplatform_INCLUDE_DIRS}
-                    ${p8-platform_INCLUDE_DIRS}
-                    ${PCRE_INCLUDE_DIRS})
+                    ${p8-platform_INCLUDE_DIRS})
 
 set(JOYSTICK_SOURCES src/addon.cpp
                      src/api/AnomalousTriggerFilter.cpp
@@ -47,6 +45,7 @@ set(JOYSTICK_SOURCES src/addon.cpp
                      src/storage/JustABunchOfFiles.cpp
                      src/storage/StorageManager.cpp
                      src/storage/StorageUtils.cpp
+                     src/storage/api/DatabaseJoystickAPI.cpp
                      src/storage/xml/ButtonMapXml.cpp
                      src/storage/xml/DatabaseXml.cpp
                      src/storage/xml/DeviceXml.cpp
@@ -59,9 +58,7 @@ if(HAVE_SYSLOG)
 endif()
 
 list(APPEND DEPLIBS ${kodiplatform_LIBRARIES}
-                    ${p8-platform_LIBRARIES}
-                    ${PCRE_LIBRARIES})
-add_definitions(${PCRE_DEFINITIONS})
+                    ${p8-platform_LIBRARIES})
 
 # --- Cocoa --------------------------------------------------------------------
 

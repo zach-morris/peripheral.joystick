@@ -228,3 +228,17 @@ void CJoystickManager::TriggerScan(void)
   if (m_scanner)
     m_scanner->TriggerScan();
 }
+
+void CJoystickManager::GetFeatures(const std::string& provider, const std::string& controllerId, FeatureVector& features)
+{
+  CLockObject lock(m_interfacesMutex);
+
+  for (std::vector<IJoystickInterface*>::iterator it = m_interfaces.begin(); it != m_interfaces.end(); ++it)
+  {
+    if ((*it)->Name() == provider)
+    {
+      (*it)->GetFeatures(controllerId, features);
+      break;
+    }
+  }
+}

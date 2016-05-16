@@ -22,7 +22,6 @@
 #include "JoystickInterfaceXInput.h"
 #include "XInputDLL.h"
 #include "api/JoystickTypes.h"
-#include "log/Log.h"
 
 #include <Xinput.h>
 
@@ -45,6 +44,8 @@ CJoystickXInput::CJoystickXInput(unsigned int controllerID)
   SetButtonCount(BUTTON_COUNT);
   SetHatCount(HAT_COUNT);
   SetAxisCount(AXIS_COUNT);
+ 
+  SetSupportsPowerOff(true);
 }
 
 bool CJoystickXInput::Equals(const CJoystick* rhs) const
@@ -57,6 +58,11 @@ bool CJoystickXInput::Equals(const CJoystick* rhs) const
     return false;
 
   return m_controllerID == rhsXInput->m_controllerID;
+}
+
+void CJoystickXInput::PowerOff()
+{
+  CXInputDLL::Get().PowerOff(m_controllerID);
 }
 
 bool CJoystickXInput::ScanEvents(void)

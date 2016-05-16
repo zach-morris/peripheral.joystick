@@ -1,6 +1,6 @@
 /*
- *      Copyright (C) 2014-2015 Garrett Brown
- *      Copyright (C) 2014-2015 Team XBMC
+ *      Copyright (C) 2015 Garrett Brown
+ *      Copyright (C) 2015 Team XBMC
  *
  *  This Program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -19,27 +19,20 @@
  */
 #pragma once
 
-#include "api/Joystick.h"
-
-#include <windows.h>
+#include "storage/IDatabase.h"
 
 namespace JOYSTICK
 {
-  class CJoystickXInput : public CJoystick
+  class CDatabaseJoystickAPI : public IDatabase
   {
   public:
-    CJoystickXInput(unsigned int controllerID);
-    virtual ~CJoystickXInput(void) { }
+    CDatabaseJoystickAPI(void) = default;
 
-    virtual bool Equals(const CJoystick* rhs) const override;
+    virtual ~CDatabaseJoystickAPI(void) { }
 
-    virtual void PowerOff() override;
-
-  protected:
-    virtual bool ScanEvents(void) override;
-
-  private:
-    unsigned int m_controllerID;   // XInput port, in the range (0, 3)
-    DWORD        m_dwPacketNumber; // If unchanged, controller state hasn't changed (currently ignored)
+    // implementation of IDatabase
+    virtual bool GetFeatures(const CDevice& driverInfo, const std::string& controllerId, FeatureVector& features) override;
+    virtual bool MapFeatures(const CDevice& driverInfo, const std::string& controllerId, const FeatureVector& features) override;
+    virtual bool ResetButtonMap(const CDevice& driverInfo, const std::string& controllerId) override;
   };
 }

@@ -118,9 +118,7 @@ bool CXInputDLL::GetState(unsigned int controllerId, XINPUT_STATE_EX& state)
   DWORD result = m_getState(controllerId, &state);
   if (result != ERROR_SUCCESS)
   {
-    if (result == ERROR_DEVICE_NOT_CONNECTED)
-      dsyslog("No XInput devices on port %u", controllerId);
-    else
+    if (result != ERROR_DEVICE_NOT_CONNECTED)
       esyslog("Failed to get XInput state on port %u (result=%u)", controllerId, result);
     return false;
   }

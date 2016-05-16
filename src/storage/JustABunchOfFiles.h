@@ -31,6 +31,9 @@
 
 namespace JOYSTICK
 {
+  /*!
+   * \brief Container class for device records and button maps
+   */
   class CResources
   {
   public:
@@ -69,14 +72,24 @@ namespace JOYSTICK
     virtual void OnRemove(const ADDON::CVFSDirEntry& item) override;
 
   protected:
+    // Interface for child class to provide
     virtual CButtonMap* CreateResource(const std::string& resourcePath) = 0;
     virtual CButtonMap* CreateResource(const std::string& resourcePath, const CDevice& driverInfo) = 0;
 
   private:
+    /*!
+     * \brief Subcursively index a path, enumerating the folder and updating
+     *        the directory cache
+     */
     void IndexDirectory(const std::string& path, unsigned int folderDepth);
 
-    void AddResource(const std::string& strPath, CButtonMap* resource);
-
+    /*!
+     * \brief Calculate and create a path for a device record
+     *
+     * The path is created if it doesn't exist.
+     *
+     * \return true if the path exists or was created
+     */
     bool GetResourcePath(const CDevice& deviceInfo, std::string& resourcePath) const;
 
     const std::string m_strResourcePath;

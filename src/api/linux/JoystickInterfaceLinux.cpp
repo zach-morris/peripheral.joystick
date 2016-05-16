@@ -59,7 +59,6 @@ bool CJoystickInterfaceLinux::ScanForJoysticks(JoystickVector& joysticks)
     {
       // Found a joystick device
       std::string filename(inputDir + "/" + pDirent->d_name);
-      isyslog("CJoystickInterfaceLinux::Initialize: opening joystick %s", filename.c_str());
 
       int fd = open(filename.c_str(), O_RDONLY);
       if (fd < 0)
