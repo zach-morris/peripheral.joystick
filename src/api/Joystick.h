@@ -80,23 +80,11 @@ namespace JOYSTICK
      */
     virtual bool GetEvents(std::vector<ADDON::PeripheralEvent>& events);
 
-    /*!
-     * Send an event to a joystick
-     */
-    virtual bool SendEvent(const ADDON::PeripheralEvent& event);
-
-    /*!
-     * Tries to power off the joystick.
-     */
-    virtual void PowerOff() { }
-
   protected:
     /*!
      * Implemented by derived class to scan for events
      */
     virtual bool ScanEvents(void) = 0;
-
-    virtual bool SetMotor(unsigned int motorIndex, float magnitude) { return false; }
 
     virtual void SetButtonValue(unsigned int buttonIndex, JOYSTICK_STATE_BUTTON buttonValue);
     virtual void SetHatValue(unsigned int hatIndex, JOYSTICK_STATE_HAT hatValue);

@@ -28,8 +28,6 @@ namespace JOYSTICK
   class CJoystickXInput : public CJoystick
   {
   public:
-    enum { MOTOR_COUNT = 2 };
-
     CJoystickXInput(unsigned int controllerID);
     virtual ~CJoystickXInput(void) { }
 
@@ -39,11 +37,9 @@ namespace JOYSTICK
 
   protected:
     virtual bool ScanEvents(void) override;
-    virtual bool SetMotor(unsigned int motorIndex, float magnitude) override;
 
   private:
     unsigned int m_controllerID;   // XInput port, in the range (0, 3)
     DWORD        m_dwPacketNumber; // If unchanged, controller state hasn't changed (currently ignored)
-    float        m_motorSpeeds[MOTOR_COUNT];
   };
 }

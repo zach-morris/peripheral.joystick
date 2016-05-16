@@ -35,7 +35,6 @@ std::string ButtonMapTranslator::ToString(const ADDON::DriverPrimitive& primitiv
   switch (primitive.Type())
   {
     case JOYSTICK_DRIVER_PRIMITIVE_TYPE_BUTTON:
-    case JOYSTICK_DRIVER_PRIMITIVE_TYPE_MOTOR:
     {
       strPrimitive << primitive.DriverIndex();
       break;
@@ -75,7 +74,7 @@ ADDON::DriverPrimitive ButtonMapTranslator::ToDriverPrimitive(const std::string&
 
     if (bIsButton)
     {
-      primitive = ADDON::DriverPrimitive::CreateButton(std::atoi(strPrimitive.c_str()));
+      primitive = ADDON::DriverPrimitive(std::atoi(strPrimitive.c_str()));
     }
     else if (bIsHat)
     {

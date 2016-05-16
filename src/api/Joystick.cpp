@@ -119,24 +119,6 @@ bool CJoystick::GetEvents(std::vector<ADDON::PeripheralEvent>& events)
   return false;
 }
 
-bool CJoystick::SendEvent(const ADDON::PeripheralEvent& event)
-{
-  bool bHandled = false;
-
-  switch (event.Type())
-  {
-    case PERIPHERAL_EVENT_TYPE_SET_MOTOR:
-    {
-      bHandled = SetMotor(event.DriverIndex(), event.MotorState());
-      break;
-    }
-    default:
-      break;
-  }
-
-  return bHandled;
-}
-
 void CJoystick::GetButtonEvents(std::vector<ADDON::PeripheralEvent>& events)
 {
   const std::vector<JOYSTICK_STATE_BUTTON>& buttons = m_stateBuffer.buttons;

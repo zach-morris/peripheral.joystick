@@ -207,16 +207,6 @@ void FreeEvents(unsigned int event_count, PERIPHERAL_EVENT* events)
   ADDON::PeripheralEvents::FreeStructs(event_count, events);
 }
 
-bool SendEvent(const PERIPHERAL_EVENT* event)
-{
-  bool bHandled = false;
-
-  if (event != nullptr)
-    bHandled = CJoystickManager::Get().SendEvent(*event);
-
-  return bHandled;
-}
-
 PERIPHERAL_ERROR GetJoystickInfo(unsigned int index, JOYSTICK_INFO* info)
 {
   if (!info)
@@ -280,15 +270,6 @@ void ResetButtonMap(const JOYSTICK_INFO* joystick, const char* controller_id)
     return;
 
   CStorageManager::Get().ResetButtonMap(ADDON::Joystick(*joystick), controller_id);
-}
-
-void PowerOffJoystick(unsigned int index)
-{
-  JoystickPtr joystick = CJoystickManager::Get().GetJoystick(index);
-  if (!joystick || !joystick->SupportsPowerOff())
-    return;
-
-  joystick->PowerOff();
 }
 
 } // extern "C"
