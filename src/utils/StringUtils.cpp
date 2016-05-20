@@ -24,7 +24,7 @@
 #include <iterator>
 #include <cctype>
 #include <functional>
-#include <regex>
+#include <pcrecpp.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -70,8 +70,8 @@ std::string StringUtils::MakeSafeUrl(const std::string& str)
 
 std::string& StringUtils::RemoveMACAddress(std::string& str)
 {
-  std::regex mac("[\\(\\[]?([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})[\\)\\]]?");
-  str = std::regex_replace(str, mac, "");
+  pcrecpp::RE re("[\\(\\[]?([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})[\\)\\]]?");
+  re.GlobalReplace("", &str);
   return str;
 }
 
