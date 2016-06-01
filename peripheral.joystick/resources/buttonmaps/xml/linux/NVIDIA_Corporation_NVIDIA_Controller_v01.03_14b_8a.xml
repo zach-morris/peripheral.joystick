@@ -9,7 +9,9 @@
             <feature name="leftbumper" button="4" />
             <feature name="leftstick">
                 <up axis="-1" />
+                <down axis="+1" />
                 <right axis="+0" />
+                <left axis="-0" />
             </feature>
             <feature name="leftthumb" button="8" />
             <feature name="lefttrigger" axis="+5" />
@@ -17,7 +19,9 @@
             <feature name="rightbumper" button="5" />
             <feature name="rightstick">
                 <up axis="-3" />
+                <up axis="+3" />
                 <right axis="+2" />
+                <left axis="-2" />
             </feature>
             <feature name="rightthumb" button="9" />
             <feature name="righttrigger" axis="+4" />
