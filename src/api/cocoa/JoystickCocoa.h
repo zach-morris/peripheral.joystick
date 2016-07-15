@@ -39,8 +39,8 @@ namespace JOYSTICK
 
     virtual bool Equals(const CJoystick* rhs) const override;
 
-    bool Initialize(void);
-    void Deinitialize(void);
+    virtual bool Initialize(void) override;
+    virtual void Deinitialize(void) override;
 
     virtual void InputValueChanged(IOHIDValueRef value) override;
 
