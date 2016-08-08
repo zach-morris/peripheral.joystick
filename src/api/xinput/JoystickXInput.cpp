@@ -45,6 +45,7 @@ CJoystickXInput::CJoystickXInput(unsigned int controllerID)
   SetButtonCount(BUTTON_COUNT);
   SetHatCount(HAT_COUNT);
   SetAxisCount(AXIS_COUNT);
+  SetMotorCount(MOTOR_COUNT);
 
   m_motorSpeeds[MOTOR_LEFT] = 0.0f;
   m_motorSpeeds[MOTOR_RIGHT] = 0.0f;
