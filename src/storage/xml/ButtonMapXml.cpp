@@ -513,25 +513,33 @@ bool CButtonMapXml::DeserializePrimitive(const TiXmlElement* pElement, ADDON::Dr
   const char* button = pElement->Attribute(BUTTONMAP_XML_ATTR_FEATURE_BUTTON);
   if (button)
   {
-    primitive = ButtonMapTranslator::ToDriverPrimitive(button);
+    primitive = ButtonMapTranslator::ToDriverPrimitive(button, JOYSTICK_DRIVER_PRIMITIVE_TYPE_BUTTON);
   }
   else
   {
     const char* hat = pElement->Attribute(BUTTONMAP_XML_ATTR_FEATURE_HAT);
     if (hat)
     {
-      primitive = ButtonMapTranslator::ToDriverPrimitive(hat);
+      primitive = ButtonMapTranslator::ToDriverPrimitive(hat, JOYSTICK_DRIVER_PRIMITIVE_TYPE_HAT_DIRECTION);
     }
     else
     {
       const char* axis = pElement->Attribute(BUTTONMAP_XML_ATTR_FEATURE_AXIS);
       if (axis)
       {
-        primitive = ButtonMapTranslator::ToDriverPrimitive(axis);
+        primitive = ButtonMapTranslator::ToDriverPrimitive(axis, JOYSTICK_DRIVER_PRIMITIVE_TYPE_SEMIAXIS);
       }
       else
       {
-        return false;
+        const char* motor = pElement->Attribute(BUTTONMAP_XML_ATTR_FEATURE_MOTOR);
+        if (motor)
+        {
+          primitive = ButtonMapTranslator::ToDriverPrimitive(motor, JOYSTICK_DRIVER_PRIMITIVE_TYPE_MOTOR);
+        }
+        else
+        {
+          return false;
+        }
       }
     }
   }

@@ -22,7 +22,6 @@
 #include "storage/ButtonMapTypes.h" // for FeatureVector
 
 #include <string>
-#include <vector>
 
 namespace JOYSTICK
 {

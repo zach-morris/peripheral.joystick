@@ -9,6 +9,7 @@
             <feature name="guide" button="14" />
             <feature name="left" button="13" />
             <feature name="leftbumper" button="4" />
+            <feature name="leftmotor" motor="0" />
             <feature name="leftstick">
                 <up axis="+1" />
                 <down axis="-1" />
@@ -19,6 +20,7 @@
             <feature name="lefttrigger" axis="+4" />
             <feature name="right" button="11" />
             <feature name="rightbumper" button="5" />
+            <feature name="rightmotor" motor="1" />
             <feature name="rightstick">
                 <up axis="+3" />
                 <down axis="-3" />
@@ -116,10 +118,12 @@
             <feature name="l3" button="8" />
             <feature name="left" button="13" />
             <feature name="leftbumper" button="4" />
+            <feature name="leftmotor" motor="0" />
             <feature name="lefttrigger" axis="+4" />
             <feature name="r3" button="9" />
             <feature name="right" button="11" />
             <feature name="rightbumper" button="5" />
+            <feature name="rightmotor" motor="1" />
             <feature name="righttrigger" axis="+5" />
             <feature name="select" button="6" />
             <feature name="square" button="2" />

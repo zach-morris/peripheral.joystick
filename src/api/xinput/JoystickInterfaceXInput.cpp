@@ -30,30 +30,6 @@ using namespace JOYSTICK;
 
 #define MAX_JOYSTICKS 4
 
-// --- DefaultFeatures ---------------------------------------------------------
-
-namespace JOYSTICK
-{
-  struct FeatureStruct
-  {
-    const char*           controllerId;
-    const char*           name;
-    JOYSTICK_FEATURE_TYPE type;
-    unsigned int          driverIndex;
-  };
-
-  std::array<FeatureStruct, 4> DefaultFeatures = {
-    {
-      { "game.controller.default", "leftmotor",   JOYSTICK_FEATURE_TYPE_MOTOR, CJoystickXInput::MOTOR_LEFT },
-      { "game.controller.default", "rightmotor",  JOYSTICK_FEATURE_TYPE_MOTOR, CJoystickXInput::MOTOR_RIGHT },
-      { "game.controller.ps",      "strongmotor", JOYSTICK_FEATURE_TYPE_MOTOR, CJoystickXInput::MOTOR_LEFT },
-      { "game.controller.ps",      "weakmotor",   JOYSTICK_FEATURE_TYPE_MOTOR, CJoystickXInput::MOTOR_RIGHT },
-    }
-  };
-}
-
-// --- CJoystickInterfaceXInput ------------------------------------------------
-
 const char* CJoystickInterfaceXInput::Name(void) const
 {
   return INTERFACE_XINPUT;
@@ -82,17 +58,4 @@ bool CJoystickInterfaceXInput::ScanForJoysticks(JoystickVector& joysticks)
   }
 
   return true;
-}
-
-void CJoystickInterfaceXInput::GetFeatures(const std::string& controllerId, FeatureVector& features)
-{
-  for (auto& featureStruct : DefaultFeatures)
-  {
-    if (controllerId == featureStruct.controllerId)
-    {
-      ADDON::JoystickFeature feature(featureStruct.name, featureStruct.type);
-      feature.SetPrimitive(ADDON::DriverPrimitive::CreateMotor(featureStruct.driverIndex));
-      features.push_back(std::move(feature));
-    }
-  }
 }

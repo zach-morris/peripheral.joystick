@@ -32,6 +32,10 @@ namespace JOYSTICK
      * \brief Canonical string serialization of the driver primitive
      */
     static std::string ToString(const ADDON::DriverPrimitive& primitive);
-    static ADDON::DriverPrimitive ToDriverPrimitive(const std::string& primitive);
+
+    /*!
+     * \brief Deserialize string representation of driver primitive
+     */
+    static ADDON::DriverPrimitive ToDriverPrimitive(const std::string& primitive, JOYSTICK_DRIVER_PRIMITIVE_TYPE type);
   };
 }
