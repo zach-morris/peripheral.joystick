@@ -31,7 +31,7 @@ namespace JOYSTICK
   class CDatabaseXml : public CJustABunchOfFiles
   {
   public:
-    CDatabaseXml(const std::string& strBasePath, bool bReadWrite);
+    CDatabaseXml(const std::string& strBasePath, bool bReadWrite, IDatabaseCallbacks* callbacks);
 
     virtual ~CDatabaseXml(void) { }
 

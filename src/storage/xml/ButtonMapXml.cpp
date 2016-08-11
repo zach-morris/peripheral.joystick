@@ -20,8 +20,8 @@
 
 #include "ButtonMapXml.h"
 #include "DeviceXml.h"
+#include "buttonmapper/ButtonMapTranslator.h"
 #include "storage/ButtonMapDefinitions.h"
-#include "storage/ButtonMapTranslator.h"
 #include "log/Log.h"
 
 #include "tinyxml.h"

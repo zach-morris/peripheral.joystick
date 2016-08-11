@@ -19,7 +19,6 @@
 #pragma once
 
 #include "JoystickTypes.h"
-#include "storage/ButtonMapTypes.h" // for FeatureVector
 
 #include <string>
 
@@ -55,13 +54,5 @@ namespace JOYSTICK
      * \return true if the scan completed successfully, even if no results are found
      */
     virtual bool ScanForJoysticks(JoystickVector& joysticks) = 0;
-
-    /*!
-     * \brief Get the feature mapping known to the interface
-     *
-     * \param      controllerId The add-on ID of a controller profile
-     * \param[out] features     The features known to the interface (such as motors)
-     */
-    virtual void GetFeatures(const std::string& controllerId, FeatureVector& features) { }
   };
 }

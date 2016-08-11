@@ -24,8 +24,8 @@
 
 using namespace JOYSTICK;
 
-CDatabaseXml::CDatabaseXml(const std::string& strBasePath, bool bReadWrite) :
-  CJustABunchOfFiles(strBasePath + "/" RESOURCE_XML_FOLDER, RESOURCE_XML_EXTENSION, bReadWrite)
+CDatabaseXml::CDatabaseXml(const std::string& strBasePath, bool bReadWrite, IDatabaseCallbacks* callbacks) :
+  CJustABunchOfFiles(strBasePath + "/" RESOURCE_XML_FOLDER, RESOURCE_XML_EXTENSION, bReadWrite, callbacks)
 {
 }
 

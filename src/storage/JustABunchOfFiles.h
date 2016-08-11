@@ -54,17 +54,19 @@ namespace JOYSTICK
                              public IDirectoryCacheCallback
   {
   public:
-    CJustABunchOfFiles(const std::string& strResourcePath, const std::string& strExtension, bool bReadWrite);
+    CJustABunchOfFiles(const std::string& strResourcePath,
+                       const std::string& strExtension,
+                       bool bReadWrite,
+                       IDatabaseCallbacks* callbacks);
+
     virtual ~CJustABunchOfFiles(void);
 
     // implementation of IDatabase
-    virtual bool GetFeatures(const CDevice& driverInfo,
-                             const std::string& controllerId,
-                             FeatureVector& features) override;
-    virtual bool MapFeatures(const CDevice& driverInfo,
+    virtual const ButtonMap& GetButtonMap(const ADDON::Joystick& driverInfo) override;
+    virtual bool MapFeatures(const ADDON::Joystick& driverInfo,
                              const std::string& controllerId,
                              const FeatureVector& features) override;
-    virtual bool ResetButtonMap(const CDevice& driverInfo,
+    virtual bool ResetButtonMap(const ADDON::Joystick& driverInfo,
                                 const std::string& controllerId) override;
 
     // implementation of IDirectoryCacheCallback
@@ -78,7 +80,7 @@ namespace JOYSTICK
 
   private:
     /*!
-     * \brief Subcursively index a path, enumerating the folder and updating
+     * \brief Recursively index a path, enumerating the folder and updating
      *        the directory cache
      */
     void IndexDirectory(const std::string& path, unsigned int folderDepth);

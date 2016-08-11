@@ -19,18 +19,19 @@
  */
 #pragma once
 
-#include "ButtonMapTypes.h"
-
-#include "kodi_peripheral_types.h"
-#include "kodi_peripheral_utils.hpp"
+#include "StorageTypes.h"
+#include "buttonmapper/ButtonMapper.h"
+#include "buttonmapper/ButtonMapTypes.h"
 
 #include <string>
-#include <vector>
+
+struct PERIPHERAL_PROPERTIES;
 
 namespace ADDON { class CHelper_libKODI_peripheral; }
 
 namespace JOYSTICK
 {
+  class CDevice;
   class IDatabase;
 
   class CStorageManager
@@ -104,10 +105,9 @@ namespace JOYSTICK
     void RefreshButtonMaps(const std::string& strDeviceName = "");
 
   private:
-    static void MergeFeatures(FeatureVector& features, const FeatureVector& newFeatures);
-
     ADDON::CHelper_libKODI_peripheral* m_peripheralLib;
 
-    DatabaseVector m_databases;
+    DatabaseVector    m_databases;
+    CButtonMapper     m_buttonMapper;
   };
 }

@@ -39,18 +39,10 @@ CButtonMap::CButtonMap(const std::string& strResourcePath, const CDevice& device
 {
 }
 
-bool CButtonMap::GetFeatures(const std::string& controllerId, FeatureVector& features)
+const ButtonMap& CButtonMap::GetButtonMap()
 {
   Refresh();
-
-  ButtonMap::const_iterator it = m_buttonMap.find(controllerId);
-  if (it != m_buttonMap.end())
-  {
-    features = it->second;
-    return true;
-  }
-
-  return false;
+  return m_buttonMap;
 }
 
 bool CButtonMap::MapFeatures(const std::string& controllerId, const FeatureVector& features)

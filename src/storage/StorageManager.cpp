@@ -28,8 +28,8 @@
 #include "utils/StringUtils.h"
 
 #include "libKODI_peripheral.h"
-
-#include <algorithm>
+#include "kodi_peripheral_types.h"
+#include "kodi_peripheral_utils.hpp"
 
 using namespace JOYSTICK;
 
@@ -78,12 +78,15 @@ bool CStorageManager::Initialize(ADDON::CHelper_libKODI_peripheral* peripheralLi
   // Ensure button map path exists in user data
   CStorageUtils::EnsureDirectoryExists(strUserPath);
 
-  m_databases.push_back(DatabasePtr(new CDatabaseXml(strUserPath, true)));
-  //m_databases.push_back(DatabasePtr(new CDatabaseRetroArch(strUserPath, true))); // TODO
-  m_databases.push_back(DatabasePtr(new CDatabaseXml(strAddonPath, false)));
+  m_databases.push_back(DatabasePtr(new CDatabaseXml(strUserPath, true, m_buttonMapper.GetCallbacks())));
+  //m_databases.push_back(DatabasePtr(new CDatabaseRetroArch(strUserPath, true, &m_controllerMapper))); // TODO
+  m_databases.push_back(DatabasePtr(new CDatabaseXml(strAddonPath, false, m_buttonMapper.GetCallbacks())));
   //m_databases.push_back(DatabasePtr(new CDatabaseRetroArch(strAddonPath, false))); // TODO
 
-  m_databases.push_back(DatabasePtr(new CDatabaseJoystickAPI));
+  m_databases.push_back(DatabasePtr(new CDatabaseJoystickAPI(m_buttonMapper.GetCallbacks())));
+
+  for (auto& database : m_databases)
+    m_buttonMapper.RegisterDatabase(database);
 
   return true;
 }
@@ -97,14 +100,7 @@ bool CStorageManager::GetFeatures(const ADDON::Joystick& joystick,
                                   const std::string& strControllerId,
                                   FeatureVector& features)
 {
-  CDevice deviceInfo(joystick);
-
-  for (DatabaseVector::const_iterator it = m_databases.begin(); it != m_databases.end(); ++it)
-  {
-    FeatureVector newFeatures;
-    if ((*it)->GetFeatures(deviceInfo, strControllerId, newFeatures))
-      MergeFeatures(features, newFeatures);
-  }
+  m_buttonMapper.GetFeatures(joystick, strControllerId, features);
 
   return !features.empty();
 }
@@ -113,24 +109,20 @@ bool CStorageManager::MapFeatures(const ADDON::Joystick& joystick,
                                   const std::string& strControllerId,
                                   const FeatureVector& features)
 {
-  CDevice deviceInfo(joystick);
-
   bool bModified = false;
 
   for (DatabaseVector::const_iterator it = m_databases.begin(); it != m_databases.end(); ++it)
-    bModified |= (*it)->MapFeatures(deviceInfo, strControllerId, features);
+    bModified |= (*it)->MapFeatures(joystick, strControllerId, features);
 
   return bModified;
 }
 
 bool CStorageManager::ResetButtonMap(const ADDON::Joystick& joystick, const std::string& strControllerId)
 {
-  CDevice deviceInfo(joystick);
-
   bool bModified = false;
 
   for (DatabaseVector::const_iterator it = m_databases.begin(); it != m_databases.end(); ++it)
-    bModified |= (*it)->ResetButtonMap(deviceInfo, strControllerId);
+    bModified |= (*it)->ResetButtonMap(joystick, strControllerId);
 
   return bModified;
 }
@@ -140,19 +132,4 @@ void CStorageManager::RefreshButtonMaps(const std::string& strDeviceName /* = ""
   // Request the frontend to refresh its button maps
   if (m_peripheralLib)
     m_peripheralLib->RefreshButtonMaps(strDeviceName);
-}
-
-void CStorageManager::MergeFeatures(FeatureVector& features, const FeatureVector& newFeatures)
-{
-  for (const ADDON::JoystickFeature& newFeature : newFeatures)
-  {
-    const bool bFound = std::find_if(features.begin(), features.end(),
-      [newFeature](const ADDON::JoystickFeature& feature)
-      {
-        return feature.Name() == newFeature.Name();
-      }) != features.end();
-
-    if (!bFound)
-      features.push_back(newFeature);
-  }
 }

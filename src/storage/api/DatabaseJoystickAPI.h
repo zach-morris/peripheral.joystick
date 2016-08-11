@@ -26,13 +26,13 @@ namespace JOYSTICK
   class CDatabaseJoystickAPI : public IDatabase
   {
   public:
-    CDatabaseJoystickAPI(void) = default;
+    CDatabaseJoystickAPI(IDatabaseCallbacks* callbacks) : IDatabase(callbacks) { }
 
     virtual ~CDatabaseJoystickAPI(void) { }
 
     // implementation of IDatabase
-    virtual bool GetFeatures(const CDevice& driverInfo, const std::string& controllerId, FeatureVector& features) override;
-    virtual bool MapFeatures(const CDevice& driverInfo, const std::string& controllerId, const FeatureVector& features) override;
-    virtual bool ResetButtonMap(const CDevice& driverInfo, const std::string& controllerId) override;
+    virtual const ButtonMap& GetButtonMap(const ADDON::Joystick& driverInfo) override;
+    virtual bool MapFeatures(const ADDON::Joystick& driverInfo, const std::string& controllerId, const FeatureVector& features) override;
+    virtual bool ResetButtonMap(const ADDON::Joystick& driverInfo, const std::string& controllerId) override;
   };
 }

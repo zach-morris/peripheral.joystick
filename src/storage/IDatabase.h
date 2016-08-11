@@ -19,37 +19,53 @@
  */
 #pragma once
 
-#include "ButtonMapTypes.h"
+#include "buttonmapper/ButtonMapTypes.h"
 
 #include <string>
+
+namespace ADDON
+{
+  class Joystick;
+}
 
 namespace JOYSTICK
 {
   class CDevice;
 
+  class IDatabaseCallbacks
+  {
+  public:
+    virtual ~IDatabaseCallbacks() = default;
+
+    virtual void OnAdd(const CDevice& driverInfo, const ButtonMap& buttonMap) = 0;
+  };
+
   class IDatabase
   {
   public:
+    IDatabase(IDatabaseCallbacks* callbacks) : m_callbacks(callbacks) { }
+
     virtual ~IDatabase(void) { }
 
     /*!
      * \copydoc CStorageManager::GetFeatures()
      */
-    virtual bool GetFeatures(const CDevice& driverInfo,
-                             const std::string& controllerId,
-                             FeatureVector& features) = 0;
+    virtual const ButtonMap& GetButtonMap(const ADDON::Joystick& driverInfo) = 0;
 
     /*!
      * \copydoc CStorageManager::MapFeatures()
      */
-    virtual bool MapFeatures(const CDevice& driverInfo,
+    virtual bool MapFeatures(const ADDON::Joystick& driverInfo,
                              const std::string& controllerId,
                              const FeatureVector& features) = 0;
 
     /*!
      * \copydoc CStorageManager::ResetButtonMap()
      */
-    virtual bool ResetButtonMap(const CDevice& driverInfo,
+    virtual bool ResetButtonMap(const ADDON::Joystick& driverInfo,
                                 const std::string& controllerId) = 0;
+
+  protected:
+    IDatabaseCallbacks* const m_callbacks;
   };
 }

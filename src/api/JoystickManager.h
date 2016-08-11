@@ -20,7 +20,7 @@
 #pragma once
 
 #include "JoystickTypes.h"
-#include "storage/ButtonMapTypes.h" // for FeatureVector
+#include "buttonmapper/ButtonMapTypes.h"
 
 #include "kodi_peripheral_utils.hpp"
 #include "p8-platform/threads/mutex.h"
@@ -94,13 +94,13 @@ namespace JOYSTICK
     void TriggerScan(void);
 
     /*!
-     * \brief Get the feature mapping known to an interface
+     * \brief Get the button map known to the interface
      *
-     * \param      provider     Name of the joystick interface
-     * \param      controllerId Add-on ID of the controller profile being requested
-     * \param[out] features     The features, if any are known to the interface
+     * \param provider Name of the joystick interface
+     *
+     * \return A button map populated with hard-coded features for the interface
      */
-    void GetFeatures(const std::string& provider, const std::string& controllerId, FeatureVector& features);
+    const ButtonMap& GetButtonMap(const std::string& provider);
 
   private:
     IScannerCallback*                m_scanner;
