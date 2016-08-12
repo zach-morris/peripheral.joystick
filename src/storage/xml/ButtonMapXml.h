@@ -39,7 +39,7 @@ namespace JOYSTICK
   {
   public:
     CButtonMapXml(const std::string& strResourcePath);
-    CButtonMapXml(const std::string& strResourcePath, const CDevice& device);
+    CButtonMapXml(const std::string& strResourcePath, const DevicePtr& device);
 
     virtual ~CButtonMapXml(void) { }
 

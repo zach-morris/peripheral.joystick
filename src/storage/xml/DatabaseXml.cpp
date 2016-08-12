@@ -34,7 +34,7 @@ CButtonMap* CDatabaseXml::CreateResource(const std::string& resourcePath)
   return new CButtonMapXml(resourcePath);
 }
 
-CButtonMap* CDatabaseXml::CreateResource(const std::string& resourcePath, const CDevice& deviceInfo)
+CButtonMap* CDatabaseXml::CreateResource(const std::string& resourcePath, const DevicePtr& deviceInfo)
 {
   return new CButtonMapXml(resourcePath, deviceInfo);
 }

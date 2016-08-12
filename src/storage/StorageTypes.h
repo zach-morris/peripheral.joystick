@@ -19,10 +19,16 @@
 #pragma once
 
 #include <memory>
+#include <set>
 #include <vector>
 
 namespace JOYSTICK
 {
+  class CDevice;
+  typedef std::shared_ptr<CDevice> DevicePtr;
+  typedef std::vector<DevicePtr>   DeviceVector;
+  typedef std::set<DevicePtr>      DeviceSet;
+
   class IDatabase;
   typedef std::shared_ptr<IDatabase> DatabasePtr;
   typedef std::vector<DatabasePtr>   DatabaseVector;

@@ -40,13 +40,17 @@ namespace JOYSTICK
     CResources(void) { }
     ~CResources(void);
 
+    DevicePtr GetDevice(const CDevice& deviceInfo);
+
     CButtonMap* GetResource(const CDevice& deviceInfo);
     bool AddResource(CButtonMap* resource);
     void RemoveResource(const std::string& strPath);
 
   private:
+    typedef std::map<CDevice, DevicePtr>   DeviceMap;
     typedef std::map<CDevice, CButtonMap*> ResourceMap;
 
+    DeviceMap   m_devices;
     ResourceMap m_resources;
   };
 
@@ -76,7 +80,7 @@ namespace JOYSTICK
   protected:
     // Interface for child class to provide
     virtual CButtonMap* CreateResource(const std::string& resourcePath) = 0;
-    virtual CButtonMap* CreateResource(const std::string& resourcePath, const CDevice& driverInfo) = 0;
+    virtual CButtonMap* CreateResource(const std::string& resourcePath, const DevicePtr& driverInfo) = 0;
 
   private:
     /*!
@@ -92,7 +96,7 @@ namespace JOYSTICK
      *
      * \return true if the path exists or was created
      */
-    bool GetResourcePath(const CDevice& deviceInfo, std::string& resourcePath) const;
+    bool GetResourcePath(const ADDON::Joystick& deviceInfo, std::string& resourcePath) const;
 
     const std::string m_strResourcePath;
     const std::string m_strExtension;

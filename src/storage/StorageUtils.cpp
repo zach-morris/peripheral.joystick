@@ -19,11 +19,14 @@
  */
 
 #include "StorageUtils.h"
+#include "Device.h"
 #include "filesystem/DirectoryUtils.h"
 #include "log/Log.h"
 #include "utils/StringUtils.h"
 
+#include <algorithm>
 #include <set>
+#include <sstream>
 #include <stdio.h>
 
 using namespace JOYSTICK;
@@ -48,6 +51,46 @@ bool CStorageUtils::EnsureDirectoryExists(const std::string& path)
   m_existingDirs.insert(path);
 
   return true;
+}
+
+std::string CStorageUtils::RootFileName(const ADDON::Joystick& device)
+{
+  std::string baseFilename = StringUtils::MakeSafeUrl(device.Name());
+
+  // Combine successive runs of underscores (fits more information in smaller
+  // space)
+  baseFilename.erase(std::unique(baseFilename.begin(), baseFilename.end(),
+    [](char a, char b)
+    {
+      return a == '_' && b == '_';
+    }), baseFilename.end());
+
+  // Limit filename to a sane number of characters.
+  if (baseFilename.length() > 50)
+    baseFilename.erase(baseFilename.begin() + 50, baseFilename.end());
+
+  // Trim trailing underscores left over from chopping the string
+  baseFilename = StringUtils::Trim(baseFilename, "_");
+
+  // Append remaining properties
+  std::stringstream filename;
+
+  filename << baseFilename;
+  if (device.IsVidPidKnown())
+  {
+    filename << "_v" << CStorageUtils::FormatHexString(device.VendorID());
+    filename << "_p" << CStorageUtils::FormatHexString(device.ProductID());
+  }
+  if (device.ButtonCount() != 0)
+    filename << "_" << device.ButtonCount() << "b";
+  if (device.HatCount() != 0)
+    filename << "_" << device.HatCount() << "h";
+  if (device.AxisCount() != 0)
+    filename << "_" << device.AxisCount() << "a";
+  if (device.Index() != 0)
+    filename << "_" << device.Index();
+
+  return filename.str();
 }
 
 int CStorageUtils::HexStringToInt(const char* strHex)

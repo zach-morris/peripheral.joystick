@@ -22,6 +22,7 @@
 #include "DeviceXml.h"
 #include "buttonmapper/ButtonMapTranslator.h"
 #include "storage/ButtonMapDefinitions.h"
+#include "storage/Device.h"
 #include "log/Log.h"
 
 #include "tinyxml.h"
@@ -38,7 +39,7 @@ CButtonMapXml::CButtonMapXml(const std::string& strResourcePath) :
 {
 }
 
-CButtonMapXml::CButtonMapXml(const std::string& strResourcePath, const CDevice& device) :
+CButtonMapXml::CButtonMapXml(const std::string& strResourcePath, const DevicePtr& device) :
   CButtonMap(strResourcePath, device)
 {
 }
@@ -67,14 +68,18 @@ bool CButtonMapXml::Load(void)
     return false;
   }
 
-  if (!CDeviceXml::Deserialize(pDevice, m_device))
-    return false;
+  // Don't overwrite valid device
+  if (!m_device->IsValid())
+  {
+    if (!CDeviceXml::Deserialize(pDevice, *m_device))
+      return false;
+  }
 
   const TiXmlElement* pController = pDevice->FirstChildElement(BUTTONMAP_XML_ELEM_CONTROLLER);
 
   if (!pController)
   {
-    esyslog("Device \"%s\": can't find <%s> tag", m_device.Name().c_str(), BUTTONMAP_XML_ELEM_CONTROLLER);
+    esyslog("Device \"%s\": can't find <%s> tag", m_device->Name().c_str(), BUTTONMAP_XML_ELEM_CONTROLLER);
     return false;
   }
 
@@ -86,7 +91,7 @@ bool CButtonMapXml::Load(void)
     const char* id = pController->Attribute(BUTTONMAP_XML_ATTR_CONTROLLER_ID);
     if (!id)
     {
-      esyslog("Device \"%s\": <%s> tag has no attribute \"%s\"", m_device.Name().c_str(),
+      esyslog("Device \"%s\": <%s> tag has no attribute \"%s\"", m_device->Name().c_str(),
               BUTTONMAP_XML_ELEM_CONTROLLER, BUTTONMAP_XML_ATTR_CONTROLLER_ID);
       return false;
     }
@@ -97,7 +102,7 @@ bool CButtonMapXml::Load(void)
 
     if (features.empty())
     {
-      esyslog("Device \"%s\" has no features for controller %s", m_device.Name().c_str(), id);
+      esyslog("Device \"%s\" has no features for controller %s", m_device->Name().c_str(), id);
     }
     else
     {
@@ -108,7 +113,7 @@ bool CButtonMapXml::Load(void)
     pController = pController->NextSiblingElement(BUTTONMAP_XML_ELEM_CONTROLLER);
   }
 
-  dsyslog("Loaded device \"%s\" with %u controller profiles and %u total features", m_device.Name().c_str(), m_buttonMap.size(), totalFeatureCount);
+  dsyslog("Loaded device \"%s\" with %u controller profiles and %u total features", m_device->Name().c_str(), m_buttonMap.size(), totalFeatureCount);
 
   return true;
 }
@@ -138,7 +143,7 @@ bool CButtonMapXml::Save(void) const
   if (deviceElem == NULL)
     return false;
 
-  CDeviceXml::Serialize(m_device, deviceElem);
+  CDeviceXml::Serialize(*m_device, deviceElem);
 
   if (!SerializeButtonMaps(deviceElem))
     return false;

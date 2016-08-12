@@ -26,8 +26,14 @@
 
 using namespace JOYSTICK;
 
-void CControllerMapper::OnAdd(const CDevice& driverInfo, const ButtonMap& buttonMap)
+void CControllerMapper::OnAdd(const DevicePtr& driverInfo, const ButtonMap& buttonMap)
 {
+  // Skip devices we've already encountered.
+  if (m_observedDevices.find(driverInfo) == m_observedDevices.end())
+    m_observedDevices.insert(driverInfo);
+  else
+    return;
+
   bool bChanged = false;
 
   for (auto itTo = buttonMap.begin(); itTo != buttonMap.end(); ++itTo)

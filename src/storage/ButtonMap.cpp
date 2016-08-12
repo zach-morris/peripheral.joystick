@@ -19,6 +19,7 @@
  */
 
 #include "ButtonMap.h"
+#include "Device.h"
 
 #include "p8-platform/util/timeutils.h"
 
@@ -28,15 +29,21 @@ using namespace JOYSTICK;
 
 CButtonMap::CButtonMap(const std::string& strResourcePath) :
   m_strResourcePath(strResourcePath),
+  m_device(std::move(std::make_shared<CDevice>())),
   m_timestamp(-1)
 {
 }
 
-CButtonMap::CButtonMap(const std::string& strResourcePath, const CDevice& device) :
+CButtonMap::CButtonMap(const std::string& strResourcePath, const DevicePtr& device) :
   m_strResourcePath(strResourcePath),
   m_device(device),
   m_timestamp(-1)
 {
+}
+
+bool CButtonMap::IsValid(void) const
+{
+  return m_device->IsValid();
 }
 
 const ButtonMap& CButtonMap::GetButtonMap()

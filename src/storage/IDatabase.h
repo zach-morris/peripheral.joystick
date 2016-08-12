@@ -19,6 +19,7 @@
  */
 #pragma once
 
+#include "StorageTypes.h"
 #include "buttonmapper/ButtonMapTypes.h"
 
 #include <string>
@@ -37,7 +38,7 @@ namespace JOYSTICK
   public:
     virtual ~IDatabaseCallbacks() = default;
 
-    virtual void OnAdd(const CDevice& driverInfo, const ButtonMap& buttonMap) = 0;
+    virtual void OnAdd(const DevicePtr& driverInfo, const ButtonMap& buttonMap) = 0;
   };
 
   class IDatabase

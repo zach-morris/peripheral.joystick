@@ -21,6 +21,12 @@
 
 #include "ButtonMapTypes.h"
 #include "storage/IDatabase.h"
+#include "storage/StorageTypes.h"
+
+namespace ADDON
+{
+  class Joystick;
+}
 
 namespace JOYSTICK
 {
@@ -31,7 +37,7 @@ namespace JOYSTICK
     virtual ~CControllerMapper() = default;
 
     // implementation of IDatabaseCallbacks
-    virtual void OnAdd(const CDevice& driverInfo, const ButtonMap& buttonMap);
+    virtual void OnAdd(const DevicePtr& driverInfo, const ButtonMap& buttonMap);
 
     void TransformFeatures(const std::string& fromController,
                            const std::string& toController,
@@ -47,5 +53,6 @@ namespace JOYSTICK
 
     ControllerMap m_map;
     ControllerMap m_reducedMap;
+    DeviceSet     m_observedDevices;
   };
 }
