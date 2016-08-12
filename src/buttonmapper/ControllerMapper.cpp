@@ -19,10 +19,12 @@
  */
 
 #include "ControllerMapper.h"
+#include "storage/Device.h"
 
 #include "kodi_peripheral_utils.hpp"
 
 #include <algorithm>
+#include <array>
 #include <assert.h>
 
 using namespace JOYSTICK;
@@ -35,23 +37,27 @@ void CControllerMapper::OnAdd(const DevicePtr& driverInfo, const ButtonMap& butt
   else
     return;
 
-  bool bChanged = false;
+  CJoystickFamily family(driverInfo->Name(), driverInfo->Provider());
+  CDriverGeometry geometry(driverInfo->ButtonCount(),
+                           driverInfo->HatCount(),
+                           driverInfo->AxisCount());
+
+  CControllerModel& familyModel = m_familyModels[family];
+  CControllerModel& geometryModel = m_geometryModels[geometry];
 
   for (auto itTo = buttonMap.begin(); itTo != buttonMap.end(); ++itTo)
   {
     // Only allow controller map items where "from" compares before "to"
     for (auto itFrom = buttonMap.begin(); itFrom->first < itTo->first; ++itFrom)
     {
-      bChanged |= AddControllerMap(itFrom->first, itFrom->second, itTo->first, itTo->second);
+      AddControllerMap(familyModel, itFrom->first, itFrom->second, itTo->first, itTo->second);
+      AddControllerMap(geometryModel, itFrom->first, itFrom->second, itTo->first, itTo->second);
     }
   }
-
-  // Clear cache
-  if (bChanged)
-    m_reducedMap.clear();
 }
 
-bool CControllerMapper::AddControllerMap(const std::string& controllerFrom, const FeatureVector& featuresFrom,
+bool CControllerMapper::AddControllerMap(CControllerModel& model,
+                                         const std::string& controllerFrom, const FeatureVector& featuresFrom,
                                          const std::string& controllerTo, const FeatureVector& featuresTo)
 {
   bool bChanged = false;
@@ -60,41 +66,37 @@ bool CControllerMapper::AddControllerMap(const std::string& controllerFrom, cons
 
   ControllerMapItem needle = { controllerFrom, controllerTo };
 
-  auto it = m_map.find(needle);
-  if (it == m_map.end())
-  {
-    m_map.insert(needle);
-    it = m_map.find(needle);
-  }
-
-  ControllerMapItem& controllerItem = const_cast<ControllerMapItem&>(*it);
+  ControllerMap& controllerMap = model.GetMap();
+  FeatureOccurrences& featureMap = controllerMap[needle];
 
   for (auto itFromFeature = featuresFrom.begin(); itFromFeature != featuresFrom.end(); ++itFromFeature)
   {
+    const ADDON::JoystickFeature& fromFeature = *itFromFeature;
+
     auto itToFeature = std::find_if(featuresTo.begin(), featuresTo.end(),
-      [&itFromFeature](const ADDON::JoystickFeature& feature)
+      [&fromFeature](const ADDON::JoystickFeature& feature)
       {
-        if (itFromFeature->Type() == feature.Type())
+        if (fromFeature.Type() == feature.Type())
         {
           switch (feature.Type())
           {
           case JOYSTICK_FEATURE_TYPE_SCALAR:
           case JOYSTICK_FEATURE_TYPE_MOTOR:
           {
-            return itFromFeature->Primitive() == feature.Primitive();
+            return fromFeature.Primitive() == feature.Primitive();
           }
           case JOYSTICK_FEATURE_TYPE_ANALOG_STICK:
           {
-            return itFromFeature->Up()    == feature.Up() &&
-                   itFromFeature->Down()  == feature.Down() &&
-                   itFromFeature->Right() == feature.Right() &&
-                   itFromFeature->Left()  == feature.Left();
+            return fromFeature.Up()    == feature.Up() &&
+                   fromFeature.Down()  == feature.Down() &&
+                   fromFeature.Right() == feature.Right() &&
+                   fromFeature.Left()  == feature.Left();
           }
           case JOYSTICK_FEATURE_TYPE_ACCELEROMETER:
           {
-            return itFromFeature->PositiveX() == feature.PositiveX() &&
-                   itFromFeature->PositiveY() == feature.PositiveY() &&
-                   itFromFeature->PositiveZ() == feature.PositiveZ();
+            return fromFeature.PositiveX() == feature.PositiveX() &&
+                   fromFeature.PositiveY() == feature.PositiveY() &&
+                   fromFeature.PositiveZ() == feature.PositiveZ();
           }
           default:
             break;
@@ -105,16 +107,20 @@ bool CControllerMapper::AddControllerMap(const std::string& controllerFrom, cons
 
     if (itToFeature != featuresTo.end())
     {
-      FeatureMapItem featureMapItem = { itFromFeature->Name(), itToFeature->Name() };
-      ++controllerItem.featureMap[featureMapItem];
+      FeatureMapItem featureMapItem = { fromFeature.Name(), itToFeature->Name() };
+      ++featureMap[featureMapItem];
       bChanged = true;
     }
   }
 
+  if (bChanged)
+    model.Reset();
+
   return bChanged;
 }
 
-void CControllerMapper::TransformFeatures(const std::string& fromController,
+void CControllerMapper::TransformFeatures(const ADDON::Joystick& driverInfo,
+                                          const std::string& fromController,
                                           const std::string& toController,
                                           const FeatureVector& features,
                                           FeatureVector& transformedFeatures)
@@ -124,83 +130,40 @@ void CControllerMapper::TransformFeatures(const std::string& fromController,
   ControllerMapItem needle = { bSwap ? toController : fromController,
                                bSwap ? fromController : toController };
 
-  const FeatureOccurrences& featureMap = GetFeatureMap(needle, bSwap);
+  CJoystickFamily family(driverInfo.Name(), driverInfo.Provider());
+  CDriverGeometry geometry(driverInfo.ButtonCount(),
+                           driverInfo.HatCount(),
+                           driverInfo.AxisCount());
 
-  for (auto itMap = featureMap.begin(); itMap != featureMap.end(); ++itMap)
+  CControllerModel& familyModel = m_familyModels[family];
+  CControllerModel& geometryModel = m_geometryModels[geometry];
+
+  std::array<CControllerModel*, 2> models = { &familyModel, &geometryModel };
+
+  for (CControllerModel* model : models)
   {
-    const std::string& fromFeature = bSwap ? itMap->first.second : itMap->first.first;
-    const std::string& toFeature = bSwap ? itMap->first.first : itMap->first.second;
+    const FeatureOccurrences& normalizedFeatures = model->GetNormalizedFeatures(needle, bSwap);
 
-    auto itFrom = std::find_if(features.begin(), features.end(),
-      [fromFeature](const ADDON::JoystickFeature& feature)
+    for (auto itMap = normalizedFeatures.begin(); itMap != normalizedFeatures.end(); ++itMap)
+    {
+      const std::string& fromFeature = bSwap ? itMap->first.toFeature : itMap->first.fromFeature;
+      const std::string& toFeature = bSwap ? itMap->first.fromFeature : itMap->first.toFeature;
+
+      auto itFrom = std::find_if(features.begin(), features.end(),
+        [fromFeature](const ADDON::JoystickFeature& feature)
+        {
+          return feature.Name() == fromFeature;
+        });
+
+      if (itFrom != features.end())
       {
-        return feature.Name() == fromFeature;
-      });
-
-    if (itFrom != features.end())
-    {
-      ADDON::JoystickFeature transformedFeature(*itFrom);
-      transformedFeature.SetName(toFeature);
-      transformedFeatures.emplace_back(std::move(transformedFeature));
+        ADDON::JoystickFeature transformedFeature(*itFrom);
+        transformedFeature.SetName(toFeature);
+        transformedFeatures.emplace_back(std::move(transformedFeature));
+      }
     }
-  }
-}
 
-const FeatureOccurrences& CControllerMapper::GetFeatureMap(const ControllerMapItem& needle, bool bSwap)
-{
-  ControllerMap::iterator it = m_reducedMap.find(needle);
-  if (it == m_reducedMap.end())
-  {
-    m_reducedMap.insert(needle);
-    it = m_reducedMap.find(needle);
-  }
-
-  ControllerMapItem& controllerItem = const_cast<ControllerMapItem&>(*it);
-
-  FeatureOccurrences& featureMap = controllerItem.featureMap;
-
-  if (featureMap.empty())
-  {
-    auto it = m_map.find(needle);
-    if (it != m_map.end())
-    {
-      const ControllerMapItem& model = *it;
-      ReduceModel(model.featureMap, featureMap, bSwap);
-    }
-  }
-
-  return featureMap;
-}
-
-void CControllerMapper::ReduceModel(const FeatureOccurrences& model, FeatureOccurrences& result, bool bSwap)
-{
-  // First pass, calculate max occurrence counts
-  std::map<std::string, unsigned int> maxFeatureCounts;
-  for (auto it = model.begin(); it != model.end(); ++it)
-  {
-    const std::string& fromFeature = it->first.first;
-    const std::string& toFeature = it->first.second;
-    const std::string& feature = bSwap ? toFeature : fromFeature;
-    const unsigned int count = it->second;
-
-    unsigned int& maxCount = maxFeatureCounts[feature];
-    if (count > maxCount)
-      maxCount = count;
-  }
-
-  // Second pass, assign features with max occurrences to result
-  for (auto it = model.begin(); it != model.end(); ++it)
-  {
-    const std::string& fromFeature = it->first.first;
-    const std::string& toFeature = it->first.second;
-    const std::string& feature = bSwap ? toFeature : fromFeature;
-    const unsigned int count = it->second;
-
-    unsigned int& targetCount = maxFeatureCounts[feature];
-    if (targetCount == count)
-    {
-      result[std::make_pair(fromFeature, toFeature)] = 1;
-      targetCount = 0;
-    }
+    if (!transformedFeatures.empty())
+      break;
   }
 }

@@ -28,17 +28,6 @@
 
 using namespace JOYSTICK;
 
-void CButtonMapper::RegisterDatabase(const DatabasePtr& database)
-{
-  if (std::find(m_databases.begin(), m_databases.end(), database) == m_databases.end())
-    m_databases.push_back(database);
-}
-
-void CButtonMapper::UnregisterDatabase(const DatabasePtr& database)
-{
-  m_databases.erase(std::remove(m_databases.begin(), m_databases.end(), database), m_databases.end());
-}
-
 bool CButtonMapper::GetFeatures(const ADDON::Joystick& joystick,
                                 const std::string& strControllerId,
                                 FeatureVector& features)
@@ -46,7 +35,7 @@ bool CButtonMapper::GetFeatures(const ADDON::Joystick& joystick,
   // Accumulate available button maps for this device
   ButtonMap accumulatedMap = GetButtonMap(joystick);
 
-  GetFeatures(std::move(accumulatedMap), strControllerId, features);
+  GetFeatures(joystick, std::move(accumulatedMap), strControllerId, features);
 
   return !features.empty();
 }
@@ -90,7 +79,7 @@ void CButtonMapper::MergeFeatures(FeatureVector& features, const FeatureVector& 
   }
 }
 
-bool CButtonMapper::GetFeatures(ButtonMap&& buttonMap, const std::string& controllerId, FeatureVector& features)
+bool CButtonMapper::GetFeatures(const ADDON::Joystick& joystick, ButtonMap&& buttonMap, const std::string& controllerId, FeatureVector& features)
 {
   // Try to get a button map for the specified controller profile
   auto itController = buttonMap.find(controllerId);
@@ -99,12 +88,12 @@ bool CButtonMapper::GetFeatures(ButtonMap&& buttonMap, const std::string& contro
 
   // Try to derive a button map from relations between controller profiles
   if (features.empty())
-    DeriveFeatures(controllerId, buttonMap, features);
+    DeriveFeatures(joystick, controllerId, buttonMap, features);
 
   return !features.empty();
 }
 
-void CButtonMapper::DeriveFeatures(const std::string& toController, const ButtonMap& buttonMap, FeatureVector& transformedFeatures)
+void CButtonMapper::DeriveFeatures(const ADDON::Joystick& joystick, const std::string& toController, const ButtonMap& buttonMap, FeatureVector& transformedFeatures)
 {
   // Obtain an iterator to the controller profile with the highest count of features defined
   unsigned int maxFeatures = 0;
@@ -126,6 +115,17 @@ void CButtonMapper::DeriveFeatures(const std::string& toController, const Button
     const std::string& fromController = maxFeaturesIt->first;
     const FeatureVector& features = maxFeaturesIt->second;
 
-    m_controllerMapper.TransformFeatures(fromController, toController, features, transformedFeatures);
+    m_controllerMapper.TransformFeatures(joystick, fromController, toController, features, transformedFeatures);
   }
+}
+
+void CButtonMapper::RegisterDatabase(const DatabasePtr& database)
+{
+  if (std::find(m_databases.begin(), m_databases.end(), database) == m_databases.end())
+    m_databases.push_back(database);
+}
+
+void CButtonMapper::UnregisterDatabase(const DatabasePtr& database)
+{
+  m_databases.erase(std::remove(m_databases.begin(), m_databases.end(), database), m_databases.end());
 }

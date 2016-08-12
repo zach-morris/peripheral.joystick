@@ -38,14 +38,29 @@ namespace JOYSTICK
   typedef std::vector<ADDON::JoystickFeature>    FeatureVector;
   typedef std::map<ControllerID, FeatureVector>  ButtonMap;
 
-  typedef std::pair<FeatureName, FeatureName>    FeatureMapItem; // From feature -> To feature
-  typedef std::map<FeatureMapItem, unsigned int> FeatureOccurrences; // Feature map item -> occurrence count
+  struct FeatureMapItem
+  {
+    std::string fromFeature;
+    std::string toFeature;
+
+    bool operator<(const FeatureMapItem& other) const
+    {
+      if (fromFeature < other.fromFeature) return true;
+      if (fromFeature > other.fromFeature) return false;
+
+      if (toFeature < other.toFeature) return true;
+      if (toFeature > other.toFeature) return false;
+
+      return false;
+    }
+  };
+
+  typedef std::map<FeatureMapItem, unsigned int> FeatureOccurrences;
 
   struct ControllerMapItem
   {
     std::string        fromController;
     std::string        toController;
-    FeatureOccurrences featureMap;
 
     bool operator<(const ControllerMapItem& other) const
     {
@@ -59,5 +74,11 @@ namespace JOYSTICK
     }
   };
 
-  typedef std::set<ControllerMapItem> ControllerMap;
+  typedef std::map<ControllerMapItem, FeatureOccurrences> ControllerMap;
+
+  typedef std::string FamilyName;
+  typedef std::string JoystickName;
+
+  typedef std::map<FamilyName, std::set<JoystickName>> JoystickFamilyMap;
+
 }

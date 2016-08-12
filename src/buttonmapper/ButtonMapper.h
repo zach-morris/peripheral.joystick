@@ -41,19 +41,19 @@ namespace JOYSTICK
     CButtonMapper() = default;
     ~CButtonMapper() = default;
 
-    void RegisterDatabase(const DatabasePtr& database);
-    void UnregisterDatabase(const DatabasePtr& database);
-
     bool GetFeatures(const ADDON::Joystick& joystick, const std::string& strDeviceId, FeatureVector& features);
 
     IDatabaseCallbacks* GetCallbacks() { return &m_controllerMapper; }
+
+    void RegisterDatabase(const DatabasePtr& database);
+    void UnregisterDatabase(const DatabasePtr& database);
 
   private:
     ButtonMap GetButtonMap(const ADDON::Joystick& joystick) const;
     static void MergeButtonMap(ButtonMap& knownMap, const ButtonMap& newFeatures);
     static void MergeFeatures(FeatureVector& features, const FeatureVector& newFeatures);
-    bool GetFeatures(ButtonMap&& buttonMap, const std::string& controllerId, FeatureVector& features);
-    void DeriveFeatures(const std::string& toController, const ButtonMap& buttonMap, FeatureVector& transformedFeatures);
+    bool GetFeatures(const ADDON::Joystick& joystick, ButtonMap&& buttonMap, const std::string& controllerId, FeatureVector& features);
+    void DeriveFeatures(const ADDON::Joystick& joystick, const std::string& toController, const ButtonMap& buttonMap, FeatureVector& transformedFeatures);
 
     DatabaseVector    m_databases;
     CControllerMapper m_controllerMapper;

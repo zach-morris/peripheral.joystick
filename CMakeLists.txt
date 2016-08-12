@@ -29,9 +29,12 @@ set(JOYSTICK_SOURCES src/addon.cpp
                      src/api/JoystickManager.cpp
                      src/api/JoystickTranslator.cpp
                      src/api/PeripheralScanner.cpp
-                     src/buttonmapper/ButtonMapTranslator.cpp
                      src/buttonmapper/ButtonMapper.cpp
+                     src/buttonmapper/ButtonMapTranslator.cpp
                      src/buttonmapper/ControllerMapper.cpp
+                     src/buttonmapper/ControllerModel.cpp
+                     src/buttonmapper/DriverGeometry.cpp
+                     src/buttonmapper/JoystickFamily.cpp
                      src/filesystem/DirectoryCache.cpp
                      src/filesystem/DirectoryUtils.cpp
                      src/filesystem/Filesystem.cpp
@@ -53,6 +56,7 @@ set(JOYSTICK_SOURCES src/addon.cpp
                      src/storage/xml/ButtonMapXml.cpp
                      src/storage/xml/DatabaseXml.cpp
                      src/storage/xml/DeviceXml.cpp
+                     src/storage/xml/JoystickFamiliesXml.cpp
                      src/utils/StringUtils.cpp)
 
 check_include_files("syslog.h" HAVE_SYSLOG)
