@@ -23,6 +23,7 @@
 #include "kodi_peripheral_utils.hpp"
 
 #include <algorithm>
+#include <assert.h>
 
 using namespace JOYSTICK;
 
@@ -54,6 +55,8 @@ bool CControllerMapper::AddControllerMap(const std::string& controllerFrom, cons
                                          const std::string& controllerTo, const FeatureVector& featuresTo)
 {
   bool bChanged = false;
+
+  assert(controllerFrom < controllerTo);
 
   ControllerMapItem needle = { controllerFrom, controllerTo };
 
