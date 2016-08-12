@@ -120,13 +120,10 @@ bool CStorageManager::MapFeatures(const ADDON::Joystick& joystick,
   for (DatabaseVector::const_iterator it = m_databases.begin(); it != m_databases.end(); ++it)
     bModified |= (*it)->MapFeatures(deviceInfo, strControllerId, features);
 
-  if (bModified)
-    RefreshButtonMaps(deviceInfo.Name(), strControllerId);
-
   return bModified;
 }
 
-void CStorageManager::ResetButtonMap(const ADDON::Joystick& joystick, const std::string& strControllerId)
+bool CStorageManager::ResetButtonMap(const ADDON::Joystick& joystick, const std::string& strControllerId)
 {
   CDevice deviceInfo(joystick);
 
@@ -135,16 +132,14 @@ void CStorageManager::ResetButtonMap(const ADDON::Joystick& joystick, const std:
   for (DatabaseVector::const_iterator it = m_databases.begin(); it != m_databases.end(); ++it)
     bModified |= (*it)->ResetButtonMap(deviceInfo, strControllerId);
 
-  if (bModified)
-    RefreshButtonMaps(deviceInfo.Name(), strControllerId);
+  return bModified;
 }
 
-void CStorageManager::RefreshButtonMaps(const std::string& strDeviceName /* = "" */,
-                                        const std::string& strControllerId /* = "" */)
+void CStorageManager::RefreshButtonMaps(const std::string& strDeviceName /* = "" */)
 {
   // Request the frontend to refresh its button maps
   if (m_peripheralLib)
-    m_peripheralLib->RefreshButtonMaps(strDeviceName, strControllerId);
+    m_peripheralLib->RefreshButtonMaps(strDeviceName);
 }
 
 void CStorageManager::MergeFeatures(FeatureVector& features, const FeatureVector& newFeatures)

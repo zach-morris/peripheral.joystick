@@ -90,8 +90,10 @@ namespace JOYSTICK
      *
      * \param deviceName The name of the device to reset
      * \param controllerId The controller ID to reset
+     *
+     * \return true if the underlying storage was modified, false otherwise
      */
-    void ResetButtonMap(const ADDON::Joystick& joystick, const std::string& strControllerId);
+    bool ResetButtonMap(const ADDON::Joystick& joystick, const std::string& strControllerId);
 
     /*!
      * \brief Notify the frontend that button maps have changed
@@ -99,7 +101,7 @@ namespace JOYSTICK
      * \param[optional] deviceName The name of the device to refresh, or empty for all devices
      * \param[optional] controllerId The controller ID to refresh, or empty for all controllers
      */
-    void RefreshButtonMaps(const std::string& strDeviceName = "", const std::string& strControllerId = "");
+    void RefreshButtonMaps(const std::string& strDeviceName = "");
 
   private:
     static void MergeFeatures(FeatureVector& features, const FeatureVector& newFeatures);
