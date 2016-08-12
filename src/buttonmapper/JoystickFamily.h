@@ -37,6 +37,8 @@ namespace JOYSTICK
 
     const std::string& Name() const { return m_familyName; }
 
+    bool IsValid() const { return !m_familyName.empty(); }
+
   private:
     const std::string m_familyName;
   };

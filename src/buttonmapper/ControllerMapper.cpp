@@ -50,8 +50,10 @@ void CControllerMapper::OnAdd(const DevicePtr& driverInfo, const ButtonMap& butt
     // Only allow controller map items where "from" compares before "to"
     for (auto itFrom = buttonMap.begin(); itFrom->first < itTo->first; ++itFrom)
     {
-      AddControllerMap(familyModel, itFrom->first, itFrom->second, itTo->first, itTo->second);
-      AddControllerMap(geometryModel, itFrom->first, itFrom->second, itTo->first, itTo->second);
+      if (family.IsValid())
+        AddControllerMap(familyModel, itFrom->first, itFrom->second, itTo->first, itTo->second);
+      if (geometry.IsValid())
+        AddControllerMap(geometryModel, itFrom->first, itFrom->second, itTo->first, itTo->second);
     }
   }
 }

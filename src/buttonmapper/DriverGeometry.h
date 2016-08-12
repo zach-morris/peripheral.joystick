@@ -27,6 +27,8 @@ namespace JOYSTICK
     CDriverGeometry(unsigned int buttonCount, unsigned int hatCount, unsigned int axisCount);
     CDriverGeometry(const CDriverGeometry& other);
 
+    bool IsValid() const;
+
     bool operator<(const CDriverGeometry& other) const;
 
     unsigned int ButtonCount() const { return m_buttonCount; }
