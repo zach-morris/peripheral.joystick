@@ -69,6 +69,7 @@ bool CResources::AddResource(CButtonMap* resource)
     CButtonMap* oldResource = m_resources[*resource->Device()];
     delete oldResource;
     m_resources[*resource->Device()] = resource;
+    m_devices[*resource->Device()] = resource->Device();
     return true;
   }
   return false;
