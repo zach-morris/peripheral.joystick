@@ -25,6 +25,7 @@
 #define INTERFACE_DIRECTINPUT  "directinput"
 #define INTERFACE_LINUX        "linux"
 #define INTERFACE_SDL          "sdl"
+#define INTERFACE_UDEV         "udev"
 #define INTERFACE_XINPUT       "xinput"
 
 namespace JOYSTICK

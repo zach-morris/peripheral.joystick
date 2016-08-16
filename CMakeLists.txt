@@ -130,6 +130,20 @@ if("${CORE_SYSTEM_NAME}" STREQUAL "windows")
                                src/api/xinput/XInputDLL.cpp)
 endif()
 
+# --- udev ---------------------------------------------------------------------
+
+find_package(udev REQUIRED)
+if(UDEV_FOUND)
+  include_directories(${UDEV_INCLUDE_DIRS})
+
+  add_definitions(-DHAVE_UDEV)
+
+  list(APPEND JOYSTICK_SOURCES src/api/udev/JoystickInterfaceUdev.cpp
+                               src/api/udev/JoystickUdev.cpp)
+
+  list(APPEND DEPLIBS ${UDEV_LIBRARIES})
+endif()
+
 # ------------------------------------------------------------------------------
 
 build_addon(peripheral.joystick JOYSTICK DEPLIBS)
