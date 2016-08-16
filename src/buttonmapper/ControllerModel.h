@@ -23,15 +23,28 @@
 
 namespace JOYSTICK
 {
+  /*!
+   * \brief Model for how controllers map to each other
+   */
   class CControllerModel
   {
   public:
-    void Reset();
+    /*!
+     * \brief Add data to the model
+     *
+     * \param controllerMapping  The from and to controllers
+     * \param featureMapping     The from and to features
+     */
+    void AddFeatureMapping(const ControllerMapItem& controllerMapping, const FeatureMapItem& featuremapping);
 
-    ControllerMap& GetMap() { return m_map; }
-    const ControllerMap& GetMap() const { return m_map; }
-
-    const FeatureOccurrences& GetNormalizedFeatures(const ControllerMapItem& needle, bool bSwap);
+    /*!
+     * \brief Get a translation map for the specified form and to controllers
+     *
+     * \param needle The from and to controllers
+     *
+     * \return A map whose keys are from-to feature pairs and whose values are all 1
+     */
+    const FeatureOccurrences& GetNormalizedFeatures(const ControllerMapItem& needle);
 
   private:
     void Normalize(const ControllerMapItem& needle, bool bSwap);

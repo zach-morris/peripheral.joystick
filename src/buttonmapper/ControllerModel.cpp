@@ -22,13 +22,18 @@
 
 using namespace JOYSTICK;
 
-void CControllerModel::Reset()
+void CControllerModel::AddFeatureMapping(const ControllerMapItem& controllerMapping, const FeatureMapItem& featureMapping)
 {
-  m_reducedMap.clear();
+  ++m_map[controllerMapping][featureMapping];
+
+  // Reset the reduced model for the controller mapping
+  m_reducedMap[controllerMapping].clear();
 }
 
-const FeatureOccurrences& CControllerModel::GetNormalizedFeatures(const ControllerMapItem& needle, bool bSwap)
+const FeatureOccurrences& CControllerModel::GetNormalizedFeatures(const ControllerMapItem& needle)
 {
+  const bool bSwap = (needle.fromController >= needle.toController);
+
   FeatureOccurrences& result = m_reducedMap[needle];
   if (result.empty())
     NormalizeFeatures(m_map[needle], result, bSwap);

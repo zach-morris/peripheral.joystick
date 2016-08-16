@@ -66,9 +66,6 @@ bool CControllerTransformer::AddControllerMap(CControllerModel& model,
 
   ControllerMapItem needle = { controllerFrom, controllerTo };
 
-  ControllerMap& controllerMap = model.GetMap();
-  FeatureOccurrences& featureMap = controllerMap[needle];
-
   for (auto itFromFeature = featuresFrom.begin(); itFromFeature != featuresFrom.end(); ++itFromFeature)
   {
     const ADDON::JoystickFeature& fromFeature = *itFromFeature;
@@ -108,13 +105,10 @@ bool CControllerTransformer::AddControllerMap(CControllerModel& model,
     if (itToFeature != featuresTo.end())
     {
       FeatureMapItem featureMapItem = { fromFeature.Name(), itToFeature->Name() };
-      ++featureMap[featureMapItem];
+      model.AddFeatureMapping(needle, std::move(featureMapItem));
       bChanged = true;
     }
   }
-
-  if (bChanged)
-    model.Reset();
 
   return bChanged;
 }
@@ -134,7 +128,7 @@ void CControllerTransformer::TransformFeatures(const ADDON::Joystick& driverInfo
 
   for (CControllerModel* model : models)
   {
-    const FeatureOccurrences& normalizedFeatures = model->GetNormalizedFeatures(needle, bSwap);
+    const FeatureOccurrences& normalizedFeatures = model->GetNormalizedFeatures(needle);
 
     for (auto itMap = normalizedFeatures.begin(); itMap != normalizedFeatures.end(); ++itMap)
     {
