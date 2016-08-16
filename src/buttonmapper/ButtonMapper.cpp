@@ -142,7 +142,7 @@ void CButtonMapper::DeriveFeatures(const ADDON::Joystick& joystick, const std::s
   if (!m_controllerTransformer)
     return;
 
-  // Obtain an iterator to the controller profile with the highest count of features defined
+  // Search the button map for the controller with the highest count of features defined
   unsigned int maxFeatures = 0;
   auto maxFeaturesIt = buttonMap.end();
 
