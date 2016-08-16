@@ -207,7 +207,10 @@ void CJoystick::SetAxisValue(unsigned int axisIndex, JOYSTICK_STATE_AXIS axisVal
 
 void CJoystick::SetAxisValue(unsigned int axisIndex, long value, long maxAxisAmount)
 {
-  SetAxisValue(axisIndex, (float)value / (float)maxAxisAmount);
+  if (maxAxisAmount != 0)
+    SetAxisValue(axisIndex, (float)value / (float)maxAxisAmount);
+  else
+    SetAxisValue(axisIndex, 0.0f);
 }
 
 void CJoystick::UpdateTimers(void)

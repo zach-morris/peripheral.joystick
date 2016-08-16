@@ -36,6 +36,9 @@
 #if defined(HAVE_COCOA)
   #include "cocoa/JoystickInterfaceCocoa.h"
 #endif
+#if defined(HAVE_UDEV)
+  #include "udev/JoystickInterfaceUdev.h"
+#endif
 
 #include "log/Log.h"
 #include "utils/CommonMacros.h"
@@ -107,10 +110,12 @@ bool CJoystickManager::Initialize(IScannerCallback* scanner)
 #if defined(HAVE_XINPUT)
   m_interfaces.push_back(new CJoystickInterfaceXInput);
 #endif
-#if defined(HAVE_LINUX_JOYSTICK)
-  m_interfaces.push_back(new CJoystickInterfaceLinux);
+#if defined(HAVE_UDEV)
+  m_interfaces.push_back(new CJoystickInterfaceUdev);
 #elif defined(HAVE_SDL)
   m_interfaces.push_back(new CJoystickInterfaceSDL);
+#elif defined(HAVE_LINUX_JOYSTICK)
+  m_interfaces.push_back(new CJoystickInterfaceLinux);
 #endif
 #if defined(HAVE_COCOA)
   m_interfaces.push_back(new CJoystickInterfaceCocoa);
@@ -191,7 +196,8 @@ bool CJoystickManager::PerformJoystickScan(JoystickVector& joysticks)
   joysticks.erase(std::remove_if(joysticks.begin(), joysticks.end(),
     [](const JoystickPtr& joystick)
     {
-      return joystick->Provider() == INTERFACE_LINUX &&
+      return (joystick->Provider() == INTERFACE_LINUX ||
+               joystick->Provider() == INTERFACE_UDEV) &&
              (joystick->Name() == "Xbox 360 Wireless Receiver" ||
                joystick->Name() == "Xbox 360 Wireless Receiver (XBOX)") &&
              joystick->ActivateTimeMs() < 0;
