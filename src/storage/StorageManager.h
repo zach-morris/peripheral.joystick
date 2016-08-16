@@ -20,17 +20,22 @@
 #pragma once
 
 #include "StorageTypes.h"
-#include "buttonmapper/ButtonMapper.h"
 #include "buttonmapper/ButtonMapTypes.h"
 
+#include <memory>
 #include <string>
 
 struct PERIPHERAL_PROPERTIES;
 
-namespace ADDON { class CHelper_libKODI_peripheral; }
+namespace ADDON
+{
+  class CHelper_libKODI_peripheral;
+  class Joystick;
+}
 
 namespace JOYSTICK
 {
+  class CButtonMapper;
   class CDevice;
   class IDatabase;
 
@@ -42,7 +47,7 @@ namespace JOYSTICK
   public:
     static CStorageManager& Get(void);
 
-    ~CStorageManager(void) { Deinitialize(); }
+    ~CStorageManager(void);
 
     /*!
      * \brief Initialize storage manager
@@ -107,7 +112,7 @@ namespace JOYSTICK
   private:
     ADDON::CHelper_libKODI_peripheral* m_peripheralLib;
 
-    DatabaseVector    m_databases;
-    CButtonMapper     m_buttonMapper;
+    DatabaseVector                 m_databases;
+    std::unique_ptr<CButtonMapper> m_buttonMapper;
   };
 }

@@ -27,6 +27,7 @@
 
 namespace ADDON
 {
+  class CHelper_libKODI_peripheral;
   class Joystick;
 };
 
@@ -38,8 +39,8 @@ namespace JOYSTICK
   class CButtonMapper
   {
   public:
-    CButtonMapper() = default;
-    ~CButtonMapper() = default;
+    CButtonMapper(ADDON::CHelper_libKODI_peripheral* peripheralLib);
+    ~CButtonMapper();
 
     bool GetFeatures(const ADDON::Joystick& joystick, const std::string& strDeviceId, FeatureVector& features);
 
@@ -57,5 +58,7 @@ namespace JOYSTICK
 
     DatabaseVector    m_databases;
     CControllerMapper m_controllerMapper;
+
+    ADDON::CHelper_libKODI_peripheral* m_peripheralLib;
   };
 }

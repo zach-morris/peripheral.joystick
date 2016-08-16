@@ -22,11 +22,21 @@
 #include "storage/IDatabase.h"
 
 #include "kodi_peripheral_utils.hpp"
+#include "libKODI_peripheral.h"
 
 #include <algorithm>
 #include <iterator>
 
 using namespace JOYSTICK;
+
+CButtonMapper::CButtonMapper(ADDON::CHelper_libKODI_peripheral* peripheralLib) :
+  m_peripheralLib(peripheralLib)
+{
+}
+
+CButtonMapper::~CButtonMapper()
+{
+}
 
 bool CButtonMapper::GetFeatures(const ADDON::Joystick& joystick,
                                 const std::string& strControllerId,
@@ -86,9 +96,25 @@ bool CButtonMapper::GetFeatures(const ADDON::Joystick& joystick, ButtonMap&& but
   if (itController != buttonMap.end())
     features.swap(itController->second);
 
-  // Try to derive a button map from relations between controller profiles
+  bool bNeedsFeatures = false;
+
   if (features.empty())
-    DeriveFeatures(joystick, controllerId, buttonMap, features);
+    bNeedsFeatures = true;
+
+  if (m_peripheralLib)
+  {
+    unsigned int featureCount = m_peripheralLib->FeatureCount(controllerId);
+    if (featureCount > 0)
+      bNeedsFeatures = (features.size() < featureCount);
+  }
+
+  // Try to derive a button map from relations between controller profiles
+  if (bNeedsFeatures)
+  {
+    FeatureVector derivedFeatures;
+    DeriveFeatures(joystick, controllerId, buttonMap, derivedFeatures);
+    MergeFeatures(features, derivedFeatures);
+  }
 
   return !features.empty();
 }
