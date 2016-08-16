@@ -52,9 +52,8 @@ namespace JOYSTICK
                            FeatureVector& transformedFeatures);
 
   private:
-    static bool AddControllerMap(CControllerModel& model,
-                                 const std::string& controllerFrom, const FeatureVector& featuresFrom,
-                                 const std::string& controllerTo, const FeatureVector& featuresTo);
+    bool AddControllerMap(const std::string& controllerFrom, const FeatureVector& featuresFrom,
+                          const std::string& controllerTo, const FeatureVector& featuresTo);
 
     CControllerModel        m_controllerModel;
     DeviceSet               m_observedDevices;

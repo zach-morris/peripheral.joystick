@@ -51,18 +51,17 @@ void CControllerTransformer::OnAdd(const DevicePtr& driverInfo, const ButtonMap&
     // Only allow controller map items where "from" compares before "to"
     for (auto itFrom = buttonMap.begin(); itFrom->first < itTo->first; ++itFrom)
     {
-      AddControllerMap(m_controllerModel, itFrom->first, itFrom->second, itTo->first, itTo->second);
+      AddControllerMap(itFrom->first, itFrom->second, itTo->first, itTo->second);
     }
   }
 }
 
-bool CControllerTransformer::AddControllerMap(CControllerModel& model,
-                                              const std::string& controllerFrom, const FeatureVector& featuresFrom,
+bool CControllerTransformer::AddControllerMap(const std::string& controllerFrom, const FeatureVector& featuresFrom,
                                               const std::string& controllerTo, const FeatureVector& featuresTo)
 {
   bool bChanged = false;
 
-  assert(controllerFrom < controllerTo);
+  //assert(controllerFrom < controllerTo);
 
   ControllerMapItem needle = { controllerFrom, controllerTo };
 
@@ -105,7 +104,7 @@ bool CControllerTransformer::AddControllerMap(CControllerModel& model,
     if (itToFeature != featuresTo.end())
     {
       FeatureMapItem featureMapItem = { fromFeature.Name(), itToFeature->Name() };
-      model.AddFeatureMapping(needle, std::move(featureMapItem));
+      m_controllerModel.AddFeatureMapping(needle, std::move(featureMapItem));
       bChanged = true;
     }
   }
