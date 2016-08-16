@@ -1,6 +1,6 @@
 /*
- *      Copyright (C) 2016 Garrett Brown
- *      Copyright (C) 2016 Team Kodi
+ *      Copyright (C) 2014-2015 Garrett Brown
+ *      Copyright (C) 2014-2015 Team XBMC
  *
  *  This Program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -13,25 +13,17 @@
  *  GNU General Public License for more details.
  *
  *  You should have received a copy of the GNU General Public License
- *  along with this Program; see the file COPYING.  If not, see
+ *  along with XBMC; see the file COPYING.  If not, see
  *  <http://www.gnu.org/licenses/>.
  *
  */
 #pragma once
 
-#include "buttonmapper/ButtonMapTypes.h"
+#define RESOURCE_XML_EXTENSION                 ".xml"
+#define RESOURCE_RETROARCH_EXTENSION           ".cfg"
 
-class TiXmlElement;
+#define RESOURCE_XML_FOLDER                    "xml"
+#define RESOURCE_RETROARCH_FOLDER              "retroarch"
 
-namespace JOYSTICK
-{
-  class CJoystickFamiliesXml
-  {
-  public:
-    static bool LoadFamilies(const std::string& path, JoystickFamilyMap& result);
-
-  private:
-    static bool Deserialize(const TiXmlElement* pFamily, JoystickFamilyMap& result);
-    static bool DeserializeJoysticks(const TiXmlElement* pJoystick, std::set<std::string>& family);
-  };
-}
+#define DEVICES_XML_ROOT                       "devices"
+#define DEVICES_XML_ELEM_DEVICE                "device"

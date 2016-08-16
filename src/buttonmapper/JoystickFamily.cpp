@@ -20,13 +20,14 @@
 
 #include "JoystickFamily.h"
 #include "storage/xml/JoystickFamiliesXml.h"
+#include "storage/xml/JoystickFamilyDefinitions.h"
 
 using namespace JOYSTICK;
 
 // --- CJoystickFamily ---------------------------------------------------------
 
-CJoystickFamily::CJoystickFamily(const std::string& name, const std::string& provider) :
-  m_familyName(CJoystickFamilyManager::Get().GetFamily(name, provider))
+CJoystickFamily::CJoystickFamily(const std::string& familyName) :
+  m_familyName(familyName)
 {
 }
 
@@ -42,15 +43,16 @@ bool CJoystickFamily::operator<(const CJoystickFamily& other) const
 
 // --- CJoystickFamilyManager --------------------------------------------------
 
-CJoystickFamilyManager& CJoystickFamilyManager::Get()
+bool CJoystickFamilyManager::Initialize(const std::string& addonPath)
 {
-  static CJoystickFamilyManager instance;
-  return instance;
+  std::string path = addonPath + "/" JOYSTICK_FAMILIES_FOLDER "/" JOYSTICK_FAMILIES_RESOURCE;
+  return LoadFamilies(path);
 }
 
-bool CJoystickFamilyManager::Load()
+bool CJoystickFamilyManager::LoadFamilies(const std::string& path)
 {
-  m_families = CJoystickFamiliesXml::LoadFamilies();
+  CJoystickFamiliesXml::LoadFamilies(path, m_families);
+
   return !m_families.empty();
 }
 

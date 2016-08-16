@@ -19,19 +19,11 @@
  */
 #pragma once
 
-#include "buttonmapper/ButtonMapTypes.h"
+#define JOYSTICK_FAMILIES_FOLDER                "joystickfamilies"
+#define JOYSTICK_FAMILIES_RESOURCE              "joystickfamilies.xml"
 
-class TiXmlElement;
+#define JOYSTICK_FAMILIES_XML_ELEM_FAMILIES     "joystickfamilies"
+#define JOYSTICK_FAMILIES_XML_ELEM_FAMILY       "joystickfamily"
+#define JOYSTICK_FAMILIES_XML_ELEM_JOYSTICK     "joystick"
 
-namespace JOYSTICK
-{
-  class CJoystickFamiliesXml
-  {
-  public:
-    static bool LoadFamilies(const std::string& path, JoystickFamilyMap& result);
-
-  private:
-    static bool Deserialize(const TiXmlElement* pFamily, JoystickFamilyMap& result);
-    static bool DeserializeJoysticks(const TiXmlElement* pJoystick, std::set<std::string>& family);
-  };
-}
+#define JOYSTICK_FAMILIES_XML_ATTR_FAMILY_NAME  "name"

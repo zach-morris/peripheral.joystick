@@ -19,6 +19,7 @@
  */
 
 #include "ButtonMapper.h"
+#include "ControllerTransformer.h"
 #include "storage/IDatabase.h"
 
 #include "kodi_peripheral_utils.hpp"
@@ -36,6 +37,23 @@ CButtonMapper::CButtonMapper(ADDON::CHelper_libKODI_peripheral* peripheralLib) :
 
 CButtonMapper::~CButtonMapper()
 {
+}
+
+bool CButtonMapper::Initialize(CJoystickFamilyManager& familyManager)
+{
+  m_controllerTransformer.reset(new CControllerTransformer(familyManager));
+  return true;
+}
+
+void CButtonMapper::Deinitialize()
+{
+  m_controllerTransformer.reset();
+  m_databases.clear();
+}
+
+IDatabaseCallbacks* CButtonMapper::GetCallbacks()
+{
+  return m_controllerTransformer.get();
 }
 
 bool CButtonMapper::GetFeatures(const ADDON::Joystick& joystick,
@@ -121,6 +139,9 @@ bool CButtonMapper::GetFeatures(const ADDON::Joystick& joystick, ButtonMap&& but
 
 void CButtonMapper::DeriveFeatures(const ADDON::Joystick& joystick, const std::string& toController, const ButtonMap& buttonMap, FeatureVector& transformedFeatures)
 {
+  if (!m_controllerTransformer)
+    return;
+
   // Obtain an iterator to the controller profile with the highest count of features defined
   unsigned int maxFeatures = 0;
   auto maxFeaturesIt = buttonMap.end();
@@ -141,7 +162,7 @@ void CButtonMapper::DeriveFeatures(const ADDON::Joystick& joystick, const std::s
     const std::string& fromController = maxFeaturesIt->first;
     const FeatureVector& features = maxFeaturesIt->second;
 
-    m_controllerMapper.TransformFeatures(joystick, fromController, toController, features, transformedFeatures);
+    m_controllerTransformer->TransformFeatures(joystick, fromController, toController, features, transformedFeatures);
   }
 }
 

@@ -42,7 +42,7 @@ using namespace JOYSTICK;
 #define BUTTONMAP_FOLDER        "buttonmaps"
 
 CStorageManager::CStorageManager(void) :
-  m_peripheralLib(NULL)
+  m_peripheralLib(nullptr)
 {
 }
 
@@ -70,6 +70,9 @@ bool CStorageManager::Initialize(ADDON::CHelper_libKODI_peripheral* peripheralLi
 
   m_buttonMapper.reset(new CButtonMapper(peripheralLib));
 
+  if (!m_buttonMapper->Initialize(m_familyManager))
+    return false;
+
   // Remove slash at end
   StringUtils::TrimRight(strUserPath, "\\/");
   StringUtils::TrimRight(strAddonPath, "\\/");
@@ -80,30 +83,33 @@ bool CStorageManager::Initialize(ADDON::CHelper_libKODI_peripheral* peripheralLi
   // Ensure resources path exists in user data
   CStorageUtils::EnsureDirectoryExists(strUserPath);
 
-  strUserPath += "/" BUTTONMAP_FOLDER;
-  strAddonPath += "/" BUTTONMAP_FOLDER;
+  std::string strUserButtonMapPath = strUserPath + "/" BUTTONMAP_FOLDER;
+  std::string strAddonButtonMapPath = strAddonPath + "/" BUTTONMAP_FOLDER;
 
   // Ensure button map path exists in user data
-  CStorageUtils::EnsureDirectoryExists(strUserPath);
+  CStorageUtils::EnsureDirectoryExists(strUserButtonMapPath);
 
-  m_databases.push_back(DatabasePtr(new CDatabaseXml(strUserPath, true, m_buttonMapper->GetCallbacks())));
-  //m_databases.push_back(DatabasePtr(new CDatabaseRetroArch(strUserPath, true, &m_controllerMapper))); // TODO
-  m_databases.push_back(DatabasePtr(new CDatabaseXml(strAddonPath, false, m_buttonMapper->GetCallbacks())));
-  //m_databases.push_back(DatabasePtr(new CDatabaseRetroArch(strAddonPath, false))); // TODO
+  m_databases.push_back(DatabasePtr(new CDatabaseXml(strUserButtonMapPath, true, m_buttonMapper->GetCallbacks())));
+  //m_databases.push_back(DatabasePtr(new CDatabaseRetroArch(strUserButtonMapPath, true, &m_controllerMapper))); // TODO
+  m_databases.push_back(DatabasePtr(new CDatabaseXml(strAddonButtonMapPath, false, m_buttonMapper->GetCallbacks())));
+  //m_databases.push_back(DatabasePtr(new CDatabaseRetroArch(strAddonButtonMapPath, false))); // TODO
 
   m_databases.push_back(DatabasePtr(new CDatabaseJoystickAPI(m_buttonMapper->GetCallbacks())));
 
   for (auto& database : m_databases)
     m_buttonMapper->RegisterDatabase(database);
 
+  m_familyManager.Initialize(strAddonPath);
+
   return true;
 }
 
 void CStorageManager::Deinitialize(void)
 {
+  m_familyManager.Deinitialize();
   m_databases.clear();
   m_buttonMapper.reset();
-  m_peripheralLib = NULL;
+  m_peripheralLib = nullptr;
 }
 
 bool CStorageManager::GetFeatures(const ADDON::Joystick& joystick,

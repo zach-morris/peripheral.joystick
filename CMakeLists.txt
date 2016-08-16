@@ -31,8 +31,8 @@ set(JOYSTICK_SOURCES src/addon.cpp
                      src/api/PeripheralScanner.cpp
                      src/buttonmapper/ButtonMapper.cpp
                      src/buttonmapper/ButtonMapTranslator.cpp
-                     src/buttonmapper/ControllerMapper.cpp
                      src/buttonmapper/ControllerModel.cpp
+                     src/buttonmapper/ControllerTransformer.cpp
                      src/buttonmapper/DriverGeometry.cpp
                      src/buttonmapper/JoystickFamily.cpp
                      src/filesystem/DirectoryCache.cpp

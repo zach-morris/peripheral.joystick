@@ -18,7 +18,7 @@
  *
  */
 
-#include "ControllerMapper.h"
+#include "ControllerTransformer.h"
 #include "storage/Device.h"
 
 #include "kodi_peripheral_utils.hpp"
@@ -29,7 +29,16 @@
 
 using namespace JOYSTICK;
 
-void CControllerMapper::OnAdd(const DevicePtr& driverInfo, const ButtonMap& buttonMap)
+CControllerTransformer::CControllerTransformer(CJoystickFamilyManager& familyManager) :
+  m_familyManager(familyManager)
+{
+}
+
+CControllerTransformer::~CControllerTransformer()
+{
+}
+
+void CControllerTransformer::OnAdd(const DevicePtr& driverInfo, const ButtonMap& buttonMap)
 {
   // Skip devices we've already encountered.
   if (m_observedDevices.find(driverInfo) == m_observedDevices.end())
@@ -37,7 +46,9 @@ void CControllerMapper::OnAdd(const DevicePtr& driverInfo, const ButtonMap& butt
   else
     return;
 
-  CJoystickFamily family(driverInfo->Name(), driverInfo->Provider());
+  const std::string& familyName = m_familyManager.GetFamily(driverInfo->Name(), driverInfo->Provider());
+
+  CJoystickFamily family(familyName);
   CDriverGeometry geometry(driverInfo->ButtonCount(),
                            driverInfo->HatCount(),
                            driverInfo->AxisCount());
@@ -58,9 +69,9 @@ void CControllerMapper::OnAdd(const DevicePtr& driverInfo, const ButtonMap& butt
   }
 }
 
-bool CControllerMapper::AddControllerMap(CControllerModel& model,
-                                         const std::string& controllerFrom, const FeatureVector& featuresFrom,
-                                         const std::string& controllerTo, const FeatureVector& featuresTo)
+bool CControllerTransformer::AddControllerMap(CControllerModel& model,
+                                              const std::string& controllerFrom, const FeatureVector& featuresFrom,
+                                              const std::string& controllerTo, const FeatureVector& featuresTo)
 {
   bool bChanged = false;
 
@@ -121,18 +132,20 @@ bool CControllerMapper::AddControllerMap(CControllerModel& model,
   return bChanged;
 }
 
-void CControllerMapper::TransformFeatures(const ADDON::Joystick& driverInfo,
-                                          const std::string& fromController,
-                                          const std::string& toController,
-                                          const FeatureVector& features,
-                                          FeatureVector& transformedFeatures)
+void CControllerTransformer::TransformFeatures(const ADDON::Joystick& driverInfo,
+                                               const std::string& fromController,
+                                               const std::string& toController,
+                                               const FeatureVector& features,
+                                               FeatureVector& transformedFeatures)
 {
   bool bSwap = (fromController >= toController);
 
   ControllerMapItem needle = { bSwap ? toController : fromController,
                                bSwap ? fromController : toController };
 
-  CJoystickFamily family(driverInfo.Name(), driverInfo.Provider());
+  const std::string& familyName = m_familyManager.GetFamily(driverInfo.Name(), driverInfo.Provider());
+
+  CJoystickFamily family(familyName);
   CDriverGeometry geometry(driverInfo.ButtonCount(),
                            driverInfo.HatCount(),
                            driverInfo.AxisCount());

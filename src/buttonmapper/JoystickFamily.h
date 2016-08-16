@@ -27,35 +27,38 @@
 
 namespace JOYSTICK
 {
+  // --- CJoystickFamily -------------------------------------------------------
+
   class CJoystickFamily
   {
   public:
-    CJoystickFamily(const std::string& name, const std::string& provider);
+    CJoystickFamily(const std::string& familyName);
     CJoystickFamily(const CJoystickFamily& other);
 
     bool operator<(const CJoystickFamily& other) const;
 
-    const std::string& Name() const { return m_familyName; }
-
+    const std::string& FamilyName() const { return m_familyName; }
     bool IsValid() const { return !m_familyName.empty(); }
 
   private:
     const std::string m_familyName;
   };
 
+  // --- CJoystickFamilyManager ------------------------------------------------
+
   class CJoystickFamilyManager
   {
-  private:
+  public:
     CJoystickFamilyManager() = default;
 
-  public:
-    static CJoystickFamilyManager& Get();
-
-    bool Load();
+    bool Initialize(const std::string& addonPath);
+    void Deinitialize() { m_families.clear(); }
 
     const std::string& GetFamily(const std::string& name, const std::string& provider) const;
 
   private:
+    bool LoadFamilies(const std::string& path);
+
     JoystickFamilyMap m_families;
   };
 }

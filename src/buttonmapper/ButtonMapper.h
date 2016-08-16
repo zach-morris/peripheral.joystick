@@ -20,9 +20,9 @@
 #pragma once
 
 #include "ButtonMapTypes.h"
-#include "ControllerMapper.h"
 #include "storage/StorageTypes.h"
 
+#include <memory>
 #include <string>
 
 namespace ADDON
@@ -33,7 +33,8 @@ namespace ADDON
 
 namespace JOYSTICK
 {
-  class IDatabase;
+  class CControllerTransformer;
+  class CJoystickFamilyManager;
   class IDatabaseCallbacks;
 
   class CButtonMapper
@@ -42,9 +43,12 @@ namespace JOYSTICK
     CButtonMapper(ADDON::CHelper_libKODI_peripheral* peripheralLib);
     ~CButtonMapper();
 
-    bool GetFeatures(const ADDON::Joystick& joystick, const std::string& strDeviceId, FeatureVector& features);
+    bool Initialize(CJoystickFamilyManager& familyManager);
+    void Deinitialize();
 
-    IDatabaseCallbacks* GetCallbacks() { return &m_controllerMapper; }
+    IDatabaseCallbacks* GetCallbacks();
+
+    bool GetFeatures(const ADDON::Joystick& joystick, const std::string& strDeviceId, FeatureVector& features);
 
     void RegisterDatabase(const DatabasePtr& database);
     void UnregisterDatabase(const DatabasePtr& database);
@@ -57,7 +61,7 @@ namespace JOYSTICK
     void DeriveFeatures(const ADDON::Joystick& joystick, const std::string& toController, const ButtonMap& buttonMap, FeatureVector& transformedFeatures);
 
     DatabaseVector    m_databases;
-    CControllerMapper m_controllerMapper;
+    std::unique_ptr<CControllerTransformer> m_controllerTransformer;
 
     ADDON::CHelper_libKODI_peripheral* m_peripheralLib;
   };

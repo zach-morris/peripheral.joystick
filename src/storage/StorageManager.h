@@ -21,6 +21,7 @@
 
 #include "StorageTypes.h"
 #include "buttonmapper/ButtonMapTypes.h"
+#include "buttonmapper/JoystickFamily.h"
 
 #include <memory>
 #include <string>
@@ -114,5 +115,6 @@ namespace JOYSTICK
 
     DatabaseVector                 m_databases;
     std::unique_ptr<CButtonMapper> m_buttonMapper;
+    CJoystickFamilyManager         m_familyManager;
   };
 }

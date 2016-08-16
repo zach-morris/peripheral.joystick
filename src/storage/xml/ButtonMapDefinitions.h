@@ -19,16 +19,8 @@
  */
 #pragma once
 
-#define RESOURCE_XML_EXTENSION                 ".xml"
-#define RESOURCE_RETROARCH_EXTENSION           ".cfg"
-
-#define RESOURCE_XML_FOLDER                    "xml"
-#define RESOURCE_RETROARCH_FOLDER              "retroarch"
-
-#define DEVICES_XML_ROOT                       "devices"
-#define DEVICES_XML_ELEM_DEVICE                "device"
-
 #define BUTTONMAP_XML_ROOT                     "buttonmap"
+#define BUTTONMAP_XML_ELEM_DEVICE              "device"
 #define BUTTONMAP_XML_ELEM_CONTROLLER          "controller"
 #define BUTTONMAP_XML_ELEM_FEATURE             "feature"
 

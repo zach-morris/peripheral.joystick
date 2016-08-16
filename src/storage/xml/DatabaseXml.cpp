@@ -20,7 +20,7 @@
 
 #include "DatabaseXml.h"
 #include "ButtonMapXml.h"
-#include "storage/ButtonMapDefinitions.h"
+#include "storage/StorageDefinitions.h"
 
 using namespace JOYSTICK;
 

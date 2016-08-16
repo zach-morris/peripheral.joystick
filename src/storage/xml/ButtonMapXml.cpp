@@ -19,9 +19,9 @@
  */
 
 #include "ButtonMapXml.h"
+#include "ButtonMapDefinitions.h"
 #include "DeviceXml.h"
 #include "buttonmapper/ButtonMapTranslator.h"
-#include "storage/ButtonMapDefinitions.h"
 #include "storage/Device.h"
 #include "log/Log.h"
 
@@ -60,11 +60,11 @@ bool CButtonMapXml::Load(void)
     return false;
   }
 
-  const TiXmlElement* pDevice = pRootElement->FirstChildElement(DEVICES_XML_ELEM_DEVICE);
+  const TiXmlElement* pDevice = pRootElement->FirstChildElement(BUTTONMAP_XML_ELEM_DEVICE);
 
   if (!pDevice)
   {
-    esyslog("Can't find <%s> tag", DEVICES_XML_ELEM_DEVICE);
+    esyslog("Can't find <%s> tag", BUTTONMAP_XML_ELEM_DEVICE);
     return false;
   }
 
@@ -134,7 +134,7 @@ bool CButtonMapXml::Save(void) const
   if (!pElem)
     return false;
 
-  TiXmlElement deviceElement(DEVICES_XML_ELEM_DEVICE);
+  TiXmlElement deviceElement(BUTTONMAP_XML_ELEM_DEVICE);
   TiXmlNode* deviceNode = pElem->InsertEndChild(deviceElement);
   if (deviceNode == NULL)
     return false;

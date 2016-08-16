@@ -33,11 +33,14 @@ namespace ADDON
 
 namespace JOYSTICK
 {
-  class CControllerMapper : public IDatabaseCallbacks
+  class CJoystickFamilyManager;
+
+  class CControllerTransformer : public IDatabaseCallbacks
   {
   public:
-    CControllerMapper() = default;
-    virtual ~CControllerMapper() = default;
+    CControllerTransformer(CJoystickFamilyManager& familyManager);
+
+    virtual ~CControllerTransformer();
 
     // implementation of IDatabaseCallbacks
     virtual void OnAdd(const DevicePtr& driverInfo, const ButtonMap& buttonMap);
@@ -56,8 +59,9 @@ namespace JOYSTICK
     typedef std::map<CJoystickFamily, CControllerModel> FamilyMap;
     typedef std::map<CDriverGeometry, CControllerModel> GeomoetryMap;
 
-    FamilyMap    m_familyModels;
-    GeomoetryMap m_geometryModels;
-    DeviceSet    m_observedDevices;
+    FamilyMap               m_familyModels;
+    GeomoetryMap            m_geometryModels;
+    DeviceSet               m_observedDevices;
+    CJoystickFamilyManager& m_familyManager;
   };
 }
