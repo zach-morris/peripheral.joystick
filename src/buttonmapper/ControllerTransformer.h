@@ -56,11 +56,7 @@ namespace JOYSTICK
                                  const std::string& controllerFrom, const FeatureVector& featuresFrom,
                                  const std::string& controllerTo, const FeatureVector& featuresTo);
 
-    typedef std::map<CJoystickFamily, CControllerModel> FamilyMap;
-    typedef std::map<CDriverGeometry, CControllerModel> GeomoetryMap;
-
-    FamilyMap               m_familyModels;
-    GeomoetryMap            m_geometryModels;
+    CControllerModel        m_controllerModel;
     DeviceSet               m_observedDevices;
     CJoystickFamilyManager& m_familyManager;
   };

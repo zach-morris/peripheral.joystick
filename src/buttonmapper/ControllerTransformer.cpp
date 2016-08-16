@@ -46,25 +46,12 @@ void CControllerTransformer::OnAdd(const DevicePtr& driverInfo, const ButtonMap&
   else
     return;
 
-  const std::string& familyName = m_familyManager.GetFamily(driverInfo->Name(), driverInfo->Provider());
-
-  CJoystickFamily family(familyName);
-  CDriverGeometry geometry(driverInfo->ButtonCount(),
-                           driverInfo->HatCount(),
-                           driverInfo->AxisCount());
-
-  CControllerModel& familyModel = m_familyModels[family];
-  CControllerModel& geometryModel = m_geometryModels[geometry];
-
   for (auto itTo = buttonMap.begin(); itTo != buttonMap.end(); ++itTo)
   {
     // Only allow controller map items where "from" compares before "to"
     for (auto itFrom = buttonMap.begin(); itFrom->first < itTo->first; ++itFrom)
     {
-      if (family.IsValid())
-        AddControllerMap(familyModel, itFrom->first, itFrom->second, itTo->first, itTo->second);
-      if (geometry.IsValid())
-        AddControllerMap(geometryModel, itFrom->first, itFrom->second, itTo->first, itTo->second);
+      AddControllerMap(m_controllerModel, itFrom->first, itFrom->second, itTo->first, itTo->second);
     }
   }
 }
@@ -143,17 +130,7 @@ void CControllerTransformer::TransformFeatures(const ADDON::Joystick& driverInfo
   ControllerMapItem needle = { bSwap ? toController : fromController,
                                bSwap ? fromController : toController };
 
-  const std::string& familyName = m_familyManager.GetFamily(driverInfo.Name(), driverInfo.Provider());
-
-  CJoystickFamily family(familyName);
-  CDriverGeometry geometry(driverInfo.ButtonCount(),
-                           driverInfo.HatCount(),
-                           driverInfo.AxisCount());
-
-  CControllerModel& familyModel = m_familyModels[family];
-  CControllerModel& geometryModel = m_geometryModels[geometry];
-
-  std::array<CControllerModel*, 2> models = { &familyModel, &geometryModel };
+  std::array<CControllerModel*, 1> models = { &m_controllerModel };
 
   for (CControllerModel* model : models)
   {
