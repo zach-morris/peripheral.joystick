@@ -19,6 +19,7 @@
 #pragma once
 
 #include "JoystickTypes.h"
+#include "buttonmapper/ButtonMapTypes.h"
 
 #include <string>
 
@@ -54,5 +55,16 @@ namespace JOYSTICK
      * \return true if the scan completed successfully, even if no results are found
      */
     virtual bool ScanForJoysticks(JoystickVector& joysticks) = 0;
+
+    /*!
+     * \brief Get the button map known to the interface
+     *
+     * \return A button map populated with hard-coded features for the interface
+     */
+    virtual const ButtonMap& GetButtonMap()
+    {
+      static ButtonMap empty;
+      return empty;
+    }
   };
 }

@@ -252,7 +252,13 @@ const ButtonMap& CJoystickManager::GetButtonMap(const std::string& provider)
 {
   static ButtonMap empty;
 
-  // TODO
+  CLockObject lock(m_interfacesMutex);
+
+  for (auto interface : m_interfaces)
+  {
+    if (interface->Name() == provider)
+      return interface->GetButtonMap();
+  }
 
   return empty;
 }
