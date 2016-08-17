@@ -20,12 +20,12 @@
 
 #include "ControllerTransformer.h"
 #include "storage/Device.h"
+#include "utils/CommonMacros.h"
 
 #include "kodi_peripheral_utils.hpp"
 
 #include <algorithm>
 #include <array>
-#include <assert.h>
 
 using namespace JOYSTICK;
 
@@ -61,7 +61,7 @@ bool CControllerTransformer::AddControllerMap(const std::string& controllerFrom,
 {
   bool bChanged = false;
 
-  //assert(controllerFrom < controllerTo);
+  ASSERT(controllerFrom < controllerTo);
 
   ControllerMapItem needle = { controllerFrom, controllerTo };
 
