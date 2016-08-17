@@ -260,10 +260,11 @@ const ButtonMap& CJoystickManager::GetButtonMap(const std::string& provider)
 
   CLockObject lock(m_interfacesMutex);
 
-  for (auto interface : m_interfaces)
+  // Scan for joysticks (this can take a while, don't block)
+  for (std::vector<IJoystickInterface*>::iterator itInterface = m_interfaces.begin(); itInterface != m_interfaces.end(); ++itInterface)
   {
-    if (interface->Name() == provider)
-      return interface->GetButtonMap();
+    if ((*itInterface)->Name() == provider)
+      return (*itInterface)->GetButtonMap();
   }
 
   return empty;
