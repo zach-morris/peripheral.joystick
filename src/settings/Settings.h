@@ -36,21 +36,6 @@ namespace JOYSTICK
     bool IsInitialized(void) const { return m_bInitialized; }
 
     /*!
-     * \brief The analog stick deadzone
-     *
-     * This is applied to each axis. Axis is scaled appropriately, so position
-     * is continuous from -1.0 to 1.0:
-     *
-     *            |    / 1.0
-     *            |   /
-     *          __|__/
-     *         /  |
-     *        /   |--| Deadzone
-     *  -1.0 /    |
-     */
-    float Deadzone(void) const { return m_deadzone; }
-
-    /*!
      * \brief Generate .cfg files compatible with RetroArch's joypad autoconfig
      */
     bool GenerateRetroArchConfigs(void) const { return m_bGenerateRetroArchConfigs; }
