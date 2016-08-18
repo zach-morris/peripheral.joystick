@@ -202,7 +202,7 @@ void CJoystick::SetAxisValue(unsigned int axisIndex, JOYSTICK_STATE_AXIS axisVal
   axisValue = CONSTRAIN(-1.0f, axisValue, 1.0f);
 
   if (axisIndex < m_stateBuffer.axes.size())
-    m_stateBuffer.axes[axisIndex] = ScaleDeadzone(m_axisFilters[axisIndex]->Filter(axisValue));
+    m_stateBuffer.axes[axisIndex] = m_axisFilters[axisIndex]->Filter(axisValue);
 }
 
 void CJoystick::SetAxisValue(unsigned int axisIndex, long value, long maxAxisAmount)
@@ -223,19 +223,4 @@ void CJoystick::UpdateTimers(void)
 float CJoystick::NormalizeAxis(long value, long maxAxisAmount)
 {
   return 1.0f * CONSTRAIN(-maxAxisAmount, value, maxAxisAmount) / maxAxisAmount;
-}
-
-float CJoystick::ScaleDeadzone(float value)
-{
-  const float deadzone = CSettings::Get().Deadzone();
-
-  if (deadzone >= 1.0f)
-    return 0.0f;
-
-  if (value > deadzone)
-    return (float)(value - deadzone) / (float)(1.0f - deadzone);
-  else if (value < -deadzone)
-    return (float)(value + deadzone) / (float)(1.0f - deadzone);
-
-  return 0.0f;
 }
