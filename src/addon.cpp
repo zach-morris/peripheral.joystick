@@ -157,6 +157,7 @@ PERIPHERAL_ERROR GetAddonCapabilities(PERIPHERAL_CAPABILITIES* pCapabilities)
     return PERIPHERAL_ERROR_INVALID_PARAMETERS;
 
   pCapabilities->provides_joysticks = true;
+  pCapabilities->provides_buttonmaps = true;
 
   return PERIPHERAL_NO_ERROR;
 }
