@@ -54,6 +54,8 @@ namespace JOYSTICK
     virtual bool Load(void) = 0;
     virtual bool Save(void) const = 0;
 
+    void Sanitize();
+
     const std::string m_strResourcePath;
     DevicePtr         m_device;
     ButtonMap         m_buttonMap;

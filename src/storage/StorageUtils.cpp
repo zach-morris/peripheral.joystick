@@ -109,3 +109,37 @@ std::string CStorageUtils::FormatHexString(int iVal)
 
   return StringUtils::Format("%04X", iVal);
 };
+
+std::string CStorageUtils::PrimitiveToString(const ADDON::DriverPrimitive& primitive)
+{
+  switch (primitive.Type())
+  {
+  case JOYSTICK_DRIVER_PRIMITIVE_TYPE_BUTTON:
+    return StringUtils::Format("button %u", primitive.DriverIndex());
+  case JOYSTICK_DRIVER_PRIMITIVE_TYPE_HAT_DIRECTION:
+    switch (primitive.HatDirection())
+    {
+    case JOYSTICK_DRIVER_HAT_UP:
+      return StringUtils::Format("hat up");
+    case JOYSTICK_DRIVER_HAT_RIGHT:
+      return StringUtils::Format("hat right");
+    case JOYSTICK_DRIVER_HAT_DOWN:
+      return StringUtils::Format("hat down");
+    case JOYSTICK_DRIVER_HAT_LEFT:
+      return StringUtils::Format("hat left");
+    default:
+      break;
+    }
+    break;
+  case JOYSTICK_DRIVER_PRIMITIVE_TYPE_SEMIAXIS:
+    return StringUtils::Format("axis %s%u",
+        primitive.SemiAxisDirection() == JOYSTICK_DRIVER_SEMIAXIS_POSITIVE ? "+" : "-",
+        primitive.DriverIndex());
+  case JOYSTICK_DRIVER_PRIMITIVE_TYPE_MOTOR:
+    return StringUtils::Format("motor %u", primitive.DriverIndex());
+  default:
+    break;
+  }
+
+  return "";
+}

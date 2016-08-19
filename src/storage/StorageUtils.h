@@ -24,6 +24,7 @@
 
 namespace ADDON
 {
+  struct DriverPrimitive;
   class Joystick;
 }
 
@@ -71,6 +72,8 @@ namespace JOYSTICK
      * From PeripheralTypes.h of Kodi
      */
     static std::string FormatHexString(int iVal);
+
+    static std::string PrimitiveToString(const ADDON::DriverPrimitive& primitive);
 
   private:
     static std::set<std::string> m_existingDirs; // Cache list of existing dirs
