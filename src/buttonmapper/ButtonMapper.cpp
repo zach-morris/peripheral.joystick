@@ -96,11 +96,29 @@ void CButtonMapper::MergeFeatures(FeatureVector& features, const FeatureVector& 
 {
   for (const ADDON::JoystickFeature& newFeature : newFeatures)
   {
-    const bool bFound = std::find_if(features.begin(), features.end(),
-      [newFeature](const ADDON::JoystickFeature& feature)
+    // Check for duplicate feature name
+    bool bFound = std::find_if(features.begin(), features.end(),
+      [&newFeature](const ADDON::JoystickFeature& feature)
       {
         return feature.Name() == newFeature.Name();
       }) != features.end();
+
+    // Check for duplicate driver primitives
+    if (!bFound)
+    {
+      const auto& newPrimitives = newFeature.Primitives();
+
+      bFound = std::find_if(features.begin(), features.end(),
+        [&newPrimitives](const ADDON::JoystickFeature& feature)
+        {
+          for (const auto& primitive : feature.Primitives())
+          {
+            if (std::find(newPrimitives.begin(), newPrimitives.end(), primitive) != newPrimitives.end())
+              return true; // Found primitive
+          }
+          return false; // Didn't find primitive
+        }) != features.end();
+    }
 
     if (!bFound)
       features.push_back(newFeature);
