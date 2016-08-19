@@ -28,6 +28,7 @@
 #include <limits.h>
 #include <sys/ioctl.h>
 #include <sys/stat.h>
+#include <unistd.h>
 
 using namespace JOYSTICK;
 
@@ -319,6 +320,10 @@ bool CJoystickUdev::SetMotor(unsigned int motorIndex, float magnitude)
     play.type  = EV_FF;
     play.code  = m_effect;
     play.value = bIsPlaying;
+
+    // udev fails to stop playing if event is written too soon after last ioctl
+    if (!bIsPlaying)
+      usleep(2500);
 
     if (write(m_fd, &play, sizeof(play)) < (ssize_t)sizeof(play))
     {
