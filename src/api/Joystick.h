@@ -25,6 +25,7 @@
 
 namespace JOYSTICK
 {
+  class CAnomalousTrigger;
   class IJoystickAxisFilter;
 
   class CJoystick : public ADDON::Joystick
@@ -89,6 +90,8 @@ namespace JOYSTICK
      * Tries to power off the joystick.
      */
     virtual void PowerOff() { }
+
+    std::vector<CAnomalousTrigger*> GetAnomalousTriggers();
 
   protected:
     /*!

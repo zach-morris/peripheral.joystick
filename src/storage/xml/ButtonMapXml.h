@@ -33,6 +33,7 @@ namespace ADDON
 
 namespace JOYSTICK
 {
+  class CAnomalousTrigger;
   class CButtonMap;
 
   class CButtonMapXml : public CButtonMap
@@ -50,11 +51,13 @@ namespace JOYSTICK
 
   private:
     bool SerializeButtonMaps(TiXmlElement* pElement) const;
+    bool SerializeTriggers(TiXmlElement* pElement) const;
 
     static bool Serialize(const FeatureVector& features, TiXmlElement* pElement);
     static bool Deserialize(const TiXmlElement* pElement, FeatureVector& features);
 
     static bool IsValid(const ADDON::JoystickFeature& feature);
+    static bool SerializeTrigger(TiXmlElement* pElement, const CAnomalousTrigger* trigger);
     static bool SerializeFeature(TiXmlElement* pElement, const ADDON::DriverPrimitive& primitive, const char* tagName);
     static bool SerializePrimitiveTag(TiXmlElement* pElement, const ADDON::DriverPrimitive& primitive, const char* tagName);
     static void SerializePrimitive(TiXmlElement* pElement, const ADDON::DriverPrimitive& primitive);

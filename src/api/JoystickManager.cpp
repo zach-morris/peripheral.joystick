@@ -219,6 +219,24 @@ JoystickPtr CJoystickManager::GetJoystick(unsigned int index) const
   return JoystickPtr();
 }
 
+JoystickVector CJoystickManager::GetJoysticks(const ADDON::Joystick& joystickInfo) const
+{
+  JoystickVector result;
+
+  CLockObject lock(m_joystickMutex);
+
+  for (const auto& joystick : m_joysticks)
+  {
+    if (joystick->Name() == joystickInfo.Name() &&
+        joystick->Provider() == joystickInfo.Provider())
+    {
+      result.push_back(joystick);
+    }
+  }
+
+  return result;
+}
+
 bool CJoystickManager::GetEvents(std::vector<ADDON::PeripheralEvent>& events)
 {
   CLockObject lock(m_joystickMutex);

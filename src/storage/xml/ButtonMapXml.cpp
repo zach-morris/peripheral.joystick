@@ -21,12 +21,16 @@
 #include "ButtonMapXml.h"
 #include "ButtonMapDefinitions.h"
 #include "DeviceXml.h"
+#include "api/AnomalousTrigger.h"
+#include "api/Joystick.h"
+#include "api/JoystickManager.h"
 #include "buttonmapper/ButtonMapTranslator.h"
 #include "storage/Device.h"
 #include "log/Log.h"
 
 #include "tinyxml.h"
 
+#include <algorithm>
 #include <cmath>
 #include <cstdlib>
 #include <sstream>
@@ -145,10 +149,66 @@ bool CButtonMapXml::Save(void) const
 
   CDeviceXml::Serialize(*m_device, deviceElem);
 
+  if (!SerializeTriggers(deviceElem))
+    return false;
+
   if (!SerializeButtonMaps(deviceElem))
     return false;
 
   return xmlFile.SaveFile(m_strResourcePath);
+}
+
+bool CButtonMapXml::SerializeTriggers(TiXmlElement* pElement) const
+{
+  std::map<unsigned int, CAnomalousTrigger*> triggers;
+
+  // Get triggers
+  JoystickVector joysticks = CJoystickManager::Get().GetJoysticks(*m_device);
+  for (const auto& joystick : joysticks)
+  {
+    std::vector<CAnomalousTrigger*> triggerVec = joystick->GetAnomalousTriggers();
+    for (CAnomalousTrigger* trigger : triggerVec)
+      triggers[trigger->AxisIndex()] = trigger;
+  }
+
+  // Serialize triggers
+  if (!triggers.empty())
+  {
+    TiXmlElement configurationElement(BUTTONMAP_XML_ELEM_CONFIGURATION);
+    TiXmlNode* configurationNode = pElement->InsertEndChild(configurationElement);
+    if (configurationNode == nullptr)
+      return false;
+
+    TiXmlElement* configurationElem = configurationNode->ToElement();
+    if (configurationElem == nullptr)
+      return false;
+
+    for (auto itTrigger = triggers.begin(); itTrigger != triggers.end(); ++itTrigger)
+    {
+      if (!SerializeTrigger(configurationElem, itTrigger->second))
+        return false;
+    }
+  }
+
+  return true;
+}
+
+bool CButtonMapXml::SerializeTrigger(TiXmlElement* pElement, const CAnomalousTrigger* trigger)
+{
+  TiXmlElement axisElement(BUTTONMAP_XML_ELEM_AXIS);
+  TiXmlNode* axisNode = pElement->InsertEndChild(axisElement);
+  if (axisNode == nullptr)
+    return false;
+
+  TiXmlElement* axisElem = axisNode->ToElement();
+  if (axisElem == nullptr)
+    return false;
+
+  axisElem->SetAttribute(BUTTONMAP_XML_ATTR_AXIS_INDEX, trigger->AxisIndex());
+  axisElem->SetAttribute(BUTTONMAP_XML_ATTR_AXIS_CENTER, trigger->Center());
+  axisElem->SetAttribute(BUTTONMAP_XML_ATTR_AXIS_RANGE, trigger->Range());
+
+  return true;
 }
 
 bool CButtonMapXml::SerializeButtonMaps(TiXmlElement* pElement) const

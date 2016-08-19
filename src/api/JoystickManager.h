@@ -74,6 +74,8 @@ namespace JOYSTICK
 
     JoystickPtr GetJoystick(unsigned int index) const;
 
+    JoystickVector GetJoysticks(const ADDON::Joystick& joystickInfo) const;
+
     /*!
     * \brief Get all events that have occurred since the last call to GetEvents()
     */

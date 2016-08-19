@@ -17,8 +17,8 @@
  *  <http://www.gnu.org/licenses/>.
  */
 
-#include "AnomalousTriggerFilter.h"
 #include "Joystick.h"
+#include "AnomalousTrigger.h"
 #include "log/Log.h"
 #include "settings/Settings.h"
 #include "utils/CommonMacros.h"
@@ -82,8 +82,9 @@ bool CJoystick::Initialize(void)
   m_stateBuffer.axes.assign(AxisCount(), 0.0f);
 
   // Filter for anomalous triggers
+  m_axisFilters.reserve(AxisCount());
   for (unsigned int i = 0; i < AxisCount(); i++)
-    m_axisFilters.push_back(new CAnomalousTriggerFilter(i));
+    m_axisFilters.push_back(new CAnomalousTrigger(i));
 
   return true;
 }
@@ -135,6 +136,23 @@ bool CJoystick::SendEvent(const ADDON::PeripheralEvent& event)
   }
 
   return bHandled;
+}
+
+std::vector<CAnomalousTrigger*> CJoystick::GetAnomalousTriggers()
+{
+  std::vector<CAnomalousTrigger*> result;
+
+  for (IJoystickAxisFilter* filter : m_axisFilters)
+  {
+    CAnomalousTrigger* trigger = dynamic_cast<CAnomalousTrigger*>(filter);
+    if (!trigger)
+      continue;
+
+    if (trigger->IsAnomalousTrigger())
+      result.push_back(trigger);
+  }
+
+  return result;
 }
 
 void CJoystick::GetButtonEvents(std::vector<ADDON::PeripheralEvent>& events)

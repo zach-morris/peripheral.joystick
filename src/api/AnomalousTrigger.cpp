@@ -17,15 +17,15 @@
  *  <http://www.gnu.org/licenses/>.
  */
 
-#include "AnomalousTriggerFilter.h"
+#include "AnomalousTrigger.h"
 #include "log/Log.h"
 
 using namespace JOYSTICK;
 
 #define ANOMOLOUS_MAGNITUDE  0.5f
 
-CAnomalousTriggerFilter::CAnomalousTriggerFilter(unsigned int axisIndex)
-  : axisIndex(axisIndex),
+CAnomalousTrigger::CAnomalousTrigger(unsigned int axisIndex)
+  : m_axisIndex(axisIndex),
     m_state(STATE_UNKNOWN),
     m_center(CENTER_ZERO),
     m_range(TRIGGER_RANGE_HALF),
@@ -35,7 +35,7 @@ CAnomalousTriggerFilter::CAnomalousTriggerFilter(unsigned int axisIndex)
 {
 }
 
-float CAnomalousTriggerFilter::Filter(float value)
+float CAnomalousTrigger::Filter(float value)
 {
   // First, check for discrete D-pad
   if (m_state == STATE_UNKNOWN)
@@ -51,7 +51,7 @@ float CAnomalousTriggerFilter::Filter(float value)
       if (m_bCenterSeen && m_bPositiveOneSeen && m_bNegativeOneSeen)
       {
         m_state = STATE_DISCRETE_DPAD;
-        dsyslog("Discrete D-pad detected on axis %u", axisIndex);
+        dsyslog("Discrete D-pad detected on axis %u", m_axisIndex);
       }
     }
     else
@@ -71,7 +71,7 @@ float CAnomalousTriggerFilter::Filter(float value)
       m_center = CENTER_ZERO;
 
     if (IsAnomalousTrigger())
-      dsyslog("Anomalous trigger detected on axis %u (initial value = %f)", axisIndex, value);
+      dsyslog("Anomalous trigger detected on axis %u (initial value = %f)", m_axisIndex, value);
 
     m_state = STATE_CENTER_KNOWN;
   }
@@ -105,19 +105,31 @@ float CAnomalousTriggerFilter::Filter(float value)
   return value;
 }
 
-bool CAnomalousTriggerFilter::IsAnomalousTrigger(void)
+bool CAnomalousTrigger::IsAnomalousTrigger(void) const
 {
   return m_center != CENTER_ZERO;
 }
 
-float CAnomalousTriggerFilter::GetCenter(AXIS_CENTER center)
+int CAnomalousTrigger::GetCenter(AXIS_CENTER center)
 {
   switch (center)
   {
-    case CENTER_NEGATIVE_ONE: return -1.0f;
-    case CENTER_POSITIVE_ONE: return  1.0f;
+    case CENTER_NEGATIVE_ONE: return -1;
+    case CENTER_POSITIVE_ONE: return  1;
     default:
       break;
   }
-  return 0.0f;
+  return 0;
+}
+
+int CAnomalousTrigger::GetRange(TRIGGER_RANGE range)
+{
+  switch (range)
+  {
+    case TRIGGER_RANGE_HALF: return 1;
+    case TRIGGER_RANGE_FULL: return 2;
+    default:
+      break;
+  }
+  return 1;
 }
