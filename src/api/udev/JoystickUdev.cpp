@@ -42,19 +42,6 @@ using namespace JOYSTICK;
 // From RetroArch
 #define NBITS(x)  ((((x) - 1) / (sizeof(long) * CHAR_BIT)) + 1)
 
-// From RetroArch
-static inline int16_t compute_axis(const input_absinfo& info, int value)
-{
-   int range = info.maximum - info.minimum;
-   int axis  = (value - info.minimum) * 0xffffll / range - 0x7fffll;
-
-   if (axis > 0x7fff)
-      return 0x7fff;
-   else if (axis < -0x7fff)
-      return -0x7fff;
-   return axis;
-}
-
 CJoystickUdev::CJoystickUdev(udev_device* dev, const char* path)
  : CJoystick(INTERFACE_UDEV),
    m_dev(dev),
@@ -65,6 +52,9 @@ CJoystickUdev::CJoystickUdev(udev_device* dev, const char* path)
    m_has_set_ff(false),
    m_effect(-1)
 {
+  for (unsigned int i = 0; i < MOTOR_COUNT; i++)
+    m_motors[i] = 0;
+
   // Must initialize in the constructor to fill out joystick properties
   Initialize();
 }
@@ -276,24 +266,26 @@ bool CJoystickUdev::SetMotor(unsigned int motorIndex, float magnitude)
   if (motorIndex >= MotorCount() || magnitude < 0.0f)
     return false;
 
-  uint16_t strength = std::min(0xffff, static_cast<int>(magnitude * 0xffff));
+  if (magnitude < 0.01f)
+    magnitude = 0.0f;
 
-  if (strength < 0.01f)
-    strength = 0.0f;
+  uint16_t strength = std::min(0xffff, static_cast<int>(magnitude * 0xffff));
 
   bool bChanged = false;
 
-  if (strength != m_motors[motorIndex].strength)
+  if (strength != m_motors[motorIndex])
     bChanged = true;
 
   if (!bChanged)
     return true;
 
-  uint32_t oldStrength = m_motors[MOTOR_STRONG].strength + m_motors[MOTOR_WEAK].strength;
+  uint32_t oldStrength = static_cast<uint32_t>(m_motors[MOTOR_STRONG]) +
+                         static_cast<uint32_t>(m_motors[MOTOR_WEAK]);
 
-  m_motors[motorIndex].strength = strength;
+  m_motors[motorIndex] = strength;
 
-  uint32_t newStrength = m_motors[MOTOR_STRONG].strength + m_motors[MOTOR_WEAK].strength;
+  uint32_t newStrength = static_cast<uint32_t>(m_motors[MOTOR_STRONG]) +
+                         static_cast<uint32_t>(m_motors[MOTOR_WEAK]);
 
   if (newStrength > 0)
   {
@@ -304,8 +296,8 @@ bool CJoystickUdev::SetMotor(unsigned int motorIndex, float magnitude)
 
     e.type                      = FF_RUMBLE;
     e.id                        = old_effect;
-    e.u.rumble.strong_magnitude = m_motors[MOTOR_STRONG].strength;
-    e.u.rumble.weak_magnitude   = m_motors[MOTOR_WEAK].strength;
+    e.u.rumble.strong_magnitude = m_motors[MOTOR_STRONG];
+    e.u.rumble.weak_magnitude   = m_motors[MOTOR_WEAK];
 
     if (ioctl(m_fd, EVIOCSFF, &e) < 0)
     {

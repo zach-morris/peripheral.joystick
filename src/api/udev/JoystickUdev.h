@@ -72,12 +72,6 @@ namespace JOYSTICK
     bool SetMotor(unsigned int motorIndex, float magnitude);
 
   private:
-    struct Motor
-    {
-      uint16_t strength;
-      uint16_t configured_strength;
-    };
-
     struct Axis
     {
       unsigned int  axisIndex;
@@ -99,6 +93,6 @@ namespace JOYSTICK
     // Joystick properties
     std::map<unsigned int, unsigned int> m_button_bind; // Maps keycodes -> button
     std::map<unsigned int, Axis>         m_axes_bind;   // Maps keycodes -> axis and axis info
-    Motor                                m_motors[MOTOR_COUNT];
+    uint16_t                             m_motors[MOTOR_COUNT];
   };
 }
