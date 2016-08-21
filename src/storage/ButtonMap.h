@@ -19,8 +19,8 @@
  */
 #pragma once
 
-#include "ButtonMapTypes.h"
-#include "Device.h"
+#include "StorageTypes.h"
+#include "buttonmapper/ButtonMapTypes.h"
 
 #include <string>
 
@@ -30,15 +30,19 @@ namespace JOYSTICK
   {
   public:
     CButtonMap(const std::string& strResourcePath);
-    CButtonMap(const std::string& strResourcePath, const CDevice& device);
+    CButtonMap(const std::string& strResourcePath, const DevicePtr& device);
 
     virtual ~CButtonMap(void) { }
 
     const std::string& Path(void) const { return m_strResourcePath; }
 
-    const CDevice& Device(void) const { return m_device; }
+    const DevicePtr& Device(void) const { return m_device; }
 
-    bool GetFeatures(const std::string& controllerId, FeatureVector& features);
+    bool IsValid(void) const;
+
+    const ButtonMap& GetButtonMap();
+
+    void GetControllerMap(ControllerMap& controllerMap);
 
     bool MapFeatures(const std::string& controllerId, const FeatureVector& features);
 
@@ -50,11 +54,10 @@ namespace JOYSTICK
     virtual bool Load(void) = 0;
     virtual bool Save(void) const = 0;
 
-    typedef std::string                           ControllerID;
-    typedef std::map<ControllerID, FeatureVector> ButtonMap;
+    void Sanitize();
 
     const std::string m_strResourcePath;
-    CDevice           m_device;
+    DevicePtr         m_device;
     ButtonMap         m_buttonMap;
 
   private:

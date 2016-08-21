@@ -19,18 +19,25 @@
  */
 #pragma once
 
-#include "ButtonMapTypes.h"
+#include "StorageTypes.h"
+#include "buttonmapper/ButtonMapTypes.h"
+#include "buttonmapper/JoystickFamily.h"
 
-#include "kodi_peripheral_types.h"
-#include "kodi_peripheral_utils.hpp"
-
+#include <memory>
 #include <string>
-#include <vector>
 
-namespace ADDON { class CHelper_libKODI_peripheral; }
+struct PERIPHERAL_PROPERTIES;
+
+namespace ADDON
+{
+  class CHelper_libKODI_peripheral;
+  class Joystick;
+}
 
 namespace JOYSTICK
 {
+  class CButtonMapper;
+  class CDevice;
   class IDatabase;
 
   class CStorageManager
@@ -41,7 +48,7 @@ namespace JOYSTICK
   public:
     static CStorageManager& Get(void);
 
-    ~CStorageManager(void) { Deinitialize(); }
+    ~CStorageManager(void);
 
     /*!
      * \brief Initialize storage manager
@@ -104,10 +111,10 @@ namespace JOYSTICK
     void RefreshButtonMaps(const std::string& strDeviceName = "");
 
   private:
-    static void MergeFeatures(FeatureVector& features, const FeatureVector& newFeatures);
-
     ADDON::CHelper_libKODI_peripheral* m_peripheralLib;
 
-    DatabaseVector m_databases;
+    DatabaseVector                 m_databases;
+    std::unique_ptr<CButtonMapper> m_buttonMapper;
+    CJoystickFamilyManager         m_familyManager;
   };
 }

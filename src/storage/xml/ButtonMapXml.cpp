@@ -19,13 +19,18 @@
  */
 
 #include "ButtonMapXml.h"
+#include "ButtonMapDefinitions.h"
 #include "DeviceXml.h"
-#include "storage/ButtonMapDefinitions.h"
-#include "storage/ButtonMapTranslator.h"
+#include "api/AnomalousTrigger.h"
+#include "api/Joystick.h"
+#include "api/JoystickManager.h"
+#include "buttonmapper/ButtonMapTranslator.h"
+#include "storage/Device.h"
 #include "log/Log.h"
 
 #include "tinyxml.h"
 
+#include <algorithm>
 #include <cmath>
 #include <cstdlib>
 #include <sstream>
@@ -38,7 +43,7 @@ CButtonMapXml::CButtonMapXml(const std::string& strResourcePath) :
 {
 }
 
-CButtonMapXml::CButtonMapXml(const std::string& strResourcePath, const CDevice& device) :
+CButtonMapXml::CButtonMapXml(const std::string& strResourcePath, const DevicePtr& device) :
   CButtonMap(strResourcePath, device)
 {
 }
@@ -59,22 +64,26 @@ bool CButtonMapXml::Load(void)
     return false;
   }
 
-  const TiXmlElement* pDevice = pRootElement->FirstChildElement(DEVICES_XML_ELEM_DEVICE);
+  const TiXmlElement* pDevice = pRootElement->FirstChildElement(BUTTONMAP_XML_ELEM_DEVICE);
 
   if (!pDevice)
   {
-    esyslog("Can't find <%s> tag", DEVICES_XML_ELEM_DEVICE);
+    esyslog("Can't find <%s> tag", BUTTONMAP_XML_ELEM_DEVICE);
     return false;
   }
 
-  if (!CDeviceXml::Deserialize(pDevice, m_device))
-    return false;
+  // Don't overwrite valid device
+  if (!m_device->IsValid())
+  {
+    if (!CDeviceXml::Deserialize(pDevice, *m_device))
+      return false;
+  }
 
   const TiXmlElement* pController = pDevice->FirstChildElement(BUTTONMAP_XML_ELEM_CONTROLLER);
 
   if (!pController)
   {
-    esyslog("Device \"%s\": can't find <%s> tag", m_device.Name().c_str(), BUTTONMAP_XML_ELEM_CONTROLLER);
+    esyslog("Device \"%s\": can't find <%s> tag", m_device->Name().c_str(), BUTTONMAP_XML_ELEM_CONTROLLER);
     return false;
   }
 
@@ -86,7 +95,7 @@ bool CButtonMapXml::Load(void)
     const char* id = pController->Attribute(BUTTONMAP_XML_ATTR_CONTROLLER_ID);
     if (!id)
     {
-      esyslog("Device \"%s\": <%s> tag has no attribute \"%s\"", m_device.Name().c_str(),
+      esyslog("Device \"%s\": <%s> tag has no attribute \"%s\"", m_device->Name().c_str(),
               BUTTONMAP_XML_ELEM_CONTROLLER, BUTTONMAP_XML_ATTR_CONTROLLER_ID);
       return false;
     }
@@ -97,7 +106,7 @@ bool CButtonMapXml::Load(void)
 
     if (features.empty())
     {
-      esyslog("Device \"%s\" has no features for controller %s", m_device.Name().c_str(), id);
+      esyslog("Device \"%s\" has no features for controller %s", m_device->Name().c_str(), id);
     }
     else
     {
@@ -108,7 +117,7 @@ bool CButtonMapXml::Load(void)
     pController = pController->NextSiblingElement(BUTTONMAP_XML_ELEM_CONTROLLER);
   }
 
-  dsyslog("Loaded device \"%s\" with %u controller profiles and %u total features", m_device.Name().c_str(), m_buttonMap.size(), totalFeatureCount);
+  dsyslog("Loaded device \"%s\" with %u controller profiles and %u total features", m_device->Name().c_str(), m_buttonMap.size(), totalFeatureCount);
 
   return true;
 }
@@ -129,7 +138,7 @@ bool CButtonMapXml::Save(void) const
   if (!pElem)
     return false;
 
-  TiXmlElement deviceElement(DEVICES_XML_ELEM_DEVICE);
+  TiXmlElement deviceElement(BUTTONMAP_XML_ELEM_DEVICE);
   TiXmlNode* deviceNode = pElem->InsertEndChild(deviceElement);
   if (deviceNode == NULL)
     return false;
@@ -138,12 +147,68 @@ bool CButtonMapXml::Save(void) const
   if (deviceElem == NULL)
     return false;
 
-  CDeviceXml::Serialize(m_device, deviceElem);
+  CDeviceXml::Serialize(*m_device, deviceElem);
+
+  if (!SerializeTriggers(deviceElem))
+    return false;
 
   if (!SerializeButtonMaps(deviceElem))
     return false;
 
   return xmlFile.SaveFile(m_strResourcePath);
+}
+
+bool CButtonMapXml::SerializeTriggers(TiXmlElement* pElement) const
+{
+  std::map<unsigned int, CAnomalousTrigger*> triggers;
+
+  // Get triggers
+  JoystickVector joysticks = CJoystickManager::Get().GetJoysticks(*m_device);
+  for (const auto& joystick : joysticks)
+  {
+    std::vector<CAnomalousTrigger*> triggerVec = joystick->GetAnomalousTriggers();
+    for (CAnomalousTrigger* trigger : triggerVec)
+      triggers[trigger->AxisIndex()] = trigger;
+  }
+
+  // Serialize triggers
+  if (!triggers.empty())
+  {
+    TiXmlElement configurationElement(BUTTONMAP_XML_ELEM_CONFIGURATION);
+    TiXmlNode* configurationNode = pElement->InsertEndChild(configurationElement);
+    if (configurationNode == nullptr)
+      return false;
+
+    TiXmlElement* configurationElem = configurationNode->ToElement();
+    if (configurationElem == nullptr)
+      return false;
+
+    for (auto itTrigger = triggers.begin(); itTrigger != triggers.end(); ++itTrigger)
+    {
+      if (!SerializeTrigger(configurationElem, itTrigger->second))
+        return false;
+    }
+  }
+
+  return true;
+}
+
+bool CButtonMapXml::SerializeTrigger(TiXmlElement* pElement, const CAnomalousTrigger* trigger)
+{
+  TiXmlElement axisElement(BUTTONMAP_XML_ELEM_AXIS);
+  TiXmlNode* axisNode = pElement->InsertEndChild(axisElement);
+  if (axisNode == nullptr)
+    return false;
+
+  TiXmlElement* axisElem = axisNode->ToElement();
+  if (axisElem == nullptr)
+    return false;
+
+  axisElem->SetAttribute(BUTTONMAP_XML_ATTR_AXIS_INDEX, trigger->AxisIndex());
+  axisElem->SetAttribute(BUTTONMAP_XML_ATTR_AXIS_CENTER, trigger->Center());
+  axisElem->SetAttribute(BUTTONMAP_XML_ATTR_AXIS_RANGE, trigger->Range());
+
+  return true;
 }
 
 bool CButtonMapXml::SerializeButtonMaps(TiXmlElement* pElement) const

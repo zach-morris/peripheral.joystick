@@ -1,6 +1,6 @@
 /*
- *      Copyright (C) 2015 Garrett Brown
- *      Copyright (C) 2015 Team XBMC
+ *      Copyright (C) 2014-2015 Garrett Brown
+ *      Copyright (C) 2014-2015 Team XBMC
  *
  *  This Program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -19,25 +19,11 @@
  */
 #pragma once
 
-#include "storage/JustABunchOfFiles.h"
+#define RESOURCE_XML_EXTENSION                 ".xml"
+#define RESOURCE_RETROARCH_EXTENSION           ".cfg"
 
-#include <string>
-#include <vector>
+#define RESOURCE_XML_FOLDER                    "xml"
+#define RESOURCE_RETROARCH_FOLDER              "retroarch"
 
-class TiXmlElement;
-
-namespace JOYSTICK
-{
-  class CDatabaseXml : public CJustABunchOfFiles
-  {
-  public:
-    CDatabaseXml(const std::string& strBasePath, bool bReadWrite, IDatabaseCallbacks* callbacks);
-
-    virtual ~CDatabaseXml(void) { }
-
-  protected:
-    // implementation of CJustABunchOfFiles
-    virtual CButtonMap* CreateResource(const std::string& resourcePath) override;
-    virtual CButtonMap* CreateResource(const std::string& resourcePath, const DevicePtr& deviceInfo) override;
-  };
-}
+#define DEVICES_XML_ROOT                       "devices"
+#define DEVICES_XML_ELEM_DEVICE                "device"

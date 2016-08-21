@@ -45,13 +45,24 @@ namespace JOYSTICK
    *
    * Triggers centered about 1.0 are transformed to travel from zero to -1.0.
    */
-  class CAnomalousTriggerFilter : public IJoystickAxisFilter
+  class CAnomalousTrigger : public IJoystickAxisFilter
   {
   public:
-    CAnomalousTriggerFilter(unsigned int axisIndex);
+    CAnomalousTrigger(unsigned int axisIndex);
 
     // implementation of IJoystickAxisFilter
     virtual float Filter(float value) override;
+
+    /*!
+     * \brief Has this axis been detected as an anomalous trigger
+     */
+    bool IsAnomalousTrigger(void) const;
+
+    unsigned int AxisIndex(void) const { return m_axisIndex; }
+
+    unsigned int Center(void) const { return GetCenter(m_center); }
+
+    unsigned int Range(void) const { return GetRange(m_range); }
 
   private:
     enum AXIS_STATE
@@ -96,16 +107,12 @@ namespace JOYSTICK
     };
 
     /*!
-     * \brief Has this axis been detected as an anomalous trigger
-     */
-    bool IsAnomalousTrigger(void);
-
-    /*!
      * \brief Helper functions
      */
-    static float GetCenter(AXIS_CENTER center);
+    static int GetCenter(AXIS_CENTER center);
+    static int GetRange(TRIGGER_RANGE range);
 
-    const unsigned int axisIndex;
+    const unsigned int m_axisIndex;
     AXIS_STATE         m_state;
     AXIS_CENTER        m_center;
     TRIGGER_RANGE      m_range;

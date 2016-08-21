@@ -40,13 +40,17 @@ namespace JOYSTICK
     CResources(void) { }
     ~CResources(void);
 
+    DevicePtr GetDevice(const CDevice& deviceInfo);
+
     CButtonMap* GetResource(const CDevice& deviceInfo);
     bool AddResource(CButtonMap* resource);
     void RemoveResource(const std::string& strPath);
 
   private:
+    typedef std::map<CDevice, DevicePtr>   DeviceMap;
     typedef std::map<CDevice, CButtonMap*> ResourceMap;
 
+    DeviceMap   m_devices;
     ResourceMap m_resources;
   };
 
@@ -54,17 +58,19 @@ namespace JOYSTICK
                              public IDirectoryCacheCallback
   {
   public:
-    CJustABunchOfFiles(const std::string& strResourcePath, const std::string& strExtension, bool bReadWrite);
+    CJustABunchOfFiles(const std::string& strResourcePath,
+                       const std::string& strExtension,
+                       bool bReadWrite,
+                       IDatabaseCallbacks* callbacks);
+
     virtual ~CJustABunchOfFiles(void);
 
     // implementation of IDatabase
-    virtual bool GetFeatures(const CDevice& driverInfo,
-                             const std::string& controllerId,
-                             FeatureVector& features) override;
-    virtual bool MapFeatures(const CDevice& driverInfo,
+    virtual const ButtonMap& GetButtonMap(const ADDON::Joystick& driverInfo) override;
+    virtual bool MapFeatures(const ADDON::Joystick& driverInfo,
                              const std::string& controllerId,
                              const FeatureVector& features) override;
-    virtual bool ResetButtonMap(const CDevice& driverInfo,
+    virtual bool ResetButtonMap(const ADDON::Joystick& driverInfo,
                                 const std::string& controllerId) override;
 
     // implementation of IDirectoryCacheCallback
@@ -74,11 +80,11 @@ namespace JOYSTICK
   protected:
     // Interface for child class to provide
     virtual CButtonMap* CreateResource(const std::string& resourcePath) = 0;
-    virtual CButtonMap* CreateResource(const std::string& resourcePath, const CDevice& driverInfo) = 0;
+    virtual CButtonMap* CreateResource(const std::string& resourcePath, const DevicePtr& driverInfo) = 0;
 
   private:
     /*!
-     * \brief Subcursively index a path, enumerating the folder and updating
+     * \brief Recursively index a path, enumerating the folder and updating
      *        the directory cache
      */
     void IndexDirectory(const std::string& path, unsigned int folderDepth);
@@ -90,7 +96,7 @@ namespace JOYSTICK
      *
      * \return true if the path exists or was created
      */
-    bool GetResourcePath(const CDevice& deviceInfo, std::string& resourcePath) const;
+    bool GetResourcePath(const ADDON::Joystick& deviceInfo, std::string& resourcePath) const;
 
     const std::string m_strResourcePath;
     const std::string m_strExtension;

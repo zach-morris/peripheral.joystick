@@ -53,16 +53,8 @@ compile
 *.opensdf
 *.vcxproj.user
 
-project/VS2010Express/objs
-project/VS2010Express/ipch
-project/VS2010Express/libs
-project/VS2010Express/platform/Debug
-project/VS2010Express/platform/Release
-project/BuildDependencies/downloads
-project/BuildDependencies/lib
-project/BuildDependencies/include
-addons/*/project/VS2010Express/Debug
-addons/*/project/VS2010Express/Release
-addons/*/*.so
-addons/*/addon/*.dll
-addons/*/addon/addon.xml
+peripheral.joystick/project/VS2010Express/Debug
+peripheral.joystick/project/VS2010Express/Release
+peripheral.joystick/*.so
+peripheral.joystick/*.dll
+peripheral.joystick/addon.xml

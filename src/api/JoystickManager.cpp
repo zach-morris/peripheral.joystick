@@ -36,6 +36,9 @@
 #if defined(HAVE_COCOA)
   #include "cocoa/JoystickInterfaceCocoa.h"
 #endif
+#if defined(HAVE_UDEV)
+  #include "udev/JoystickInterfaceUdev.h"
+#endif
 
 #include "log/Log.h"
 #include "utils/CommonMacros.h"
@@ -107,10 +110,12 @@ bool CJoystickManager::Initialize(IScannerCallback* scanner)
 #if defined(HAVE_XINPUT)
   m_interfaces.push_back(new CJoystickInterfaceXInput);
 #endif
-#if defined(HAVE_LINUX_JOYSTICK)
-  m_interfaces.push_back(new CJoystickInterfaceLinux);
+#if defined(HAVE_UDEV)
+  m_interfaces.push_back(new CJoystickInterfaceUdev);
 #elif defined(HAVE_SDL)
   m_interfaces.push_back(new CJoystickInterfaceSDL);
+#elif defined(HAVE_LINUX_JOYSTICK)
+  m_interfaces.push_back(new CJoystickInterfaceLinux);
 #endif
 #if defined(HAVE_COCOA)
   m_interfaces.push_back(new CJoystickInterfaceCocoa);
@@ -191,7 +196,8 @@ bool CJoystickManager::PerformJoystickScan(JoystickVector& joysticks)
   joysticks.erase(std::remove_if(joysticks.begin(), joysticks.end(),
     [](const JoystickPtr& joystick)
     {
-      return joystick->Provider() == INTERFACE_LINUX &&
+      return (joystick->Provider() == INTERFACE_LINUX ||
+               joystick->Provider() == INTERFACE_UDEV) &&
              (joystick->Name() == "Xbox 360 Wireless Receiver" ||
                joystick->Name() == "Xbox 360 Wireless Receiver (XBOX)") &&
              joystick->ActivateTimeMs() < 0;
@@ -211,6 +217,24 @@ JoystickPtr CJoystickManager::GetJoystick(unsigned int index) const
   }
 
   return JoystickPtr();
+}
+
+JoystickVector CJoystickManager::GetJoysticks(const ADDON::Joystick& joystickInfo) const
+{
+  JoystickVector result;
+
+  CLockObject lock(m_joystickMutex);
+
+  for (const auto& joystick : m_joysticks)
+  {
+    if (joystick->Name() == joystickInfo.Name() &&
+        joystick->Provider() == joystickInfo.Provider())
+    {
+      result.push_back(joystick);
+    }
+  }
+
+  return result;
 }
 
 bool CJoystickManager::GetEvents(std::vector<ADDON::PeripheralEvent>& events)
@@ -248,16 +272,18 @@ void CJoystickManager::TriggerScan(void)
     m_scanner->TriggerScan();
 }
 
-void CJoystickManager::GetFeatures(const std::string& provider, const std::string& controllerId, FeatureVector& features)
+const ButtonMap& CJoystickManager::GetButtonMap(const std::string& provider)
 {
+  static ButtonMap empty;
+
   CLockObject lock(m_interfacesMutex);
 
-  for (std::vector<IJoystickInterface*>::iterator it = m_interfaces.begin(); it != m_interfaces.end(); ++it)
+  // Scan for joysticks (this can take a while, don't block)
+  for (std::vector<IJoystickInterface*>::iterator itInterface = m_interfaces.begin(); itInterface != m_interfaces.end(); ++itInterface)
   {
-    if ((*it)->Name() == provider)
-    {
-      (*it)->GetFeatures(controllerId, features);
-      break;
-    }
+    if ((*itInterface)->Name() == provider)
+      return (*itInterface)->GetButtonMap();
   }
+
+  return empty;
 }

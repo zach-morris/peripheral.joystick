@@ -19,7 +19,7 @@
  */
 
 #include "DeviceXml.h"
-#include "storage/ButtonMapDefinitions.h"
+#include "ButtonMapDefinitions.h"
 #include "storage/Device.h"
 #include "storage/StorageUtils.h"
 #include "log/Log.h"
@@ -55,7 +55,7 @@ bool CDeviceXml::Deserialize(const TiXmlElement* pElement, CDevice& record)
   const char* name = pElement->Attribute(BUTTONMAP_XML_ATTR_DEVICE_NAME);
   if (!name)
   {
-    esyslog("<%s> tag has no \"%s\" attribute", DEVICES_XML_ELEM_DEVICE, BUTTONMAP_XML_ATTR_DEVICE_NAME);
+    esyslog("<%s> tag has no \"%s\" attribute", BUTTONMAP_XML_ELEM_DEVICE, BUTTONMAP_XML_ATTR_DEVICE_NAME);
     return false;
   }
   record.SetName(name);
@@ -63,7 +63,7 @@ bool CDeviceXml::Deserialize(const TiXmlElement* pElement, CDevice& record)
   const char* provider = pElement->Attribute(BUTTONMAP_XML_ATTR_DEVICE_PROVIDER);
   if (!provider)
   {
-    esyslog("<%s> tag has no \"%s\" attribute", DEVICES_XML_ELEM_DEVICE, BUTTONMAP_XML_ATTR_DEVICE_PROVIDER);
+    esyslog("<%s> tag has no \"%s\" attribute", BUTTONMAP_XML_ELEM_DEVICE, BUTTONMAP_XML_ATTR_DEVICE_PROVIDER);
     return false;
   }
   record.SetProvider(provider);

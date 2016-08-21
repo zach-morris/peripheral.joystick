@@ -19,16 +19,10 @@
  */
 #pragma once
 
-#define RESOURCE_XML_EXTENSION                 ".xml"
-#define RESOURCE_RETROARCH_EXTENSION           ".cfg"
-
-#define RESOURCE_XML_FOLDER                    "xml"
-#define RESOURCE_RETROARCH_FOLDER              "retroarch"
-
-#define DEVICES_XML_ROOT                       "devices"
-#define DEVICES_XML_ELEM_DEVICE                "device"
-
 #define BUTTONMAP_XML_ROOT                     "buttonmap"
+#define BUTTONMAP_XML_ELEM_DEVICE              "device"
+#define BUTTONMAP_XML_ELEM_CONFIGURATION       "configuration"
+#define BUTTONMAP_XML_ELEM_AXIS                "axis"
 #define BUTTONMAP_XML_ELEM_CONTROLLER          "controller"
 #define BUTTONMAP_XML_ELEM_FEATURE             "feature"
 
@@ -58,3 +52,7 @@
 #define BUTTONMAP_XML_ATTR_FEATURE_HAT         "hat"
 #define BUTTONMAP_XML_ATTR_FEATURE_AXIS        "axis"
 #define BUTTONMAP_XML_ATTR_FEATURE_MOTOR       "motor"
+
+#define BUTTONMAP_XML_ATTR_AXIS_INDEX          "index"
+#define BUTTONMAP_XML_ATTR_AXIS_CENTER         "center"
+#define BUTTONMAP_XML_ATTR_AXIS_RANGE          "range"

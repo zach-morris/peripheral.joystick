@@ -76,33 +76,5 @@ namespace JOYSTICK
      * \brief Merge valid (known) properties of given record into this record
      */
     void MergeProperties(const CDevice& record);
-
-    /*!
-     * \brief Utility function: Build a filename out of the record's properties
-     *
-     * \return A sensible filename, lacking an extension (which can be added by
-     *         the caller)
-     *
-     * The filename is derived from driver properties. An example joystick
-     * filename is:
-     *
-     * Gamepad_F310_v1133_p1133_15b_6a
-     *
-     * where:
-     *
-     *   -  "Gamepad_F301" is the name reported by the driver
-     *   -  "v1133_p1133" is the USB VID/PID if known
-     *   -  "15b_6a" is the button/hat/axis count if known
-     *
-     * An example keyboard filename is:
-     *
-     * Keyboard_1
-     *
-     * where:
-     *
-     *   -  "Keyboard" is the name given to the keyboard by Kodi's peripheral subsystem
-     *   - `"1" is the player number (for arcade cabinets that use keyboard drivers)
-     */
-    std::string RootFileName(void) const;
   };
 }

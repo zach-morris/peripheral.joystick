@@ -1,6 +1,6 @@
 /*
- *      Copyright (C) 2015 Garrett Brown
- *      Copyright (C) 2015 Team XBMC
+ *      Copyright (C) 2016 Garrett Brown
+ *      Copyright (C) 2016 Team Kodi
  *
  *  This Program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -13,21 +13,17 @@
  *  GNU General Public License for more details.
  *
  *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
+ *  along with this Program; see the file COPYING.  If not, see
  *  <http://www.gnu.org/licenses/>.
+ *
  */
 #pragma once
 
-#include <memory>
-#include <vector>
+#define JOYSTICK_FAMILIES_FOLDER                "joystickfamilies"
+#define JOYSTICK_FAMILIES_RESOURCE              "joystickfamilies.xml"
 
-namespace ADDON { class JoystickFeature; }
+#define JOYSTICK_FAMILIES_XML_ELEM_FAMILIES     "joystickfamilies"
+#define JOYSTICK_FAMILIES_XML_ELEM_FAMILY       "joystickfamily"
+#define JOYSTICK_FAMILIES_XML_ELEM_JOYSTICK     "joystick"
 
-namespace JOYSTICK
-{
-  typedef std::vector<ADDON::JoystickFeature> FeatureVector;
-
-  class IDatabase;
-  typedef std::shared_ptr<IDatabase> DatabasePtr;
-  typedef std::vector<DatabasePtr>   DatabaseVector;
-}
+#define JOYSTICK_FAMILIES_XML_ATTR_FAMILY_NAME  "name"

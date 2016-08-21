@@ -19,7 +19,7 @@
  */
 
 #include "JustABunchOfFiles.h"
-#include "ButtonMapDefinitions.h"
+#include "StorageDefinitions.h"
 #include "StorageUtils.h"
 #include "filesystem/DirectoryUtils.h"
 #include "log/Log.h"
@@ -40,26 +40,37 @@ CResources::~CResources(void)
     delete it->second;
 }
 
+DevicePtr CResources::GetDevice(const CDevice& deviceInfo)
+{
+  DevicePtr device;
+
+  auto itDevice = m_devices.find(deviceInfo);
+  if (itDevice != m_devices.end())
+    device = itDevice->second;
+
+  return device;
+}
+
 CButtonMap* CResources::GetResource(const CDevice& deviceInfo)
 {
-  ResourceMap::iterator itResource = m_resources.find(deviceInfo);
-  if (itResource != m_resources.end())
-    return itResource->second;
+  CButtonMap* buttonMap = nullptr;
 
-  return nullptr;
+  auto itResource = m_resources.find(deviceInfo);
+  if (itResource != m_resources.end())
+    buttonMap = itResource->second;
+
+  return buttonMap;
 }
 
 bool CResources::AddResource(CButtonMap* resource)
 {
-  if (resource != nullptr)
+  if (resource != nullptr && resource->IsValid())
   {
-    if (resource->Device().IsValid())
-    {
-      CButtonMap* oldResource = m_resources[resource->Device()];
-      delete oldResource;
-      m_resources[resource->Device()] = resource;
-      return true;
-    }
+    CButtonMap* oldResource = m_resources[*resource->Device()];
+    delete oldResource;
+    m_resources[*resource->Device()] = resource;
+    m_devices[*resource->Device()] = resource->Device();
+    return true;
   }
   return false;
 }
@@ -79,7 +90,11 @@ void CResources::RemoveResource(const std::string& strPath)
 
 // --- CJustABunchOfFiles ------------------------------------------------------
 
-CJustABunchOfFiles::CJustABunchOfFiles(const std::string& strResourcePath, const std::string& strExtension, bool bReadWrite) :
+CJustABunchOfFiles::CJustABunchOfFiles(const std::string& strResourcePath,
+                                       const std::string& strExtension,
+                                       bool bReadWrite,
+                                       IDatabaseCallbacks* callbacks) :
+  IDatabase(callbacks),
   m_strResourcePath(strResourcePath),
   m_strExtension(strExtension),
   m_bReadWrite(bReadWrite)
@@ -95,10 +110,10 @@ CJustABunchOfFiles::~CJustABunchOfFiles(void)
   m_directoryCache.Deinitialize();
 }
 
-bool CJustABunchOfFiles::GetFeatures(const CDevice& driverInfo,
-                                     const std::string& controllerId,
-                                     FeatureVector& features)
+const ButtonMap& CJustABunchOfFiles::GetButtonMap(const ADDON::Joystick& driverInfo)
 {
+  static ButtonMap empty;
+
   CLockObject lock(m_mutex);
 
   // Update index
@@ -107,12 +122,12 @@ bool CJustABunchOfFiles::GetFeatures(const CDevice& driverInfo,
   CButtonMap* resource = m_resources.GetResource(driverInfo);
 
   if (resource)
-    return resource->GetFeatures(controllerId, features);
+    return resource->GetButtonMap();
 
-  return false;
+  return empty;
 }
 
-bool CJustABunchOfFiles::MapFeatures(const CDevice& driverInfo,
+bool CJustABunchOfFiles::MapFeatures(const ADDON::Joystick& driverInfo,
                                      const std::string& controllerId,
                                      const FeatureVector& features)
 {
@@ -122,18 +137,19 @@ bool CJustABunchOfFiles::MapFeatures(const CDevice& driverInfo,
   CLockObject lock(m_mutex);
 
   CButtonMap* resource = m_resources.GetResource(driverInfo);
-
   if (resource == nullptr)
   {
     // Resource doesn't exist yet, try to create it now
     std::string resourcePath;
-    GetResourcePath(driverInfo, resourcePath);
-
-    resource = CreateResource(resourcePath, driverInfo);
-    if (!m_resources.AddResource(resource))
+    if (GetResourcePath(driverInfo, resourcePath))
     {
-      delete resource;
-      resource = nullptr;
+      DevicePtr device = std::make_shared<CDevice>(driverInfo);
+      resource = CreateResource(resourcePath, device);
+      if (!m_resources.AddResource(resource))
+      {
+        delete resource;
+        resource = nullptr;
+      }
     }
   }
 
@@ -143,14 +159,16 @@ bool CJustABunchOfFiles::MapFeatures(const CDevice& driverInfo,
   return false;
 }
 
-bool CJustABunchOfFiles::ResetButtonMap(const CDevice& driverInfo, const std::string& controllerId)
+bool CJustABunchOfFiles::ResetButtonMap(const ADDON::Joystick& driverInfo, const std::string& controllerId)
 {
   if (!m_bReadWrite)
     return false;
 
+  CDevice device(driverInfo);
+
   CLockObject lock(m_mutex);
 
-  CButtonMap* resource = m_resources.GetResource(driverInfo);
+  CButtonMap* resource = m_resources.GetResource(device);
 
   if (resource)
     return resource->ResetButtonMap(controllerId);
@@ -193,12 +211,18 @@ void CJustABunchOfFiles::OnAdd(const ADDON::CVFSDirEntry& item)
 {
   if (!item.IsFolder())
   {
+    // TODO: Switch to unique_ptr or shared_ptr
     CButtonMap* resource = CreateResource(item.Path());
 
     // Load device info
-    resource->Refresh();
-
-    if (!m_resources.AddResource(resource))
+    if (resource && resource->Refresh())
+    {
+      if (m_resources.AddResource(resource))
+        m_callbacks->OnAdd(resource->Device(), resource->GetButtonMap());
+      else
+        delete resource;
+    }
+    else
       delete resource;
   }
 }
@@ -208,13 +232,13 @@ void CJustABunchOfFiles::OnRemove(const ADDON::CVFSDirEntry& item)
   m_resources.RemoveResource(item.Path());
 }
 
-bool CJustABunchOfFiles::GetResourcePath(const CDevice& deviceInfo, std::string& resourcePath) const
+bool CJustABunchOfFiles::GetResourcePath(const ADDON::Joystick& deviceInfo, std::string& resourcePath) const
 {
   // Calculate folder path
   std::string strFolder = m_strResourcePath + "/" + deviceInfo.Provider();
 
   // Calculate resource path
-  resourcePath = strFolder + "/" + deviceInfo.RootFileName() + m_strExtension;
+  resourcePath = strFolder + "/" + CStorageUtils::RootFileName(deviceInfo) + m_strExtension;
 
   // Ensure folder path exists
   return CStorageUtils::EnsureDirectoryExists(strFolder);

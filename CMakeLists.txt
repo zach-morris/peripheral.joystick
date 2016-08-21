@@ -22,13 +22,19 @@ include_directories(${INCLUDES}
                     ${PCRE_INCLUDE_DIRS})
 
 set(JOYSTICK_SOURCES src/addon.cpp
-                     src/api/AnomalousTriggerFilter.cpp
+                     src/api/AnomalousTrigger.cpp
                      src/api/Joystick.cpp
                      src/api/JoystickAsync.cpp
                      src/api/JoystickInterfaceCallback.cpp
                      src/api/JoystickManager.cpp
                      src/api/JoystickTranslator.cpp
                      src/api/PeripheralScanner.cpp
+                     src/buttonmapper/ButtonMapper.cpp
+                     src/buttonmapper/ButtonMapTranslator.cpp
+                     src/buttonmapper/ControllerModel.cpp
+                     src/buttonmapper/ControllerTransformer.cpp
+                     src/buttonmapper/DriverGeometry.cpp
+                     src/buttonmapper/JoystickFamily.cpp
                      src/filesystem/DirectoryCache.cpp
                      src/filesystem/DirectoryUtils.cpp
                      src/filesystem/Filesystem.cpp
@@ -42,7 +48,6 @@ set(JOYSTICK_SOURCES src/addon.cpp
                      src/log/LogConsole.cpp
                      src/settings/Settings.cpp
                      src/storage/ButtonMap.cpp
-                     src/storage/ButtonMapTranslator.cpp
                      src/storage/Device.cpp
                      src/storage/JustABunchOfFiles.cpp
                      src/storage/StorageManager.cpp
@@ -51,6 +56,7 @@ set(JOYSTICK_SOURCES src/addon.cpp
                      src/storage/xml/ButtonMapXml.cpp
                      src/storage/xml/DatabaseXml.cpp
                      src/storage/xml/DeviceXml.cpp
+                     src/storage/xml/JoystickFamiliesXml.cpp
                      src/utils/StringUtils.cpp)
 
 check_include_files("syslog.h" HAVE_SYSLOG)
@@ -122,6 +128,20 @@ if("${CORE_SYSTEM_NAME}" STREQUAL "windows")
   list(APPEND JOYSTICK_SOURCES src/api/xinput/JoystickInterfaceXInput.cpp
                                src/api/xinput/JoystickXInput.cpp
                                src/api/xinput/XInputDLL.cpp)
+endif()
+
+# --- udev ---------------------------------------------------------------------
+
+find_package(udev REQUIRED)
+if(UDEV_FOUND)
+  include_directories(${UDEV_INCLUDE_DIRS})
+
+  add_definitions(-DHAVE_UDEV)
+
+  list(APPEND JOYSTICK_SOURCES src/api/udev/JoystickInterfaceUdev.cpp
+                               src/api/udev/JoystickUdev.cpp)
+
+  list(APPEND DEPLIBS ${UDEV_LIBRARIES})
 endif()
 
 # ------------------------------------------------------------------------------

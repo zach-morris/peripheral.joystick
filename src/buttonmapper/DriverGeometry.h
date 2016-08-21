@@ -17,24 +17,27 @@
  *  <http://www.gnu.org/licenses/>.
  *
  */
+#pragma once
 
-#include "DatabaseXml.h"
-#include "ButtonMapXml.h"
-#include "storage/StorageDefinitions.h"
-
-using namespace JOYSTICK;
-
-CDatabaseXml::CDatabaseXml(const std::string& strBasePath, bool bReadWrite, IDatabaseCallbacks* callbacks) :
-  CJustABunchOfFiles(strBasePath + "/" RESOURCE_XML_FOLDER, RESOURCE_XML_EXTENSION, bReadWrite, callbacks)
+namespace JOYSTICK
 {
-}
+  class CDriverGeometry
+  {
+  public:
+    CDriverGeometry(unsigned int buttonCount, unsigned int hatCount, unsigned int axisCount);
+    CDriverGeometry(const CDriverGeometry& other);
 
-CButtonMap* CDatabaseXml::CreateResource(const std::string& resourcePath)
-{
-  return new CButtonMapXml(resourcePath);
-}
+    bool IsValid() const;
 
-CButtonMap* CDatabaseXml::CreateResource(const std::string& resourcePath, const DevicePtr& deviceInfo)
-{
-  return new CButtonMapXml(resourcePath, deviceInfo);
+    bool operator<(const CDriverGeometry& other) const;
+
+    unsigned int ButtonCount() const { return m_buttonCount; }
+    unsigned int HatCount() const { return m_hatCount; }
+    unsigned int AxisCount() const { return m_axisCount; }
+
+  private:
+    const unsigned int m_buttonCount;
+    const unsigned int m_hatCount;
+    const unsigned int m_axisCount;
+  };
 }

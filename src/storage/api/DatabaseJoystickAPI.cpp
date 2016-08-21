@@ -24,18 +24,17 @@
 
 using namespace JOYSTICK;
 
-bool CDatabaseJoystickAPI::GetFeatures(const CDevice& driverInfo, const std::string& controllerId, FeatureVector& features)
+const ButtonMap& CDatabaseJoystickAPI::GetButtonMap(const ADDON::Joystick& driverInfo)
 {
-  CJoystickManager::Get().GetFeatures(driverInfo.Provider(), controllerId, features);
-  return !features.empty();
+  return CJoystickManager::Get().GetButtonMap(driverInfo.Provider());
 }
 
-bool CDatabaseJoystickAPI::MapFeatures(const CDevice& driverInfo, const std::string& controllerId, const FeatureVector& features)
+bool CDatabaseJoystickAPI::MapFeatures(const ADDON::Joystick& driverInfo, const std::string& controllerId, const FeatureVector& features)
 {
   return false;
 }
 
-bool CDatabaseJoystickAPI::ResetButtonMap(const CDevice& driverInfo, const std::string& controllerId)
+bool CDatabaseJoystickAPI::ResetButtonMap(const ADDON::Joystick& driverInfo, const std::string& controllerId)
 {
   return false;
 }
