@@ -23,10 +23,12 @@
 
 using namespace JOYSTICK;
 
+#define SETTING_DEADZONE          "deadzone"
 #define SETTING_RETROARCH_CONFIG  "retroarchconfig"
 
 CSettings::CSettings(void)
   : m_bInitialized(false),
+    m_deadzone(0.0f),
     m_bGenerateRetroArchConfigs(false)
 {
 }
@@ -39,6 +41,11 @@ CSettings& CSettings::Get(void)
 
 void CSettings::SetSetting(const std::string& strName, const void* value)
 {
+  if (strName == SETTING_DEADZONE)
+  {
+    m_deadzone = *static_cast<const float*>(value);
+    dsyslog("Setting \"%s\" set to %f", SETTING_DEADZONE, m_deadzone);
+  }
   if (strName == SETTING_RETROARCH_CONFIG)
   {
     m_bGenerateRetroArchConfigs = *static_cast<const bool*>(value);
