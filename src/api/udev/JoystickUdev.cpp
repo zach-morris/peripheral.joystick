@@ -51,7 +51,9 @@ CJoystickUdev::CJoystickUdev(udev_device* dev, const char* path)
    m_fd(INVALID_FD),
    m_bInitialized(false),
    m_has_set_ff(false),
-   m_effect(-1)
+   m_effect(-1),
+   m_motors(),
+   m_previousMotors()
 {
   for (unsigned int i = 0; i < MOTOR_COUNT; i++)
     m_motors[i] = 0;
@@ -97,6 +99,75 @@ void CJoystickUdev::Deinitialize(void)
   }
 
   CJoystick::Deinitialize();
+}
+
+void CJoystickUdev::ProcessEvents(void)
+{
+  uint32_t oldStrength = static_cast<uint32_t>(m_previousMotors[MOTOR_STRONG]) +
+                         static_cast<uint32_t>(m_previousMotors[MOTOR_WEAK]);
+  uint32_t newStrength = static_cast<uint32_t>(m_motors[MOTOR_STRONG]) +
+                         static_cast<uint32_t>(m_motors[MOTOR_WEAK]);
+
+  bool bWasPlaying = (oldStrength > 0);
+  bool bIsPlaying = (newStrength > 0);
+
+  if (!bWasPlaying && !bIsPlaying)
+  {
+    // Nothing to do
+  }
+  else if (!bWasPlaying && bIsPlaying)
+  {
+    UpdateMotorState();
+
+    // Play effect
+    Play(true);
+  }
+  else if (bWasPlaying && !bIsPlaying)
+  {
+    // Stop the effect
+    Play(false);
+  }
+  else
+  {
+    if (oldStrength != newStrength)
+      UpdateMotorState();
+  }
+
+  m_previousMotors = m_motors;
+}
+
+void CJoystickUdev::Play(bool bPlayStop)
+{
+  struct input_event play = { { } };
+
+  play.type  = EV_FF;
+  play.code  = m_effect;
+  play.value = bPlayStop;
+
+  if (write(m_fd, &play, sizeof(play)) < (ssize_t)sizeof(play))
+    esyslog("[udev]: Failed to play rumble effect on \"%s\"", Name().c_str());
+}
+
+void CJoystickUdev::UpdateMotorState()
+{
+  struct ff_effect e = { };
+
+  int old_effect = m_has_set_ff ? m_effect : -1;
+
+  e.type                      = FF_RUMBLE;
+  e.id                        = old_effect;
+  e.u.rumble.strong_magnitude = m_motors[MOTOR_STRONG];
+  e.u.rumble.weak_magnitude   = m_motors[MOTOR_WEAK];
+
+  if (ioctl(m_fd, EVIOCSFF, &e) < 0)
+  {
+    esyslog("Failed to set rumble effect on \"%s\"", Name().c_str());
+  }
+  else
+  {
+    m_effect     = e.id;
+    m_has_set_ff = true;
+  }
 }
 
 bool CJoystickUdev::ScanEvents(void)
@@ -272,65 +343,7 @@ bool CJoystickUdev::SetMotor(unsigned int motorIndex, float magnitude)
 
   uint16_t strength = std::min(0xffff, static_cast<int>(magnitude * 0xffff));
 
-  bool bChanged = false;
-
-  if (strength != m_motors[motorIndex])
-    bChanged = true;
-
-  if (!bChanged)
-    return true;
-
-  uint32_t oldStrength = static_cast<uint32_t>(m_motors[MOTOR_STRONG]) +
-                         static_cast<uint32_t>(m_motors[MOTOR_WEAK]);
-
   m_motors[motorIndex] = strength;
-
-  uint32_t newStrength = static_cast<uint32_t>(m_motors[MOTOR_STRONG]) +
-                         static_cast<uint32_t>(m_motors[MOTOR_WEAK]);
-
-  if (newStrength > 0)
-  {
-    // Create new or update old playing state
-    struct ff_effect e = { };
-
-    int old_effect = m_has_set_ff ? m_effect : -1;
-
-    e.type                      = FF_RUMBLE;
-    e.id                        = old_effect;
-    e.u.rumble.strong_magnitude = m_motors[MOTOR_STRONG];
-    e.u.rumble.weak_magnitude   = m_motors[MOTOR_WEAK];
-
-    if (ioctl(m_fd, EVIOCSFF, &e) < 0)
-    {
-      esyslog("Failed to set rumble effect on \"%s\"", Name().c_str());
-      return false;
-    }
-
-    m_effect     = e.id;
-    m_has_set_ff = true;
-  }
-
-  bool bWasPlaying = !!oldStrength;
-  bool bIsPlaying = !!newStrength;
-
-  if (bWasPlaying != bIsPlaying)
-  {
-    struct input_event play = { { } };
-
-    play.type  = EV_FF;
-    play.code  = m_effect;
-    play.value = bIsPlaying;
-
-    // udev fails to stop playing if event is written too soon after last ioctl
-    if (!bIsPlaying)
-      usleep(2500);
-
-    if (write(m_fd, &play, sizeof(play)) < (ssize_t)sizeof(play))
-    {
-      esyslog("[udev]: Failed to play rumble effect on \"%s\"", Name().c_str());
-      return false;
-    }
-  }
 
   return true;
 }

@@ -91,6 +91,11 @@ namespace JOYSTICK
     bool SendEvent(const ADDON::PeripheralEvent& event);
 
     /*!
+     * \brief Process events that have arrived since the last call to ProcessEvents()
+     */
+    void ProcessEvents();
+
+    /*!
      * \brief Trigger a scan for joysticks through the callback
      */
     void TriggerScan(void);

@@ -41,6 +41,7 @@
 
 #include "api/Joystick.h"
 
+#include <array>
 #include <linux/input.h>
 #include <sys/types.h>
 
@@ -65,6 +66,7 @@ namespace JOYSTICK
     virtual bool Equals(const CJoystick* rhs) const override;
     virtual bool Initialize(void) override;
     virtual void Deinitialize(void) override;
+    virtual void ProcessEvents(void) override;
 
   protected:
     // implementation of CJoystick
@@ -72,6 +74,9 @@ namespace JOYSTICK
     bool SetMotor(unsigned int motorIndex, float magnitude);
 
   private:
+    void UpdateMotorState();
+    void Play(bool bPlayStop);
+
     struct Axis
     {
       unsigned int  axisIndex;
@@ -93,6 +98,7 @@ namespace JOYSTICK
     // Joystick properties
     std::map<unsigned int, unsigned int> m_button_bind; // Maps keycodes -> button
     std::map<unsigned int, Axis>         m_axes_bind;   // Maps keycodes -> axis and axis info
-    uint16_t                             m_motors[MOTOR_COUNT];
+    std::array<uint16_t, MOTOR_COUNT>    m_motors;
+    std::array<uint16_t, MOTOR_COUNT>    m_previousMotors;
   };
 }

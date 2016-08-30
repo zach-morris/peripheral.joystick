@@ -192,15 +192,19 @@ PERIPHERAL_ERROR GetEvents(unsigned int* event_count, PERIPHERAL_EVENT** events)
   if (!event_count || !events)
     return PERIPHERAL_ERROR_INVALID_PARAMETERS;
 
+  PERIPHERAL_ERROR result = PERIPHERAL_ERROR_FAILED;
+
   std::vector<ADDON::PeripheralEvent> peripheralEvents;
   if (CJoystickManager::Get().GetEvents(peripheralEvents))
   {
     *event_count = peripheralEvents.size();
     ADDON::PeripheralEvents::ToStructs(peripheralEvents, events);
-    return PERIPHERAL_NO_ERROR;
+    result = PERIPHERAL_NO_ERROR;
   }
 
-  return PERIPHERAL_ERROR_FAILED;
+  CJoystickManager::Get().ProcessEvents();
+
+  return result;
 }
 
 void FreeEvents(unsigned int event_count, PERIPHERAL_EVENT* events)

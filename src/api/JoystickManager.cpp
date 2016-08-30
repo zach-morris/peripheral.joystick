@@ -266,6 +266,14 @@ bool CJoystickManager::SendEvent(const ADDON::PeripheralEvent& event)
   return bHandled;
 }
 
+void CJoystickManager::ProcessEvents()
+{
+  CLockObject lock(m_joystickMutex);
+
+  for (const JoystickPtr& joystick : m_joysticks)
+    joystick->ProcessEvents();
+}
+
 void CJoystickManager::TriggerScan(void)
 {
   if (m_scanner)
