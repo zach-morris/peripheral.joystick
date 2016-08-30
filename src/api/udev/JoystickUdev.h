@@ -41,6 +41,8 @@
 
 #include "api/Joystick.h"
 
+#include "p8-platform/threads/mutex.h"
+
 #include <array>
 #include <linux/input.h>
 #include <sys/types.h>
@@ -74,7 +76,7 @@ namespace JOYSTICK
     bool SetMotor(unsigned int motorIndex, float magnitude);
 
   private:
-    void UpdateMotorState();
+    void UpdateMotorState(const std::array<uint16_t, MOTOR_COUNT>& motors);
     void Play(bool bPlayStop);
 
     struct Axis
@@ -100,5 +102,6 @@ namespace JOYSTICK
     std::map<unsigned int, Axis>         m_axes_bind;   // Maps keycodes -> axis and axis info
     std::array<uint16_t, MOTOR_COUNT>    m_motors;
     std::array<uint16_t, MOTOR_COUNT>    m_previousMotors;
+    P8PLATFORM::CMutex                   m_mutex;
   };
 }

@@ -103,10 +103,21 @@ void CJoystickUdev::Deinitialize(void)
 
 void CJoystickUdev::ProcessEvents(void)
 {
-  uint32_t oldStrength = static_cast<uint32_t>(m_previousMotors[MOTOR_STRONG]) +
-                         static_cast<uint32_t>(m_previousMotors[MOTOR_WEAK]);
-  uint32_t newStrength = static_cast<uint32_t>(m_motors[MOTOR_STRONG]) +
-                         static_cast<uint32_t>(m_motors[MOTOR_WEAK]);
+  using namespace P8PLATFORM;
+
+  std::array<uint16_t, MOTOR_COUNT> motors;
+  std::array<uint16_t, MOTOR_COUNT> previousMotors;
+
+  {
+    CLockObject lock(m_mutex);
+    motors = m_motors;
+    previousMotors = m_previousMotors;
+  }
+
+  uint32_t oldStrength = static_cast<uint32_t>(previousMotors[MOTOR_STRONG]) +
+                         static_cast<uint32_t>(previousMotors[MOTOR_WEAK]);
+  uint32_t newStrength = static_cast<uint32_t>(motors[MOTOR_STRONG]) +
+                         static_cast<uint32_t>(motors[MOTOR_WEAK]);
 
   bool bWasPlaying = (oldStrength > 0);
   bool bIsPlaying = (newStrength > 0);
@@ -117,7 +128,7 @@ void CJoystickUdev::ProcessEvents(void)
   }
   else if (!bWasPlaying && bIsPlaying)
   {
-    UpdateMotorState();
+    UpdateMotorState(motors);
 
     // Play effect
     Play(true);
@@ -130,10 +141,13 @@ void CJoystickUdev::ProcessEvents(void)
   else
   {
     if (oldStrength != newStrength)
-      UpdateMotorState();
+      UpdateMotorState(motors);
   }
 
-  m_previousMotors = m_motors;
+  {
+    CLockObject lock(m_mutex);
+    m_previousMotors = motors;
+  }
 }
 
 void CJoystickUdev::Play(bool bPlayStop)
@@ -148,7 +162,7 @@ void CJoystickUdev::Play(bool bPlayStop)
     esyslog("[udev]: Failed to play rumble effect on \"%s\"", Name().c_str());
 }
 
-void CJoystickUdev::UpdateMotorState()
+void CJoystickUdev::UpdateMotorState(const std::array<uint16_t, MOTOR_COUNT>& motors)
 {
   struct ff_effect e = { };
 
@@ -156,8 +170,8 @@ void CJoystickUdev::UpdateMotorState()
 
   e.type                      = FF_RUMBLE;
   e.id                        = old_effect;
-  e.u.rumble.strong_magnitude = m_motors[MOTOR_STRONG];
-  e.u.rumble.weak_magnitude   = m_motors[MOTOR_WEAK];
+  e.u.rumble.strong_magnitude = motors[MOTOR_STRONG];
+  e.u.rumble.weak_magnitude   = motors[MOTOR_WEAK];
 
   if (ioctl(m_fd, EVIOCSFF, &e) < 0)
   {
@@ -332,7 +346,9 @@ bool CJoystickUdev::GetProperties()
 
 bool CJoystickUdev::SetMotor(unsigned int motorIndex, float magnitude)
 {
-   if (!m_bInitialized)
+  using namespace P8PLATFORM;
+
+  if (!m_bInitialized)
     return false;
 
   if (motorIndex >= MotorCount() || magnitude < 0.0f)
@@ -342,6 +358,8 @@ bool CJoystickUdev::SetMotor(unsigned int motorIndex, float magnitude)
     magnitude = 0.0f;
 
   uint16_t strength = std::min(0xffff, static_cast<int>(magnitude * 0xffff));
+
+  CLockObject lock(m_mutex);
 
   m_motors[motorIndex] = strength;
 
