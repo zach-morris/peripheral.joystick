@@ -23,9 +23,11 @@
 #include "log/Log.h"
 
 #include <algorithm>
+#include <errno.h>
 #include <fcntl.h>
 #include <libudev.h>
 #include <limits.h>
+#include <string.h>
 #include <sys/ioctl.h>
 #include <sys/stat.h>
 #include <unistd.h>
@@ -50,14 +52,10 @@ CJoystickUdev::CJoystickUdev(udev_device* dev, const char* path)
    m_deviceNumber(0),
    m_fd(INVALID_FD),
    m_bInitialized(false),
-   m_has_set_ff(false),
    m_effect(-1),
    m_motors(),
    m_previousMotors()
 {
-  for (unsigned int i = 0; i < MOTOR_COUNT; i++)
-    m_motors[i] = 0;
-
   // Must initialize in the constructor to fill out joystick properties
   Initialize();
 }
@@ -110,7 +108,7 @@ void CJoystickUdev::ProcessEvents(void)
 
   {
     CLockObject lock(m_mutex);
-    motors = m_motors;
+    motors         = m_motors;
     previousMotors = m_previousMotors;
   }
 
@@ -159,28 +157,30 @@ void CJoystickUdev::Play(bool bPlayStop)
   play.value = bPlayStop;
 
   if (write(m_fd, &play, sizeof(play)) < (ssize_t)sizeof(play))
-    esyslog("[udev]: Failed to play rumble effect on \"%s\"", Name().c_str());
+    esyslog("[udev]: Failed to play rumble effect %d on \"%s\" - %s", m_effect, Name().c_str(), strerror(errno));
+
+  if (!bPlayStop)
+    m_effect = -1;
 }
 
 void CJoystickUdev::UpdateMotorState(const std::array<uint16_t, MOTOR_COUNT>& motors)
 {
   struct ff_effect e = { };
 
-  int old_effect = m_has_set_ff ? m_effect : -1;
-
   e.type                      = FF_RUMBLE;
-  e.id                        = old_effect;
+  e.id                        = m_effect;
   e.u.rumble.strong_magnitude = motors[MOTOR_STRONG];
   e.u.rumble.weak_magnitude   = motors[MOTOR_WEAK];
 
   if (ioctl(m_fd, EVIOCSFF, &e) < 0)
   {
-    esyslog("Failed to set rumble effect on \"%s\"", Name().c_str());
+    esyslog("Failed to set rumble effect %d (0x%04x, 0x%04x) on \"%s\" - %s",
+        e.id, e.u.rumble.strong_magnitude, e.u.rumble.weak_magnitude,
+        Name().c_str(), strerror(errno));
   }
   else
   {
-    m_effect     = e.id;
-    m_has_set_ff = true;
+    m_effect = e.id;
   }
 }
 

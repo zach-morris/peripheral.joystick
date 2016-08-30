@@ -94,7 +94,6 @@ namespace JOYSTICK
     dev_t        m_deviceNumber;
     int          m_fd;
     bool         m_bInitialized;
-    bool         m_has_set_ff;
     int          m_effect;
 
     // Joystick properties
