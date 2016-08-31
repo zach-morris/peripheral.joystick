@@ -154,7 +154,27 @@ bool CJustABunchOfFiles::MapFeatures(const ADDON::Joystick& driverInfo,
   }
 
   if (resource)
-    return resource->MapFeatures(controllerId, features);
+  {
+    resource->MapFeatures(controllerId, features);
+    return true;
+  }
+
+  return false;
+}
+
+bool CJustABunchOfFiles::SaveButtonMap(const ADDON::Joystick& driverInfo)
+{
+  if (!m_bReadWrite)
+    return false;
+
+  CDevice device(driverInfo);
+
+  CLockObject lock(m_mutex);
+
+  CButtonMap* resource = m_resources.GetResource(device);
+
+  if (resource)
+    return resource->SaveButtonMap();
 
   return false;
 }
@@ -174,7 +194,6 @@ bool CJustABunchOfFiles::ResetButtonMap(const ADDON::Joystick& driverInfo, const
     return resource->ResetButtonMap(controllerId);
 
   return false;
-
 }
 
 void CJustABunchOfFiles::IndexDirectory(const std::string& path, unsigned int folderDepth)

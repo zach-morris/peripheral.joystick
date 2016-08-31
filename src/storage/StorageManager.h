@@ -86,11 +86,20 @@ namespace JOYSTICK
      * \param controller_id The game controller profile being updated
      * \param features      The array of features and their driver primitives
      *
-     * \return true if features were updated in a storage backend
+     * \return true if features were mapped in a storage backend
      */
     bool MapFeatures(const ADDON::Joystick& joystick,
                      const std::string& strDeviceId,
                      const FeatureVector& features);
+
+    /*!
+     * \brief Save the button map for the specified device
+     *
+     * \param deviceName The name of the device to reset
+     *
+     * \return true if the underlying storage was modified, false otherwise
+     */
+    bool SaveButtonMap(const ADDON::Joystick& joystick);
 
     /*!
      * \brief Reset the button map for the specified device and controller profile
