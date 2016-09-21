@@ -286,7 +286,7 @@ void SaveButtonMap(const JOYSTICK_INFO* joystick)
 
   ADDON::Joystick addonJoystick(*joystick);
 
-  if (CStorageManager::Get().SaveButtonMap(addonJoystick));
+  if (CStorageManager::Get().SaveButtonMap(addonJoystick))
     PERIPHERAL->RefreshButtonMaps(addonJoystick.Name());
 }
 
