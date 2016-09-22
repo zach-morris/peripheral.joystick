@@ -30,7 +30,8 @@
 #endif
 #if defined(HAVE_LINUX_JOYSTICK)
   #include "linux/JoystickInterfaceLinux.h"
-#elif defined(HAVE_SDL)
+#endif
+#if defined(HAVE_SDL)
   #include "sdl/JoystickInterfaceSDL.h"
 #endif
 #if defined(HAVE_COCOA)
@@ -104,19 +105,24 @@ bool CJoystickManager::Initialize(IScannerCallback* scanner)
 
   m_scanner = scanner;
 
+  // Windows
 #if defined(HAVE_DIRECT_INPUT)
   m_interfaces.push_back(new CJoystickInterfaceDirectInput);
 #endif
 #if defined(HAVE_XINPUT)
   m_interfaces.push_back(new CJoystickInterfaceXInput);
 #endif
-#if defined(HAVE_UDEV)
+
+  // Linux
+#if defined(HAVE_LINUX_JOYSTICK)
+  m_interfaces.push_back(new CJoystickInterfaceLinux);
+#elif defined(HAVE_UDEV)
   m_interfaces.push_back(new CJoystickInterfaceUdev);
 #elif defined(HAVE_SDL)
   m_interfaces.push_back(new CJoystickInterfaceSDL);
-#elif defined(HAVE_LINUX_JOYSTICK)
-  m_interfaces.push_back(new CJoystickInterfaceLinux);
 #endif
+
+  // OSX
 #if defined(HAVE_COCOA)
   m_interfaces.push_back(new CJoystickInterfaceCocoa);
 #endif
