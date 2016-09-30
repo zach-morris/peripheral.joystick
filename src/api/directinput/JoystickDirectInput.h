@@ -33,7 +33,7 @@ namespace JOYSTICK
                          LPDIRECTINPUTDEVICE8           joystickDevice,
                          const std::string&             strName);
 
-    virtual ~CJoystickDirectInput(void) { }
+    virtual ~CJoystickDirectInput(void);
 
     virtual bool Equals(const CJoystick* rhs) const override;
 
