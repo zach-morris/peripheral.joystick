@@ -142,6 +142,16 @@ BOOL CALLBACK CJoystickInterfaceDirectInput::EnumJoysticksCallback(const DIDEVIC
     return DIENUM_CONTINUE;
   }
 
+  // This will be done automatically when we're in the foreground but
+  // let's do it here to check that we can acquire it and that no other
+  // app has it in exclusive mode
+  hr = pJoystick->Acquire();
+  if (FAILED(hr))
+  {
+    esyslog("%s: Failed to acquire device on: %s", __FUNCTION__, pdidInstance->tszProductName);
+    return DIENUM_CONTINUE;
+  }
+
   const std::string strName = pdidInstance->tszProductName ? pdidInstance->tszProductName : "";
 
   context->AddScanResult(JoystickPtr(new CJoystickDirectInput(pdidInstance->guidInstance, pJoystick, strName)));

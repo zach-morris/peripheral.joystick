@@ -47,6 +47,9 @@ CJoystickDirectInput::CJoystickDirectInput(GUID                           device
 
 CJoystickDirectInput::~CJoystickDirectInput()
 {
+  if (m_joystickDevice)
+    m_joystickDevice->Unacquire();
+
   SAFE_RELEASE(m_joystickDevice);
 }
 
