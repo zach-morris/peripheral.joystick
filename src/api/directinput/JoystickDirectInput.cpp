@@ -45,6 +45,14 @@ CJoystickDirectInput::CJoystickDirectInput(GUID                           device
   SetName(strName);
 }
 
+CJoystickDirectInput::~CJoystickDirectInput()
+{
+  if (m_joystickDevice)
+    m_joystickDevice->Unacquire();
+
+  SAFE_RELEASE(m_joystickDevice);
+}
+
 bool CJoystickDirectInput::Equals(const CJoystick* rhs) const
 {
   if (rhs == nullptr)
