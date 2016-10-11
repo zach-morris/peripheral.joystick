@@ -286,8 +286,7 @@ void SaveButtonMap(const JOYSTICK_INFO* joystick)
 
   ADDON::Joystick addonJoystick(*joystick);
 
-  if (CStorageManager::Get().SaveButtonMap(addonJoystick))
-    PERIPHERAL->RefreshButtonMaps(addonJoystick.Name());
+  CStorageManager::Get().SaveButtonMap(addonJoystick);
 }
 
 void ResetButtonMap(const JOYSTICK_INFO* joystick, const char* controller_id)
@@ -297,8 +296,7 @@ void ResetButtonMap(const JOYSTICK_INFO* joystick, const char* controller_id)
 
   ADDON::Joystick addonJoystick(*joystick);
 
-  if (CStorageManager::Get().ResetButtonMap(addonJoystick, controller_id))
-    PERIPHERAL->RefreshButtonMaps(addonJoystick.Name());
+  CStorageManager::Get().ResetButtonMap(addonJoystick, controller_id);
 }
 
 void PowerOffJoystick(unsigned int index)
