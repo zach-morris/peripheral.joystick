@@ -65,7 +65,7 @@ void CButtonMap::MapFeatures(const std::string& controllerId, const FeatureVecto
   for (auto& newFeature : features)
   {
     myFeatures.erase(std::remove_if(myFeatures.begin(), myFeatures.end(),
-      [newFeature, controllerId](const ADDON::JoystickFeature& feature)
+      [&newFeature, &controllerId](const ADDON::JoystickFeature& feature)
       {
         if (feature.Name() == newFeature.Name())
         {
@@ -192,7 +192,7 @@ void CButtonMap::Sanitize(const std::string& controllerId, FeatureVector& featur
 
   // Erase invalid features
   features.erase(std::remove_if(features.begin(), features.end(),
-    [controllerId](const ADDON::JoystickFeature& feature)
+    [&controllerId](const ADDON::JoystickFeature& feature)
     {
       auto& primitives = feature.Primitives();
 
