@@ -65,9 +65,14 @@ void CButtonMap::MapFeatures(const std::string& controllerId, const FeatureVecto
   for (auto& newFeature : features)
   {
     myFeatures.erase(std::remove_if(myFeatures.begin(), myFeatures.end(),
-      [newFeature](const ADDON::JoystickFeature& feature)
+      [newFeature, controllerId](const ADDON::JoystickFeature& feature)
       {
-        return feature.Name() == newFeature.Name();
+        if (feature.Name() == newFeature.Name())
+        {
+          dsyslog("%s: Overwriting feature \"%s\"", controllerId.c_str(), feature.Name().c_str());
+          return true;
+        }
+        return false;
       }), myFeatures.end());
   }
 
