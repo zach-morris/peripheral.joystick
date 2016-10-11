@@ -313,13 +313,12 @@ bool CButtonMapXml::Serialize(const FeatureVector& features, TiXmlElement* pElem
 
 bool CButtonMapXml::IsValid(const ADDON::JoystickFeature& feature)
 {
-  auto itValid = std::find_if(feature.Primitives().begin(), feature.Primitives().end(),
-    [](const ADDON::DriverPrimitive& primitive)
-    {
-      return primitive.Type() != JOYSTICK_DRIVER_PRIMITIVE_TYPE_UNKNOWN;
-    });
-
-  return itValid != feature.Primitives().end();
+  for (auto primitive : feature.Primitives())
+  {
+    if (primitive.Type() != JOYSTICK_DRIVER_PRIMITIVE_TYPE_UNKNOWN)
+      return true;
+  }
+  return false;
 }
 
 bool CButtonMapXml::SerializePrimitiveTag(TiXmlElement* pElement, const ADDON::DriverPrimitive& primitive, const char* tagName)
