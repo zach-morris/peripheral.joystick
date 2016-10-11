@@ -74,7 +74,6 @@ bool CControllerTransformer::AddControllerMap(const std::string& controllerFrom,
       {
         if (fromFeature.Type() == feature.Type())
         {
-          return fromFeature.Primitives() == feature.Primitives();
           switch (feature.Type())
           {
           case JOYSTICK_FEATURE_TYPE_SCALAR:
