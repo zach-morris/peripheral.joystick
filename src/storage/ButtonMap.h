@@ -64,5 +64,6 @@ namespace JOYSTICK
 
   private:
     int64_t m_timestamp;
+    bool    m_bModified;
   };
 }

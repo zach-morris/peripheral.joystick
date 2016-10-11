@@ -35,14 +35,16 @@ using namespace JOYSTICK;
 CButtonMap::CButtonMap(const std::string& strResourcePath) :
   m_strResourcePath(strResourcePath),
   m_device(std::move(std::make_shared<CDevice>())),
-  m_timestamp(-1)
+  m_timestamp(-1),
+  m_bModified(false)
 {
 }
 
 CButtonMap::CButtonMap(const std::string& strResourcePath, const DevicePtr& device) :
   m_strResourcePath(strResourcePath),
   m_device(device),
-  m_timestamp(-1)
+  m_timestamp(-1),
+  m_bModified(false)
 {
 }
 
@@ -53,7 +55,9 @@ bool CButtonMap::IsValid(void) const
 
 const ButtonMap& CButtonMap::GetButtonMap()
 {
-  Refresh();
+  if (!m_bModified)
+    Refresh();
+
   return m_buttonMap;
 }
 
@@ -85,6 +89,8 @@ void CButtonMap::MapFeatures(const std::string& controllerId, const FeatureVecto
     {
       return lhs.Name() < rhs.Name();
     });
+
+  m_bModified = true;
 }
 
 bool CButtonMap::SaveButtonMap()
@@ -92,6 +98,7 @@ bool CButtonMap::SaveButtonMap()
   if (Save())
   {
     m_timestamp = P8PLATFORM::GetTimeMs();
+    m_bModified = false;
     return true;
   }
 
