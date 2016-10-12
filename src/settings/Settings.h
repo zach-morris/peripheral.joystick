@@ -31,8 +31,16 @@ namespace JOYSTICK
   public:
     static CSettings& Get(void);
 
+    /*!
+     * \brief Set the value of a setting. Called by the frontend.
+     */
     void SetSetting(const std::string& strName, const void* value);
 
+    /*!
+     * \brief Check if the settings have been initialized
+     *
+     * This will return true if SetSetting() has been called at least once.
+     */
     bool IsInitialized(void) const { return m_bInitialized; }
 
     /*!
