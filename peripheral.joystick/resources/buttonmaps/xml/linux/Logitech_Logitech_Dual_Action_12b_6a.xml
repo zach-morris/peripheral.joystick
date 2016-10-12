@@ -21,7 +21,7 @@
                 <up axis="-3" />
                 <down axis="+3" />
                 <right axis="+2" />
-                <left button="2" />
+                <left axis="-2" />
             </feature>
             <feature name="righttrigger" button="5" />
             <feature name="start" button="9" />

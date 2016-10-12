@@ -69,7 +69,7 @@
             <feature name="left" axis="-6" />
             <feature name="leftbumper" button="4" />
             <feature name="right" axis="+6" />
-            <feature name="rightbumper" button="+4" />
+            <feature name="rightbumper" button="5" />
             <feature name="start" button="7" />
             <feature name="up" axis="-7" />
             <feature name="z" axis="+5" />

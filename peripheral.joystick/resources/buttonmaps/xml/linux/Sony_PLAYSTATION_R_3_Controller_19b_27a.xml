@@ -67,7 +67,7 @@
             <feature name="cup" axis="-3" />
             <feature name="down" button="6" />
             <feature name="left" button="7" />
-            <feature name="leftbumper" axis="10" />
+            <feature name="leftbumper" button="10" />
             <feature name="right" button="5" />
             <feature name="rightbumper" button="11" />
             <feature name="start" button="3" />
@@ -89,7 +89,7 @@
             <feature name="cross" button="14" />
             <feature name="down" button="6" />
             <feature name="left" button="7" />
-            <feature name="leftbumper" axis="10" />
+            <feature name="leftbumper" button="10" />
             <feature name="lefttrigger" button="8" />
             <feature name="right" button="5" />
             <feature name="rightbumper" button="11" />
@@ -105,7 +105,7 @@
             <feature name="b" button="14" />
             <feature name="down" button="6" />
             <feature name="left" button="7" />
-            <feature name="leftbumper" axis="10" />
+            <feature name="leftbumper" button="10" />
             <feature name="right" button="5" />
             <feature name="rightbumper" button="11" />
             <feature name="select" button="0" />
