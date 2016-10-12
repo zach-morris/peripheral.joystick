@@ -19,6 +19,7 @@
  */
 
 #include "Device.h"
+
 using namespace JOYSTICK;
 
 CDevice::CDevice(const ADDON::Joystick& joystick) :
