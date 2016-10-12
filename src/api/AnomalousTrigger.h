@@ -20,6 +20,11 @@
 
 #include "IJoystickAxisFilter.h"
 
+namespace ADDON
+{
+  class Joystick;
+}
+
 namespace JOYSTICK
 {
   /*!
@@ -48,7 +53,7 @@ namespace JOYSTICK
   class CAnomalousTrigger : public IJoystickAxisFilter
   {
   public:
-    CAnomalousTrigger(unsigned int axisIndex);
+    CAnomalousTrigger(unsigned int axisIndex, const ADDON::Joystick* joystickInfo);
 
     // implementation of IJoystickAxisFilter
     virtual float Filter(float value) override;
@@ -56,7 +61,7 @@ namespace JOYSTICK
     /*!
      * \brief Has this axis been detected as an anomalous trigger
      */
-    bool IsAnomalousTrigger(void) const;
+    bool IsAnomalousTriggerDetected(void) const;
 
     unsigned int AxisIndex(void) const { return m_axisIndex; }
 
@@ -64,7 +69,11 @@ namespace JOYSTICK
 
     unsigned int Range(void) const { return GetRange(m_range); }
 
+    void SetTrigger(bool bIsTrigger) { m_bTrigger = bIsTrigger; }
+
   private:
+    void UpdateState(float value);
+
     enum AXIS_STATE
     {
       /*!
@@ -109,15 +118,21 @@ namespace JOYSTICK
     /*!
      * \brief Helper functions
      */
+    static float FilterAnomalousTrigger(float value, int center, unsigned int range);
     static int GetCenter(AXIS_CENTER center);
     static unsigned int GetRange(TRIGGER_RANGE range);
 
-    const unsigned int m_axisIndex;
+    // Construction parameters
+    const unsigned int           m_axisIndex;
+    const ADDON::Joystick* const m_joystickInfo;
+
+    // Detected trigger parameters
     AXIS_STATE         m_state;
     AXIS_CENTER        m_center;
     TRIGGER_RANGE      m_range;
     bool               m_bCenterSeen;
     bool               m_bPositiveOneSeen;
     bool               m_bNegativeOneSeen;
+    bool               m_bTrigger; // Set to false if this axis is definitely not a trigger
   };
 }

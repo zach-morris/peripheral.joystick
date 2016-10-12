@@ -84,7 +84,7 @@ bool CJoystick::Initialize(void)
   // Filter for anomalous triggers
   m_axisFilters.reserve(AxisCount());
   for (unsigned int i = 0; i < AxisCount(); i++)
-    m_axisFilters.push_back(new CAnomalousTrigger(i));
+    m_axisFilters.push_back(new CAnomalousTrigger(i, this));
 
   return true;
 }
@@ -148,7 +148,7 @@ std::vector<CAnomalousTrigger*> CJoystick::GetAnomalousTriggers()
     if (!trigger)
       continue;
 
-    if (trigger->IsAnomalousTrigger())
+    if (trigger->IsAnomalousTriggerDetected())
       result.push_back(trigger);
   }
 

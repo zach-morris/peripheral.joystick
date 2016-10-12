@@ -15,33 +15,37 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this Program; see the file COPYING.  If not, see
  *  <http://www.gnu.org/licenses/>.
+ *
  */
 #pragma once
 
-#include <map>
-#include <memory>
-#include <set>
-#include <vector>
+#include "StorageTypes.h"
 
 namespace JOYSTICK
 {
   class CDevice;
-  typedef std::shared_ptr<CDevice> DevicePtr;
-  typedef std::vector<DevicePtr>   DeviceVector;
-  typedef std::set<DevicePtr>      DeviceSet;
 
-  class IDatabase;
-  typedef std::shared_ptr<IDatabase> DatabasePtr;
-  typedef std::vector<DatabasePtr>   DatabaseVector;
-
-  typedef unsigned int AxisIndex;
-
-  struct AxisProperties
+  class CDeviceConfiguration
   {
-    unsigned int index;
-    int center;
-    unsigned int range;
-  };
+  public:
+    CDeviceConfiguration(const CDevice* parent);
+    ~CDeviceConfiguration(void) = default;
 
-  typedef std::map<AxisIndex, AxisProperties> AxisConfiguration;
+    void Reset(void);
+
+    const AxisConfiguration& Axes(void) const { return m_axes; }
+
+    bool GetAxis(unsigned int axisIndex, AxisProperties& axisProps) const;
+
+    void LoadAxis(unsigned int axisIndex);
+
+    void SetAxis(const AxisProperties& axisProps);
+
+  private:
+    // Construction parameters
+    const CDevice* const m_parent;
+
+    // Configuration parameters
+    AxisConfiguration m_axes;
+  };
 }

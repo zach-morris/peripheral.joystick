@@ -19,16 +19,25 @@
  */
 #pragma once
 
+#include "storage/StorageTypes.h"
+
 class TiXmlElement;
 
 namespace JOYSTICK
 {
   class CDevice;
+  class CDeviceConfiguration;
 
   class CDeviceXml
   {
   public:
     static bool Serialize(const CDevice& record, TiXmlElement* pElement);
     static bool Deserialize(const TiXmlElement* pElement, CDevice& record);
+
+    static bool SerializeConfig(const CDeviceConfiguration& config, TiXmlElement* pElement);
+    static bool DeserializeConfig(const TiXmlElement* pElement, CDeviceConfiguration& config);
+
+    static bool SerializeAxis(const AxisProperties& axisProps, TiXmlElement* pElement);
+    static bool DeserializeAxis(const TiXmlElement* pElement, AxisProperties& axisProps);
   };
 }

@@ -23,6 +23,8 @@
 #include "buttonmapper/ButtonMapTypes.h"
 #include "buttonmapper/JoystickFamily.h"
 
+#include "kodi_peripheral_types.h"
+
 #include <memory>
 #include <string>
 

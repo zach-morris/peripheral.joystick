@@ -20,22 +20,38 @@
 #include "AnomalousTrigger.h"
 #include "log/Log.h"
 
+#include <assert.h>
+
 using namespace JOYSTICK;
 
 #define ANOMOLOUS_MAGNITUDE  0.5f
 
-CAnomalousTrigger::CAnomalousTrigger(unsigned int axisIndex)
+CAnomalousTrigger::CAnomalousTrigger(unsigned int axisIndex, const ADDON::Joystick* joystickInfo)
   : m_axisIndex(axisIndex),
+    m_joystickInfo(joystickInfo),
     m_state(STATE_UNKNOWN),
     m_center(CENTER_ZERO),
     m_range(TRIGGER_RANGE_HALF),
     m_bCenterSeen(false),
     m_bPositiveOneSeen(false),
-    m_bNegativeOneSeen(false)
+    m_bNegativeOneSeen(false),
+    m_bTrigger(true)
 {
+  assert(m_joystickInfo != nullptr);
 }
 
 float CAnomalousTrigger::Filter(float value)
+{
+  UpdateState(value);
+
+  // Filter anomalous triggers
+  if (IsAnomalousTriggerDetected() && m_bTrigger)
+    value = FilterAnomalousTrigger(value, GetCenter(m_center), GetRange(m_range));
+
+  return value;
+}
+
+void CAnomalousTrigger::UpdateState(float value)
 {
   // First, check for discrete D-pad
   if (m_state == STATE_UNKNOWN)
@@ -70,44 +86,43 @@ float CAnomalousTrigger::Filter(float value)
     else
       m_center = CENTER_ZERO;
 
-    if (IsAnomalousTrigger())
+    if (IsAnomalousTriggerDetected())
       dsyslog("Anomalous trigger detected on axis %u (initial value = %f)", m_axisIndex, value);
 
     m_state = STATE_CENTER_KNOWN;
   }
 
-  // Process anomalous trigger
-  if (IsAnomalousTrigger())
+  // Adjust range if value enters opposite semiaxis
+  if (m_state == STATE_CENTER_KNOWN)
   {
-    // Adjust range if value enters opposite semiaxis
-    if (m_state == STATE_CENTER_KNOWN)
+    if (m_center == CENTER_NEGATIVE_ONE && value > 0.0f)
     {
-      if (m_center == CENTER_NEGATIVE_ONE && value > 0.0f)
-      {
-        m_range = TRIGGER_RANGE_FULL;
-        m_state = STATE_RANGE_KNOWN;
-      }
-      else if (m_center == CENTER_POSITIVE_ONE && value < 0.0f)
-      {
-        m_range = TRIGGER_RANGE_FULL;
-        m_state = STATE_RANGE_KNOWN;
-      }
+      m_range = TRIGGER_RANGE_FULL;
+      m_state = STATE_RANGE_KNOWN;
     }
-
-    // Translate center to zero
-    value = value - GetCenter(m_center);
-
-    // Adjust range to lie in an interval of length 1
-    if (m_range == TRIGGER_RANGE_FULL)
-      value /= 2;
+    else if (m_center == CENTER_POSITIVE_ONE && value < 0.0f)
+    {
+      m_range = TRIGGER_RANGE_FULL;
+      m_state = STATE_RANGE_KNOWN;
+    }
   }
-
-  return value;
 }
 
-bool CAnomalousTrigger::IsAnomalousTrigger(void) const
+bool CAnomalousTrigger::IsAnomalousTriggerDetected(void) const
 {
   return m_center != CENTER_ZERO;
+}
+
+float CAnomalousTrigger::FilterAnomalousTrigger(float value, int center, unsigned int range)
+{
+  // Translate center to zero
+  value -= center;
+
+  // Adjust range to lie in an interval of length 1
+  if (range > 1)
+    value /= range;
+
+  return value;
 }
 
 int CAnomalousTrigger::GetCenter(AXIS_CENTER center)

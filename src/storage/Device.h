@@ -19,6 +19,8 @@
  */
 #pragma once
 
+#include "DeviceConfiguration.h"
+
 #include "kodi_peripheral_utils.hpp"
 
 namespace JOYSTICK
@@ -48,8 +50,10 @@ namespace JOYSTICK
   class CDevice : public ADDON::Joystick
   {
   public:
-    CDevice(void) { }
+    CDevice(void);
     CDevice(const ADDON::Joystick& joystick);
+
+    void Reset(void);
 
     /*!
      * \brief Define a comparison operator for driver records
@@ -76,5 +80,11 @@ namespace JOYSTICK
      * \brief Merge valid (known) properties of given record into this record
      */
     void MergeProperties(const CDevice& record);
+
+    CDeviceConfiguration& Configuration(void) { return m_configuration; }
+    const CDeviceConfiguration& Configuration(void) const { return m_configuration; }
+
+  private:
+    CDeviceConfiguration m_configuration;
   };
 }

@@ -46,6 +46,7 @@ set(JOYSTICK_SOURCES src/addon.cpp
                      src/settings/Settings.cpp
                      src/storage/ButtonMap.cpp
                      src/storage/Device.cpp
+                     src/storage/DeviceConfiguration.cpp
                      src/storage/JustABunchOfFiles.cpp
                      src/storage/StorageManager.cpp
                      src/storage/StorageUtils.cpp

@@ -20,13 +20,16 @@
 
 #include "ButtonMap.h"
 #include "Device.h"
+#include "DeviceConfiguration.h"
+#include "StorageManager.h"
+#include "StorageUtils.h"
 #include "log/Log.h"
-#include "storage/StorageUtils.h"
 
 #include "kodi_peripheral_utils.hpp"
 #include "p8-platform/util/timeutils.h"
 
 #include <algorithm>
+#include <set>
 
 using namespace JOYSTICK;
 
@@ -78,6 +81,23 @@ void CButtonMap::MapFeatures(const std::string& controllerId, const FeatureVecto
         }
         return false;
       }), myFeatures.end());
+  }
+
+  // Update axis configurations
+  for (auto& newFeature : features)
+  {
+    std::set<unsigned int> updatedAxes;
+    for (auto& primitive : newFeature.Primitives())
+    {
+      if (primitive.Type() == JOYSTICK_DRIVER_PRIMITIVE_TYPE_SEMIAXIS)
+        updatedAxes.insert(primitive.DriverIndex());
+    }
+
+    // TODO
+    //JOYSTICK_FEATURE_CATEGORY category = CStorageManager::Get().GetFeatureCategory(controllerId, newFeature.Name());
+
+    for (unsigned int axis : updatedAxes)
+      m_device->Configuration().LoadAxis(axis);
   }
 
   myFeatures.insert(myFeatures.begin(), features.begin(), features.end());
@@ -203,7 +223,7 @@ void CButtonMap::Sanitize(const std::string& controllerId, FeatureVector& featur
     {
       auto& primitives = feature.Primitives();
 
-      // Find invalid primitive
+      // Find valid primitive
       auto it = std::find_if(primitives.begin(), primitives.end(),
         [](const ADDON::DriverPrimitive& primitive)
         {

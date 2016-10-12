@@ -22,9 +22,21 @@
 
 using namespace JOYSTICK;
 
-CDevice::CDevice(const ADDON::Joystick& joystick) :
-  ADDON::Joystick(joystick)
+CDevice::CDevice(void) :
+  m_configuration(this)
 {
+}
+
+CDevice::CDevice(const ADDON::Joystick& joystick) :
+  ADDON::Joystick(joystick),
+  m_configuration(this)
+{
+}
+
+void CDevice::Reset(void)
+{
+  Joystick::operator=(ADDON::Joystick());
+  m_configuration.Reset();
 }
 
 bool CDevice::operator==(const CDevice& rhs) const
