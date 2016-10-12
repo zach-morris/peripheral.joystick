@@ -43,8 +43,6 @@ namespace JOYSTICK
     virtual bool ScanEvents(void) override;
 
   private:
-    static BOOL CALLBACK EnumObjectsCallback(const DIDEVICEOBJECTINSTANCE *pdidoi, VOID *pContext);
-
     GUID m_deviceGuid;
     LPDIRECTINPUTDEVICE8 m_joystickDevice;
   };
