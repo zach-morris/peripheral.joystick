@@ -60,7 +60,7 @@ namespace JOYSTICK
 
     unsigned int AxisIndex(void) const { return m_axisIndex; }
 
-    unsigned int Center(void) const { return GetCenter(m_center); }
+    int Center(void) const { return GetCenter(m_center); }
 
     unsigned int Range(void) const { return GetRange(m_range); }
 
