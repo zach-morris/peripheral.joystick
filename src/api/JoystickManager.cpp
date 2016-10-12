@@ -31,9 +31,6 @@
 #if defined(HAVE_LINUX_JOYSTICK)
   #include "linux/JoystickInterfaceLinux.h"
 #endif
-#if defined(HAVE_SDL)
-  #include "sdl/JoystickInterfaceSDL.h"
-#endif
 #if defined(HAVE_COCOA)
   #include "cocoa/JoystickInterfaceCocoa.h"
 #endif
@@ -118,8 +115,6 @@ bool CJoystickManager::Initialize(IScannerCallback* scanner)
   m_interfaces.push_back(new CJoystickInterfaceLinux);
 #elif defined(HAVE_UDEV)
   m_interfaces.push_back(new CJoystickInterfaceUdev);
-#elif defined(HAVE_SDL)
-  m_interfaces.push_back(new CJoystickInterfaceSDL);
 #endif
 
   // OSX
