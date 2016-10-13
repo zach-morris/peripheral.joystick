@@ -82,8 +82,8 @@ bool CJoystickLinux::ScanEvents(void)
       }
       else
       {
-        esyslog("%s: failed to read joystick \"%s\" on %s",
-            __FUNCTION__, Name().c_str(), m_strFilename.c_str());
+        esyslog("%s: failed to read joystick \"%s\" on %s - %d (%s)",
+            __FUNCTION__, Name().c_str(), m_strFilename.c_str(), errno, strerror(errno));
         break;
       }
     }
