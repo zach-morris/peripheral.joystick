@@ -122,7 +122,7 @@ int CAnomalousTrigger::GetCenter(AXIS_CENTER center)
   return 0;
 }
 
-int CAnomalousTrigger::GetRange(TRIGGER_RANGE range)
+unsigned int CAnomalousTrigger::GetRange(TRIGGER_RANGE range)
 {
   switch (range)
   {

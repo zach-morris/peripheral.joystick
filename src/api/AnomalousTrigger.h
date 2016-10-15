@@ -110,7 +110,7 @@ namespace JOYSTICK
      * \brief Helper functions
      */
     static int GetCenter(AXIS_CENTER center);
-    static int GetRange(TRIGGER_RANGE range);
+    static unsigned int GetRange(TRIGGER_RANGE range);
 
     const unsigned int m_axisIndex;
     AXIS_STATE         m_state;
