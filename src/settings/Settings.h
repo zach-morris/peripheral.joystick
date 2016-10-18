@@ -50,7 +50,6 @@ namespace JOYSTICK
 
   private:
     bool        m_bInitialized;
-    float       m_deadzone;
     bool        m_bGenerateRetroArchConfigs;
   };
 }
