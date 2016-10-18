@@ -1,7 +1,5 @@
+cmake_minimum_required(VERSION 3.1)
 project(peripheral.joystick)
-
-cmake_minimum_required(VERSION 2.6)
-enable_language(CXX)
 
 list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 
@@ -131,4 +129,3 @@ endif()
 
 build_addon(peripheral.joystick JOYSTICK DEPLIBS)
 
-include(CPack)
