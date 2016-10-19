@@ -113,6 +113,9 @@ void CButtonMapper::MergeFeatures(FeatureVector& features, const FeatureVector& 
         {
           for (const auto& primitive : feature.Primitives())
           {
+            if (primitive.Type() == JOYSTICK_DRIVER_PRIMITIVE_TYPE_UNKNOWN)
+              continue;
+
             if (std::find(newPrimitives.begin(), newPrimitives.end(), primitive) != newPrimitives.end())
               return true; // Found primitive
           }
