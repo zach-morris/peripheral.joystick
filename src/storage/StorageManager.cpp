@@ -89,10 +89,10 @@ bool CStorageManager::Initialize(ADDON::CHelper_libKODI_peripheral* peripheralLi
   // Ensure button map path exists in user data
   CStorageUtils::EnsureDirectoryExists(strUserButtonMapPath);
 
-  m_databases.push_back(DatabasePtr(new CDatabaseXml(strUserButtonMapPath, true, m_buttonMapper->GetCallbacks())));
-  //m_databases.push_back(DatabasePtr(new CDatabaseRetroArch(strUserButtonMapPath, true, &m_controllerMapper))); // TODO
-  m_databases.push_back(DatabasePtr(new CDatabaseXml(strAddonButtonMapPath, false, m_buttonMapper->GetCallbacks())));
   //m_databases.push_back(DatabasePtr(new CDatabaseRetroArch(strAddonButtonMapPath, false))); // TODO
+  m_databases.push_back(DatabasePtr(new CDatabaseXml(strAddonButtonMapPath, false, m_buttonMapper->GetCallbacks())));
+  //m_databases.push_back(DatabasePtr(new CDatabaseRetroArch(strUserButtonMapPath, true, &m_controllerMapper))); // TODO
+  m_databases.push_back(DatabasePtr(new CDatabaseXml(strUserButtonMapPath, true, m_buttonMapper->GetCallbacks())));
 
   m_databases.push_back(DatabasePtr(new CDatabaseJoystickAPI(m_buttonMapper->GetCallbacks())));
 
