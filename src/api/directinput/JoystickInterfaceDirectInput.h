@@ -43,7 +43,7 @@ namespace JOYSTICK
   private:
     bool InitializeDirectInput(void);
 
-    static BOOL EnumJoysticksCallback(const DIDEVICEINSTANCE *pdidInstance, VOID *pContext);
+    static BOOL CALLBACK EnumJoysticksCallback(const DIDEVICEINSTANCE *pdidInstance, VOID *pContext);
     static bool IsXInputDevice(const GUID *pGuidProductFromDirectInput);
     static HWND GetMainWindowHandle(void);
     static BOOL CALLBACK EnumWindowsCallback(HWND hnd, LPARAM lParam);

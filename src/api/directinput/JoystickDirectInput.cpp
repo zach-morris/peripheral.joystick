@@ -35,36 +35,6 @@ using namespace JOYSTICK;
 #define JOY_POV_SW   (JOY_POVBACKWARD + JOY_POVLEFT) / 2
 #define JOY_POV_NW   (JOY_POVLEFT + JOY_POV_360) / 2
 
-//-----------------------------------------------------------------------------
-// Name: EnumObjectsCallback()
-// Desc: Callback function for enumerating objects (axes, buttons, POVs) on a
-//       joystick. This function enables user interface elements for objects
-//       that are found to exist, and scales axes min/max values.
-//-----------------------------------------------------------------------------
-static BOOL EnumObjectsCallback(LPCDIDEVICEOBJECTINSTANCE pdidoi, LPVOID pContext)
-{
-  LPDIRECTINPUTDEVICE8 pJoy = static_cast<LPDIRECTINPUTDEVICE8>(pContext);
-
-  // For axes that are returned, set the DIPROP_RANGE property for the
-  // enumerated axis in order to scale min/max values.
-  if (pdidoi->dwType & DIDFT_AXIS)
-  {
-    DIPROPRANGE diprg;
-    diprg.diph.dwSize = sizeof(DIPROPRANGE);
-    diprg.diph.dwHeaderSize = sizeof(DIPROPHEADER);
-    diprg.diph.dwHow = DIPH_BYID;
-    diprg.diph.dwObj = pdidoi->dwType; // Specify the enumerated axis
-    diprg.lMin = AXIS_MIN;
-    diprg.lMax = AXIS_MAX;
-
-    // Set the range for the axis
-    HRESULT hr = pJoy->SetProperty(DIPROP_RANGE, &diprg.diph);
-    if (FAILED(hr))
-      esyslog("%s : Failed to set property on %s", __FUNCTION__, pdidoi->tszName);
-  }
-  return DIENUM_CONTINUE;
-}
-
 CJoystickDirectInput::CJoystickDirectInput(GUID                           deviceGuid,
                                            LPDIRECTINPUTDEVICE8           joystickDevice,
                                            const std::string&             strName)
@@ -142,6 +112,36 @@ bool CJoystickDirectInput::Initialize(void)
   }
 
   return CJoystick::Initialize();
+}
+
+//-----------------------------------------------------------------------------
+// Name: EnumObjectsCallback()
+// Desc: Callback function for enumerating objects (axes, buttons, POVs) on a
+//       joystick. This function enables user interface elements for objects
+//       that are found to exist, and scales axes min/max values.
+//-----------------------------------------------------------------------------
+BOOL CALLBACK CJoystickDirectInput::EnumObjectsCallback(const DIDEVICEOBJECTINSTANCE* pdidoi, VOID* pContext)
+{
+  LPDIRECTINPUTDEVICE8 pJoy = static_cast<LPDIRECTINPUTDEVICE8>(pContext);
+
+  // For axes that are returned, set the DIPROP_RANGE property for the
+  // enumerated axis in order to scale min/max values.
+  if (pdidoi->dwType & DIDFT_AXIS)
+  {
+    DIPROPRANGE diprg;
+    diprg.diph.dwSize = sizeof(DIPROPRANGE);
+    diprg.diph.dwHeaderSize = sizeof(DIPROPHEADER);
+    diprg.diph.dwHow = DIPH_BYID;
+    diprg.diph.dwObj = pdidoi->dwType; // Specify the enumerated axis
+    diprg.lMin = AXIS_MIN;
+    diprg.lMax = AXIS_MAX;
+
+    // Set the range for the axis
+    HRESULT hr = pJoy->SetProperty(DIPROP_RANGE, &diprg.diph);
+    if (FAILED(hr))
+      esyslog("%s : Failed to set property on %s", __FUNCTION__, pdidoi->tszName);
+  }
+  return DIENUM_CONTINUE;
 }
 
 bool CJoystickDirectInput::ScanEvents(void)
