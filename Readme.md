@@ -97,7 +97,7 @@ cd kodi-platform
 With these dependencies in place, the add-on can be built:
 
 ```shell
-git clone https://github.com/kodi-game/peripheral.joystick.git
+git clone https://github.com/xbmc/peripheral.joystick.git
 cd peripheral.joystick
 mkdir build
 cd build
