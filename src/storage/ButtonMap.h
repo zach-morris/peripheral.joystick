@@ -58,7 +58,9 @@ namespace JOYSTICK
     virtual bool Load(void) = 0;
     virtual bool Save(void) const = 0;
 
-    static void Sanitize(const std::string& controllerId, FeatureVector& features);
+    static void MergeFeature(const ADDON::JoystickFeature& feature, FeatureVector& features, const std::string& controllerId);
+
+    static void Sanitize(FeatureVector& features, const std::string& controllerId);
 
     static std::set<unsigned int> GetAxes(const FeatureVector& features);
 

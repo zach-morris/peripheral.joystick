@@ -23,6 +23,7 @@
 #include "DeviceConfiguration.h"
 #include "StorageManager.h"
 #include "StorageUtils.h"
+#include "buttonmapper/ButtonMapUtils.h"
 #include "log/Log.h"
 
 #include "kodi_peripheral_utils.hpp"
@@ -74,34 +75,19 @@ void CButtonMap::MapFeatures(const std::string& controllerId, const FeatureVecto
   for (unsigned int axis : updatedAxes)
     m_device->Configuration().LoadAxisFromAPI(axis, *m_device);
 
+  // Merge new features
   FeatureVector& myFeatures = m_buttonMap[controllerId];
-
-  // Remove features with the same name
-  for (auto& newFeature : features)
+  for (const auto& newFeature : features)
   {
-    myFeatures.erase(std::remove_if(myFeatures.begin(), myFeatures.end(),
-      [&newFeature, &controllerId](const ADDON::JoystickFeature& feature)
-      {
-        if (feature.Name() == newFeature.Name())
-        {
-          dsyslog("%s: Overwriting feature \"%s\"", controllerId.c_str(), feature.Name().c_str());
-          return true;
-        }
-        return false;
-      }), myFeatures.end());
+    MergeFeature(newFeature, myFeatures, controllerId);
+    m_bModified = true;
   }
-
-  myFeatures.insert(myFeatures.begin(), features.begin(), features.end());
-
-  Sanitize(controllerId, myFeatures);
 
   std::sort(myFeatures.begin(), myFeatures.end(),
     [](const ADDON::JoystickFeature& lhs, const ADDON::JoystickFeature& rhs)
     {
       return lhs.Name() < rhs.Name();
     });
-
-  m_bModified = true;
 }
 
 bool CButtonMap::SaveButtonMap()
@@ -152,7 +138,7 @@ bool CButtonMap::Refresh(void)
       return false;
 
     for (auto it = m_buttonMap.begin(); it != m_buttonMap.end(); ++it)
-      Sanitize(it->first, it->second);
+      Sanitize(it->second, it->first);
 
     m_timestamp = now;
     m_originalButtonMap.clear();
@@ -161,9 +147,40 @@ bool CButtonMap::Refresh(void)
   return true;
 }
 
-void CButtonMap::Sanitize(const std::string& controllerId, FeatureVector& features)
+void CButtonMap::MergeFeature(const ADDON::JoystickFeature& feature, FeatureVector& features, const std::string& controllerId)
 {
-  // Loop through features
+  // Find existing feature with the same name being updated
+  auto itUpdating = std::find_if(features.begin(), features.end(),
+    [&feature](const ADDON::JoystickFeature& existingFeature)
+    {
+      return existingFeature.Name() == feature.Name();
+    });
+
+  if (itUpdating != features.end())
+  {
+    // Find existing feature with the same primitives
+    auto itConflicting = std::find_if(features.begin(), features.end(),
+      [&feature](const ADDON::JoystickFeature& existingFeature)
+      {
+        return ButtonMapUtils::PrimitivesEqual(existingFeature, feature);
+      });
+
+    // Assign conflicting primitives to the primitives of the feature being updated
+    if (itConflicting != features.end())
+      itConflicting->Primitives() = itUpdating->Primitives();
+
+    // Erase the feature being updated and place it at the front of the list
+    features.erase(itUpdating);
+  }
+
+  features.insert(features.begin(), feature);
+
+  Sanitize(features, controllerId);
+}
+
+void CButtonMap::Sanitize(FeatureVector& features, const std::string& controllerId)
+{
+  // Loop through features and reset duplicate primitives
   for (unsigned int iFeature = 0; iFeature < features.size(); ++iFeature)
   {
     auto& feature = features[iFeature];
