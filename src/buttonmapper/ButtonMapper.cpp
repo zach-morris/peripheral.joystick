@@ -81,14 +81,14 @@ ButtonMap CButtonMapper::GetButtonMap(const ADDON::Joystick& joystick) const
   return accumulatedMap;
 }
 
-void CButtonMapper::MergeButtonMap(ButtonMap& knownMap, const ButtonMap& newFeatures)
+void CButtonMapper::MergeButtonMap(ButtonMap& accumulatedMap, const ButtonMap& newFeatures)
 {
   for (auto it = newFeatures.begin(); it != newFeatures.end(); ++it)
   {
     const std::string& controllerId = it->first;
     const FeatureVector& features = it->second;
 
-    MergeFeatures(knownMap[controllerId], features);
+    MergeFeatures(accumulatedMap[controllerId], features);
   }
 }
 
@@ -128,12 +128,12 @@ void CButtonMapper::MergeFeatures(FeatureVector& features, const FeatureVector& 
   }
 }
 
-bool CButtonMapper::GetFeatures(const ADDON::Joystick& joystick, ButtonMap&& buttonMap, const std::string& controllerId, FeatureVector& features)
+bool CButtonMapper::GetFeatures(const ADDON::Joystick& joystick, ButtonMap buttonMap, const std::string& controllerId, FeatureVector& features)
 {
   // Try to get a button map for the specified controller profile
   auto itController = buttonMap.find(controllerId);
   if (itController != buttonMap.end())
-    features.swap(itController->second);
+    features = std::move(itController->second);
 
   bool bNeedsFeatures = false;
 

@@ -55,9 +55,9 @@ namespace JOYSTICK
 
   private:
     ButtonMap GetButtonMap(const ADDON::Joystick& joystick) const;
-    static void MergeButtonMap(ButtonMap& knownMap, const ButtonMap& newFeatures);
+    static void MergeButtonMap(ButtonMap& accumulatedMap, const ButtonMap& newFeatures);
     static void MergeFeatures(FeatureVector& features, const FeatureVector& newFeatures);
-    bool GetFeatures(const ADDON::Joystick& joystick, ButtonMap&& buttonMap, const std::string& controllerId, FeatureVector& features);
+    bool GetFeatures(const ADDON::Joystick& joystick, ButtonMap buttonMap, const std::string& controllerId, FeatureVector& features);
     void DeriveFeatures(const ADDON::Joystick& joystick, const std::string& toController, const ButtonMap& buttonMap, FeatureVector& transformedFeatures);
 
     DatabaseVector    m_databases;

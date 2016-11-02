@@ -22,7 +22,6 @@
 #include <memory>
 #include <set>
 #include <string>
-#include <utility>
 #include <vector>
 
 namespace ADDON
@@ -32,18 +31,32 @@ namespace ADDON
 
 namespace JOYSTICK
 {
-  typedef std::string                            ControllerID;
-  typedef std::string                            FeatureName;
+  /*!
+   * \brief A list of joystick features
+   *
+   * Each feature is connected to one or more driver primitives.
+   */
+  typedef std::vector<ADDON::JoystickFeature> FeatureVector;
 
-  typedef std::vector<ADDON::JoystickFeature>    FeatureVector;
-  typedef std::map<ControllerID, FeatureVector>  ButtonMap;
+  /*!
+   * \brief Controller ID type
+   */
+  typedef std::string ControllerID;
 
-  struct FeatureMapItem
+  /*!
+   * \brief Entire set of controller profiles for a device
+   */
+  typedef std::map<ControllerID, FeatureVector> ButtonMap;
+
+  /*!
+   * \brief Feature translation entry
+   */
+  struct FeatureTranslation
   {
     std::string fromFeature;
     std::string toFeature;
 
-    bool operator<(const FeatureMapItem& other) const
+    bool operator<(const FeatureTranslation& other) const
     {
       if (fromFeature < other.fromFeature) return true;
       if (fromFeature > other.fromFeature) return false;
@@ -55,14 +68,19 @@ namespace JOYSTICK
     }
   };
 
-  typedef std::map<FeatureMapItem, unsigned int> FeatureOccurrences;
+  typedef std::set<FeatureTranslation> FeatureMap;
 
-  struct ControllerMapItem
+  typedef std::map<FeatureMap, unsigned int> FeatureMaps; // Feature map -> occurrences
+
+  /*!
+   * \brief Feature translation entry
+   */
+  struct ControllerTranslation
   {
-    std::string        fromController;
-    std::string        toController;
+    std::string fromController;
+    std::string toController;
 
-    bool operator<(const ControllerMapItem& other) const
+    bool operator<(const ControllerTranslation& other) const
     {
       if (fromController < other.fromController) return true;
       if (fromController > other.fromController) return false;
@@ -74,11 +92,10 @@ namespace JOYSTICK
     }
   };
 
-  typedef std::map<ControllerMapItem, FeatureOccurrences> ControllerMap;
+  typedef std::map<ControllerTranslation, FeatureMaps> ControllerMap;
 
   typedef std::string FamilyName;
   typedef std::string JoystickName;
 
   typedef std::map<FamilyName, std::set<JoystickName>> JoystickFamilyMap;
-
 }
