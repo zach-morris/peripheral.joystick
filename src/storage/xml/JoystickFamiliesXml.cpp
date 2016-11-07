@@ -95,9 +95,9 @@ bool CJoystickFamiliesXml::DeserializeJoysticks(const TiXmlElement* pJoystick, s
 {
   while (pJoystick != nullptr)
   {
-    const std::string& joystickName = pJoystick->ValueStr();
-
-    family.insert(joystickName);
+    const char* joystickName = pJoystick->GetText();
+    if (joystickName)
+      family.insert(joystickName);
 
     pJoystick = pJoystick->NextSiblingElement(JOYSTICK_FAMILIES_XML_ELEM_JOYSTICK);
   }
