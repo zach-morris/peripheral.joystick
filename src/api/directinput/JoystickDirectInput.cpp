@@ -69,6 +69,16 @@ bool CJoystickDirectInput::Initialize(void)
 {
   HRESULT hr;
 
+  // This will be done automatically when we're in the foreground but
+  // let's do it here to check that we can acquire it and that no other
+  // app has it in exclusive mode
+  hr = m_joystickDevice->Acquire();
+  if (FAILED(hr))
+  {
+    esyslog("%s: Failed to acquire device on: %s", __FUNCTION__, Name().c_str());
+    return false;
+  }
+
   // Get capabilities
   DIDEVCAPS diDevCaps;
   diDevCaps.dwSize = sizeof(DIDEVCAPS);
