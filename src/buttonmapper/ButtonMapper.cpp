@@ -138,9 +138,10 @@ bool CButtonMapper::GetFeatures(const ADDON::Joystick& joystick, ButtonMap butto
   bool bNeedsFeatures = false;
 
   if (features.empty())
+  {
     bNeedsFeatures = true;
-
-  if (m_peripheralLib)
+  }
+  else if (m_peripheralLib)
   {
     unsigned int featureCount = m_peripheralLib->FeatureCount(controllerId);
     if (featureCount > 0)
