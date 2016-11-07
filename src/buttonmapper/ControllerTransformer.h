@@ -20,11 +20,10 @@
 #pragma once
 
 #include "ButtonMapTypes.h"
-#include "ControllerModel.h"
-#include "DriverGeometry.h"
 #include "JoystickFamily.h"
 #include "storage/IDatabase.h"
-#include "storage/StorageTypes.h"
+
+#include <string>
 
 namespace ADDON
 {
@@ -40,10 +39,10 @@ namespace JOYSTICK
   public:
     CControllerTransformer(CJoystickFamilyManager& familyManager);
 
-    virtual ~CControllerTransformer();
+    virtual ~CControllerTransformer() = default;
 
     // implementation of IDatabaseCallbacks
-    virtual void OnAdd(const DevicePtr& driverInfo, const ButtonMap& buttonMap);
+    virtual void OnAdd(const DevicePtr& driverInfo, const ButtonMap& buttonMap) override;
 
     void TransformFeatures(const ADDON::Joystick& driverInfo,
                            const std::string& fromController,
@@ -55,7 +54,7 @@ namespace JOYSTICK
     bool AddControllerMap(const std::string& controllerFrom, const FeatureVector& featuresFrom,
                           const std::string& controllerTo, const FeatureVector& featuresTo);
 
-    CControllerModel        m_controllerModel;
+    ControllerMap           m_controllerMap;
     DeviceSet               m_observedDevices;
     CJoystickFamilyManager& m_familyManager;
   };

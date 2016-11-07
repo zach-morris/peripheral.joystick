@@ -25,7 +25,6 @@
 #include "kodi_peripheral_utils.hpp"
 
 #include <algorithm>
-#include <array>
 
 using namespace JOYSTICK;
 
@@ -34,17 +33,17 @@ CControllerTransformer::CControllerTransformer(CJoystickFamilyManager& familyMan
 {
 }
 
-CControllerTransformer::~CControllerTransformer()
-{
-}
-
 void CControllerTransformer::OnAdd(const DevicePtr& driverInfo, const ButtonMap& buttonMap)
 {
-  // Skip devices we've already encountered.
-  if (m_observedDevices.find(driverInfo) == m_observedDevices.end())
-    m_observedDevices.insert(driverInfo);
-  else
+  // Santity check
+  if (m_observedDevices.size() > 200)
     return;
+
+  // Skip devices we've already encountered.
+  if (m_observedDevices.find(driverInfo) != m_observedDevices.end())
+    return;
+
+  m_observedDevices.insert(driverInfo);
 
   for (auto itTo = buttonMap.begin(); itTo != buttonMap.end(); ++itTo)
   {
@@ -59,11 +58,13 @@ void CControllerTransformer::OnAdd(const DevicePtr& driverInfo, const ButtonMap&
 bool CControllerTransformer::AddControllerMap(const std::string& controllerFrom, const FeatureVector& featuresFrom,
                                               const std::string& controllerTo, const FeatureVector& featuresTo)
 {
-  bool bChanged = false;
+  FeatureMap featureMap;
 
   ASSERT(controllerFrom < controllerTo);
 
-  ControllerMapItem needle = { controllerFrom, controllerTo };
+  ControllerTranslation key = { controllerFrom, controllerTo };
+
+  FeatureMap features;
 
   for (auto itFromFeature = featuresFrom.begin(); itFromFeature != featuresFrom.end(); ++itFromFeature)
   {
@@ -103,13 +104,25 @@ bool CControllerTransformer::AddControllerMap(const std::string& controllerFrom,
 
     if (itToFeature != featuresTo.end())
     {
-      FeatureMapItem featureMapItem = { fromFeature.Name(), itToFeature->Name() };
-      m_controllerModel.AddFeatureMapping(needle, std::move(featureMapItem));
-      bChanged = true;
+      FeatureTranslation featureEntry = { fromFeature.Name(), itToFeature->Name() };
+      features.insert(std::move(featureEntry));
     }
   }
 
-  return bChanged;
+  if (!features.empty())
+  {
+    FeatureMaps& featureMaps = m_controllerMap[key];
+
+    auto it = featureMaps.find(features);
+    if (it != featureMaps.end())
+      ++it->second;
+    else
+      featureMaps.insert(std::make_pair(std::move(features), 1));
+
+    return true;
+  }
+
+  return false;
 }
 
 void CControllerTransformer::TransformFeatures(const ADDON::Joystick& driverInfo,
@@ -120,19 +133,32 @@ void CControllerTransformer::TransformFeatures(const ADDON::Joystick& driverInfo
 {
   bool bSwap = (fromController >= toController);
 
-  ControllerMapItem needle = { bSwap ? toController : fromController,
-                               bSwap ? fromController : toController };
+  ControllerTranslation needle = { bSwap ? toController : fromController,
+                                   bSwap ? fromController : toController };
 
-  std::array<CControllerModel*, 1> models = { &m_controllerModel };
+  FeatureMaps& featureMaps = m_controllerMap[needle];
 
-  for (CControllerModel* model : models)
+  unsigned int maxCount = 0;
+  const FeatureMap* bestFeatureMap = nullptr;
+
+  for (const auto& featureMap : featureMaps)
   {
-    const FeatureOccurrences& normalizedFeatures = model->GetNormalizedFeatures(needle);
+    const FeatureMap& features = featureMap.first;
+    unsigned int count = featureMap.second;
 
-    for (auto itMap = normalizedFeatures.begin(); itMap != normalizedFeatures.end(); ++itMap)
+    if (count > maxCount)
     {
-      const std::string& fromFeature = bSwap ? itMap->first.toFeature : itMap->first.fromFeature;
-      const std::string& toFeature = bSwap ? itMap->first.fromFeature : itMap->first.toFeature;
+      maxCount = count;
+      bestFeatureMap = &features;
+    }
+  }
+
+  if (bestFeatureMap != nullptr)
+  {
+    for (const auto& featurePair : *bestFeatureMap)
+    {
+      const std::string& fromFeature = bSwap ? featurePair.toFeature : featurePair.fromFeature;
+      const std::string& toFeature = bSwap ? featurePair.fromFeature : featurePair.toFeature;
 
       auto itFrom = std::find_if(features.begin(), features.end(),
         [fromFeature](const ADDON::JoystickFeature& feature)
@@ -147,8 +173,5 @@ void CControllerTransformer::TransformFeatures(const ADDON::Joystick& driverInfo
         transformedFeatures.emplace_back(std::move(transformedFeature));
       }
     }
-
-    if (!transformedFeatures.empty())
-      break;
   }
 }
