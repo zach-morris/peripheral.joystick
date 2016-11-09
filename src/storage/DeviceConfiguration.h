@@ -19,7 +19,11 @@
  */
 #pragma once
 
+#include "PrimitiveConfiguration.h"
 #include "StorageTypes.h"
+#include "buttonmapper/ButtonMapTypes.h"
+
+#include <map>
 
 namespace JOYSTICK
 {
@@ -31,21 +35,30 @@ namespace JOYSTICK
     CDeviceConfiguration(const CDevice* parent);
     ~CDeviceConfiguration(void) = default;
 
+    CDeviceConfiguration& operator=(const CDeviceConfiguration& rhs);
+
     void Reset(void);
 
-    const AxisConfiguration& Axes(void) const { return m_axes; }
+    void LoadAxisFromAPI(unsigned int axisIndex);
 
-    bool GetAxis(unsigned int axisIndex, AxisProperties& axisProps) const;
+          AxisConfigurationMap&   Axes(void)                       { return m_axes; }
+    const AxisConfigurationMap&   Axes(void) const                 { return m_axes; }
+    const AxisConfiguration&      Axis(unsigned int index) const;
+          ButtonConfigurationMap& Buttons(void)                    { return m_buttons; }
+    const ButtonConfigurationMap& Buttons(void) const              { return m_buttons; }
+    const ButtonConfiguration&    Button(unsigned int index) const;
+    PrimitiveVector               GetIgnoredPrimitives() const;
 
-    void LoadAxis(unsigned int axisIndex);
-
-    void SetAxis(const AxisProperties& axisProps);
+    void SetAxis(unsigned int index, const AxisConfiguration& config)     { m_axes[index] = config; }
+    void SetButton(unsigned int index, const ButtonConfiguration& config) { m_buttons[index] = config; }
+    void SetIgnoredPrimitives(const PrimitiveVector& primitives);
 
   private:
     // Construction parameters
     const CDevice* const m_parent;
 
     // Configuration parameters
-    AxisConfiguration m_axes;
+    AxisConfigurationMap m_axes;
+    ButtonConfigurationMap m_buttons;
   };
 }

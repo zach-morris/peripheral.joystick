@@ -61,9 +61,24 @@ namespace JOYSTICK
                              const FeatureVector& features) = 0;
 
     /*!
+     * \copydoc CStorageManager::GetIgnoredPrimitives()
+     */
+    virtual void GetIgnoredPrimitives(const ADDON::Joystick& driverInfo, PrimitiveVector& primitives) = 0;
+
+    /*!
+     * \copydoc CStorageManager::SetIgnoredPrimitives()
+     */
+    virtual bool SetIgnoredPrimitives(const ADDON::Joystick& driverInfo, const PrimitiveVector& primitives) = 0;
+
+    /*!
      * \copydoc CStorageManager::SaveButtonMap()
      */
     virtual bool SaveButtonMap(const ADDON::Joystick& driverInfo) = 0;
+
+    /*!
+     * \copydoc CStorageManager::RevertButtonMap()
+     */
+    virtual bool RevertButtonMap(const ADDON::Joystick& driverInfo) = 0;
 
     /*!
      * \copydoc CStorageManager::ResetButtonMap()

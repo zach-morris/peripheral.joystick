@@ -26,11 +26,17 @@
 
 namespace ADDON
 {
+  class DriverPrimitive;
   class JoystickFeature;
 };
 
 namespace JOYSTICK
 {
+  /*!
+   * \brief A list of driver primitives
+   */
+  typedef std::vector<ADDON::DriverPrimitive> PrimitiveVector;
+
   /*!
    * \brief A list of joystick features
    *

@@ -134,12 +134,38 @@ bool CStorageManager::MapFeatures(const ADDON::Joystick& joystick,
   return bSuccess;
 }
 
+void CStorageManager::GetIgnoredPrimitives(const ADDON::Joystick& joystick, PrimitiveVector& primitives)
+{
+  for (DatabaseVector::const_iterator it = m_databases.begin(); it != m_databases.end(); ++it)
+    (*it)->GetIgnoredPrimitives(joystick, primitives);
+}
+
+bool CStorageManager::SetIgnoredPrimitives(const ADDON::Joystick& joystick, const PrimitiveVector& primitives)
+{
+  bool bSuccess = false;
+
+  for (DatabaseVector::const_iterator it = m_databases.begin(); it != m_databases.end(); ++it)
+    bSuccess |= (*it)->SetIgnoredPrimitives(joystick, primitives);
+
+  return bSuccess;
+}
+
 bool CStorageManager::SaveButtonMap(const ADDON::Joystick& joystick)
 {
   bool bModified = false;
 
   for (DatabaseVector::const_iterator it = m_databases.begin(); it != m_databases.end(); ++it)
     bModified |= (*it)->SaveButtonMap(joystick);
+
+  return bModified;
+}
+
+bool CStorageManager::RevertButtonMap(const ADDON::Joystick& joystick)
+{
+  bool bModified = false;
+
+  for (DatabaseVector::const_iterator it = m_databases.begin(); it != m_databases.end(); ++it)
+    bModified |= (*it)->RevertButtonMap(joystick);
 
   return bModified;
 }

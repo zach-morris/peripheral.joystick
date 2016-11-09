@@ -268,13 +268,47 @@ void FreeFeatures(unsigned int feature_count, JOYSTICK_FEATURE* features)
 }
 
 PERIPHERAL_ERROR MapFeatures(const JOYSTICK_INFO* joystick, const char* controller_id,
-                             unsigned int feature_count, JOYSTICK_FEATURE* features)
+                             unsigned int feature_count, const JOYSTICK_FEATURE* features)
 {
   if (!joystick || !controller_id || (feature_count > 0 && !features))
     return PERIPHERAL_ERROR_INVALID_PARAMETERS;
 
   FeatureVector featureVector(features, features + feature_count);
   bool bSuccess = CStorageManager::Get().MapFeatures(ADDON::Joystick(*joystick), controller_id, featureVector);
+
+  return bSuccess ? PERIPHERAL_NO_ERROR : PERIPHERAL_ERROR_FAILED;
+}
+
+PERIPHERAL_ERROR GetIgnoredPrimitives(const JOYSTICK_INFO* joystick,
+                                      unsigned int* primitive_count,
+                                      JOYSTICK_DRIVER_PRIMITIVE** primitives)
+{
+  if (joystick == nullptr || primitive_count == nullptr || primitives == nullptr)
+    return PERIPHERAL_ERROR_INVALID_PARAMETERS;
+
+  PrimitiveVector primitiveVector;
+  CStorageManager::Get().GetIgnoredPrimitives(ADDON::Joystick(*joystick), primitiveVector);
+
+  *primitive_count = primitiveVector.size();
+  ADDON::DriverPrimitives::ToStructs(primitiveVector, primitives);
+
+  return PERIPHERAL_NO_ERROR;
+}
+
+void FreePrimitives(unsigned int primitive_count, JOYSTICK_DRIVER_PRIMITIVE* primitives)
+{
+  ADDON::DriverPrimitives::FreeStructs(primitive_count, primitives);
+}
+
+PERIPHERAL_ERROR SetIgnoredPrimitives(const JOYSTICK_INFO* joystick,
+                                      unsigned int primitive_count,
+                                      const JOYSTICK_DRIVER_PRIMITIVE* primitives)
+{
+  if (joystick == nullptr || primitive_count == 0 || (primitive_count > 0 && primitives == nullptr))
+    return PERIPHERAL_ERROR_INVALID_PARAMETERS;
+
+  PrimitiveVector primitiveVector(primitives, primitives + primitive_count);
+  bool bSuccess = CStorageManager::Get().SetIgnoredPrimitives(ADDON::Joystick(*joystick), primitiveVector);
 
   return bSuccess ? PERIPHERAL_NO_ERROR : PERIPHERAL_ERROR_FAILED;
 }
@@ -287,6 +321,16 @@ void SaveButtonMap(const JOYSTICK_INFO* joystick)
   ADDON::Joystick addonJoystick(*joystick);
 
   CStorageManager::Get().SaveButtonMap(addonJoystick);
+}
+
+void RevertButtonMap(const JOYSTICK_INFO* joystick)
+{
+  if (joystick == nullptr)
+    return;
+
+  ADDON::Joystick addonJoystick(*joystick);
+
+  CStorageManager::Get().RevertButtonMap(addonJoystick);
 }
 
 void ResetButtonMap(const JOYSTICK_INFO* joystick, const char* controller_id)

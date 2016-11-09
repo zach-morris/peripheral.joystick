@@ -33,15 +33,4 @@ namespace JOYSTICK
   class IDatabase;
   typedef std::shared_ptr<IDatabase> DatabasePtr;
   typedef std::vector<DatabasePtr>   DatabaseVector;
-
-  typedef unsigned int AxisIndex;
-
-  struct AxisProperties
-  {
-    unsigned int index;
-    int center;
-    unsigned int range;
-  };
-
-  typedef std::map<AxisIndex, AxisProperties> AxisConfiguration;
 }

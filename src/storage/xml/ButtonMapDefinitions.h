@@ -23,6 +23,7 @@
 #define BUTTONMAP_XML_ELEM_DEVICE              "device"
 #define BUTTONMAP_XML_ELEM_CONFIGURATION       "configuration"
 #define BUTTONMAP_XML_ELEM_AXIS                "axis"
+#define BUTTONMAP_XML_ELEM_BUTTON              "button"
 #define BUTTONMAP_XML_ELEM_CONTROLLER          "controller"
 #define BUTTONMAP_XML_ELEM_FEATURE             "feature"
 
@@ -53,6 +54,7 @@
 #define BUTTONMAP_XML_ATTR_FEATURE_AXIS        "axis"
 #define BUTTONMAP_XML_ATTR_FEATURE_MOTOR       "motor"
 
-#define BUTTONMAP_XML_ATTR_AXIS_INDEX          "index"
+#define BUTTONMAP_XML_ATTR_DRIVER_INDEX        "index"
 #define BUTTONMAP_XML_ATTR_AXIS_CENTER         "center"
 #define BUTTONMAP_XML_ATTR_AXIS_RANGE          "range"
+#define BUTTONMAP_XML_ATTR_IGNORE              "ignore"

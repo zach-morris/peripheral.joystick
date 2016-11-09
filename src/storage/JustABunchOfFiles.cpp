@@ -34,13 +34,18 @@ using namespace P8PLATFORM;
 
 // --- CResources --------------------------------------------------------------
 
+CResources::CResources(const CJustABunchOfFiles* database) :
+  m_database(database)
+{
+}
+
 CResources::~CResources(void)
 {
   for (ResourceMap::iterator it = m_resources.begin(); it != m_resources.end(); ++it)
     delete it->second;
 }
 
-DevicePtr CResources::GetDevice(const CDevice& deviceInfo)
+DevicePtr CResources::GetDevice(const CDevice& deviceInfo) const
 {
   DevicePtr device;
 
@@ -51,11 +56,29 @@ DevicePtr CResources::GetDevice(const CDevice& deviceInfo)
   return device;
 }
 
-CButtonMap* CResources::GetResource(const CDevice& deviceInfo)
+CButtonMap* CResources::GetResource(const CDevice& deviceInfo, bool bCreate)
 {
   CButtonMap* buttonMap = nullptr;
 
   auto itResource = m_resources.find(deviceInfo);
+  if (itResource == m_resources.end() && bCreate)
+  {
+    // Resource doesn't exist yet, try to create it now
+    std::string resourcePath;
+    if (m_database->GetResourcePath(deviceInfo, resourcePath))
+    {
+      DevicePtr device = std::make_shared<CDevice>(deviceInfo);
+      CButtonMap* resource = m_database->CreateResource(resourcePath, device);
+      if (!AddResource(resource))
+      {
+        delete resource;
+        resource = nullptr;
+      }
+    }
+
+    itResource = m_resources.find(deviceInfo);
+  }
+
   if (itResource != m_resources.end())
     buttonMap = itResource->second;
 
@@ -88,6 +111,51 @@ void CResources::RemoveResource(const std::string& strPath)
   }
 }
 
+void CResources::GetIgnoredPrimitives(const CDevice& deviceInfo, PrimitiveVector& primitives) const
+{
+  DevicePtr device = GetDevice(deviceInfo);
+  if (device)
+    primitives = device->Configuration().GetIgnoredPrimitives();
+}
+
+void CResources::SetIgnoredPrimitives(const CDevice& deviceInfo, const PrimitiveVector& primitives)
+{
+  auto itDevice = m_devices.find(deviceInfo);
+  auto itOriginal = m_originalDevices.find(deviceInfo);
+
+  // Ensure resource exists
+  if (itDevice == m_devices.end())
+  {
+    GetResource(deviceInfo, true);
+    itDevice = m_devices.find(deviceInfo);
+  }
+
+  if (itDevice != m_devices.end())
+  {
+    // Create a backup to allow revert
+    if (itOriginal == m_originalDevices.end())
+      m_originalDevices[deviceInfo].reset(new CDevice(*itDevice->second));
+
+    itDevice->second->Configuration().SetIgnoredPrimitives(primitives);
+  }
+}
+
+void CResources::Revert(const CDevice& deviceInfo)
+{
+  CButtonMap* resource = GetResource(deviceInfo, false);
+
+  if (resource)
+    resource->RevertButtonMap();
+
+  auto itOriginal = m_originalDevices.find(deviceInfo);
+
+  if (itOriginal != m_originalDevices.end())
+  {
+    m_devices[deviceInfo]->Configuration() = itOriginal->second->Configuration();
+    m_originalDevices.erase(itOriginal);
+  }
+}
+
 // --- CJustABunchOfFiles ------------------------------------------------------
 
 CJustABunchOfFiles::CJustABunchOfFiles(const std::string& strResourcePath,
@@ -97,7 +165,8 @@ CJustABunchOfFiles::CJustABunchOfFiles(const std::string& strResourcePath,
   IDatabase(callbacks),
   m_strResourcePath(strResourcePath),
   m_strExtension(strExtension),
-  m_bReadWrite(bReadWrite)
+  m_bReadWrite(bReadWrite),
+  m_resources(this)
 {
   m_directoryCache.Initialize(this);
 
@@ -119,7 +188,7 @@ const ButtonMap& CJustABunchOfFiles::GetButtonMap(const ADDON::Joystick& driverI
   // Update index
   IndexDirectory(m_strResourcePath, FOLDER_DEPTH);
 
-  CButtonMap* resource = m_resources.GetResource(driverInfo);
+  CButtonMap* resource = m_resources.GetResource(driverInfo, false);
 
   if (resource)
     return resource->GetButtonMap();
@@ -136,23 +205,7 @@ bool CJustABunchOfFiles::MapFeatures(const ADDON::Joystick& driverInfo,
 
   CLockObject lock(m_mutex);
 
-  CButtonMap* resource = m_resources.GetResource(driverInfo);
-  if (resource == nullptr)
-  {
-    // Resource doesn't exist yet, try to create it now
-    std::string resourcePath;
-    if (GetResourcePath(driverInfo, resourcePath))
-    {
-      DevicePtr device = std::make_shared<CDevice>(driverInfo);
-      resource = CreateResource(resourcePath, device);
-      if (!m_resources.AddResource(resource))
-      {
-        delete resource;
-        resource = nullptr;
-      }
-    }
-  }
-
+  CButtonMap* resource = m_resources.GetResource(driverInfo, true);
   if (resource)
   {
     resource->MapFeatures(controllerId, features);
@@ -160,6 +213,29 @@ bool CJustABunchOfFiles::MapFeatures(const ADDON::Joystick& driverInfo,
   }
 
   return false;
+}
+
+void CJustABunchOfFiles::GetIgnoredPrimitives(const ADDON::Joystick& driverInfo, PrimitiveVector& primitives)
+{
+  CLockObject lock(m_mutex);
+
+  // Update index
+  IndexDirectory(m_strResourcePath, FOLDER_DEPTH);
+
+  m_resources.GetIgnoredPrimitives(driverInfo, primitives);
+}
+
+bool CJustABunchOfFiles::SetIgnoredPrimitives(const ADDON::Joystick& driverInfo, const PrimitiveVector& primitives)
+{
+  if (!m_bReadWrite)
+    return false;
+
+  CLockObject lock(m_mutex);
+
+  // Ensure resource exists
+  m_resources.SetIgnoredPrimitives(driverInfo, primitives);
+
+  return true;
 }
 
 bool CJustABunchOfFiles::SaveButtonMap(const ADDON::Joystick& driverInfo)
@@ -171,12 +247,26 @@ bool CJustABunchOfFiles::SaveButtonMap(const ADDON::Joystick& driverInfo)
 
   CLockObject lock(m_mutex);
 
-  CButtonMap* resource = m_resources.GetResource(device);
+  CButtonMap* resource = m_resources.GetResource(device, false);
 
   if (resource)
     return resource->SaveButtonMap();
 
   return false;
+}
+
+bool CJustABunchOfFiles::RevertButtonMap(const ADDON::Joystick& driverInfo)
+{
+  if (!m_bReadWrite)
+    return false;
+
+  CDevice device(driverInfo);
+
+  CLockObject lock(m_mutex);
+
+  m_resources.Revert(device);
+
+  return true;
 }
 
 bool CJustABunchOfFiles::ResetButtonMap(const ADDON::Joystick& driverInfo, const std::string& controllerId)
@@ -188,7 +278,7 @@ bool CJustABunchOfFiles::ResetButtonMap(const ADDON::Joystick& driverInfo, const
 
   CLockObject lock(m_mutex);
 
-  CButtonMap* resource = m_resources.GetResource(device);
+  CButtonMap* resource = m_resources.GetResource(device, false);
 
   if (resource)
     return resource->ResetButtonMap(controllerId);

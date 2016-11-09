@@ -66,6 +66,10 @@ const ButtonMap& CButtonMap::GetButtonMap()
 
 void CButtonMap::MapFeatures(const std::string& controllerId, const FeatureVector& features)
 {
+  // Create a backup to allow revert
+  if (m_originalButtonMap.empty())
+    m_originalButtonMap = m_buttonMap;
+
   FeatureVector& myFeatures = m_buttonMap[controllerId];
 
   // Remove features with the same name
@@ -97,7 +101,7 @@ void CButtonMap::MapFeatures(const std::string& controllerId, const FeatureVecto
     //JOYSTICK_FEATURE_CATEGORY category = CStorageManager::Get().GetFeatureCategory(controllerId, newFeature.Name());
 
     for (unsigned int axis : updatedAxes)
-      m_device->Configuration().LoadAxis(axis);
+      m_device->Configuration().LoadAxisFromAPI(axis);
   }
 
   myFeatures.insert(myFeatures.begin(), features.begin(), features.end());
@@ -118,7 +122,19 @@ bool CButtonMap::SaveButtonMap()
   if (Save())
   {
     m_timestamp = P8PLATFORM::GetTimeMs();
+    m_originalButtonMap.clear();
     m_bModified = false;
+    return true;
+  }
+
+  return false;
+}
+
+bool CButtonMap::RevertButtonMap()
+{
+  if (!m_originalButtonMap.empty())
+  {
+    m_buttonMap = m_originalButtonMap;
     return true;
   }
 
@@ -152,6 +168,7 @@ bool CButtonMap::Refresh(void)
       Sanitize(it->first, it->second);
 
     m_timestamp = now;
+    m_originalButtonMap.clear();
   }
 
   return true;

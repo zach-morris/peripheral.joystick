@@ -27,30 +27,43 @@
 #include "p8-platform/threads/mutex.h"
 
 #include <map>
+#include <memory>
 #include <string>
 
 namespace JOYSTICK
 {
+  class CJustABunchOfFiles;
+
   /*!
    * \brief Container class for device records and button maps
    */
   class CResources
   {
   public:
-    CResources(void) { }
+    CResources(const CJustABunchOfFiles* database);
     ~CResources(void);
 
-    DevicePtr GetDevice(const CDevice& deviceInfo);
+    DevicePtr GetDevice(const CDevice& deviceInfo) const;
 
-    CButtonMap* GetResource(const CDevice& deviceInfo);
+    CButtonMap* GetResource(const CDevice& deviceInfo, bool bCreate);
     bool AddResource(CButtonMap* resource);
     void RemoveResource(const std::string& strPath);
+
+    void GetIgnoredPrimitives(const CDevice& deviceInfo, PrimitiveVector& primitives) const;
+    void SetIgnoredPrimitives(const CDevice& deviceInfo, const PrimitiveVector& primitives);
+
+    void Revert(const CDevice& deviceInfo);
 
   private:
     typedef std::map<CDevice, DevicePtr>   DeviceMap;
     typedef std::map<CDevice, CButtonMap*> ResourceMap;
 
+    // Construction parameters
+    const CJustABunchOfFiles* const m_database;
+
+    // Resource parameters
     DeviceMap   m_devices;
+    DeviceMap   m_originalDevices;
     ResourceMap m_resources;
   };
 
@@ -70,7 +83,10 @@ namespace JOYSTICK
     virtual bool MapFeatures(const ADDON::Joystick& driverInfo,
                              const std::string& controllerId,
                              const FeatureVector& features) override;
+    virtual void GetIgnoredPrimitives(const ADDON::Joystick& driverInfo, PrimitiveVector& primitives) override;
+    virtual bool SetIgnoredPrimitives(const ADDON::Joystick& driverInfo, const PrimitiveVector& primitives) override;
     virtual bool SaveButtonMap(const ADDON::Joystick& driverInfo) override;
+    virtual bool RevertButtonMap(const ADDON::Joystick& driverInfo) override;
     virtual bool ResetButtonMap(const ADDON::Joystick& driverInfo,
                                 const std::string& controllerId) override;
 
@@ -78,17 +94,9 @@ namespace JOYSTICK
     virtual void OnAdd(const ADDON::CVFSDirEntry& item) override;
     virtual void OnRemove(const ADDON::CVFSDirEntry& item) override;
 
-  protected:
     // Interface for child class to provide
-    virtual CButtonMap* CreateResource(const std::string& resourcePath) = 0;
-    virtual CButtonMap* CreateResource(const std::string& resourcePath, const DevicePtr& driverInfo) = 0;
-
-  private:
-    /*!
-     * \brief Recursively index a path, enumerating the folder and updating
-     *        the directory cache
-     */
-    void IndexDirectory(const std::string& path, unsigned int folderDepth);
+    virtual CButtonMap* CreateResource(const std::string& resourcePath) const = 0;
+    virtual CButtonMap* CreateResource(const std::string& resourcePath, const DevicePtr& driverInfo) const = 0;
 
     /*!
      * \brief Calculate and create a path for a device record
@@ -98,6 +106,13 @@ namespace JOYSTICK
      * \return true if the path exists or was created
      */
     bool GetResourcePath(const ADDON::Joystick& deviceInfo, std::string& resourcePath) const;
+
+  private:
+    /*!
+     * \brief Recursively index a path, enumerating the folder and updating
+     *        the directory cache
+     */
+    void IndexDirectory(const std::string& path, unsigned int folderDepth);
 
     const std::string m_strResourcePath;
     const std::string m_strExtension;

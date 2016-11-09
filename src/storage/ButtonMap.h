@@ -46,6 +46,8 @@ namespace JOYSTICK
 
     bool SaveButtonMap();
 
+    bool RevertButtonMap();
+
     bool ResetButtonMap(const std::string& controllerId);
 
     bool Refresh(void);
@@ -58,7 +60,9 @@ namespace JOYSTICK
 
     const std::string m_strResourcePath;
     DevicePtr         m_device;
+    DevicePtr         m_originalDevice;
     ButtonMap         m_buttonMap;
+    ButtonMap         m_originalButtonMap;
 
   private:
     int64_t m_timestamp;

@@ -28,6 +28,9 @@ namespace JOYSTICK
   class CDevice;
   class CDeviceConfiguration;
 
+  struct AxisConfiguration;
+  struct ButtonConfiguration;
+
   class CDeviceXml
   {
   public:
@@ -37,7 +40,10 @@ namespace JOYSTICK
     static bool SerializeConfig(const CDeviceConfiguration& config, TiXmlElement* pElement);
     static bool DeserializeConfig(const TiXmlElement* pElement, CDeviceConfiguration& config);
 
-    static bool SerializeAxis(const AxisProperties& axisProps, TiXmlElement* pElement);
-    static bool DeserializeAxis(const TiXmlElement* pElement, AxisProperties& axisProps);
+    static bool SerializeAxis(unsigned int index, const AxisConfiguration& axisConfig, TiXmlElement* pElement);
+    static bool DeserializeAxis(const TiXmlElement* pElement, unsigned int& index, AxisConfiguration& axisConfig);
+
+    static bool SerializeButton(unsigned int index, const ButtonConfiguration& buttonConfig, TiXmlElement* pElement);
+    static bool DeserializeButton(const TiXmlElement* pElement, unsigned int& index, ButtonConfiguration& buttonConfig);
   };
 }

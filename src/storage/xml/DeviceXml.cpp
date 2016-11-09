@@ -22,6 +22,7 @@
 #include "ButtonMapDefinitions.h"
 #include "storage/Device.h"
 #include "storage/DeviceConfiguration.h"
+#include "storage/PrimitiveConfiguration.h"
 #include "storage/StorageUtils.h"
 #include "log/Log.h"
 
@@ -114,22 +115,25 @@ bool CDeviceXml::Deserialize(const TiXmlElement* pElement, CDevice& record)
 
 bool CDeviceXml::SerializeConfig(const CDeviceConfiguration& config, TiXmlElement* pElement)
 {
-  if (!config.Axes().empty())
+  TiXmlElement configurationElement(BUTTONMAP_XML_ELEM_CONFIGURATION);
+  TiXmlNode* configurationNode = pElement->InsertEndChild(configurationElement);
+  if (configurationNode == nullptr)
+    return false;
+
+  TiXmlElement* configurationElem = configurationNode->ToElement();
+  if (configurationElem == nullptr)
+    return false;
+
+  for (const auto& axis : config.Axes())
   {
-    TiXmlElement configurationElement(BUTTONMAP_XML_ELEM_CONFIGURATION);
-    TiXmlNode* configurationNode = pElement->InsertEndChild(configurationElement);
-    if (configurationNode == nullptr)
+    if (!SerializeAxis(axis.first, axis.second, configurationElem))
       return false;
+  }
 
-    TiXmlElement* configurationElem = configurationNode->ToElement();
-    if (configurationElem == nullptr)
+  for (const auto& button : config.Buttons())
+  {
+    if (!SerializeButton(button.first, button.second, configurationElem))
       return false;
-
-    for (const auto& axis : config.Axes())
-    {
-      if (!SerializeAxis(axis.second, configurationElem))
-        return false;
-    }
   }
 
   return true;
@@ -145,60 +149,129 @@ bool CDeviceXml::DeserializeConfig(const TiXmlElement* pElement, CDeviceConfigur
 
     for ( ; pAxis != nullptr; pAxis = pAxis->NextSiblingElement(BUTTONMAP_XML_ELEM_AXIS))
     {
-      AxisProperties axisProps;
-      if (!DeserializeAxis(pAxis, axisProps))
+      unsigned int axisIndex;
+      AxisConfiguration axisConfig;
+      if (!DeserializeAxis(pAxis, axisIndex, axisConfig))
         return false;
 
-      config.SetAxis(axisProps);
+      config.SetAxis(axisIndex, axisConfig);
+    }
+
+    const TiXmlElement* pButton = pDevice->FirstChildElement(BUTTONMAP_XML_ELEM_BUTTON);
+
+    for ( ; pButton != nullptr; pButton = pButton->NextSiblingElement(BUTTONMAP_XML_ELEM_BUTTON))
+    {
+      unsigned int buttonIndex;
+      ButtonConfiguration buttonConfig;
+      if (!DeserializeButton(pButton, buttonIndex, buttonConfig))
+        return false;
+
+      config.SetButton(buttonIndex, buttonConfig);
     }
   }
 
   return true;
 }
 
-bool CDeviceXml::SerializeAxis(const AxisProperties& axisProps, TiXmlElement* pElement)
+bool CDeviceXml::SerializeAxis(unsigned int index, const AxisConfiguration& axisConfig, TiXmlElement* pElement)
 {
-  TiXmlElement axisElement(BUTTONMAP_XML_ELEM_AXIS);
-  TiXmlNode* axisNode = pElement->InsertEndChild(axisElement);
-  if (axisNode == nullptr)
-    return false;
+  AxisConfiguration defaultConfig{ };
+  if (!(axisConfig == defaultConfig))
+  {
+    TiXmlElement axisElement(BUTTONMAP_XML_ELEM_AXIS);
+    TiXmlNode* axisNode = pElement->InsertEndChild(axisElement);
+    if (axisNode == nullptr)
+      return false;
 
-  TiXmlElement* axisElem = axisNode->ToElement();
-  if (axisElem == nullptr)
-    return false;
+    TiXmlElement* axisElem = axisNode->ToElement();
+    if (axisElem == nullptr)
+      return false;
 
-  axisElem->SetAttribute(BUTTONMAP_XML_ATTR_AXIS_INDEX, axisProps.index);
-  axisElem->SetAttribute(BUTTONMAP_XML_ATTR_AXIS_CENTER, axisProps.center);
-  axisElem->SetAttribute(BUTTONMAP_XML_ATTR_AXIS_RANGE, axisProps.range);
+    axisElem->SetAttribute(BUTTONMAP_XML_ATTR_DRIVER_INDEX, index);
+
+    TriggerProperties defaultTrigger{ };
+    if (!(axisConfig.trigger == defaultTrigger))
+    {
+      axisElem->SetAttribute(BUTTONMAP_XML_ATTR_AXIS_CENTER, axisConfig.trigger.center);
+      axisElem->SetAttribute(BUTTONMAP_XML_ATTR_AXIS_RANGE, axisConfig.trigger.range);
+    }
+
+    if (axisConfig.bIgnore)
+      axisElem->SetAttribute(BUTTONMAP_XML_ATTR_IGNORE, "true");
+  }
 
   return true;
 }
 
-bool CDeviceXml::DeserializeAxis(const TiXmlElement* pElement, AxisProperties& axisProps)
+bool CDeviceXml::SerializeButton(unsigned int index, const ButtonConfiguration& buttonConfig, TiXmlElement* pElement)
 {
-  const char* index = pElement->Attribute(BUTTONMAP_XML_ATTR_AXIS_INDEX);
-  if (!index)
+  ButtonConfiguration defaultConfig{ };
+  if (!(buttonConfig == defaultConfig))
   {
-    esyslog("<%s> tag has no \"%s\" attribute", BUTTONMAP_XML_ELEM_AXIS, BUTTONMAP_XML_ATTR_AXIS_INDEX);
+    TiXmlElement buttonElement(BUTTONMAP_XML_ELEM_BUTTON);
+    TiXmlNode* buttonNode = pElement->InsertEndChild(buttonElement);
+    if (buttonNode == nullptr)
+      return false;
+
+    TiXmlElement* buttonElem = buttonNode->ToElement();
+    if (buttonElem == nullptr)
+      return false;
+
+    buttonElem->SetAttribute(BUTTONMAP_XML_ATTR_DRIVER_INDEX, index);
+
+    if (buttonConfig.bIgnore)
+      buttonElem->SetAttribute(BUTTONMAP_XML_ATTR_IGNORE, "true");
+  }
+
+  return true;
+}
+
+bool CDeviceXml::DeserializeAxis(const TiXmlElement* pElement, unsigned int& index, AxisConfiguration& axisConfig)
+{
+  AxisConfiguration config{ };
+
+  const char* strIndex = pElement->Attribute(BUTTONMAP_XML_ATTR_DRIVER_INDEX);
+  if (!strIndex)
+  {
+    esyslog("<%s> tag has no \"%s\" attribute", BUTTONMAP_XML_ELEM_AXIS, BUTTONMAP_XML_ATTR_DRIVER_INDEX);
     return false;
   }
-  axisProps.index = std::atoi(index);
+  index = std::atoi(strIndex);
 
   const char* center = pElement->Attribute(BUTTONMAP_XML_ATTR_AXIS_CENTER);
-  if (!center)
-  {
-    esyslog("<%s> tag has no \"%s\" attribute", BUTTONMAP_XML_ELEM_AXIS, BUTTONMAP_XML_ATTR_AXIS_CENTER);
-    return false;
-  }
-  axisProps.center = std::atoi(center);
+  if (center)
+    config.trigger.center = std::atoi(center);
 
   const char* range = pElement->Attribute(BUTTONMAP_XML_ATTR_AXIS_RANGE);
-  if (!range)
+  if (range)
+    config.trigger.range = std::atoi(range);
+
+  const char* ignore = pElement->Attribute(BUTTONMAP_XML_ATTR_IGNORE);
+  if (ignore)
+    config.bIgnore = (std::string(ignore) == "true");
+
+  axisConfig = config;
+
+  return true;
+}
+
+bool CDeviceXml::DeserializeButton(const TiXmlElement* pElement, unsigned int& index, ButtonConfiguration& buttonConfig)
+{
+  ButtonConfiguration config{ };
+
+  const char* strIndex = pElement->Attribute(BUTTONMAP_XML_ATTR_DRIVER_INDEX);
+  if (!strIndex)
   {
-    esyslog("<%s> tag has no \"%s\" attribute", BUTTONMAP_XML_ELEM_AXIS, BUTTONMAP_XML_ATTR_AXIS_RANGE);
+    esyslog("<%s> tag has no \"%s\" attribute", BUTTONMAP_XML_ELEM_AXIS, BUTTONMAP_XML_ATTR_DRIVER_INDEX);
     return false;
   }
-  axisProps.range = std::atoi(range);
+  index = std::atoi(strIndex);
+
+  const char* ignore = pElement->Attribute(BUTTONMAP_XML_ATTR_IGNORE);
+  if (ignore)
+    config.bIgnore = (std::string(ignore) == "true");
+
+  buttonConfig = config;
 
   return true;
 }

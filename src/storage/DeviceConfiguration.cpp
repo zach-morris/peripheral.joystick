@@ -35,24 +35,45 @@ CDeviceConfiguration::CDeviceConfiguration(const CDevice* parent) :
   assert(m_parent != nullptr);
 }
 
+CDeviceConfiguration& CDeviceConfiguration::operator=(const CDeviceConfiguration& rhs)
+{
+  if (this != &rhs)
+  {
+    m_axes = rhs.m_axes;
+    m_buttons = rhs.m_buttons;
+  }
+  return *this;
+}
+
 void CDeviceConfiguration::Reset(void)
 {
   m_axes.clear();
+  m_buttons.clear();
 }
 
-bool CDeviceConfiguration::GetAxis(unsigned int axisIndex, AxisProperties& axisProps) const
+const AxisConfiguration& CDeviceConfiguration::Axis(unsigned int index) const
 {
-  auto itAxis = m_axes.find(axisIndex);
-  if (itAxis != m_axes.end())
-  {
-    axisProps = itAxis->second;
-    return true;
-  }
+  static AxisConfiguration defaultConfig{ };
 
-  return false;
+  auto it = m_axes.find(index);
+  if (it != m_axes.end())
+    return it->second;
+
+  return defaultConfig;
 }
 
-void CDeviceConfiguration::LoadAxis(unsigned int axisIndex)
+const ButtonConfiguration& CDeviceConfiguration::Button(unsigned int index) const
+{
+  static ButtonConfiguration defaultConfig{ };
+
+  auto it = m_buttons.find(index);
+  if (it != m_buttons.end())
+    return it->second;
+
+  return defaultConfig;
+}
+
+void CDeviceConfiguration::LoadAxisFromAPI(unsigned int axisIndex)
 {
   JoystickVector joysticks = CJoystickManager::Get().GetJoysticks(*m_parent);
   for (const auto& joystick : joysticks)
@@ -67,18 +88,60 @@ void CDeviceConfiguration::LoadAxis(unsigned int axisIndex)
 
     if (itTrigger != triggerVec.end())
     {
-      m_axes[axisIndex] = { axisIndex, (*itTrigger)->Center(), (*itTrigger)->Range() };
+      m_axes[axisIndex].trigger.center = (*itTrigger)->Center();
+      m_axes[axisIndex].trigger.range = (*itTrigger)->Range();
     }
     else
     {
-      auto itAxis = m_axes.find(axisIndex);
-      if (itAxis != m_axes.end())
-        m_axes.erase(itAxis);
+      m_axes[axisIndex].trigger.Reset();
     }
   }
 }
 
-void CDeviceConfiguration::SetAxis(const AxisProperties& axisProps)
+PrimitiveVector CDeviceConfiguration::GetIgnoredPrimitives() const
 {
-  m_axes[axisProps.index] = axisProps;
+  PrimitiveVector primitives;
+
+  for (const auto& axisConfig : m_axes)
+  {
+    if (axisConfig.second.bIgnore)
+    {
+      primitives.emplace_back(axisConfig.first, JOYSTICK_DRIVER_SEMIAXIS_POSITIVE);
+      primitives.emplace_back(axisConfig.first, JOYSTICK_DRIVER_SEMIAXIS_NEGATIVE);
+    }
+  }
+
+  for (const auto& buttonConfig : m_buttons)
+  {
+    if (buttonConfig.second.bIgnore)
+      primitives.emplace_back(ADDON::DriverPrimitive::CreateButton(buttonConfig.first));
+  }
+
+  return primitives;
+}
+
+void CDeviceConfiguration::SetIgnoredPrimitives(const PrimitiveVector& primitives)
+{
+  // Reset known axes
+  for (auto& axisConfig : m_axes)
+    axisConfig.second.bIgnore = false;
+
+  for (auto& buttonConfig : m_buttons)
+    buttonConfig.second.bIgnore = false;
+
+  // Update ignore status
+  for (const auto& primitive : primitives)
+  {
+    switch (primitive.Type())
+    {
+    case JOYSTICK_DRIVER_PRIMITIVE_TYPE_BUTTON:
+      m_buttons[primitive.DriverIndex()].bIgnore = true;
+      break;
+    case JOYSTICK_DRIVER_PRIMITIVE_TYPE_SEMIAXIS:
+      m_axes[primitive.DriverIndex()].bIgnore = true;;
+      break;
+    default:
+      break;
+    }
+  }
 }

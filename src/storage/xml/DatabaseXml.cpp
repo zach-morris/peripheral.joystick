@@ -29,12 +29,12 @@ CDatabaseXml::CDatabaseXml(const std::string& strBasePath, bool bReadWrite, IDat
 {
 }
 
-CButtonMap* CDatabaseXml::CreateResource(const std::string& resourcePath)
+CButtonMap* CDatabaseXml::CreateResource(const std::string& resourcePath) const
 {
   return new CButtonMapXml(resourcePath);
 }
 
-CButtonMap* CDatabaseXml::CreateResource(const std::string& resourcePath, const DevicePtr& deviceInfo)
+CButtonMap* CDatabaseXml::CreateResource(const std::string& resourcePath, const DevicePtr& deviceInfo) const
 {
   return new CButtonMapXml(resourcePath, deviceInfo);
 }
