@@ -304,10 +304,14 @@ PERIPHERAL_ERROR SetIgnoredPrimitives(const JOYSTICK_INFO* joystick,
                                       unsigned int primitive_count,
                                       const JOYSTICK_DRIVER_PRIMITIVE* primitives)
 {
-  if (joystick == nullptr || primitive_count == 0 || (primitive_count > 0 && primitives == nullptr))
+  if (joystick == nullptr || (primitive_count > 0 && primitives == nullptr))
     return PERIPHERAL_ERROR_INVALID_PARAMETERS;
 
-  PrimitiveVector primitiveVector(primitives, primitives + primitive_count);
+  PrimitiveVector primitiveVector;
+
+  for (unsigned int i = 0; i < primitive_count; i++)
+    primitiveVector.emplace_back(*(primitives + i));
+
   bool bSuccess = CStorageManager::Get().SetIgnoredPrimitives(ADDON::Joystick(*joystick), primitiveVector);
 
   return bSuccess ? PERIPHERAL_NO_ERROR : PERIPHERAL_ERROR_FAILED;
