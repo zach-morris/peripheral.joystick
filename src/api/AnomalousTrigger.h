@@ -92,11 +92,6 @@ namespace JOYSTICK
       STATE_NOT_DISCRETE_DPAD,
 
       /*!
-       * \brief Center has been determined (see AXIS_CENTER)
-       */
-      STATE_CENTER_KNOWN,
-
-      /*!
        * \brief Range has been determined (see TRIGGER_RANGE)
        */
       STATE_RANGE_KNOWN,

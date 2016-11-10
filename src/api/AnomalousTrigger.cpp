@@ -89,22 +89,9 @@ void CAnomalousTrigger::UpdateState(float value)
     if (IsAnomalousTriggerDetected())
       dsyslog("Anomalous trigger detected on axis %u (initial value = %f)", m_axisIndex, value);
 
-    m_state = STATE_CENTER_KNOWN;
-  }
-
-  // Adjust range if value enters opposite semiaxis
-  if (m_state == STATE_CENTER_KNOWN)
-  {
-    if (m_center == CENTER_NEGATIVE_ONE && value > 0.0f)
-    {
-      m_range = TRIGGER_RANGE_FULL;
-      m_state = STATE_RANGE_KNOWN;
-    }
-    else if (m_center == CENTER_POSITIVE_ONE && value < 0.0f)
-    {
-      m_range = TRIGGER_RANGE_FULL;
-      m_state = STATE_RANGE_KNOWN;
-    }
+    // Assume full range
+    m_range = TRIGGER_RANGE_FULL;
+    m_state = STATE_RANGE_KNOWN;
   }
 }
 
