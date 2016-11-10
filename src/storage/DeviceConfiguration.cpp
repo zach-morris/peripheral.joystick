@@ -51,6 +51,12 @@ void CDeviceConfiguration::Reset(void)
   m_buttons.clear();
 }
 
+bool CDeviceConfiguration::IsEmpty() const
+{
+  return m_axes.empty() &&
+         m_buttons.empty();
+}
+
 const AxisConfiguration& CDeviceConfiguration::Axis(unsigned int index) const
 {
   static AxisConfiguration defaultConfig{ };

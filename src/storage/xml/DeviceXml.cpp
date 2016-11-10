@@ -115,25 +115,28 @@ bool CDeviceXml::Deserialize(const TiXmlElement* pElement, CDevice& record)
 
 bool CDeviceXml::SerializeConfig(const CDeviceConfiguration& config, TiXmlElement* pElement)
 {
-  TiXmlElement configurationElement(BUTTONMAP_XML_ELEM_CONFIGURATION);
-  TiXmlNode* configurationNode = pElement->InsertEndChild(configurationElement);
-  if (configurationNode == nullptr)
-    return false;
-
-  TiXmlElement* configurationElem = configurationNode->ToElement();
-  if (configurationElem == nullptr)
-    return false;
-
-  for (const auto& axis : config.Axes())
+  if (!config.IsEmpty())
   {
-    if (!SerializeAxis(axis.first, axis.second, configurationElem))
+    TiXmlElement configurationElement(BUTTONMAP_XML_ELEM_CONFIGURATION);
+    TiXmlNode* configurationNode = pElement->InsertEndChild(configurationElement);
+    if (configurationNode == nullptr)
       return false;
-  }
 
-  for (const auto& button : config.Buttons())
-  {
-    if (!SerializeButton(button.first, button.second, configurationElem))
+    TiXmlElement* configurationElem = configurationNode->ToElement();
+    if (configurationElem == nullptr)
       return false;
+
+    for (const auto& axis : config.Axes())
+    {
+      if (!SerializeAxis(axis.first, axis.second, configurationElem))
+        return false;
+    }
+
+    for (const auto& button : config.Buttons())
+    {
+      if (!SerializeButton(button.first, button.second, configurationElem))
+        return false;
+    }
   }
 
   return true;

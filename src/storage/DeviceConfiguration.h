@@ -39,6 +39,8 @@ namespace JOYSTICK
 
     void Reset(void);
 
+    bool IsEmpty() const;
+
     void LoadAxisFromAPI(unsigned int axisIndex);
 
           AxisConfigurationMap&   Axes(void)                       { return m_axes; }
