@@ -25,11 +25,12 @@
 #include <assert.h>
 
 using namespace JOYSTICK;
+using namespace P8PLATFORM;
 
 #define MAX_JOYSTICK_BUTTONS  512
 
 CJoystickCocoa::CJoystickCocoa(IOHIDDeviceRef device, CJoystickInterfaceCocoa* api)
- : CJoystickAsync(INTERFACE_COCOA),
+ : CJoystick(INTERFACE_COCOA),
    m_api(api),
    m_device(device),
    m_bInitialized(false)
@@ -56,6 +57,8 @@ bool CJoystickCocoa::Equals(const CJoystick* rhs) const
 
 bool CJoystickCocoa::Initialize(void)
 {
+  CLockObject lock(m_mutex);
+
   if (!m_bInitialized)
   {
     CFArrayRef elements = IOHIDDeviceCopyMatchingElements(m_device, NULL, kIOHIDOptionsTypeNone);
@@ -130,6 +133,8 @@ bool CJoystickCocoa::Initialize(void)
 
 void CJoystickCocoa::Deinitialize(void)
 {
+  CLockObject lock(m_mutex);
+
   CJoystick::Deinitialize();
 
   m_buttons.clear();
@@ -138,9 +143,34 @@ void CJoystickCocoa::Deinitialize(void)
   m_bInitialized = false;
 }
 
+bool CJoystickCocoa::GetEvents(std::vector<ADDON::PeripheralEvent>& events)
+{
+  CLockObject lock(m_mutex);
+  return CJoystick::GetEvents(events);
+}
+
 bool CJoystickCocoa::ScanEvents(void)
 {
-  return m_bInitialized;
+  CLockObject lock(m_mutex);
+  return m_bInitialized; // Events arrive asynchronously
+}
+
+void CJoystickCocoa::SetButtonValue(unsigned int buttonIndex, JOYSTICK_STATE_BUTTON buttonValue)
+{
+  CLockObject lock(m_mutex);
+  CJoystick::SetButtonValue(buttonIndex, buttonValue);
+}
+
+void CJoystickCocoa::SetHatValue(unsigned int hatIndex, JOYSTICK_STATE_HAT hatValue)
+{
+  CLockObject lock(m_mutex);
+  CJoystick::SetHatValue(hatIndex, hatValue);
+}
+
+void CJoystickCocoa::SetAxisValue(unsigned int axisIndex, JOYSTICK_STATE_AXIS axisValue)
+{
+  CLockObject lock(m_mutex);
+  CJoystick::SetAxisValue(axisIndex, axisValue);
 }
 
 void CJoystickCocoa::InputValueChanged(IOHIDValueRef value)

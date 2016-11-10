@@ -20,32 +20,40 @@
 #pragma once
 
 #include "JoystickInterfaceCocoa.h"
-#include "api/JoystickAsync.h"
+#include "api/Joystick.h"
 
 #include <CoreFoundation/CoreFoundation.h>
 #include <IOKit/hid/IOHIDBase.h>
 #include <IOKit/hid/IOHIDKeys.h>
 #include <IOKit/hid/IOHIDManager.h>
 
+#include "p8-platform/threads/mutex.h"
+
 namespace JOYSTICK
 {
   class CJoystickInterfaceCocoa;
 
-  class CJoystickCocoa : public CJoystickAsync, public ICocoaInputCallback
+  class CJoystickCocoa : public CJoystick, public ICocoaInputCallback
   {
   public:
     CJoystickCocoa(IOHIDDeviceRef device, CJoystickInterfaceCocoa* api);
     virtual ~CJoystickCocoa(void);
 
+    // implementation of CJoystick
     virtual bool Equals(const CJoystick* rhs) const override;
-
     virtual bool Initialize(void) override;
     virtual void Deinitialize(void) override;
+    virtual bool GetEvents(std::vector<ADDON::PeripheralEvent>& events) override;
 
+    // implementation of ICocoaInputCallback
     virtual void InputValueChanged(IOHIDValueRef value) override;
 
   protected:
+    // implementation of CJoystick
     virtual bool ScanEvents(void) override;
+    virtual void SetButtonValue(unsigned int buttonIndex, JOYSTICK_STATE_BUTTON buttonValue) override;
+    virtual void SetHatValue(unsigned int hatIndex, JOYSTICK_STATE_HAT hatValue) override;
+    virtual void SetAxisValue(unsigned int axisIndex, JOYSTICK_STATE_AXIS axisValue) override;
 
   private:
     IOHIDDeviceRef m_device;
@@ -61,5 +69,6 @@ namespace JOYSTICK
     CJoystickInterfaceCocoa* const m_api;
     std::vector<IOHIDElementRef> m_buttons;
     std::vector<CocoaAxis>       m_axes;
+    P8PLATFORM::CMutex m_mutex;
   };
 }
