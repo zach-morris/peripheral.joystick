@@ -44,9 +44,19 @@ float CAnomalousTrigger::Filter(float value)
 {
   UpdateState(value);
 
-  // Filter anomalous triggers
-  if (IsAnomalousTriggerDetected() && m_bTrigger)
-    value = FilterAnomalousTrigger(value, GetCenter(m_center), GetRange(m_range));
+  // Don't return non-zero unless we have some information about the axis.
+  // This is needed because an initial value of 1.0 could come from a discrete
+  // d-pad or an anomalous trigger.
+  if (m_state == STATE_UNKNOWN)
+  {
+    value = 0.0f;
+  }
+  else
+  {
+    // Filter anomalous triggers
+    if (IsAnomalousTriggerDetected() && m_bTrigger)
+      value = FilterAnomalousTrigger(value, GetCenter(m_center), GetRange(m_range));
+  }
 
   return value;
 }
