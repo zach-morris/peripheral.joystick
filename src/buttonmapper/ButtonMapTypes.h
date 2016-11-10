@@ -26,7 +26,7 @@
 
 namespace ADDON
 {
-  class DriverPrimitive;
+  struct DriverPrimitive;
   class JoystickFeature;
 };
 
