@@ -47,7 +47,7 @@ CJoystickDirectInput::CJoystickDirectInput(GUID                           device
 
 CJoystickDirectInput::~CJoystickDirectInput()
 {
-  if (m_joystickDevice)
+  if (m_bAcquired)
     m_joystickDevice->Unacquire();
 
   SAFE_RELEASE(m_joystickDevice);
@@ -72,8 +72,8 @@ bool CJoystickDirectInput::Initialize(void)
   // This will be done automatically when we're in the foreground but
   // let's do it here to check that we can acquire it and that no other
   // app has it in exclusive mode
-  hr = m_joystickDevice->Acquire();
-  if (FAILED(hr))
+  m_bAcquired = !(FAILED(m_joystickDevice->Acquire()));
+  if (!m_bAcquired)
   {
     esyslog("%s: Failed to acquire device on: %s", __FUNCTION__, Name().c_str());
     return false;

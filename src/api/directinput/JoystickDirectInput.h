@@ -47,5 +47,6 @@ namespace JOYSTICK
 
     GUID m_deviceGuid;
     LPDIRECTINPUTDEVICE8 m_joystickDevice;
+    bool m_bAcquired = false;
   };
 }
