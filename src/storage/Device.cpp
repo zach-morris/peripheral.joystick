@@ -22,14 +22,8 @@
 
 using namespace JOYSTICK;
 
-CDevice::CDevice(void) :
-  m_configuration(this)
-{
-}
-
 CDevice::CDevice(const ADDON::Joystick& joystick) :
-  ADDON::Joystick(joystick),
-  m_configuration(this)
+  ADDON::Joystick(joystick)
 {
 }
 

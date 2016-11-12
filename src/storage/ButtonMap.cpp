@@ -101,7 +101,7 @@ void CButtonMap::MapFeatures(const std::string& controllerId, const FeatureVecto
     //JOYSTICK_FEATURE_CATEGORY category = CStorageManager::Get().GetFeatureCategory(controllerId, newFeature.Name());
 
     for (unsigned int axis : updatedAxes)
-      m_device->Configuration().LoadAxisFromAPI(axis);
+      m_device->Configuration().LoadAxisFromAPI(axis, *m_device);
   }
 
   myFeatures.insert(myFeatures.begin(), features.begin(), features.end());

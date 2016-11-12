@@ -29,22 +29,6 @@
 
 using namespace JOYSTICK;
 
-CDeviceConfiguration::CDeviceConfiguration(const CDevice* parent) :
-  m_parent(parent)
-{
-  assert(m_parent != nullptr);
-}
-
-CDeviceConfiguration& CDeviceConfiguration::operator=(const CDeviceConfiguration& rhs)
-{
-  if (this != &rhs)
-  {
-    m_axes = rhs.m_axes;
-    m_buttons = rhs.m_buttons;
-  }
-  return *this;
-}
-
 void CDeviceConfiguration::Reset(void)
 {
   m_axes.clear();
@@ -79,9 +63,9 @@ const ButtonConfiguration& CDeviceConfiguration::Button(unsigned int index) cons
   return defaultConfig;
 }
 
-void CDeviceConfiguration::LoadAxisFromAPI(unsigned int axisIndex)
+void CDeviceConfiguration::LoadAxisFromAPI(unsigned int axisIndex, const CDevice& joystickInfo)
 {
-  JoystickVector joysticks = CJoystickManager::Get().GetJoysticks(*m_parent);
+  JoystickVector joysticks = CJoystickManager::Get().GetJoysticks(joystickInfo);
   for (const auto& joystick : joysticks)
   {
     std::vector<CAnomalousTrigger*> triggerVec = joystick->GetAnomalousTriggers();

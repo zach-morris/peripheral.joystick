@@ -50,8 +50,9 @@ namespace JOYSTICK
   class CDevice : public ADDON::Joystick
   {
   public:
-    CDevice(void);
+    CDevice(void) = default;
     CDevice(const ADDON::Joystick& joystick);
+    virtual ~CDevice(void) = default;
 
     void Reset(void);
 

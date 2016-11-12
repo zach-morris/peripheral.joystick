@@ -32,16 +32,14 @@ namespace JOYSTICK
   class CDeviceConfiguration
   {
   public:
-    CDeviceConfiguration(const CDevice* parent);
+    CDeviceConfiguration() = default;
     ~CDeviceConfiguration(void) = default;
-
-    CDeviceConfiguration& operator=(const CDeviceConfiguration& rhs);
 
     void Reset(void);
 
     bool IsEmpty() const;
 
-    void LoadAxisFromAPI(unsigned int axisIndex);
+    void LoadAxisFromAPI(unsigned int axisIndex, const CDevice& joystickInfo);
 
           AxisConfigurationMap&   Axes(void)                       { return m_axes; }
     const AxisConfigurationMap&   Axes(void) const                 { return m_axes; }
@@ -56,9 +54,6 @@ namespace JOYSTICK
     void SetIgnoredPrimitives(const PrimitiveVector& primitives);
 
   private:
-    // Construction parameters
-    const CDevice* const m_parent;
-
     // Configuration parameters
     AxisConfigurationMap m_axes;
     ButtonConfigurationMap m_buttons;
