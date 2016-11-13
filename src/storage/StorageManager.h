@@ -23,6 +23,8 @@
 #include "buttonmapper/ButtonMapTypes.h"
 #include "buttonmapper/JoystickFamily.h"
 
+#include "kodi_peripheral_types.h"
+
 #include <memory>
 #include <string>
 
@@ -93,6 +95,26 @@ namespace JOYSTICK
                      const FeatureVector& features);
 
     /*!
+     * \brief Get the ignored primitives from a storage backend
+     *
+     * \param joystick      The device's joystick properties; unknown values may be left at their default
+     * \param primitives    The array of driver primitives
+     *
+     * \return true if results were loaded from a storage backend
+     */
+    void GetIgnoredPrimitives(const ADDON::Joystick& joystick, PrimitiveVector& primitives);
+
+    /*!
+     * \brief Update the list of ignored driver primitives
+     *
+     * \param joystick      The device's joystick properties; unknown values may be left at their default
+     * \param primitives    The array of driver primitives
+     *
+     * \return true if driver primitives were set in a storage backend
+     */
+    bool SetIgnoredPrimitives(const ADDON::Joystick& joystick, const PrimitiveVector& primitives);
+
+    /*!
      * \brief Save the button map for the specified device
      *
      * \param deviceName The name of the device to reset
@@ -100,6 +122,16 @@ namespace JOYSTICK
      * \return true if the underlying storage was modified, false otherwise
      */
     bool SaveButtonMap(const ADDON::Joystick& joystick);
+
+    /*!
+     * \brief Revert the button map to the last time it was loaded or committed to disk
+     *
+     * \param deviceName The name of the device to revert
+     * \param controllerId The controller ID to revert
+     *
+     * \return true if the underlying storage was modified, false otherwise
+     */
+    bool RevertButtonMap(const ADDON::Joystick& joystick);
 
     /*!
      * \brief Reset the button map for the specified device and controller profile

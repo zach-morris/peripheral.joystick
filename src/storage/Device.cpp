@@ -27,6 +27,12 @@ CDevice::CDevice(const ADDON::Joystick& joystick) :
 {
 }
 
+void CDevice::Reset(void)
+{
+  Joystick::operator=(ADDON::Joystick());
+  m_configuration.Reset();
+}
+
 bool CDevice::operator==(const CDevice& rhs) const
 {
   return Name() == rhs.Name() &&

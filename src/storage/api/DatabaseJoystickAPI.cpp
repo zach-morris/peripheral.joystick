@@ -34,12 +34,26 @@ bool CDatabaseJoystickAPI::MapFeatures(const ADDON::Joystick& driverInfo, const 
   return false;
 }
 
-bool CDatabaseJoystickAPI::ResetButtonMap(const ADDON::Joystick& driverInfo, const std::string& controllerId)
+void CDatabaseJoystickAPI::GetIgnoredPrimitives(const ADDON::Joystick& joystick, PrimitiveVector& primitives)
+{
+}
+
+bool CDatabaseJoystickAPI::SetIgnoredPrimitives(const ADDON::Joystick& joystick, const PrimitiveVector& primitives)
 {
   return false;
 }
 
 bool CDatabaseJoystickAPI::SaveButtonMap(const ADDON::Joystick& driverInfo)
+{
+  return false;
+}
+
+bool CDatabaseJoystickAPI::RevertButtonMap(const ADDON::Joystick& driverInfo)
+{
+  return false;
+}
+
+bool CDatabaseJoystickAPI::ResetButtonMap(const ADDON::Joystick& driverInfo, const std::string& controllerId)
 {
   return false;
 }

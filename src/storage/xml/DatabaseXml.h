@@ -35,9 +35,8 @@ namespace JOYSTICK
 
     virtual ~CDatabaseXml(void) { }
 
-  protected:
     // implementation of CJustABunchOfFiles
-    virtual CButtonMap* CreateResource(const std::string& resourcePath) override;
-    virtual CButtonMap* CreateResource(const std::string& resourcePath, const DevicePtr& deviceInfo) override;
+    virtual CButtonMap* CreateResource(const std::string& resourcePath) const override;
+    virtual CButtonMap* CreateResource(const std::string& resourcePath, const DevicePtr& deviceInfo) const override;
   };
 }

@@ -20,13 +20,16 @@
 
 #include "ButtonMap.h"
 #include "Device.h"
+#include "DeviceConfiguration.h"
+#include "StorageManager.h"
+#include "StorageUtils.h"
 #include "log/Log.h"
-#include "storage/StorageUtils.h"
 
 #include "kodi_peripheral_utils.hpp"
 #include "p8-platform/util/timeutils.h"
 
 #include <algorithm>
+#include <set>
 
 using namespace JOYSTICK;
 
@@ -63,6 +66,10 @@ const ButtonMap& CButtonMap::GetButtonMap()
 
 void CButtonMap::MapFeatures(const std::string& controllerId, const FeatureVector& features)
 {
+  // Create a backup to allow revert
+  if (m_originalButtonMap.empty())
+    m_originalButtonMap = m_buttonMap;
+
   FeatureVector& myFeatures = m_buttonMap[controllerId];
 
   // Remove features with the same name
@@ -78,6 +85,23 @@ void CButtonMap::MapFeatures(const std::string& controllerId, const FeatureVecto
         }
         return false;
       }), myFeatures.end());
+  }
+
+  // Update axis configurations
+  for (auto& newFeature : features)
+  {
+    std::set<unsigned int> updatedAxes;
+    for (auto& primitive : newFeature.Primitives())
+    {
+      if (primitive.Type() == JOYSTICK_DRIVER_PRIMITIVE_TYPE_SEMIAXIS)
+        updatedAxes.insert(primitive.DriverIndex());
+    }
+
+    // TODO
+    //JOYSTICK_FEATURE_CATEGORY category = CStorageManager::Get().GetFeatureCategory(controllerId, newFeature.Name());
+
+    for (unsigned int axis : updatedAxes)
+      m_device->Configuration().LoadAxisFromAPI(axis, *m_device);
   }
 
   myFeatures.insert(myFeatures.begin(), features.begin(), features.end());
@@ -98,7 +122,19 @@ bool CButtonMap::SaveButtonMap()
   if (Save())
   {
     m_timestamp = P8PLATFORM::GetTimeMs();
+    m_originalButtonMap.clear();
     m_bModified = false;
+    return true;
+  }
+
+  return false;
+}
+
+bool CButtonMap::RevertButtonMap()
+{
+  if (!m_originalButtonMap.empty())
+  {
+    m_buttonMap = m_originalButtonMap;
     return true;
   }
 
@@ -132,6 +168,7 @@ bool CButtonMap::Refresh(void)
       Sanitize(it->first, it->second);
 
     m_timestamp = now;
+    m_originalButtonMap.clear();
   }
 
   return true;
@@ -203,7 +240,7 @@ void CButtonMap::Sanitize(const std::string& controllerId, FeatureVector& featur
     {
       auto& primitives = feature.Primitives();
 
-      // Find invalid primitive
+      // Find valid primitive
       auto it = std::find_if(primitives.begin(), primitives.end(),
         [](const ADDON::DriverPrimitive& primitive)
         {
