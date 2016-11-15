@@ -137,7 +137,10 @@ bool CStorageManager::MapFeatures(const ADDON::Joystick& joystick,
 void CStorageManager::GetIgnoredPrimitives(const ADDON::Joystick& joystick, PrimitiveVector& primitives)
 {
   for (DatabaseVector::const_iterator it = m_databases.begin(); it != m_databases.end(); ++it)
-    (*it)->GetIgnoredPrimitives(joystick, primitives);
+  {
+    if ((*it)->GetIgnoredPrimitives(joystick, primitives))
+      break;
+  }
 }
 
 bool CStorageManager::SetIgnoredPrimitives(const ADDON::Joystick& joystick, const PrimitiveVector& primitives)

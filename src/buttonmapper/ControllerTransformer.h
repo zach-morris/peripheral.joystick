@@ -43,6 +43,7 @@ namespace JOYSTICK
 
     // implementation of IDatabaseCallbacks
     virtual void OnAdd(const DevicePtr& driverInfo, const ButtonMap& buttonMap) override;
+    virtual DevicePtr CreateDevice(const CDevice& deviceInfo) override;
 
     void TransformFeatures(const ADDON::Joystick& driverInfo,
                            const std::string& fromController,

@@ -49,7 +49,7 @@ namespace JOYSTICK
     bool AddResource(CButtonMap* resource);
     void RemoveResource(const std::string& strPath);
 
-    void GetIgnoredPrimitives(const CDevice& deviceInfo, PrimitiveVector& primitives) const;
+    bool GetIgnoredPrimitives(const CDevice& deviceInfo, PrimitiveVector& primitives) const;
     void SetIgnoredPrimitives(const CDevice& deviceInfo, const PrimitiveVector& primitives);
 
     void Revert(const CDevice& deviceInfo);
@@ -83,7 +83,7 @@ namespace JOYSTICK
     virtual bool MapFeatures(const ADDON::Joystick& driverInfo,
                              const std::string& controllerId,
                              const FeatureVector& features) override;
-    virtual void GetIgnoredPrimitives(const ADDON::Joystick& driverInfo, PrimitiveVector& primitives) override;
+    virtual bool GetIgnoredPrimitives(const ADDON::Joystick& driverInfo, PrimitiveVector& primitives) override;
     virtual bool SetIgnoredPrimitives(const ADDON::Joystick& driverInfo, const PrimitiveVector& primitives) override;
     virtual bool SaveButtonMap(const ADDON::Joystick& driverInfo) override;
     virtual bool RevertButtonMap(const ADDON::Joystick& driverInfo) override;
@@ -106,6 +106,8 @@ namespace JOYSTICK
      * \return true if the path exists or was created
      */
     bool GetResourcePath(const ADDON::Joystick& deviceInfo, std::string& resourcePath) const;
+
+    DevicePtr CreateDevice(const CDevice& deviceInfo) const;
 
   private:
     /*!

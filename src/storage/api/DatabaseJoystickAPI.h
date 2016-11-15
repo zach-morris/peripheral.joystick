@@ -33,7 +33,7 @@ namespace JOYSTICK
     // implementation of IDatabase
     virtual const ButtonMap& GetButtonMap(const ADDON::Joystick& driverInfo) override;
     virtual bool MapFeatures(const ADDON::Joystick& driverInfo, const std::string& controllerId, const FeatureVector& features) override;
-    virtual void GetIgnoredPrimitives(const ADDON::Joystick& driverInfo, PrimitiveVector& primitives) override;
+    virtual bool GetIgnoredPrimitives(const ADDON::Joystick& driverInfo, PrimitiveVector& primitives) override;
     virtual bool SetIgnoredPrimitives(const ADDON::Joystick& driverInfo, const PrimitiveVector& primitives) override;
     virtual bool SaveButtonMap(const ADDON::Joystick& driverInfo) override;
     virtual bool RevertButtonMap(const ADDON::Joystick& driverInfo) override;

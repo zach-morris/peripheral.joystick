@@ -39,6 +39,8 @@ namespace JOYSTICK
     virtual ~IDatabaseCallbacks() = default;
 
     virtual void OnAdd(const DevicePtr& driverInfo, const ButtonMap& buttonMap) = 0;
+
+    virtual DevicePtr CreateDevice(const CDevice& deviceInfo) = 0;
   };
 
   class IDatabase
@@ -63,7 +65,7 @@ namespace JOYSTICK
     /*!
      * \copydoc CStorageManager::GetIgnoredPrimitives()
      */
-    virtual void GetIgnoredPrimitives(const ADDON::Joystick& driverInfo, PrimitiveVector& primitives) = 0;
+    virtual bool GetIgnoredPrimitives(const ADDON::Joystick& driverInfo, PrimitiveVector& primitives) = 0;
 
     /*!
      * \copydoc CStorageManager::SetIgnoredPrimitives()
@@ -85,6 +87,8 @@ namespace JOYSTICK
      */
     virtual bool ResetButtonMap(const ADDON::Joystick& driverInfo,
                                 const std::string& controllerId) = 0;
+
+    IDatabaseCallbacks* Callbacks() const { return m_callbacks; }
 
   protected:
     IDatabaseCallbacks* const m_callbacks;

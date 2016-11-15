@@ -34,8 +34,9 @@ bool CDatabaseJoystickAPI::MapFeatures(const ADDON::Joystick& driverInfo, const 
   return false;
 }
 
-void CDatabaseJoystickAPI::GetIgnoredPrimitives(const ADDON::Joystick& joystick, PrimitiveVector& primitives)
+bool CDatabaseJoystickAPI::GetIgnoredPrimitives(const ADDON::Joystick& joystick, PrimitiveVector& primitives)
 {
+  return false;
 }
 
 bool CDatabaseJoystickAPI::SetIgnoredPrimitives(const ADDON::Joystick& joystick, const PrimitiveVector& primitives)

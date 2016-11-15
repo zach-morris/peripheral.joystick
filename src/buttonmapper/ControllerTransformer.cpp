@@ -55,6 +55,19 @@ void CControllerTransformer::OnAdd(const DevicePtr& driverInfo, const ButtonMap&
   }
 }
 
+DevicePtr CControllerTransformer::CreateDevice(const CDevice& deviceInfo)
+{
+  DevicePtr result = std::make_shared<CDevice>(deviceInfo);
+
+  for (const auto& device : m_observedDevices)
+  {
+    if (*device == deviceInfo)
+      result->Configuration() = device->Configuration();
+  }
+
+  return result;
+}
+
 bool CControllerTransformer::AddControllerMap(const std::string& controllerFrom, const FeatureVector& featuresFrom,
                                               const std::string& controllerTo, const FeatureVector& featuresTo)
 {

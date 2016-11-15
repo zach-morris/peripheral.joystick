@@ -67,7 +67,7 @@ CButtonMap* CResources::GetResource(const CDevice& deviceInfo, bool bCreate)
     std::string resourcePath;
     if (m_database->GetResourcePath(deviceInfo, resourcePath))
     {
-      DevicePtr device = std::make_shared<CDevice>(deviceInfo);
+      DevicePtr device = m_database->CreateDevice(deviceInfo);
       CButtonMap* resource = m_database->CreateResource(resourcePath, device);
       if (!AddResource(resource))
       {
@@ -111,11 +111,16 @@ void CResources::RemoveResource(const std::string& strPath)
   }
 }
 
-void CResources::GetIgnoredPrimitives(const CDevice& deviceInfo, PrimitiveVector& primitives) const
+bool CResources::GetIgnoredPrimitives(const CDevice& deviceInfo, PrimitiveVector& primitives) const
 {
   DevicePtr device = GetDevice(deviceInfo);
   if (device)
+  {
     primitives = device->Configuration().GetIgnoredPrimitives();
+    return true;
+  }
+
+  return false;
 }
 
 void CResources::SetIgnoredPrimitives(const CDevice& deviceInfo, const PrimitiveVector& primitives)
@@ -215,14 +220,14 @@ bool CJustABunchOfFiles::MapFeatures(const ADDON::Joystick& driverInfo,
   return false;
 }
 
-void CJustABunchOfFiles::GetIgnoredPrimitives(const ADDON::Joystick& driverInfo, PrimitiveVector& primitives)
+bool CJustABunchOfFiles::GetIgnoredPrimitives(const ADDON::Joystick& driverInfo, PrimitiveVector& primitives)
 {
   CLockObject lock(m_mutex);
 
   // Update index
   IndexDirectory(m_strResourcePath, FOLDER_DEPTH);
 
-  m_resources.GetIgnoredPrimitives(driverInfo, primitives);
+  return m_resources.GetIgnoredPrimitives(driverInfo, primitives);
 }
 
 bool CJustABunchOfFiles::SetIgnoredPrimitives(const ADDON::Joystick& driverInfo, const PrimitiveVector& primitives)
@@ -351,4 +356,12 @@ bool CJustABunchOfFiles::GetResourcePath(const ADDON::Joystick& deviceInfo, std:
 
   // Ensure folder path exists
   return CStorageUtils::EnsureDirectoryExists(strFolder);
+}
+
+DevicePtr CJustABunchOfFiles::CreateDevice(const CDevice& deviceInfo) const
+{
+  if (Callbacks())
+    return Callbacks()->CreateDevice(deviceInfo);
+
+  return std::make_shared<CDevice>(deviceInfo);
 }
