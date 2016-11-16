@@ -22,6 +22,8 @@
 #include "StorageTypes.h"
 #include "buttonmapper/ButtonMapTypes.h"
 
+#include <set>
+#include <stdint.h>
 #include <string>
 
 namespace JOYSTICK
@@ -57,6 +59,8 @@ namespace JOYSTICK
     virtual bool Save(void) const = 0;
 
     static void Sanitize(const std::string& controllerId, FeatureVector& features);
+
+    static std::set<unsigned int> GetAxes(const FeatureVector& features);
 
     const std::string m_strResourcePath;
     DevicePtr         m_device;

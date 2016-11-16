@@ -29,7 +29,6 @@
 #include "p8-platform/util/timeutils.h"
 
 #include <algorithm>
-#include <set>
 
 using namespace JOYSTICK;
 
@@ -70,6 +69,11 @@ void CButtonMap::MapFeatures(const std::string& controllerId, const FeatureVecto
   if (m_originalButtonMap.empty())
     m_originalButtonMap = m_buttonMap;
 
+  // Update axis configurations
+  std::set<unsigned int> updatedAxes = GetAxes(features);
+  for (unsigned int axis : updatedAxes)
+    m_device->Configuration().LoadAxisFromAPI(axis, *m_device);
+
   FeatureVector& myFeatures = m_buttonMap[controllerId];
 
   // Remove features with the same name
@@ -85,23 +89,6 @@ void CButtonMap::MapFeatures(const std::string& controllerId, const FeatureVecto
         }
         return false;
       }), myFeatures.end());
-  }
-
-  // Update axis configurations
-  for (auto& newFeature : features)
-  {
-    std::set<unsigned int> updatedAxes;
-    for (auto& primitive : newFeature.Primitives())
-    {
-      if (primitive.Type() == JOYSTICK_DRIVER_PRIMITIVE_TYPE_SEMIAXIS)
-        updatedAxes.insert(primitive.DriverIndex());
-    }
-
-    // TODO
-    //JOYSTICK_FEATURE_CATEGORY category = CStorageManager::Get().GetFeatureCategory(controllerId, newFeature.Name());
-
-    for (unsigned int axis : updatedAxes)
-      m_device->Configuration().LoadAxisFromAPI(axis, *m_device);
   }
 
   myFeatures.insert(myFeatures.begin(), features.begin(), features.end());
@@ -257,4 +244,20 @@ void CButtonMap::Sanitize(const std::string& controllerId, FeatureVector& featur
 
       return false;
     }), features.end());
+}
+
+std::set<unsigned int> CButtonMap::GetAxes(const FeatureVector& features)
+{
+  std::set<unsigned int> axes;
+
+  for (auto& feature : features)
+  {
+    for (auto& primitive : feature.Primitives())
+    {
+      if (primitive.Type() == JOYSTICK_DRIVER_PRIMITIVE_TYPE_SEMIAXIS)
+        axes.insert(primitive.DriverIndex());
+    }
+  }
+
+  return axes;
 }
