@@ -25,6 +25,17 @@
 
 using namespace JOYSTICK;
 
+#if defined(TARGET_WINDOWS)
+#if defined(CreateDirectory)
+#define _CreateDirectory CreateDirectory
+#undef CreateDirectory
+#endif
+#if defined(RemoveDirectory)
+#define _RemoveDirectory RemoveDirectory
+#undef RemoveDirectory
+#endif
+#endif
+
 CVFSDirectoryUtils::CVFSDirectoryUtils(ADDON::CHelper_libXBMC_addon* frontend)
   : m_frontend(frontend)
 {
@@ -50,3 +61,14 @@ bool CVFSDirectoryUtils::GetDirectory(const std::string& path, const std::string
 {
   return ADDON::VFSUtils::GetDirectory(m_frontend, path, mask, items);
 }
+
+#if defined(TARGET_WINDOWS)
+#if defined(_CreateDirectory)
+#define CreateDirectory _CreateDirectory
+#undef _CreateDirectory
+#endif
+#if defined(_RemoveDirectory)
+#define RemoveDirectory _RemoveDirectory
+#undef _RemoveDirectory
+#endif
+#endif
