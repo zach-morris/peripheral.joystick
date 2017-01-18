@@ -20,7 +20,6 @@
 
 #include "DeviceConfiguration.h"
 #include "Device.h"
-#include "api/AnomalousTrigger.h"
 #include "api/Joystick.h"
 #include "api/JoystickManager.h"
 
@@ -65,26 +64,15 @@ const ButtonConfiguration& CDeviceConfiguration::Button(unsigned int index) cons
 
 void CDeviceConfiguration::LoadAxisFromAPI(unsigned int axisIndex, const CDevice& joystickInfo)
 {
+  // TODO
+  int triggerCenter = 0;
+  int triggerRange = 1;
+
   JoystickVector joysticks = CJoystickManager::Get().GetJoysticks(joystickInfo);
   for (const auto& joystick : joysticks)
   {
-    std::vector<CAnomalousTrigger*> triggerVec = joystick->GetAnomalousTriggers();
-
-    auto itTrigger = std::find_if(triggerVec.begin(), triggerVec.end(),
-      [axisIndex](const CAnomalousTrigger* trigger)
-      {
-        return trigger->AxisIndex() == axisIndex;
-      });
-
-    if (itTrigger != triggerVec.end())
-    {
-      m_axes[axisIndex].trigger.center = (*itTrigger)->Center();
-      m_axes[axisIndex].trigger.range = (*itTrigger)->Range();
-    }
-    else
-    {
-      m_axes[axisIndex].trigger.Reset();
-    }
+    m_axes[axisIndex].trigger.center = triggerCenter;
+    m_axes[axisIndex].trigger.range = triggerRange;
   }
 }
 

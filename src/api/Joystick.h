@@ -25,9 +25,6 @@
 
 namespace JOYSTICK
 {
-  class CAnomalousTrigger;
-  class IJoystickAxisFilter;
-
   class CJoystick : public ADDON::Joystick
   {
   public:
@@ -96,8 +93,6 @@ namespace JOYSTICK
      */
     virtual void PowerOff() { }
 
-    std::vector<CAnomalousTrigger*> GetAnomalousTriggers();
-
   protected:
     /*!
      * Implemented by derived class to scan for events
@@ -133,7 +128,6 @@ namespace JOYSTICK
 
     JoystickState                     m_state;
     JoystickState                     m_stateBuffer;
-    std::vector<IJoystickAxisFilter*> m_axisFilters;
     int64_t                           m_discoverTimeMs;
     int64_t                           m_activateTimeMs;
     int64_t                           m_firstEventTimeMs;

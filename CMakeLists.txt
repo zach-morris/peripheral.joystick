@@ -20,7 +20,6 @@ include_directories(${INCLUDES}
                     ${PCRE_INCLUDE_DIRS})
 
 set(JOYSTICK_SOURCES src/addon.cpp
-                     src/api/AnomalousTrigger.cpp
                      src/api/Joystick.cpp
                      src/api/JoystickInterfaceCallback.cpp
                      src/api/JoystickManager.cpp
