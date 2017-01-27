@@ -71,9 +71,7 @@ void CButtonMap::MapFeatures(const std::string& controllerId, const FeatureVecto
     m_originalButtonMap = m_buttonMap;
 
   // Update axis configurations
-  std::set<unsigned int> updatedAxes = GetAxes(features);
-  for (unsigned int axis : updatedAxes)
-    m_device->Configuration().LoadAxisFromAPI(axis, *m_device);
+  m_device->Configuration().SetAxisConfigs(features);
 
   // Merge new features
   FeatureVector& myFeatures = m_buttonMap[controllerId];
@@ -138,7 +136,12 @@ bool CButtonMap::Refresh(void)
       return false;
 
     for (auto it = m_buttonMap.begin(); it != m_buttonMap.end(); ++it)
+    {
+      // Transfer axis configs from device configuration to features' primitives
+      m_device->Configuration().GetAxisConfigs(it->second);
+
       Sanitize(it->second, it->first);
+    }
 
     m_timestamp = now;
     m_originalButtonMap.clear();
@@ -261,20 +264,4 @@ void CButtonMap::Sanitize(FeatureVector& features, const std::string& controller
 
       return false;
     }), features.end());
-}
-
-std::set<unsigned int> CButtonMap::GetAxes(const FeatureVector& features)
-{
-  std::set<unsigned int> axes;
-
-  for (auto& feature : features)
-  {
-    for (auto& primitive : feature.Primitives())
-    {
-      if (primitive.Type() == JOYSTICK_DRIVER_PRIMITIVE_TYPE_SEMIAXIS)
-        axes.insert(primitive.DriverIndex());
-    }
-  }
-
-  return axes;
 }

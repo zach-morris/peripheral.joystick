@@ -20,11 +20,8 @@
 
 #include "DeviceConfiguration.h"
 #include "Device.h"
-#include "api/Joystick.h"
-#include "api/JoystickManager.h"
 
 #include <algorithm>
-#include <assert.h>
 
 using namespace JOYSTICK;
 
@@ -62,20 +59,6 @@ const ButtonConfiguration& CDeviceConfiguration::Button(unsigned int index) cons
   return defaultConfig;
 }
 
-void CDeviceConfiguration::LoadAxisFromAPI(unsigned int axisIndex, const CDevice& joystickInfo)
-{
-  // TODO
-  int triggerCenter = 0;
-  int triggerRange = 1;
-
-  JoystickVector joysticks = CJoystickManager::Get().GetJoysticks(joystickInfo);
-  for (const auto& joystick : joysticks)
-  {
-    m_axes[axisIndex].trigger.center = triggerCenter;
-    m_axes[axisIndex].trigger.range = triggerRange;
-  }
-}
-
 PrimitiveVector CDeviceConfiguration::GetIgnoredPrimitives() const
 {
   PrimitiveVector primitives;
@@ -84,8 +67,8 @@ PrimitiveVector CDeviceConfiguration::GetIgnoredPrimitives() const
   {
     if (axisConfig.second.bIgnore)
     {
-      primitives.emplace_back(axisConfig.first, JOYSTICK_DRIVER_SEMIAXIS_POSITIVE);
-      primitives.emplace_back(axisConfig.first, JOYSTICK_DRIVER_SEMIAXIS_NEGATIVE);
+      primitives.emplace_back(axisConfig.first, 0, JOYSTICK_DRIVER_SEMIAXIS_POSITIVE, 1);
+      primitives.emplace_back(axisConfig.first, 0, JOYSTICK_DRIVER_SEMIAXIS_NEGATIVE, 1);
     }
   }
 
@@ -96,6 +79,50 @@ PrimitiveVector CDeviceConfiguration::GetIgnoredPrimitives() const
   }
 
   return primitives;
+}
+
+void CDeviceConfiguration::GetAxisConfigs(FeatureVector& features) const
+{
+  for (auto& feature : features)
+  {
+    for (auto& primitive : feature.Primitives())
+      GetAxisConfig(primitive);
+  }
+}
+
+void CDeviceConfiguration::GetAxisConfig(ADDON::DriverPrimitive& primitive) const
+{
+  if (primitive.Type() == JOYSTICK_DRIVER_PRIMITIVE_TYPE_SEMIAXIS)
+  {
+    auto it = m_axes.find(primitive.DriverIndex());
+    if (it != m_axes.end())
+    {
+      const AxisConfiguration& config = it->second;
+      primitive = ADDON::DriverPrimitive(primitive.DriverIndex(),
+                                         config.trigger.center,
+                                         primitive.SemiAxisDirection(),
+                                         config.trigger.range);
+    }
+  }
+}
+
+void CDeviceConfiguration::SetAxisConfigs(const FeatureVector& features)
+{
+  for (const auto& feature : features)
+  {
+    for (const auto& primitive : feature.Primitives())
+      SetAxisConfig(primitive);
+  }
+}
+
+void CDeviceConfiguration::SetAxisConfig(const ADDON::DriverPrimitive& primitive)
+{
+  if (primitive.Type() == JOYSTICK_DRIVER_PRIMITIVE_TYPE_SEMIAXIS)
+  {
+    AxisConfiguration& config = m_axes[primitive.DriverIndex()];
+    config.trigger.center = primitive.Center();
+    config.trigger.range = primitive.Range();
+  }
 }
 
 void CDeviceConfiguration::SetIgnoredPrimitives(const PrimitiveVector& primitives)
