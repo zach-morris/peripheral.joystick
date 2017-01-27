@@ -128,7 +128,7 @@ void CDeviceConfiguration::SetIgnoredPrimitives(const PrimitiveVector& primitive
       m_buttons[primitive.DriverIndex()].bIgnore = true;
       break;
     case JOYSTICK_DRIVER_PRIMITIVE_TYPE_SEMIAXIS:
-      m_axes[primitive.DriverIndex()].bIgnore = true;;
+      m_axes[primitive.DriverIndex()].bIgnore = true;
       break;
     default:
       break;
