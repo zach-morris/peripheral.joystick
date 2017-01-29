@@ -1,6 +1,6 @@
 <?xml version="1.0" ?>
 <buttonmap>
-    <device name="Gamepad F310" provider="cocoa" vid="046D" pid="C21D" buttoncount="15" axiscount="6">
+    <device name="Xbox 360 Wired Controller" provider="cocoa" vid="046D" pid="C21D" buttoncount="15" axiscount="6">
         <configuration>
             <axis index="4" center="-1" range="2" />
             <axis index="5" center="-1" range="2" />
@@ -96,16 +96,16 @@
             <feature name="cup" axis="-3" />
             <feature name="down" button="12" />
             <feature name="left" button="13" />
-            <feature name="leftbumper" button="4" />
+            <feature name="leftbumper" button="5" />
             <feature name="right" button="14" />
-            <feature name="rightbumper" button="5" />
+            <feature name="rightbumper" button="4" />
             <feature name="start" button="8" />
             <feature name="up" button="11" />
             <feature name="z" axis="+5" />
         </controller>
         <controller id="game.controller.nes">
-            <feature name="a" button="1" />
-            <feature name="b" button="0" />
+            <feature name="a" button="0" />
+            <feature name="b" button="1" />
             <feature name="down" button="12" />
             <feature name="left" button="13" />
             <feature name="right" button="14" />
@@ -144,8 +144,8 @@
             <feature name="up" button="11" />
         </controller>
         <controller id="game.controller.snes">
-            <feature name="a" button="1" />
-            <feature name="b" button="0" />
+            <feature name="a" button="0" />
+            <feature name="b" button="1" />
             <feature name="down" button="12" />
             <feature name="left" button="13" />
             <feature name="leftbumper" button="4" />
@@ -154,8 +154,8 @@
             <feature name="select" button="9" />
             <feature name="start" button="8" />
             <feature name="up" button="11" />
-            <feature name="x" button="3" />
-            <feature name="y" button="2" />
+            <feature name="x" button="2" />
+            <feature name="y" button="3" />
         </controller>
     </device>
 </buttonmap>
