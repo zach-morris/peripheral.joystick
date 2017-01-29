@@ -68,6 +68,24 @@ list(APPEND DEPLIBS ${kodiplatform_LIBRARIES}
                     ${PCRE_LIBRARIES})
 add_definitions(${PCRE_DEFINITIONS})
 
+# --- SDL2 ---------------------------------------------------------------------
+
+# SDL game controller support only used by Steam Link
+if(STEAMLINK)
+  find_package(SDL2)
+
+  if(SDL2_FOUND)
+    include_directories(${SDL2_INCLUDE_DIR})
+
+    add_definitions(-DHAVE_SDL)
+
+    list(APPEND JOYSTICK_SOURCES src/api/sdl/JoystickInterfaceSDL.cpp
+                                 src/api/sdl/JoystickSDL.cpp)
+
+    list(APPEND DEPLIBS ${SDL2_LIBRARY})
+  endif()
+endif() # STEAMLINK
+
 # --- Cocoa --------------------------------------------------------------------
 
 if("${CORE_SYSTEM_NAME}" STREQUAL "darwin" OR "${CORE_SYSTEM_NAME}" STREQUAL "osx")
