@@ -226,6 +226,7 @@ void CButtonMap::Sanitize(FeatureVector& features, const std::string& controller
         {
           if (ButtonMapUtils::PrimitivesConflict(primitives[iExistingPrimitive], primitive))
           {
+            existingFeature = feature;
             bFound = true;
             break;
           }
@@ -238,7 +239,7 @@ void CButtonMap::Sanitize(FeatureVector& features, const std::string& controller
         esyslog("%s: %s (%s) conflicts with %s (%s)",
             controllerId.c_str(),
             CStorageUtils::PrimitiveToString(primitive).c_str(),
-            existingFeature.Type() != JOYSTICK_FEATURE_TYPE_UNKNOWN ? existingFeature.Name().c_str() : feature.Name().c_str(),
+            existingFeature.Name().c_str(),
             CStorageUtils::PrimitiveToString(primitive).c_str(),
             feature.Name().c_str());
 
