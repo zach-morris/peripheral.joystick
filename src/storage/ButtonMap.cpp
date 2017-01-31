@@ -205,10 +205,16 @@ void CButtonMap::Sanitize(FeatureVector& features, const std::string& controller
       for (unsigned int iExistingFeature = 0; iExistingFeature < iFeature; ++iExistingFeature)
       {
         const auto& existingPrimitives = features[iExistingFeature].Primitives();
-        if (std::find(existingPrimitives.begin(), existingPrimitives.end(), primitive) != existingPrimitives.end())
+
+        bFound = std::find_if(existingPrimitives.begin(), existingPrimitives.end(),
+          [&primitive](const ADDON::DriverPrimitive& existing)
+          {
+            return ButtonMapUtils::PrimitivesConflict(primitive, existing);
+          }) != existingPrimitives.end();
+
+        if (bFound)
         {
           existingFeature = features[iExistingFeature];
-          bFound = true;
           break;
         }
       }
@@ -218,7 +224,7 @@ void CButtonMap::Sanitize(FeatureVector& features, const std::string& controller
         // Search for primitive in prior primitives
         for (unsigned int iExistingPrimitive = 0; iExistingPrimitive < iPrimitive; ++iExistingPrimitive)
         {
-          if (primitives[iExistingPrimitive] == primitive)
+          if (ButtonMapUtils::PrimitivesConflict(primitives[iExistingPrimitive], primitive))
           {
             bFound = true;
             break;

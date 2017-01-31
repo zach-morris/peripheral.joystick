@@ -22,6 +22,8 @@
 
 #include "kodi_peripheral_utils.hpp"
 
+#include <array>
+
 using namespace JOYSTICK;
 
 bool ButtonMapUtils::PrimitivesEqual(const ADDON::JoystickFeature& lhs, const ADDON::JoystickFeature& rhs)
@@ -51,6 +53,53 @@ bool ButtonMapUtils::PrimitivesEqual(const ADDON::JoystickFeature& lhs, const AD
     default:
       break;
     }
+  }
+  return false;
+}
+
+bool ButtonMapUtils::PrimitivesConflict(const ADDON::DriverPrimitive& lhs, const ADDON::DriverPrimitive& rhs)
+{
+  if (lhs.Type() != JOYSTICK_DRIVER_PRIMITIVE_TYPE_UNKNOWN &&
+      lhs.Type() == rhs.Type() &&
+      lhs.DriverIndex() == rhs.DriverIndex())
+  {
+    switch (lhs.Type())
+    {
+    case JOYSTICK_DRIVER_PRIMITIVE_TYPE_HAT_DIRECTION:
+    {
+      if (lhs.HatDirection() == rhs.HatDirection())
+        return true;
+      break;
+    }
+    case JOYSTICK_DRIVER_PRIMITIVE_TYPE_SEMIAXIS:
+    {
+      std::array<float, 2> points = { { -0.5f, 0.5f } };
+      for (auto point : points)
+      {
+        if (SemiAxisIntersects(lhs, point) && SemiAxisIntersects(rhs, point))
+          return true;
+      }
+      break;
+    }
+    default:
+      return true;
+    }
+  }
+
+  return false;
+}
+
+bool ButtonMapUtils::SemiAxisIntersects(const ADDON::DriverPrimitive& semiaxis, float point)
+{
+  if (semiaxis.Type() == JOYSTICK_DRIVER_PRIMITIVE_TYPE_SEMIAXIS)
+  {
+    int endpoint1 = semiaxis.Center();
+    int endpoint2 = semiaxis.Center() + semiaxis.Range() * semiaxis.SemiAxisDirection();
+
+    if (endpoint1 <= endpoint2)
+      return endpoint1 <= point && point <= endpoint2;
+    else
+      return endpoint2 <= point && point <= endpoint1;
   }
   return false;
 }
