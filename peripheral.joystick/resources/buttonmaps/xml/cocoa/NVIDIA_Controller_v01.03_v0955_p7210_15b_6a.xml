@@ -1,0 +1,14 @@
+<?xml version="1.0" ?>
+<buttonmap>
+    <device name="NVIDIA Controller v01.03" provider="cocoa" vid="0955" pid="7210" buttoncount="15" axiscount="6">
+        <configuration>
+            <axis index="0" center="1" range="2" />
+        </configuration>
+        <controller id="game.controller.default">
+            <feature name="back" button="4" />
+            <feature name="leftthumb" axis="+0" />
+            <feature name="rightthumb" button="13" />
+            <feature name="x" button="3" />
+        </controller>
+    </device>
+</buttonmap>

@@ -1,0 +1,4 @@
+<?xml version="1.0" ?>
+<buttonmap>
+    <device name="PS(R) Ga`epad" provider="cocoa" vid="054C" pid="0268" buttoncount="19" axiscount="4" />
+</buttonmap>
