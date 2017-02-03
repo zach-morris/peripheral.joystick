@@ -21,6 +21,7 @@
 
 namespace ADDON
 {
+  struct DriverPrimitive;
   class JoystickFeature;
 }
 
@@ -33,5 +34,16 @@ namespace JOYSTICK
      * \brief Check if two features having matching primitives
      */
     static bool PrimitivesEqual(const ADDON::JoystickFeature& lhs, const ADDON::JoystickFeature& rhs);
+
+    /*!
+     * \brief Check if two primitives conflict with each other
+     */
+    static bool PrimitivesConflict(const ADDON::DriverPrimitive& lhs, const ADDON::DriverPrimitive& rhs);
+
+    /*!
+     * \brief Check if a point intersects the range covered by a semiaxis,
+     *        including its endpoints
+     */
+    static bool SemiAxisIntersects(const ADDON::DriverPrimitive& semiaxis, float point);
   };
 }
