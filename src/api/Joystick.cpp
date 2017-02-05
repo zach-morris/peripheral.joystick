@@ -74,11 +74,11 @@ bool CJoystick::Initialize(void)
 
   m_state.buttons.assign(ButtonCount(), JOYSTICK_STATE_BUTTON_UNPRESSED);
   m_state.hats.assign(HatCount(), JOYSTICK_STATE_HAT_UNPRESSED);
-  m_state.axes.assign(AxisCount(), 0.0f);
+  m_state.axes.resize(AxisCount());
 
   m_stateBuffer.buttons.assign(ButtonCount(), JOYSTICK_STATE_BUTTON_UNPRESSED);
   m_stateBuffer.hats.assign(HatCount(), JOYSTICK_STATE_HAT_UNPRESSED);
-  m_stateBuffer.axes.assign(AxisCount(), 0.0f);
+  m_stateBuffer.axes.resize(AxisCount());
 
   return true;
 }
@@ -156,12 +156,12 @@ void CJoystick::GetHatEvents(std::vector<ADDON::PeripheralEvent>& events)
 
 void CJoystick::GetAxisEvents(std::vector<ADDON::PeripheralEvent>& events)
 {
-  const std::vector<JOYSTICK_STATE_AXIS>& axes = m_stateBuffer.axes;
+  const std::vector<JoystickAxis>& axes = m_stateBuffer.axes;
 
   for (unsigned int i = 0; i < axes.size(); i++)
   {
-    if (axes[i] != 0.0f || m_state.axes[i] != 0.0f)
-      events.push_back(ADDON::PeripheralEvent(Index(), i, axes[i]));
+    if (axes[i].bSeen)
+      events.push_back(ADDON::PeripheralEvent(Index(), i, axes[i].state));
   }
 
   m_state.axes.assign(axes.begin(), axes.end());
@@ -193,7 +193,10 @@ void CJoystick::SetAxisValue(unsigned int axisIndex, JOYSTICK_STATE_AXIS axisVal
   axisValue = CONSTRAIN(-1.0f, axisValue, 1.0f);
 
   if (axisIndex < m_stateBuffer.axes.size())
-    m_stateBuffer.axes[axisIndex] = axisValue;
+  {
+    m_stateBuffer.axes[axisIndex].state = axisValue;
+    m_stateBuffer.axes[axisIndex].bSeen = true;
+  }
 }
 
 void CJoystick::SetAxisValue(unsigned int axisIndex, long value, long maxAxisAmount)
