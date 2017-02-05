@@ -23,6 +23,7 @@
 #include "kodi_peripheral_utils.hpp"
 
 #include <array>
+#include <map>
 
 using namespace JOYSTICK;
 
@@ -102,4 +103,42 @@ bool ButtonMapUtils::SemiAxisIntersects(const ADDON::DriverPrimitive& semiaxis, 
       return endpoint2 <= point && point <= endpoint1;
   }
   return false;
+}
+
+const std::vector<JOYSTICK_FEATURE_PRIMITIVE>& ButtonMapUtils::GetPrimitives(JOYSTICK_FEATURE_TYPE featureType)
+{
+  static const std::map<JOYSTICK_FEATURE_TYPE, std::vector<JOYSTICK_FEATURE_PRIMITIVE>> m_primitiveMap = {
+    {
+      JOYSTICK_FEATURE_TYPE_SCALAR, {
+        JOYSTICK_SCALAR_PRIMITIVE,
+      }
+    },
+    {
+      JOYSTICK_FEATURE_TYPE_ANALOG_STICK, {
+        JOYSTICK_ANALOG_STICK_UP,
+        JOYSTICK_ANALOG_STICK_DOWN,
+        JOYSTICK_ANALOG_STICK_RIGHT,
+        JOYSTICK_ANALOG_STICK_LEFT,
+      }
+    },
+    {
+      JOYSTICK_FEATURE_TYPE_ACCELEROMETER, {
+        JOYSTICK_ACCELEROMETER_POSITIVE_X,
+        JOYSTICK_ACCELEROMETER_POSITIVE_Y,
+        JOYSTICK_ACCELEROMETER_POSITIVE_Z,
+      }
+    },
+    {
+      JOYSTICK_FEATURE_TYPE_MOTOR, {
+        JOYSTICK_MOTOR_PRIMITIVE,
+      }
+    }
+  };
+
+  auto itPair = m_primitiveMap.find(featureType);
+  if (itPair != m_primitiveMap.end())
+    return itPair->second;
+
+  static const std::vector<JOYSTICK_FEATURE_PRIMITIVE> empty;
+  return empty;
 }

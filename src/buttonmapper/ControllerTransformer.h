@@ -23,10 +23,13 @@
 #include "JoystickFamily.h"
 #include "storage/IDatabase.h"
 
+#include "kodi_peripheral_types.h"
+
 #include <string>
 
 namespace ADDON
 {
+  struct DriverPrimitive;
   class Joystick;
 }
 
@@ -52,8 +55,24 @@ namespace JOYSTICK
                            FeatureVector& transformedFeatures);
 
   private:
-    bool AddControllerMap(const std::string& controllerFrom, const FeatureVector& featuresFrom,
+    void AddControllerMap(const std::string& controllerFrom, const FeatureVector& featuresFrom,
                           const std::string& controllerTo, const FeatureVector& featuresTo);
+
+    static FeatureMap CreateFeatureMap(const FeatureVector& featuresFrom, const FeatureVector& featuresTo);
+
+    static const FeatureMap& GetFeatureMap(const FeatureMaps& featureMaps);
+
+    static bool TranslatePrimitive(const ADDON::JoystickFeature& sourceFeature,
+                                   JOYSTICK_FEATURE_PRIMITIVE sourcePrimitive,
+                                   ADDON::JoystickFeature& targetFeature,
+                                   JOYSTICK_FEATURE_PRIMITIVE& targetPrimitive,
+                                   const FeatureMap& featureMap,
+                                   bool bSwap);
+
+    static void SetPrimitive(FeatureVector& features,
+                             const ADDON::JoystickFeature& feature,
+                             JOYSTICK_FEATURE_PRIMITIVE index,
+                             const ADDON::DriverPrimitive& primitive);
 
     ControllerMap           m_controllerMap;
     DeviceSet               m_observedDevices;
