@@ -119,11 +119,17 @@ namespace JOYSTICK
     static float NormalizeAxis(long value, long maxAxisAmount);
     static float ScaleDeadzone(float value);
 
+    struct JoystickAxis
+    {
+      JOYSTICK_STATE_AXIS state = 0.0f;
+      bool bSeen = false;
+    };
+
     struct JoystickState
     {
       std::vector<JOYSTICK_STATE_BUTTON> buttons;
       std::vector<JOYSTICK_STATE_HAT>    hats;
-      std::vector<JOYSTICK_STATE_AXIS>   axes;
+      std::vector<JoystickAxis>          axes;
     };
 
     JoystickState                     m_state;

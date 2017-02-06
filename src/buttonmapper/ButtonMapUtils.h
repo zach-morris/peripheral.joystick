@@ -19,6 +19,10 @@
  */
 #pragma once
 
+#include "kodi_peripheral_types.h"
+
+#include <vector>
+
 namespace ADDON
 {
   struct DriverPrimitive;
@@ -45,5 +49,10 @@ namespace JOYSTICK
      *        including its endpoints
      */
     static bool SemiAxisIntersects(const ADDON::DriverPrimitive& semiaxis, float point);
+
+    /*!
+     * \brief Get a list of all primitives belonging to this feature
+     */
+    static const std::vector<JOYSTICK_FEATURE_PRIMITIVE>& GetPrimitives(JOYSTICK_FEATURE_TYPE featureTypes);
   };
 }
