@@ -63,7 +63,10 @@ DevicePtr CControllerTransformer::CreateDevice(const CDevice& deviceInfo)
   for (const auto& device : m_observedDevices)
   {
     if (*device == deviceInfo)
+    {
       result->Configuration() = device->Configuration();
+      break;
+    }
   }
 
   return result;
