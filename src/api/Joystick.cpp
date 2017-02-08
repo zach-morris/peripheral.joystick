@@ -54,12 +54,10 @@ bool CJoystick::Equals(const CJoystick* rhs) const
 
 void CJoystick::SetName(const std::string& strName)
 {
-  std::string strSanitizedFilename(strName);
+  std::string strSanitizedFilename = StringUtils::MakeSafeString(strName);
 
   // Remove Bluetooth MAC address as seen in Sony Playstation controllers
   StringUtils::RemoveMACAddress(strSanitizedFilename);
-
-  StringUtils::Trim(strSanitizedFilename);
 
   ADDON::Joystick::SetName(strSanitizedFilename);
 }
