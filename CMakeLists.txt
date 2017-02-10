@@ -25,6 +25,7 @@ set(JOYSTICK_SOURCES src/addon.cpp
                      src/api/JoystickInterfaceCallback.cpp
                      src/api/JoystickManager.cpp
                      src/api/JoystickTranslator.cpp
+                     src/api/JoystickUtils.cpp
                      src/api/PeripheralScanner.cpp
                      src/buttonmapper/ButtonMapper.cpp
                      src/buttonmapper/ButtonMapTranslator.cpp

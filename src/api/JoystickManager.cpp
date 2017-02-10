@@ -22,6 +22,7 @@
 #include "IJoystickInterface.h"
 #include "Joystick.h"
 #include "JoystickTranslator.h"
+#include "JoystickUtils.h"
 
 #if defined(HAVE_DIRECT_INPUT)
   #include "directinput/JoystickInterfaceDirectInput.h"
@@ -228,11 +229,8 @@ bool CJoystickManager::PerformJoystickScan(JoystickVector& joysticks)
   joysticks.erase(std::remove_if(joysticks.begin(), joysticks.end(),
     [](const JoystickPtr& joystick)
     {
-      return (joystick->Provider() == JoystickTranslator::GetInterfaceProvider(EJoystickInterface::LINUX) ||
-               joystick->Provider() == JoystickTranslator::GetInterfaceProvider(EJoystickInterface::UDEV)) &&
-             (joystick->Name() == "Xbox 360 Wireless Receiver" ||
-               joystick->Name() == "Xbox 360 Wireless Receiver (XBOX)") &&
-             joystick->ActivateTimeMs() < 0;
+      return CJoystickUtils::IsGhostJoystick(*joystick) &&
+             !joystick->IsActive();
     }), joysticks.end());
 
   return true;
