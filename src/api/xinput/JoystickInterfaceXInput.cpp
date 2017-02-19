@@ -25,11 +25,23 @@
 
 #include <array>
 #include <cstring>
+#include <utility>
 #include <Xinput.h>
 
 using namespace JOYSTICK;
 
 #define MAX_JOYSTICKS 4
+
+ButtonMap CJoystickInterfaceXInput::m_buttonMap = {
+    std::make_pair("game.controller.default", FeatureVector{
+        ADDON::JoystickFeature("leftmotor", JOYSTICK_FEATURE_TYPE_MOTOR),
+        ADDON::JoystickFeature("rightmotor", JOYSTICK_FEATURE_TYPE_MOTOR),
+    }),
+    std::make_pair("game.controller.ps", FeatureVector{
+        ADDON::JoystickFeature("strongmotor", JOYSTICK_FEATURE_TYPE_MOTOR),
+        ADDON::JoystickFeature("weakmotor", JOYSTICK_FEATURE_TYPE_MOTOR),
+    }),
+};
 
 EJoystickInterface CJoystickInterfaceXInput::Type(void) const
 {
@@ -74,4 +86,17 @@ bool CJoystickInterfaceXInput::ScanForJoysticks(JoystickVector& joysticks)
   }
 
   return true;
+}
+
+const ButtonMap& CJoystickInterfaceXInput::GetButtonMap()
+{
+  auto& dflt = m_buttonMap["game.controller.default"];
+  dflt[CJoystickXInput::MOTOR_LEFT].SetPrimitive(JOYSTICK_MOTOR_PRIMITIVE, ADDON::DriverPrimitive::CreateMotor(CJoystickXInput::MOTOR_LEFT));
+  dflt[CJoystickXInput::MOTOR_RIGHT].SetPrimitive(JOYSTICK_MOTOR_PRIMITIVE, ADDON::DriverPrimitive::CreateMotor(CJoystickXInput::MOTOR_RIGHT));
+
+  auto& ps = m_buttonMap["game.controller.ps"];
+  ps[CJoystickXInput::MOTOR_LEFT].SetPrimitive(JOYSTICK_MOTOR_PRIMITIVE, ADDON::DriverPrimitive::CreateMotor(CJoystickXInput::MOTOR_LEFT));
+  ps[CJoystickXInput::MOTOR_RIGHT].SetPrimitive(JOYSTICK_MOTOR_PRIMITIVE, ADDON::DriverPrimitive::CreateMotor(CJoystickXInput::MOTOR_RIGHT));
+
+  return m_buttonMap;
 }

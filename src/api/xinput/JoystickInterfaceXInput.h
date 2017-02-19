@@ -20,6 +20,7 @@
 #pragma once
 
 #include "api/IJoystickInterface.h"
+#include "buttonmapper/ButtonMapTypes.h"
 
 namespace JOYSTICK
 {
@@ -36,5 +37,9 @@ namespace JOYSTICK
     virtual bool SupportsRumble(void) const override { return true; }
     virtual bool SupportsPowerOff(void) const override;
     virtual bool ScanForJoysticks(JoystickVector& joysticks) override;
+    virtual const ButtonMap& GetButtonMap() override;
+
+  private:
+    static ButtonMap m_buttonMap;
   };
 }
