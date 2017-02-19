@@ -159,6 +159,30 @@ void CJoystickManager::Deinitialize(void)
   m_scanner = NULL;
 }
 
+bool CJoystickManager::SupportsRumble(void) const
+{
+  CLockObject lock(m_interfacesMutex);
+  for (auto iface : m_interfaces)
+  {
+    if (iface->SupportsRumble())
+      return true;
+  }
+
+  return false;
+}
+
+bool CJoystickManager::SupportsPowerOff(void) const
+{
+  CLockObject lock(m_interfacesMutex);
+  for (auto iface : m_interfaces)
+  {
+    if (iface->SupportsPowerOff())
+      return true;
+  }
+
+  return false;
+}
+
 bool CJoystickManager::PerformJoystickScan(JoystickVector& joysticks)
 {
   JoystickVector scanResults;

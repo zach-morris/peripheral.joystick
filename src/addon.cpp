@@ -157,6 +157,8 @@ PERIPHERAL_ERROR GetAddonCapabilities(PERIPHERAL_CAPABILITIES* pCapabilities)
     return PERIPHERAL_ERROR_INVALID_PARAMETERS;
 
   pCapabilities->provides_joysticks = true;
+  pCapabilities->provides_joystick_rumble = CJoystickManager::Get().SupportsRumble();
+  pCapabilities->provides_joystick_power_off = CJoystickManager::Get().SupportsPowerOff();
   pCapabilities->provides_buttonmaps = true;
 
   return PERIPHERAL_NO_ERROR;
