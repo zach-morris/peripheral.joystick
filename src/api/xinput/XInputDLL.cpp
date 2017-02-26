@@ -70,14 +70,14 @@ bool CXInputDLL::Load(void)
 
     // 100 is the ordinal for _XInputGetStateEx, which returns the same struct as
     // XinputGetState, but with extra data in wButtons for the guide button, we think...
-    if (m_strVersion == "1.3")
+    if (HasGuideButton())
       m_getStateEx = (FnXInputGetStateEx)GetProcAddress(m_dll, reinterpret_cast<LPCSTR>(100));
     else
       m_getState = (FnXInputGetState)GetProcAddress(m_dll, "XInputGetState");
     m_setState = (FnXInputSetState)GetProcAddress(m_dll, "XInputSetState");
     m_getCaps  = (FnXInputGetCapabilities)GetProcAddress(m_dll, "XInputGetCapabilities");
     m_getBatteryInfo = (FnXInputGetBatteryInformation)GetProcAddress(m_dll, "XInputGetBatteryInformation");
-    if (m_strVersion == "1.3")
+    if (SupportsPowerOff())
       m_powerOff = (FnXInputPowerOffController)GetProcAddress(m_dll, reinterpret_cast<LPCSTR>(103));
 
     if ((m_getState || m_getStateEx) && m_setState && m_getCaps && m_getBatteryInfo)
@@ -112,6 +112,17 @@ void CXInputDLL::Unload(void)
   m_getBatteryInfo  = NULL;
   m_powerOff = NULL;
   m_dll      = NULL;
+}
+
+
+bool CXInputDLL::HasGuideButton(void) const
+{
+  return m_strVersion == "1.3";
+}
+
+bool CXInputDLL::SupportsPowerOff(void) const
+{
+  return m_strVersion == "1.3";
 }
 
 bool CXInputDLL::GetState(unsigned int controllerId, XINPUT_STATE& state)

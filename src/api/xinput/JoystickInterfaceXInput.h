@@ -33,6 +33,8 @@ namespace JOYSTICK
     virtual const char* Name(void) const override;
     virtual bool Initialize(void) override;
     virtual void Deinitialize(void) override;
+    virtual bool SupportsRumble(void) const override { return true; }
+    virtual bool SupportsPowerOff(void) const override;
     virtual bool ScanForJoysticks(JoystickVector& joysticks) override;
   };
 }

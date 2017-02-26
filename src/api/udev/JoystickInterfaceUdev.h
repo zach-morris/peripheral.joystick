@@ -57,6 +57,7 @@ namespace JOYSTICK
     virtual const char* Name() const override;
     virtual bool Initialize() override;
     virtual void Deinitialize() override;
+    virtual bool SupportsRumble(void) const { return true; }
     virtual bool ScanForJoysticks(JoystickVector& joysticks) override;
     virtual const ButtonMap& GetButtonMap() override;
 

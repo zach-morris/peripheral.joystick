@@ -45,6 +45,11 @@ void CJoystickInterfaceXInput::Deinitialize(void)
   CXInputDLL::Get().Unload();
 }
 
+bool CJoystickInterfaceXInput::SupportsPowerOff(void) const
+{
+  return CXInputDLL::Get().SupportsPowerOff();
+}
+
 bool CJoystickInterfaceXInput::ScanForJoysticks(JoystickVector& joysticks)
 {
   // No need to memset, only checking for controller existence
@@ -53,7 +58,7 @@ bool CJoystickInterfaceXInput::ScanForJoysticks(JoystickVector& joysticks)
 
   for (unsigned int i = 0; i < MAX_JOYSTICKS; i++)
   {
-    if (CXInputDLL::Get().Version() == "1.3")
+    if (CXInputDLL::Get().HasGuideButton())
     {
       if (!CXInputDLL::Get().GetStateWithGuide(i, controllerStateWithGuide))
         continue;

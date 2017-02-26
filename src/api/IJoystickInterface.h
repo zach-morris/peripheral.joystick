@@ -48,6 +48,16 @@ namespace JOYSTICK
     virtual void Deinitialize(void) { }
 
     /*!
+     * \brief Check if rumble is supported by this interface
+     */
+    virtual bool SupportsRumble(void) const { return false; }
+
+    /*!
+     * \brief Check if controller power-off is supported by this interface
+     */
+    virtual bool SupportsPowerOff(void) const { return false; }
+
+    /*!
      * \brief Scan the interface for joysticks
      *
      * \param results (out) the discovered joysticks; must be deallocated

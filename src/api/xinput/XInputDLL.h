@@ -63,6 +63,9 @@ namespace JOYSTICK
     // Available after library is loaded successfully
     const std::string& Version(void) const { return m_strVersion; }
 
+    bool HasGuideButton(void) const;
+    bool SupportsPowerOff() const;
+
     bool GetState(unsigned int controllerId, XINPUT_STATE& state);
     bool GetStateWithGuide(unsigned int controllerId, XINPUT_STATE_EX& state);
     bool SetState(unsigned int controllerId, XINPUT_VIBRATION& vibration);
