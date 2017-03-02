@@ -69,9 +69,9 @@ CJoystickInterfaceCocoa::CJoystickInterfaceCocoa(void)
 {
 }
 
-const char* CJoystickInterfaceCocoa::Name(void) const
+EJoystickInterface CJoystickInterfaceCocoa::Type(void) const
 {
-  return INTERFACE_COCOA;
+  return EJoystickInterface::COCOA;
 }
 
 bool CJoystickInterfaceCocoa::Initialize(void)

@@ -36,9 +36,9 @@
 
 using namespace JOYSTICK;
 
-const char* CJoystickInterfaceLinux::Name(void) const
+EJoystickInterface CJoystickInterfaceLinux::Type(void) const
 {
-  return INTERFACE_LINUX;
+  return EJoystickInterface::LINUX;
 }
 
 bool CJoystickInterfaceLinux::ScanForJoysticks(JoystickVector& joysticks)

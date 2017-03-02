@@ -27,9 +27,9 @@
 
 using namespace JOYSTICK;
 
-const char* CJoystickInterfaceSDL::Name(void) const
+EJoystickInterface CJoystickInterfaceSDL::Type(void) const
 {
-  return INTERFACE_SDL;
+  return EJoystickInterface::SDL;
 }
 
 bool CJoystickInterfaceSDL::Initialize(void)

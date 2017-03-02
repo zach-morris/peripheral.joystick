@@ -22,15 +22,23 @@
 #include <memory>
 #include <vector>
 
-#define INTERFACE_COCOA        "cocoa"
-#define INTERFACE_DIRECTINPUT  "directinput"
-#define INTERFACE_LINUX        "linux"
-#define INTERFACE_SDL          "sdl"
-#define INTERFACE_UDEV         "udev"
-#define INTERFACE_XINPUT       "xinput"
-
 namespace JOYSTICK
 {
+  /*!
+   * \brief Joystick interface types
+   *
+   * Priority of interfaces is determined by JoystickUtils::GetDrivers().
+   */
+  enum class EJoystickInterface
+  {
+    COCOA,
+    DIRECTINPUT,
+    LINUX,
+    SDL,
+    UDEV,
+    XINPUT,
+  };
+
   class CJoystick;
   typedef std::shared_ptr<CJoystick> JoystickPtr;
   typedef std::vector<JoystickPtr>   JoystickVector;

@@ -44,9 +44,9 @@ CJoystickInterfaceUdev::CJoystickInterfaceUdev() :
 {
 }
 
-const char* CJoystickInterfaceUdev::Name() const
+EJoystickInterface CJoystickInterfaceUdev::Type() const
 {
-  return INTERFACE_UDEV;
+  return EJoystickInterface::UDEV;
 }
 
 bool CJoystickInterfaceUdev::Initialize()

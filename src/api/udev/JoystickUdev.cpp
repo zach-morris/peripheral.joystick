@@ -46,7 +46,7 @@ using namespace JOYSTICK;
 #define NBITS(x)  ((((x) - 1) / (sizeof(long) * CHAR_BIT)) + 1)
 
 CJoystickUdev::CJoystickUdev(udev_device* dev, const char* path)
- : CJoystick(INTERFACE_UDEV),
+ : CJoystick(EJoystickInterface::UDEV),
    m_dev(dev),
    m_path(path),
    m_deviceNumber(0),

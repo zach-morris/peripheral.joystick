@@ -54,7 +54,7 @@ namespace JOYSTICK
     virtual ~CJoystickInterfaceUdev() { Deinitialize(); }
 
     // implementation of IJoystickInterface
-    virtual const char* Name() const override;
+    virtual EJoystickInterface Type() const override;
     virtual bool Initialize() override;
     virtual void Deinitialize() override;
     virtual bool SupportsRumble(void) const { return true; }

@@ -20,7 +20,84 @@
 
 #include "JoystickTranslator.h"
 
+#include <algorithm>
+
 using namespace JOYSTICK;
+
+namespace JOYSTICK
+{
+  struct SJoystickInterface
+  {
+    EJoystickInterface type;
+    const char* provider;
+    const char* name;
+  };
+
+  static const std::vector<SJoystickInterface> Interfaces =
+  {
+    {
+      EJoystickInterface::COCOA,
+      "cocoa", "Cocoa",
+    },
+    {
+      EJoystickInterface::DIRECTINPUT,
+      "directinput", "DirectInput",
+    },
+    {
+      EJoystickInterface::LINUX,
+      "linux", "Linux Joystick API",
+    },
+    {
+      EJoystickInterface::SDL,
+      "sdl", "SDL 2",
+    },
+    {
+      EJoystickInterface::UDEV,
+      "udev", "udev",
+    },
+    {
+      EJoystickInterface::XINPUT,
+      "xinput", "XInput",
+    },
+  };
+
+  struct FindByType
+  {
+    FindByType(EJoystickInterface type) : m_type(type) { }
+
+    bool operator()(const SJoystickInterface& iface)
+    {
+      return iface.type == m_type;
+    }
+
+  private:
+    EJoystickInterface m_type;
+  };
+}
+
+// --- JoystickTranslator ------------------------------------------------------
+
+std::string JoystickTranslator::GetInterfaceProvider(EJoystickInterface iface)
+{
+  std::string provider;
+
+  auto it = std::find_if(Interfaces.begin(), Interfaces.end(), FindByType(iface));
+  if (it != Interfaces.end())
+    provider = it->provider;
+
+  return provider;
+}
+
+std::string JoystickTranslator::GetInterfaceName(EJoystickInterface iface)
+{
+  std::string name;
+
+  auto it = std::find_if(Interfaces.begin(), Interfaces.end(), FindByType(iface));
+  if (it != Interfaces.end())
+    name = it->name;
+
+  return name;
+}
 
 JOYSTICK_DRIVER_HAT_DIRECTION JoystickTranslator::TranslateHatDir(const std::string& hatDir)
 {

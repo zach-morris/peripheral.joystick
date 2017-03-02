@@ -21,6 +21,7 @@
 #include "JoystickManager.h"
 #include "IJoystickInterface.h"
 #include "Joystick.h"
+#include "JoystickTranslator.h"
 
 #if defined(HAVE_DIRECT_INPUT)
   #include "directinput/JoystickInterfaceDirectInput.h"
@@ -45,6 +46,7 @@
 #include "utils/CommonMacros.h"
 
 #include <algorithm>
+#include <iterator>
 
 using namespace JOYSTICK;
 using namespace P8PLATFORM;
@@ -135,7 +137,7 @@ bool CJoystickManager::Initialize(IScannerCallback* scanner)
   {
     if (!m_interfaces.at(i)->Initialize())
     {
-      esyslog("Failed to initialize interface %s", m_interfaces.at(i)->Name());
+      esyslog("Failed to initialize interface %s", JoystickTranslator::GetInterfaceName(m_interfaces.at(i)->Type()).c_str());
       delete m_interfaces.at(i);
       m_interfaces.erase(m_interfaces.begin() + i);
     }
@@ -226,8 +228,8 @@ bool CJoystickManager::PerformJoystickScan(JoystickVector& joysticks)
   joysticks.erase(std::remove_if(joysticks.begin(), joysticks.end(),
     [](const JoystickPtr& joystick)
     {
-      return (joystick->Provider() == INTERFACE_LINUX ||
-               joystick->Provider() == INTERFACE_UDEV) &&
+      return (joystick->Provider() == JoystickTranslator::GetInterfaceProvider(EJoystickInterface::LINUX) ||
+               joystick->Provider() == JoystickTranslator::GetInterfaceProvider(EJoystickInterface::UDEV)) &&
              (joystick->Name() == "Xbox 360 Wireless Receiver" ||
                joystick->Name() == "Xbox 360 Wireless Receiver (XBOX)") &&
              joystick->ActivateTimeMs() < 0;
@@ -319,7 +321,7 @@ const ButtonMap& CJoystickManager::GetButtonMap(const std::string& provider)
   // Scan for joysticks (this can take a while, don't block)
   for (std::vector<IJoystickInterface*>::iterator itInterface = m_interfaces.begin(); itInterface != m_interfaces.end(); ++itInterface)
   {
-    if ((*itInterface)->Name() == provider)
+    if ((*itInterface)->Provider() == provider)
       return (*itInterface)->GetButtonMap();
   }
 

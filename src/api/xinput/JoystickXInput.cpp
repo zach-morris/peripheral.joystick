@@ -36,7 +36,7 @@ using namespace JOYSTICK;
 #define MAX_MOTOR     65535
 
 CJoystickXInput::CJoystickXInput(unsigned int controllerID)
- : CJoystick(INTERFACE_XINPUT),
+ : CJoystick(EJoystickInterface::XINPUT),
    m_controllerID(controllerID),
    m_dwPacketNumber(0)
 {

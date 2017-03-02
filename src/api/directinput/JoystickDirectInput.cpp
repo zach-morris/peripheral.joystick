@@ -38,7 +38,7 @@ using namespace JOYSTICK;
 CJoystickDirectInput::CJoystickDirectInput(GUID                           deviceGuid,
                                            LPDIRECTINPUTDEVICE8           joystickDevice,
                                            const std::string&             strName)
- : CJoystick(INTERFACE_DIRECTINPUT),
+ : CJoystick(EJoystickInterface::DIRECTINPUT),
    m_deviceGuid(deviceGuid),
    m_joystickDevice(joystickDevice)
 {

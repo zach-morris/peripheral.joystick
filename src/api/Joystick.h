@@ -19,6 +19,8 @@
  */
 #pragma once
 
+#include "JoystickTypes.h"
+
 #include "kodi_peripheral_utils.hpp"
 
 #include <string>
@@ -29,7 +31,8 @@ namespace JOYSTICK
   class CJoystick : public ADDON::Joystick
   {
   public:
-    CJoystick(const std::string& strProvider);
+    CJoystick(EJoystickInterface interfaceType);
+
     virtual ~CJoystick(void) { Deinitialize(); }
 
     /*!

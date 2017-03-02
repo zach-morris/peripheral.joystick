@@ -19,6 +19,7 @@
  */
 
 #include "Joystick.h"
+#include "JoystickTranslator.h"
 #include "log/Log.h"
 #include "settings/Settings.h"
 #include "utils/CommonMacros.h"
@@ -30,13 +31,13 @@ using namespace JOYSTICK;
 
 #define ANALOG_EPSILON  0.0001f
 
-CJoystick::CJoystick(const std::string& strProvider)
+CJoystick::CJoystick(EJoystickInterface interfaceType)
  : m_discoverTimeMs(P8PLATFORM::GetTimeMs()),
    m_activateTimeMs(-1),
    m_firstEventTimeMs(-1),
    m_lastEventTimeMs(-1)
 {
-  SetProvider(strProvider);
+  SetProvider(JoystickTranslator::GetInterfaceProvider(interfaceType));
 }
 
 bool CJoystick::Equals(const CJoystick* rhs) const

@@ -41,7 +41,7 @@ using namespace JOYSTICK;
 #define INVALID_FD         -1
 
 CJoystickLinux::CJoystickLinux(int fd, const std::string& strFilename)
- : CJoystick(INTERFACE_LINUX),
+ : CJoystick(EJoystickInterface::LINUX),
    m_fd(fd),
    m_strFilename(strFilename)
 {
