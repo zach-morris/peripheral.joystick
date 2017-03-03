@@ -100,7 +100,9 @@ endif()
 
 # --- Linux Joystick API -------------------------------------------------------
 
-check_include_files(linux/joystick.h HAVE_LINUX_JOYSTICK_H)
+if(CORE_SYSTEM_NAME STREQUAL linux)
+  check_include_files(linux/joystick.h HAVE_LINUX_JOYSTICK_H)
+endif()
 
 if(HAVE_LINUX_JOYSTICK_H)
   add_definitions(-DHAVE_LINUX_JOYSTICK)
@@ -130,7 +132,10 @@ endif()
 
 # --- udev ---------------------------------------------------------------------
 
-find_package(udev REQUIRED)
+if(CORE_SYSTEM_NAME STREQUAL linux)
+  find_package(udev REQUIRED)
+endif()
+
 if(UDEV_FOUND)
   include_directories(${UDEV_INCLUDE_DIRS})
 
