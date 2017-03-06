@@ -25,6 +25,7 @@
 #include "kodi_peripheral_utils.hpp"
 #include "p8-platform/threads/mutex.h"
 
+#include <set>
 #include <vector>
 
 namespace JOYSTICK
@@ -51,6 +52,10 @@ namespace JOYSTICK
     static CJoystickManager& Get(void);
     virtual ~CJoystickManager(void) { Deinitialize(); }
 
+    static const std::vector<EJoystickInterface>& GetSupportedInterfaces();
+
+    static IJoystickInterface* CreateInterface(EJoystickInterface interface);
+
     /*!
      * \brief Initialize the joystick manager
      *
@@ -72,6 +77,32 @@ namespace JOYSTICK
      * \brief Return true if an interface supports controller power-off
      */
     bool SupportsPowerOff(void) const;
+
+    /*!
+     * \brief Check if the given interface is managed by this system
+     *
+     * \param interface The interface type
+     *
+     * \return true if the interface is present
+     */
+    bool HasInterface(EJoystickInterface interface) const;
+
+    /*!
+     * \brief Set the state of the specified interface
+     *
+     * \param iface The interface type
+     * \param bEnabled True to enable interface, false to disable interface
+     */
+    void SetEnabled(EJoystickInterface interface, bool bEnabled);
+
+    /*!
+     * \brief Check the state of the specified interface
+     *
+     * \param interface The interface to check
+     *
+     * \return true if the interface is present and enabled, false otherwise
+     */
+    bool IsEnabled(IJoystickInterface* interface);
 
     /*!
      * \brief Scan the available interfaces for joysticks
@@ -106,7 +137,12 @@ namespace JOYSTICK
     void ProcessEvents();
 
     /*!
-     * \brief Trigger a scan for joysticks through the callback
+     * \brief Set the flag for changed interfaces
+     */
+    void SetChanged(bool bChanged);
+
+    /*!
+     * \brief Trigger a scan for joysticks through the callback, if changed
      */
     void TriggerScan(void);
 
@@ -122,8 +158,11 @@ namespace JOYSTICK
   private:
     IScannerCallback*                m_scanner;
     std::vector<IJoystickInterface*> m_interfaces;
+    std::set<IJoystickInterface*>    m_enabledInterfaces;
     JoystickVector                   m_joysticks;
     unsigned int                     m_nextJoystickIndex;
+    bool                             m_bChanged;
+    mutable P8PLATFORM::CMutex       m_changedMutex;
     mutable P8PLATFORM::CMutex         m_interfacesMutex;
     mutable P8PLATFORM::CMutex         m_joystickMutex;
   };

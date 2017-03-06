@@ -31,6 +31,7 @@ namespace JOYSTICK
    */
   enum class EJoystickInterface
   {
+    NONE,
     COCOA,
     DIRECTINPUT,
     LINUX,

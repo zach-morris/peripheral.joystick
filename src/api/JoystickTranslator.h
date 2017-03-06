@@ -31,7 +31,7 @@ namespace JOYSTICK
   {
   public:
     static std::string GetInterfaceProvider(EJoystickInterface iface);
-    static std::string GetInterfaceName(EJoystickInterface iface);
+    static EJoystickInterface GetInterfaceType(const std::string& provider);
 
     static JOYSTICK_DRIVER_HAT_DIRECTION TranslateHatDir(const std::string& hatDir);
     static const char* TranslateHatDir(JOYSTICK_DRIVER_HAT_DIRECTION hatDir);

@@ -137,7 +137,10 @@ void CJoystick::Activate()
     m_activateTimeMs = P8PLATFORM::GetTimeMs();
 
     if (CJoystickUtils::IsGhostJoystick(*this))
+    {
+      CJoystickManager::Get().SetChanged(true);
       CJoystickManager::Get().TriggerScan();
+    }
   }
 }
 

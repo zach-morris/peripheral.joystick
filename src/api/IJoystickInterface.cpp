@@ -26,8 +26,3 @@ std::string IJoystickInterface::Provider(void) const
 {
   return JoystickTranslator::GetInterfaceProvider(Type());
 }
-
-std::string IJoystickInterface::Name(void) const
-{
-  return JoystickTranslator::GetInterfaceName(Type());
-}

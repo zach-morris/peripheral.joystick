@@ -30,34 +30,33 @@ namespace JOYSTICK
   {
     EJoystickInterface type;
     const char* provider;
-    const char* name;
   };
 
   static const std::vector<SJoystickInterface> Interfaces =
   {
     {
       EJoystickInterface::COCOA,
-      "cocoa", "Cocoa",
+      "cocoa",
     },
     {
       EJoystickInterface::DIRECTINPUT,
-      "directinput", "DirectInput",
+      "directinput",
     },
     {
       EJoystickInterface::LINUX,
-      "linux", "Linux Joystick API",
+      "linux",
     },
     {
       EJoystickInterface::SDL,
-      "sdl", "SDL 2",
+      "sdl",
     },
     {
       EJoystickInterface::UDEV,
-      "udev", "udev",
+      "udev",
     },
     {
       EJoystickInterface::XINPUT,
-      "xinput", "XInput",
+      "xinput",
     },
   };
 
@@ -72,6 +71,19 @@ namespace JOYSTICK
 
   private:
     EJoystickInterface m_type;
+  };
+
+  struct FindByProvider
+  {
+    FindByProvider(const std::string& provider) : m_provider(provider) { }
+
+    bool operator()(const SJoystickInterface& iface)
+    {
+      return iface.provider == m_provider;
+    }
+
+  private:
+    const std::string m_provider;
   };
 }
 
@@ -88,15 +100,15 @@ std::string JoystickTranslator::GetInterfaceProvider(EJoystickInterface iface)
   return provider;
 }
 
-std::string JoystickTranslator::GetInterfaceName(EJoystickInterface iface)
+EJoystickInterface JoystickTranslator::GetInterfaceType(const std::string& provider)
 {
-  std::string name;
+  EJoystickInterface type = EJoystickInterface::NONE;
 
-  auto it = std::find_if(Interfaces.begin(), Interfaces.end(), FindByType(iface));
+  auto it = std::find_if(Interfaces.begin(), Interfaces.end(), FindByProvider(provider));
   if (it != Interfaces.end())
-    name = it->name;
+    type = it->type;
 
-  return name;
+  return type;
 }
 
 JOYSTICK_DRIVER_HAT_DIRECTION JoystickTranslator::TranslateHatDir(const std::string& hatDir)

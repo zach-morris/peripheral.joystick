@@ -44,6 +44,7 @@
 #endif
 
 #include "log/Log.h"
+#include "settings/Settings.h"
 #include "utils/CommonMacros.h"
 
 #include <algorithm>
@@ -92,7 +93,8 @@ namespace JOYSTICK
 
 CJoystickManager::CJoystickManager(void)
   : m_scanner(NULL),
-    m_nextJoystickIndex(0)
+    m_nextJoystickIndex(0),
+    m_bChanged(false)
 {
 }
 
@@ -102,47 +104,86 @@ CJoystickManager& CJoystickManager::Get(void)
   return _instance;
 }
 
+const std::vector<EJoystickInterface>& CJoystickManager::GetSupportedInterfaces()
+{
+  static std::vector<EJoystickInterface> supportedInterfaces;
+
+  // Supported interfaces in order of priority
+  if (supportedInterfaces.empty())
+  {
+#if defined(HAVE_DIRECT_INPUT)
+    supportedInterfaces.push_back(EJoystickInterface::DIRECTINPUT);
+#endif
+#if defined(HAVE_XINPUT)
+    supportedInterfaces.push_back(EJoystickInterface::XINPUT);
+#endif
+
+  // Linux
+#if defined(HAVE_SDL)
+    supportedInterfaces.push_back(EJoystickInterface::SDL);
+#endif
+#if defined(HAVE_LINUX_JOYSTICK)
+    supportedInterfaces.push_back(EJoystickInterface::LINUX);
+#endif
+#if defined(HAVE_UDEV)
+    supportedInterfaces.push_back(EJoystickInterface::UDEV);
+#endif
+
+  // OSX
+#if defined(HAVE_COCOA)
+    supportedInterfaces.push_back(EJoystickInterface::COCOA);
+#endif
+  }
+
+  return supportedInterfaces;
+}
+
+IJoystickInterface* CJoystickManager::CreateInterface(EJoystickInterface interface)
+{
+  switch (interface)
+  {
+#if defined(HAVE_COCOA)
+  case EJoystickInterface::COCOA: return new CJoystickInterfaceCocoa;
+#endif
+#if defined(HAVE_DIRECT_INPUT)
+  case EJoystickInterface::DIRECTINPUT: return new CJoystickInterfaceDirectInput;
+#endif
+#if defined(HAVE_LINUX_JOYSTICK)
+  case EJoystickInterface::LINUX: return new CJoystickInterfaceLinux;
+#endif
+#if defined(HAVE_SDL)
+  case EJoystickInterface::SDL: return new CJoystickInterfaceSDL;
+#endif
+#if defined(HAVE_UDEV)
+  case EJoystickInterface::UDEV: return new CJoystickInterfaceUdev;
+#endif
+#if defined(HAVE_XINPUT)
+  case EJoystickInterface::XINPUT: return new CJoystickInterfaceXInput;
+#endif
+  default:
+    break;
+  }
+
+  return nullptr;
+}
+
 bool CJoystickManager::Initialize(IScannerCallback* scanner)
 {
   CLockObject lock(m_interfacesMutex);
 
   m_scanner = scanner;
 
-  // Windows
-#if defined(HAVE_DIRECT_INPUT)
-  m_interfaces.push_back(new CJoystickInterfaceDirectInput);
-#endif
-#if defined(HAVE_XINPUT)
-  m_interfaces.push_back(new CJoystickInterfaceXInput);
-#endif
+  const std::vector<EJoystickInterface>& interfaces = GetSupportedInterfaces();
 
-  // Linux
-#if defined(HAVE_SDL)
-  m_interfaces.push_back(new CJoystickInterfaceSDL);
-#elif defined(HAVE_LINUX_JOYSTICK)
-  m_interfaces.push_back(new CJoystickInterfaceLinux);
-#elif defined(HAVE_UDEV)
-  m_interfaces.push_back(new CJoystickInterfaceUdev);
-#endif
-
-  // OSX
-#if defined(HAVE_COCOA)
-  m_interfaces.push_back(new CJoystickInterfaceCocoa);
-#endif
+  for (auto interface : interfaces)
+  {
+    auto iface = CreateInterface(interface);
+    if (iface)
+      m_interfaces.push_back(iface);
+  }
 
   if (m_interfaces.empty())
     dsyslog("No joystick APIs in use");
-
-  // Initialise all known interfaces
-  for (int i = (int)m_interfaces.size() - 1; i >= 0; i--)
-  {
-    if (!m_interfaces.at(i)->Initialize())
-    {
-      esyslog("Failed to initialize interface %s", JoystickTranslator::GetInterfaceName(m_interfaces.at(i)->Type()).c_str());
-      delete m_interfaces.at(i);
-      m_interfaces.erase(m_interfaces.begin() + i);
-    }
-  }
 
   return true;
 }
@@ -156,6 +197,8 @@ void CJoystickManager::Deinitialize(void)
 
   {
     CLockObject lock(m_interfacesMutex);
+    for (auto iface : m_interfaces)
+      SetEnabled(iface->Type(), false);
     safe_delete_vector(m_interfaces);
   }
 
@@ -165,7 +208,7 @@ void CJoystickManager::Deinitialize(void)
 bool CJoystickManager::SupportsRumble(void) const
 {
   CLockObject lock(m_interfacesMutex);
-  for (auto iface : m_interfaces)
+  for (auto iface : m_enabledInterfaces)
   {
     if (iface->SupportsRumble())
       return true;
@@ -177,7 +220,7 @@ bool CJoystickManager::SupportsRumble(void) const
 bool CJoystickManager::SupportsPowerOff(void) const
 {
   CLockObject lock(m_interfacesMutex);
-  for (auto iface : m_interfaces)
+  for (auto iface : m_enabledInterfaces)
   {
     if (iface->SupportsPowerOff())
       return true;
@@ -186,14 +229,63 @@ bool CJoystickManager::SupportsPowerOff(void) const
   return false;
 }
 
+bool CJoystickManager::HasInterface(EJoystickInterface interface) const
+{
+  CLockObject lock(m_interfacesMutex);
+  for (auto iface : m_interfaces)
+  {
+    if (iface->Type() == interface)
+      return true;
+  }
+
+  return false;
+}
+
+void CJoystickManager::SetEnabled(EJoystickInterface interface, bool bEnabled)
+{
+  CLockObject lock(m_interfacesMutex);
+
+  for (auto iface : m_interfaces)
+  {
+    if (iface->Type() == interface)
+    {
+      if (bEnabled && !IsEnabled(iface))
+      {
+        isyslog("Enabling joystick interface \"%s\"", JoystickTranslator::GetInterfaceProvider(interface).c_str());
+        if (iface->Initialize())
+        {
+          m_enabledInterfaces.insert(iface);
+          SetChanged(true);
+        }
+        else
+          esyslog("Failed to initialize interface %s", JoystickTranslator::GetInterfaceProvider(interface).c_str());
+      }
+      else if (!bEnabled && IsEnabled(iface))
+      {
+        isyslog("Disabling joystick interface \"%s\"", JoystickTranslator::GetInterfaceProvider(interface).c_str());
+        iface->Deinitialize();
+        m_enabledInterfaces.erase(iface);
+        SetChanged(true);
+      }
+      break;
+    }
+  }
+}
+
+bool CJoystickManager::IsEnabled(IJoystickInterface* interface)
+{
+  CLockObject lock(m_interfacesMutex);
+  return m_enabledInterfaces.find(interface) != m_enabledInterfaces.end();
+}
+
 bool CJoystickManager::PerformJoystickScan(JoystickVector& joysticks)
 {
   JoystickVector scanResults;
   {
     CLockObject lock(m_interfacesMutex);
     // Scan for joysticks (this can take a while, don't block)
-    for (std::vector<IJoystickInterface*>::iterator itInterface = m_interfaces.begin(); itInterface != m_interfaces.end(); ++itInterface)
-      (*itInterface)->ScanForJoysticks(scanResults);
+    for (auto interface : m_enabledInterfaces)
+      interface->ScanForJoysticks(scanResults);
   }
 
   CLockObject lock(m_joystickMutex);
@@ -304,9 +396,22 @@ void CJoystickManager::ProcessEvents()
     joystick->ProcessEvents();
 }
 
+void CJoystickManager::SetChanged(bool bChanged)
+{
+  CLockObject lock(m_changedMutex);
+  m_bChanged = bChanged;
+}
+
 void CJoystickManager::TriggerScan(void)
 {
-  if (m_scanner)
+  bool bChanged;
+  {
+    CLockObject lock(m_changedMutex);
+    bChanged = m_bChanged;
+    m_bChanged = false;
+  }
+
+  if (bChanged && m_scanner)
     m_scanner->TriggerScan();
 }
 

@@ -44,11 +44,6 @@ namespace JOYSTICK
     std::string Provider(void) const;
 
     /*!
-     * \brief Convenience function to translate interface type to name string
-     */
-    std::string Name(void) const;
-
-    /*!
      * \brief Initialize the interface
      */
     virtual bool Initialize(void) { return true; }

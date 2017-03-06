@@ -163,7 +163,10 @@ void CJoystickInterfaceCocoa::DeviceAdded(IOHIDDeviceRef device)
   }
 
   if (bDeviceAdded)
+  {
+    CJoystickManager::Get().SetChanged(true);
     CJoystickManager::Get().TriggerScan();
+  }
 }
 
 void CJoystickInterfaceCocoa::DeviceRemoved(IOHIDDeviceRef device)
@@ -173,6 +176,7 @@ void CJoystickInterfaceCocoa::DeviceRemoved(IOHIDDeviceRef device)
     m_discoveredDevices.erase(std::remove(m_discoveredDevices.begin(), m_discoveredDevices.end(), device), m_discoveredDevices.end());
   }
 
+  CJoystickManager::Get().SetChanged(true);
   CJoystickManager::Get().TriggerScan();
 }
 
