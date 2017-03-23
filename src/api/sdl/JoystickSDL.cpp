@@ -79,7 +79,7 @@ void CJoystickSDL::Deinitialize(void)
     m_pController = nullptr;
   }
 
-  CJoystickSDL::Deinitialize();
+  CJoystick::Deinitialize();
 }
 
 bool CJoystickSDL::ScanEvents(void)
