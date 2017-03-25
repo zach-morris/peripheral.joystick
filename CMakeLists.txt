@@ -96,6 +96,7 @@ if("${CORE_SYSTEM_NAME}" STREQUAL "darwin" OR "${CORE_SYSTEM_NAME}" STREQUAL "os
                                src/api/cocoa/JoystickInterfaceCocoa.cpp)
 
   list(APPEND DEPLIBS ${COCOA_LIBRARY})
+  list(APPEND DEPLIBS "-framework IOKit")
 endif()
 
 # --- Linux Joystick API -------------------------------------------------------
