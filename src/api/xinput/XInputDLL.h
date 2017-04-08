@@ -19,6 +19,8 @@
  */
 #pragma once
 
+#include "utils/CommonIncludes.h"
+
 #include "p8-platform/threads/mutex.h"
 
 #include <string>

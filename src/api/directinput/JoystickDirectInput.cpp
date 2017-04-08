@@ -23,6 +23,7 @@
 #include "api/JoystickTypes.h"
 #include "log/Log.h"
 #include "utils/CommonMacros.h"
+#include "utils/windows/CharsetConverter.h"
 
 using namespace JOYSTICK;
 
@@ -37,12 +38,16 @@ using namespace JOYSTICK;
 
 CJoystickDirectInput::CJoystickDirectInput(GUID                           deviceGuid,
                                            LPDIRECTINPUTDEVICE8           joystickDevice,
-                                           const std::string&             strName)
+                                           const _TCHAR                   *strName)
  : CJoystick(EJoystickInterface::DIRECTINPUT),
    m_deviceGuid(deviceGuid),
    m_joystickDevice(joystickDevice)
 {
+#if !defined(_UNICODE)
   SetName(strName);
+#else
+  SetName(KODI::PLATFORM::WINDOWS::FromW(strName));
+#endif
 }
 
 CJoystickDirectInput::~CJoystickDirectInput()

@@ -19,6 +19,8 @@
  */
 #pragma once
 
+#include "utils/CommonIncludes.h"
+
 #include "api/Joystick.h"
 
 #define DIRECTINPUT_VERSION 0x0800
@@ -31,7 +33,7 @@ namespace JOYSTICK
   public:
     CJoystickDirectInput(GUID                           deviceGuid,
                          LPDIRECTINPUTDEVICE8           joystickDevice,
-                         const std::string&             strName);
+                         const _TCHAR                   *strName);
 
     virtual ~CJoystickDirectInput(void);
 

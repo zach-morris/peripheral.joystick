@@ -110,6 +110,11 @@ set(JOYSTICK_HEADERS src/api/IJoystickInterface.h
                      src/utils/CommonMacros.h
                      src/utils/StringUtils.h)
 
+if(CORE_SYSTEM_NAME STREQUAL windows)
+  list(APPEND JOYSTICK_SOURCES src/utils/windows/CharsetConverter.cpp)
+  list(APPEND JOYSTICK_HEADERS src/utils/windows/CharsetConverter.h)
+endif()
+
 check_include_files("syslog.h" HAVE_SYSLOG)
 
 if(HAVE_SYSLOG)
