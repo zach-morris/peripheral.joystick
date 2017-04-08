@@ -54,7 +54,7 @@ namespace JOYSTICK
 
     static const std::vector<EJoystickInterface>& GetSupportedInterfaces();
 
-    static IJoystickInterface* CreateInterface(EJoystickInterface interface);
+    static IJoystickInterface* CreateInterface(EJoystickInterface iface);
 
     /*!
      * \brief Initialize the joystick manager
@@ -81,11 +81,11 @@ namespace JOYSTICK
     /*!
      * \brief Check if the given interface is managed by this system
      *
-     * \param interface The interface type
+     * \param iface The interface type
      *
      * \return true if the interface is present
      */
-    bool HasInterface(EJoystickInterface interface) const;
+    bool HasInterface(EJoystickInterface iface) const;
 
     /*!
      * \brief Set the state of the specified interface
@@ -93,16 +93,16 @@ namespace JOYSTICK
      * \param iface The interface type
      * \param bEnabled True to enable interface, false to disable interface
      */
-    void SetEnabled(EJoystickInterface interface, bool bEnabled);
+    void SetEnabled(EJoystickInterface iface, bool bEnabled);
 
     /*!
      * \brief Check the state of the specified interface
      *
-     * \param interface The interface to check
+     * \param iface The interface to check
      *
      * \return true if the interface is present and enabled, false otherwise
      */
-    bool IsEnabled(IJoystickInterface* interface);
+    bool IsEnabled(IJoystickInterface* iface);
 
     /*!
      * \brief Scan the available interfaces for joysticks

@@ -138,9 +138,9 @@ const std::vector<EJoystickInterface>& CJoystickManager::GetSupportedInterfaces(
   return supportedInterfaces;
 }
 
-IJoystickInterface* CJoystickManager::CreateInterface(EJoystickInterface interface)
+IJoystickInterface* CJoystickManager::CreateInterface(EJoystickInterface iface)
 {
-  switch (interface)
+  switch (iface)
   {
 #if defined(HAVE_COCOA)
   case EJoystickInterface::COCOA: return new CJoystickInterfaceCocoa;
@@ -175,11 +175,11 @@ bool CJoystickManager::Initialize(IScannerCallback* scanner)
 
   const std::vector<EJoystickInterface>& interfaces = GetSupportedInterfaces();
 
-  for (auto interface : interfaces)
+  for (auto interfaceType : interfaces)
   {
-    auto iface = CreateInterface(interface);
-    if (iface)
-      m_interfaces.push_back(iface);
+    auto pInterface = CreateInterface(interfaceType);
+    if (pInterface)
+      m_interfaces.push_back(pInterface);
   }
 
   if (m_interfaces.empty())
@@ -197,8 +197,8 @@ void CJoystickManager::Deinitialize(void)
 
   {
     CLockObject lock(m_interfacesMutex);
-    for (auto iface : m_interfaces)
-      SetEnabled(iface->Type(), false);
+    for (auto pInterface : m_interfaces)
+      SetEnabled(pInterface->Type(), false);
     safe_delete_vector(m_interfaces);
   }
 
@@ -208,9 +208,9 @@ void CJoystickManager::Deinitialize(void)
 bool CJoystickManager::SupportsRumble(void) const
 {
   CLockObject lock(m_interfacesMutex);
-  for (auto iface : m_enabledInterfaces)
+  for (auto pInterface : m_enabledInterfaces)
   {
-    if (iface->SupportsRumble())
+    if (pInterface->SupportsRumble())
       return true;
   }
 
@@ -220,51 +220,51 @@ bool CJoystickManager::SupportsRumble(void) const
 bool CJoystickManager::SupportsPowerOff(void) const
 {
   CLockObject lock(m_interfacesMutex);
-  for (auto iface : m_enabledInterfaces)
+  for (auto pInterface : m_enabledInterfaces)
   {
-    if (iface->SupportsPowerOff())
+    if (pInterface->SupportsPowerOff())
       return true;
   }
 
   return false;
 }
 
-bool CJoystickManager::HasInterface(EJoystickInterface interface) const
+bool CJoystickManager::HasInterface(EJoystickInterface iface) const
 {
   CLockObject lock(m_interfacesMutex);
-  for (auto iface : m_interfaces)
+  for (auto pInterface : m_interfaces)
   {
-    if (iface->Type() == interface)
+    if (pInterface->Type() == iface)
       return true;
   }
 
   return false;
 }
 
-void CJoystickManager::SetEnabled(EJoystickInterface interface, bool bEnabled)
+void CJoystickManager::SetEnabled(EJoystickInterface iface, bool bEnabled)
 {
   CLockObject lock(m_interfacesMutex);
 
-  for (auto iface : m_interfaces)
+  for (auto pInterface : m_interfaces)
   {
-    if (iface->Type() == interface)
+    if (pInterface->Type() == iface)
     {
-      if (bEnabled && !IsEnabled(iface))
+      if (bEnabled && !IsEnabled(pInterface))
       {
-        isyslog("Enabling joystick interface \"%s\"", JoystickTranslator::GetInterfaceProvider(interface).c_str());
-        if (iface->Initialize())
+        isyslog("Enabling joystick interface \"%s\"", JoystickTranslator::GetInterfaceProvider(iface).c_str());
+        if (pInterface->Initialize())
         {
-          m_enabledInterfaces.insert(iface);
+          m_enabledInterfaces.insert(pInterface);
           SetChanged(true);
         }
         else
-          esyslog("Failed to initialize interface %s", JoystickTranslator::GetInterfaceProvider(interface).c_str());
+          esyslog("Failed to initialize interface %s", JoystickTranslator::GetInterfaceProvider(iface).c_str());
       }
-      else if (!bEnabled && IsEnabled(iface))
+      else if (!bEnabled && IsEnabled(pInterface))
       {
-        isyslog("Disabling joystick interface \"%s\"", JoystickTranslator::GetInterfaceProvider(interface).c_str());
-        iface->Deinitialize();
-        m_enabledInterfaces.erase(iface);
+        isyslog("Disabling joystick interface \"%s\"", JoystickTranslator::GetInterfaceProvider(iface).c_str());
+        pInterface->Deinitialize();
+        m_enabledInterfaces.erase(pInterface);
         SetChanged(true);
       }
       break;
@@ -272,10 +272,10 @@ void CJoystickManager::SetEnabled(EJoystickInterface interface, bool bEnabled)
   }
 }
 
-bool CJoystickManager::IsEnabled(IJoystickInterface* interface)
+bool CJoystickManager::IsEnabled(IJoystickInterface* iface)
 {
   CLockObject lock(m_interfacesMutex);
-  return m_enabledInterfaces.find(interface) != m_enabledInterfaces.end();
+  return m_enabledInterfaces.find(iface) != m_enabledInterfaces.end();
 }
 
 bool CJoystickManager::PerformJoystickScan(JoystickVector& joysticks)
@@ -284,8 +284,8 @@ bool CJoystickManager::PerformJoystickScan(JoystickVector& joysticks)
   {
     CLockObject lock(m_interfacesMutex);
     // Scan for joysticks (this can take a while, don't block)
-    for (auto interface : m_enabledInterfaces)
-      interface->ScanForJoysticks(scanResults);
+    for (auto pInterface : m_enabledInterfaces)
+      pInterface->ScanForJoysticks(scanResults);
   }
 
   CLockObject lock(m_joystickMutex);
@@ -421,11 +421,10 @@ const ButtonMap& CJoystickManager::GetButtonMap(const std::string& provider)
 
   CLockObject lock(m_interfacesMutex);
 
-  // Scan for joysticks (this can take a while, don't block)
-  for (std::vector<IJoystickInterface*>::iterator itInterface = m_interfaces.begin(); itInterface != m_interfaces.end(); ++itInterface)
+  for (auto pInterface : m_interfaces)
   {
-    if ((*itInterface)->Provider() == provider)
-      return (*itInterface)->GetButtonMap();
+    if (pInterface->Provider() == provider)
+      return pInterface->GetButtonMap();
   }
 
   return empty;
