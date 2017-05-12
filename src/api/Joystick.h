@@ -19,6 +19,8 @@
  */
 #pragma once
 
+#include "JoystickTypes.h"
+
 #include "kodi_peripheral_utils.hpp"
 
 #include <string>
@@ -29,7 +31,8 @@ namespace JOYSTICK
   class CJoystick : public ADDON::Joystick
   {
   public:
-    CJoystick(const std::string& strProvider);
+    CJoystick(EJoystickInterface interfaceType);
+
     virtual ~CJoystick(void) { Deinitialize(); }
 
     /*!
@@ -51,6 +54,11 @@ namespace JOYSTICK
      * The time that this joystick received its first input
      */
     int64_t ActivateTimeMs(void) const { return m_activateTimeMs; }
+
+    /*!
+     * Check if this joystick has received any input
+     */
+    bool IsActive(void) const { return m_activateTimeMs >= 0; }
 
     /*!
      * The time that this joystick delivered its first event
@@ -108,6 +116,8 @@ namespace JOYSTICK
     void SetAxisValue(unsigned int axisIndex, long value, long maxAxisAmount);
 
   private:
+    void Activate();
+
     void GetButtonEvents(std::vector<ADDON::PeripheralEvent>& events);
     void GetHatEvents(std::vector<ADDON::PeripheralEvent>& events);
     void GetAxisEvents(std::vector<ADDON::PeripheralEvent>& events);

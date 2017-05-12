@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<settings>
+	<category label="30000">
+		@LINUX_SELECT@
+		@SDL_SELECT@
+		@OSX_SELECT@
+		@XINPUT_CHECK@
+		@DIRECTINPUT_CHECK@
+	</category>
+</settings>

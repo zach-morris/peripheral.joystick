@@ -20,10 +20,12 @@ include_directories(${INCLUDES}
                     ${PCRE_INCLUDE_DIRS})
 
 set(JOYSTICK_SOURCES src/addon.cpp
+                     src/api/IJoystickInterface.cpp
                      src/api/Joystick.cpp
                      src/api/JoystickInterfaceCallback.cpp
                      src/api/JoystickManager.cpp
                      src/api/JoystickTranslator.cpp
+                     src/api/JoystickUtils.cpp
                      src/api/PeripheralScanner.cpp
                      src/buttonmapper/ButtonMapper.cpp
                      src/buttonmapper/ButtonMapTranslator.cpp
@@ -152,3 +154,28 @@ endif()
 
 build_addon(peripheral.joystick JOYSTICK DEPLIBS)
 
+# ------------------------------------------------------------------------------
+
+set(LINUX_SELECT_LINE      "<setting label=\"30001\" type=\"select\" id=\"driver_linux\" lvalues=\"30005|30007|30002\"/>")
+set(SDL_SELECT_LINE        "<setting label=\"30001\" type=\"select\" id=\"driver_sdl\" lvalues=\"30008|30005|30007|30002\"/>")
+set(OSX_SELECT_LINE        "<setting label=\"30001\" type=\"select\" id=\"driver_linux\" lvalues=\"30006|30002\"/>")
+set(XINPUT_CHECK_LINE      "<setting label=\"30003\" type=\"bool\" id=\"driver_xinput\" default=\"true\"/>")
+set(DIRECTINPUT_CHECK_LINE "<setting label=\"30004\" type=\"bool\" id=\"driver_directinput\" default=\"true\"/>")
+
+# Write settings.xml.include
+if(CORE_SYSTEM_NAME STREQUAL windows)
+  set(XINPUT_CHECK "${XINPUT_CHECK_LINE}")
+  set(DIRECTINPUT_CHECK "${DIRECTINPUT_CHECK_LINE}")
+elseif(CORE_SYSTEM_NAME STREQUAL osx)
+  set(OSX_SELECT "${OSX_SELECT_LINE}")
+else()
+  if(SDL2_FOUND)
+    set(SDL_SELECT "${SDL_SELECT_LINE}")
+  else()
+    set(LINUX_SELECT "${LINUX_SELECT_LINE}")
+  endif()
+endif()
+
+file(READ ${PROJECT_SOURCE_DIR}/${PROJECT_NAME}/resources/settings.xml.include settings_file)
+string(CONFIGURE "${settings_file}" settings_file_conf @ONLY)
+file(GENERATE OUTPUT ${PROJECT_SOURCE_DIR}/${PROJECT_NAME}/resources/settings.xml CONTENT "${settings_file_conf}")

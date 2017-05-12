@@ -19,6 +19,9 @@
  */
 
 #include "Joystick.h"
+#include "JoystickManager.h"
+#include "JoystickTranslator.h"
+#include "JoystickUtils.h"
 #include "log/Log.h"
 #include "settings/Settings.h"
 #include "utils/CommonMacros.h"
@@ -30,13 +33,13 @@ using namespace JOYSTICK;
 
 #define ANALOG_EPSILON  0.0001f
 
-CJoystick::CJoystick(const std::string& strProvider)
+CJoystick::CJoystick(EJoystickInterface interfaceType)
  : m_discoverTimeMs(P8PLATFORM::GetTimeMs()),
    m_activateTimeMs(-1),
    m_firstEventTimeMs(-1),
    m_lastEventTimeMs(-1)
 {
-  SetProvider(strProvider);
+  SetProvider(JoystickTranslator::GetInterfaceProvider(interfaceType));
 }
 
 bool CJoystick::Equals(const CJoystick* rhs) const
@@ -127,6 +130,20 @@ bool CJoystick::SendEvent(const ADDON::PeripheralEvent& event)
   return bHandled;
 }
 
+void CJoystick::Activate()
+{
+  if (!IsActive())
+  {
+    m_activateTimeMs = P8PLATFORM::GetTimeMs();
+
+    if (CJoystickUtils::IsGhostJoystick(*this))
+    {
+      CJoystickManager::Get().SetChanged(true);
+      CJoystickManager::Get().TriggerScan();
+    }
+  }
+}
+
 void CJoystick::GetButtonEvents(std::vector<ADDON::PeripheralEvent>& events)
 {
   const std::vector<JOYSTICK_STATE_BUTTON>& buttons = m_stateBuffer.buttons;
@@ -168,8 +185,7 @@ void CJoystick::GetAxisEvents(std::vector<ADDON::PeripheralEvent>& events)
 
 void CJoystick::SetButtonValue(unsigned int buttonIndex, JOYSTICK_STATE_BUTTON buttonValue)
 {
-  if (m_activateTimeMs < 0)
-    m_activateTimeMs = P8PLATFORM::GetTimeMs();
+  Activate();
 
   if (buttonIndex < m_stateBuffer.buttons.size())
     m_stateBuffer.buttons[buttonIndex] = buttonValue;
@@ -177,8 +193,7 @@ void CJoystick::SetButtonValue(unsigned int buttonIndex, JOYSTICK_STATE_BUTTON b
 
 void CJoystick::SetHatValue(unsigned int hatIndex, JOYSTICK_STATE_HAT hatValue)
 {
-  if (m_activateTimeMs < 0)
-    m_activateTimeMs = P8PLATFORM::GetTimeMs();
+  Activate();
 
   if (hatIndex < m_stateBuffer.hats.size())
     m_stateBuffer.hats[hatIndex] = hatValue;
@@ -186,8 +201,7 @@ void CJoystick::SetHatValue(unsigned int hatIndex, JOYSTICK_STATE_HAT hatValue)
 
 void CJoystick::SetAxisValue(unsigned int axisIndex, JOYSTICK_STATE_AXIS axisValue)
 {
-  if (m_activateTimeMs < 0)
-    m_activateTimeMs = P8PLATFORM::GetTimeMs();
+  Activate();
 
   axisValue = CONSTRAIN(-1.0f, axisValue, 1.0f);
 

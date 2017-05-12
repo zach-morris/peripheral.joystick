@@ -1,6 +1,6 @@
 /*
- *      Copyright (C) 2015-2017 Garrett Brown
- *      Copyright (C) 2015-2017 Team Kodi
+ *      Copyright (C) 2017 Garrett Brown
+ *      Copyright (C) 2017 Team Kodi
  *
  *  This Program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -15,28 +15,28 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this Program; see the file COPYING.  If not, see
  *  <http://www.gnu.org/licenses/>.
- *
  */
-#pragma once
 
+#include "JoystickUtils.h"
+#include "Joystick.h"
+#include "JoystickTranslator.h"
 #include "JoystickTypes.h"
 
-#include "kodi_peripheral_types.h"
+using namespace JOYSTICK;
 
-#include <string>
-
-namespace JOYSTICK
+bool CJoystickUtils::IsGhostJoystick(const CJoystick& joystick)
 {
-  class JoystickTranslator
+  // Ghost joysticks observed on linux and udev
+  if (joystick.Provider() == JoystickTranslator::GetInterfaceProvider(EJoystickInterface::LINUX) ||
+      joystick.Provider() == JoystickTranslator::GetInterfaceProvider(EJoystickInterface::UDEV))
   {
-  public:
-    static std::string GetInterfaceProvider(EJoystickInterface iface);
-    static EJoystickInterface GetInterfaceType(const std::string& provider);
+    // Wireless receiver names
+    if (joystick.Name() == "Xbox 360 Wireless Receiver" ||
+        joystick.Name() == "Xbox 360 Wireless Receiver (XBOX)")
+    {
+      return true;
+    }
+  }
 
-    static JOYSTICK_DRIVER_HAT_DIRECTION TranslateHatDir(const std::string& hatDir);
-    static const char* TranslateHatDir(JOYSTICK_DRIVER_HAT_DIRECTION hatDir);
-
-    static JOYSTICK_DRIVER_SEMIAXIS_DIRECTION TranslateSemiAxisDir(char axisSign);
-    static const char* TranslateSemiAxisDir(JOYSTICK_DRIVER_SEMIAXIS_DIRECTION dir);
-  };
+  return false;
 }

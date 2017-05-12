@@ -30,7 +30,7 @@ using namespace JOYSTICK;
 #define MAX_AXIS      32768
 
 CJoystickSDL::CJoystickSDL(unsigned int index) :
-  CJoystick(INTERFACE_SDL),
+  CJoystick(EJoystickInterface::SDL),
   m_index(index),
   m_pController(nullptr)
 {

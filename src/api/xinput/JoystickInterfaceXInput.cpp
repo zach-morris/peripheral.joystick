@@ -24,15 +24,16 @@
 #include "api/JoystickTypes.h"
 
 #include <array>
+#include <cstring>
 #include <Xinput.h>
 
 using namespace JOYSTICK;
 
 #define MAX_JOYSTICKS 4
 
-const char* CJoystickInterfaceXInput::Name(void) const
+EJoystickInterface CJoystickInterfaceXInput::Type(void) const
 {
-  return INTERFACE_XINPUT;
+  return EJoystickInterface::XINPUT;
 }
 
 bool CJoystickInterfaceXInput::Initialize(void)

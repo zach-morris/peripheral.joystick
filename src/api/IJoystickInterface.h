@@ -36,7 +36,12 @@ namespace JOYSTICK
     /*!
      * \brief Get a short name for the interface
      */
-    virtual const char* Name(void) const = 0;
+    virtual EJoystickInterface Type(void) const = 0;
+
+    /*!
+     * \brief Convenience function to translate interface type to provider string
+     */
+    std::string Provider(void) const;
 
     /*!
      * \brief Initialize the interface

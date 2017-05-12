@@ -45,9 +45,9 @@ CJoystickInterfaceDirectInput::CJoystickInterfaceDirectInput(void)
     m_pDirectInput(NULL)
 { }
 
-const char* CJoystickInterfaceDirectInput::Name(void) const
+EJoystickInterface CJoystickInterfaceDirectInput::Type(void) const
 {
-  return INTERFACE_DIRECTINPUT;
+  return EJoystickInterface::DIRECTINPUT;
 }
 
 bool CJoystickInterfaceDirectInput::Initialize(void)
