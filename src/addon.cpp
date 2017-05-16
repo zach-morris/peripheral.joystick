@@ -123,16 +123,6 @@ ADDON_STATUS ADDON_SetSetting(const char* settingName, const void* settingValue)
   return ADDON_STATUS_OK;
 }
 
-const char* GetPeripheralAPIVersion(void)
-{
-  return PERIPHERAL_API_VERSION;
-}
-
-const char* GetMinimumPeripheralAPIVersion(void)
-{
-  return PERIPHERAL_MIN_API_VERSION;
-}
-
 PERIPHERAL_ERROR GetAddonCapabilities(PERIPHERAL_CAPABILITIES* pCapabilities)
 {
   if (!pCapabilities)
