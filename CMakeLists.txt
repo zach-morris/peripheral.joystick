@@ -58,10 +58,63 @@ set(JOYSTICK_SOURCES src/addon.cpp
                      src/storage/xml/JoystickFamiliesXml.cpp
                      src/utils/StringUtils.cpp)
 
+set(JOYSTICK_HEADERS src/api/IJoystickInterface.h
+                     src/api/Joystick.h
+                     src/api/JoystickInterfaceCallback.h
+                     src/api/JoystickManager.h
+                     src/api/JoystickTranslator.h
+                     src/api/JoystickTypes.h
+                     src/api/PeripheralScanner.h
+                     src/buttonmapper/ButtonMapper.h
+                     src/buttonmapper/ButtonMapTranslator.h
+                     src/buttonmapper/ButtonMapTypes.h
+                     src/buttonmapper/ButtonMapUtils.h
+                     src/buttonmapper/ControllerTransformer.h
+                     src/buttonmapper/DriverGeometry.h
+                     src/buttonmapper/JoystickFamily.h
+                     src/filesystem/DirectoryCache.h
+                     src/filesystem/DirectoryUtils.h
+                     src/filesystem/Filesystem.h
+                     src/filesystem/FilesystemTypes.h
+                     src/filesystem/FileUtils.h
+                     src/filesystem/IDirectoryUtils.h
+                     src/filesystem/IFile.h
+                     src/filesystem/IFileUtils.h
+                     src/filesystem/generic/ReadableFile.h
+                     src/filesystem/generic/SeekableFile.h
+                     src/filesystem/vfs/VFSDirectoryUtils.h
+                     src/filesystem/vfs/VFSFileUtils.h
+                     src/log/ILog.h
+                     src/log/LogAddon.h
+                     src/log/LogConsole.h
+                     src/log/Log.h
+                     src/settings/Settings.h
+                     src/storage/ButtonMap.h
+                     src/storage/DeviceConfiguration.h
+                     src/storage/Device.h
+                     src/storage/IDatabase.h
+                     src/storage/JustABunchOfFiles.h
+                     src/storage/PrimitiveConfiguration.h
+                     src/storage/StorageDefinitions.h
+                     src/storage/StorageManager.h
+                     src/storage/StorageTypes.h
+                     src/storage/StorageUtils.h
+                     src/storage/api/DatabaseJoystickAPI.h
+                     src/storage/xml/ButtonMapDefinitions.h
+                     src/storage/xml/ButtonMapXml.h
+                     src/storage/xml/DatabaseXml.h
+                     src/storage/xml/DeviceXml.h
+                     src/storage/xml/JoystickFamiliesXml.h
+                     src/storage/xml/JoystickFamilyDefinitions.h
+                     src/utils/CommonIncludes.h
+                     src/utils/CommonMacros.h
+                     src/utils/StringUtils.h)
+
 check_include_files("syslog.h" HAVE_SYSLOG)
 
 if(HAVE_SYSLOG)
   list(APPEND JOYSTICK_SOURCES src/log/LogSyslog.cpp)
+  list(APPEND JOYSTICK_HEADERS src/log/LogSyslog.h)
 endif()
 
 list(APPEND DEPLIBS ${kodiplatform_LIBRARIES}
@@ -82,6 +135,8 @@ if(STEAMLINK)
 
     list(APPEND JOYSTICK_SOURCES src/api/sdl/JoystickInterfaceSDL.cpp
                                  src/api/sdl/JoystickSDL.cpp)
+    list(APPEND JOYSTICK_HEADERS src/api/sdl/JoystickInterfaceSDL.h
+                                 src/api/sdl/JoystickSDL.h)
 
     list(APPEND DEPLIBS ${SDL2_LIBRARY})
   endif()
@@ -96,6 +151,8 @@ if("${CORE_SYSTEM_NAME}" STREQUAL "darwin" OR "${CORE_SYSTEM_NAME}" STREQUAL "os
 
   list(APPEND JOYSTICK_SOURCES src/api/cocoa/JoystickCocoa.cpp
                                src/api/cocoa/JoystickInterfaceCocoa.cpp)
+  list(APPEND JOYSTICK_HEADERS src/api/cocoa/JoystickCocoa.h
+                               src/api/cocoa/JoystickInterfaceCocoa.h)
 
   list(APPEND DEPLIBS ${COCOA_LIBRARY})
   list(APPEND DEPLIBS "-framework IOKit")
@@ -112,6 +169,8 @@ if(HAVE_LINUX_JOYSTICK_H)
 
   list(APPEND JOYSTICK_SOURCES src/api/linux/JoystickInterfaceLinux.cpp
                                src/api/linux/JoystickLinux.cpp)
+  list(APPEND JOYSTICK_HEADERS src/api/linux/JoystickInterfaceLinux.h
+                               src/api/linux/JoystickLinux.h)
 endif()
 
 # --- DirectInput --------------------------------------------------------------
@@ -121,6 +180,8 @@ if("${CORE_SYSTEM_NAME}" STREQUAL "windows")
 
   list(APPEND JOYSTICK_SOURCES src/api/directinput/JoystickDirectInput.cpp
                                src/api/directinput/JoystickInterfaceDirectInput.cpp)
+  list(APPEND JOYSTICK_HEADERS src/api/directinput/JoystickDirectInput.h
+                               src/api/directinput/JoystickInterfaceDirectInput.h)
 endif()
 
 # --- XInput -------------------------------------------------------------------
@@ -131,6 +192,9 @@ if("${CORE_SYSTEM_NAME}" STREQUAL "windows")
   list(APPEND JOYSTICK_SOURCES src/api/xinput/JoystickInterfaceXInput.cpp
                                src/api/xinput/JoystickXInput.cpp
                                src/api/xinput/XInputDLL.cpp)
+  list(APPEND JOYSTICK_HEADERS src/api/xinput/JoystickInterfaceXInput.h
+                               src/api/xinput/JoystickXInput.h
+                               src/api/xinput/XInputDLL.h)
 endif()
 
 # --- udev ---------------------------------------------------------------------
@@ -146,6 +210,8 @@ if(UDEV_FOUND)
 
   list(APPEND JOYSTICK_SOURCES src/api/udev/JoystickInterfaceUdev.cpp
                                src/api/udev/JoystickUdev.cpp)
+  list(APPEND JOYSTICK_HEADERS src/api/udev/JoystickInterfaceUdev.h
+                               src/api/udev/JoystickUdev.h)
 
   list(APPEND DEPLIBS ${UDEV_LIBRARIES})
 endif()

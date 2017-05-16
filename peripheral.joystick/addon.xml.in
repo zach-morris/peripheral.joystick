@@ -1,13 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <addon
   id="peripheral.joystick"
-  version="1.3.2"
+  version="1.3.3"
   name="Joystick Support"
   provider-name="Team-Kodi">
-  <requires>
-    <c-pluff version="0.1"/>
-    <import addon="kodi.peripheral" version="1.3.1"/>
-  </requires>
+  <requires>@ADDON_DEPENDS@</requires>
   <extension
     point="kodi.peripheral"
     provides_joysticks="true"
