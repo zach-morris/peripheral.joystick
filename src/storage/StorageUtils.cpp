@@ -57,20 +57,9 @@ std::string CStorageUtils::RootFileName(const ADDON::Joystick& device)
 {
   std::string baseFilename = StringUtils::MakeSafeUrl(device.Name());
 
-  // Combine successive runs of underscores (fits more information in smaller
-  // space)
-  baseFilename.erase(std::unique(baseFilename.begin(), baseFilename.end(),
-    [](char a, char b)
-    {
-      return a == '_' && b == '_';
-    }), baseFilename.end());
-
   // Limit filename to a sane number of characters.
   if (baseFilename.length() > 50)
     baseFilename.erase(baseFilename.begin() + 50, baseFilename.end());
-
-  // Trim trailing underscores left over from chopping the string
-  baseFilename = StringUtils::Trim(baseFilename, "_");
 
   // Append remaining properties
   std::stringstream filename;
