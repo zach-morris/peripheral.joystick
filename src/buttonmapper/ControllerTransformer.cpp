@@ -29,6 +29,30 @@
 
 using namespace JOYSTICK;
 
+// --- Utility definitions -----------------------------------------------------
+
+namespace JOYSTICK
+{
+  struct FeatureMapProperties
+  {
+    unsigned int occurrences;
+    unsigned int primitiveCount;
+  };
+
+  bool operator<(const FeatureMapProperties& lhs, const FeatureMapProperties& rhs)
+  {
+    if (lhs.occurrences < rhs.occurrences) return true;
+    if (lhs.occurrences > rhs.occurrences) return false;
+
+    if (lhs.primitiveCount < rhs.primitiveCount) return true;
+    if (lhs.primitiveCount > rhs.primitiveCount) return false;
+
+    return false;
+  }
+}
+
+// --- CControllerTransformer --------------------------------------------------
+
 CControllerTransformer::CControllerTransformer(CJoystickFamilyManager& familyManager) :
   m_familyManager(familyManager)
 {
@@ -63,7 +87,10 @@ DevicePtr CControllerTransformer::CreateDevice(const CDevice& deviceInfo)
   for (const auto& device : m_observedDevices)
   {
     if (*device == deviceInfo)
+    {
       result->Configuration() = device->Configuration();
+      break;
+    }
   }
 
   return result;
@@ -173,23 +200,23 @@ const FeatureMap& CControllerTransformer::GetFeatureMap(const FeatureMaps& featu
 {
   static const FeatureMap empty;
 
-  unsigned int maxCount = 0;
-  const FeatureMap* bestFeatureMap = nullptr;
+  std::map<FeatureMapProperties, const FeatureMap*> sortedFeatureMaps;
 
-  for (const auto& featureMap : featureMaps)
+  for (const auto& it : featureMaps)
   {
-    const FeatureMap& features = featureMap.first;
-    unsigned int count = featureMap.second;
+    const FeatureMap& featureMap = it.first;
+    unsigned int occurrenceCount = it.second;
 
-    if (count > maxCount)
-    {
-      maxCount = count;
-      bestFeatureMap = &features;
-    }
+    FeatureMapProperties props = { static_cast<unsigned int>(featureMap.size()), occurrenceCount };
+
+    sortedFeatureMaps[props] = &featureMap;
   }
 
-  if (bestFeatureMap != nullptr)
-    return *bestFeatureMap;
+  if (!sortedFeatureMaps.empty())
+  {
+    const FeatureMap* featureMap = sortedFeatureMaps.rbegin()->second;
+    return *featureMap;
+  }
 
   return empty;
 }
