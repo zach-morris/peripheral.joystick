@@ -19,6 +19,11 @@
  */
 #pragma once
 
+#if defined(_WIN32)
+#  include <windows.h>
+#  include <tchar.h>
+#endif
+
 // This must be #defined before libXBMC_addon.h to fix compile
 #if !defined(_WIN32) && !defined(TARGET_DARWIN)
   #include <sys/stat.h>

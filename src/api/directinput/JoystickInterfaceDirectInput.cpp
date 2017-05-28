@@ -18,6 +18,8 @@
  *
  */
 
+#include "utils/CommonIncludes.h"
+
 #include "JoystickInterfaceDirectInput.h"
 #include "JoystickDirectInput.h"
 #include "api/JoystickTypes.h"
@@ -142,7 +144,7 @@ BOOL CALLBACK CJoystickInterfaceDirectInput::EnumJoysticksCallback(const DIDEVIC
     return DIENUM_CONTINUE;
   }
 
-  const std::string strName = pdidInstance->tszProductName ? pdidInstance->tszProductName : "";
+  const _TCHAR *strName = pdidInstance->tszProductName ? pdidInstance->tszProductName : _TEXT("");
 
   context->AddScanResult(JoystickPtr(new CJoystickDirectInput(pdidInstance->guidInstance, pJoystick, strName)));
 
