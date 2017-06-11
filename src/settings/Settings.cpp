@@ -83,9 +83,7 @@ void CSettings::SetSetting(const std::string& strName, const void* value)
       };
     }
 
-    const char* strValue = static_cast<const char*>(value);
-    int ifaceIndex = strValue[0] - '0';
-
+    int ifaceIndex = *static_cast<const int*>(value);
     unsigned int driverIndex = 0;
     for (auto driver : drivers)
     {
