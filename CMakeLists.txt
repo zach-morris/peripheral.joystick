@@ -227,11 +227,56 @@ build_addon(peripheral.joystick JOYSTICK DEPLIBS)
 
 # ------------------------------------------------------------------------------
 
-set(LINUX_SELECT_LINE      "<setting label=\"30001\" type=\"select\" id=\"driver_linux\" lvalues=\"30005|30007|30002\"/>")
-set(SDL_SELECT_LINE        "<setting label=\"30001\" type=\"select\" id=\"driver_sdl\" lvalues=\"30008|30005|30007|30002\"/>")
-set(OSX_SELECT_LINE        "<setting label=\"30001\" type=\"select\" id=\"driver_linux\" lvalues=\"30006|30002\"/>")
-set(XINPUT_CHECK_LINE      "<setting label=\"30003\" type=\"bool\" id=\"driver_xinput\" default=\"true\"/>")
-set(DIRECTINPUT_CHECK_LINE "<setting label=\"30004\" type=\"bool\" id=\"driver_directinput\" default=\"true\"/>")
+set(LINUX_SELECT_LINE "\
+        <setting id=\"driver_linux\" type=\"integer\" label=\"30001\">
+          <default>0</default>
+          <constraints>
+            <options>
+              <option label=\"30005\">0</option>
+              <option label=\"30007\">1</option>
+              <option label=\"30002\">2</option>
+            </options>
+          </constraints>
+          <control type=\"spinner\" format=\"string\"/>
+        </setting>")
+
+set(SDL_SELECT_LINE "\
+        <setting id=\"driver_sdl\" type=\"integer\" label=\"30001\">
+          <default>0</default>
+          <constraints>
+            <options>
+              <option label=\"30008\">0</option>
+              <option label=\"30005\">1</option>
+              <option label=\"30007\">2</option>
+              <option label=\"30002\">3</option>
+            </options>
+          </constraints>
+          <control type=\"spinner\" format=\"string\"/>
+        </setting>")
+
+set(OSX_SELECT_LINE  "\
+        <setting id=\"driver_osx\" type=\"integer\" label=\"30001\">
+          <default>0</default>
+          <constraints>
+            <options>
+              <option label=\"30006\">0</option>
+              <option label=\"30002\">1</option>
+            </options>
+          </constraints>
+          <control type=\"spinner\" format=\"string\"/>
+        </setting>")
+
+set(XINPUT_CHECK_LINE "\
+        <setting id=\"driver_xinput\" type=\"boolean\" label=\"30003\">
+          <default>true</default>
+          <control type=\"toggle\"/>
+        </setting>")
+
+set(DIRECTINPUT_CHECK_LINE "\
+        <setting id=\"driver_directinput\" type=\"boolean\" label=\"30004\">
+          <default>true</default>
+          <control type=\"toggle\"/>
+        </setting>")
 
 # Write settings.xml.include
 if(CORE_SYSTEM_NAME STREQUAL windows)
