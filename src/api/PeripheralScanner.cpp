@@ -19,13 +19,12 @@
  */
 
 #include "PeripheralScanner.h"
+#include "addon.h"
 
-#include "libKODI_peripheral.h"
-
-using namespace ADDON;
+using namespace kodi::addon;
 using namespace JOYSTICK;
 
-CPeripheralScanner::CPeripheralScanner(CHelper_libKODI_peripheral* peripheralLib)
+CPeripheralScanner::CPeripheralScanner(CPeripheralJoystick* peripheralLib)
   : m_peripheralLib(peripheralLib)
 {
 }

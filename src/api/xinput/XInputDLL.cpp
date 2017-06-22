@@ -114,7 +114,6 @@ void CXInputDLL::Unload(void)
   m_dll      = NULL;
 }
 
-
 bool CXInputDLL::HasGuideButton(void) const
 {
   return m_strVersion == "1.3";

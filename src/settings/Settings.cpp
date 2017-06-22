@@ -45,11 +45,11 @@ CSettings& CSettings::Get(void)
   return _instance;
 }
 
-void CSettings::SetSetting(const std::string& strName, const void* value)
+void CSettings::SetSetting(const std::string& strName, const kodi::CSettingValue& value)
 {
   if (strName == SETTING_RETROARCH_CONFIG)
   {
-    m_bGenerateRetroArchConfigs = *static_cast<const bool*>(value);
+    m_bGenerateRetroArchConfigs = value.GetBoolean();
     dsyslog("Setting \"%s\" set to %f", SETTING_RETROARCH_CONFIG, m_bGenerateRetroArchConfigs ? "true" : "false");
   }
   else if (strName == SETTING_LINUX_DRIVER ||
@@ -83,7 +83,7 @@ void CSettings::SetSetting(const std::string& strName, const void* value)
       };
     }
 
-    int ifaceIndex = *static_cast<const int*>(value);
+    int ifaceIndex = value.GetInt();
     unsigned int driverIndex = 0;
     for (auto driver : drivers)
     {
@@ -98,13 +98,13 @@ void CSettings::SetSetting(const std::string& strName, const void* value)
   else if (strName == SETTING_XINPUT_DRIVER)
   {
     const EJoystickInterface iface = EJoystickInterface::XINPUT;
-    CJoystickManager::Get().SetEnabled(iface, *static_cast<const bool*>(value));
+    CJoystickManager::Get().SetEnabled(iface, value.GetBoolean());
     CJoystickManager::Get().TriggerScan();
   }
   else if (strName == SETTING_DIRECTINPUT_DRIVER)
   {
     const EJoystickInterface iface = EJoystickInterface::DIRECTINPUT;
-    CJoystickManager::Get().SetEnabled(iface, *static_cast<const bool*>(value));
+    CJoystickManager::Get().SetEnabled(iface, value.GetBoolean());
     CJoystickManager::Get().TriggerScan();
   }
 

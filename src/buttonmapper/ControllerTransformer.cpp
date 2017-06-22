@@ -23,7 +23,7 @@
 #include "storage/Device.h"
 #include "utils/CommonMacros.h"
 
-#include "kodi_peripheral_utils.hpp"
+#include <kodi/addon-instance/PeripheralUtils.h>
 
 #include <algorithm>
 
@@ -125,11 +125,11 @@ FeatureMap CControllerTransformer::CreateFeatureMap(const FeatureVector& feature
 {
   FeatureMap featureMap;
 
-  for (const ADDON::JoystickFeature& featureFrom : featuresFrom)
+  for (const kodi::addon::JoystickFeature& featureFrom : featuresFrom)
   {
     for (JOYSTICK_FEATURE_PRIMITIVE primitiveIndex : ButtonMapUtils::GetPrimitives(featureFrom.Type()))
     {
-      const ADDON::DriverPrimitive& targetPrimitive = featureFrom.Primitive(primitiveIndex);
+      const kodi::addon::DriverPrimitive& targetPrimitive = featureFrom.Primitive(primitiveIndex);
 
       if (targetPrimitive.Type() == JOYSTICK_DRIVER_PRIMITIVE_TYPE_UNKNOWN)
         continue;
@@ -137,7 +137,7 @@ FeatureMap CControllerTransformer::CreateFeatureMap(const FeatureVector& feature
       JOYSTICK_FEATURE_PRIMITIVE toPrimitiveIndex;
 
       auto itFeatureTo = std::find_if(featuresTo.begin(), featuresTo.end(),
-        [&targetPrimitive, &toPrimitiveIndex](const ADDON::JoystickFeature& featureTo)
+        [&targetPrimitive, &toPrimitiveIndex](const kodi::addon::JoystickFeature& featureTo)
         {
           for (JOYSTICK_FEATURE_PRIMITIVE toIndex : ButtonMapUtils::GetPrimitives(featureTo.Type()))
           {
@@ -163,7 +163,7 @@ FeatureMap CControllerTransformer::CreateFeatureMap(const FeatureVector& feature
   return featureMap;
 }
 
-void CControllerTransformer::TransformFeatures(const ADDON::Joystick& driverInfo,
+void CControllerTransformer::TransformFeatures(const kodi::addon::Joystick& driverInfo,
                                                const std::string& fromController,
                                                const std::string& toController,
                                                const FeatureVector& features,
@@ -178,16 +178,16 @@ void CControllerTransformer::TransformFeatures(const ADDON::Joystick& driverInfo
 
   const FeatureMap& featureMap = GetFeatureMap(featureMaps);
 
-  for (const ADDON::JoystickFeature& sourceFeature : features)
+  for (const kodi::addon::JoystickFeature& sourceFeature : features)
   {
     for (JOYSTICK_FEATURE_PRIMITIVE primitiveIndex : ButtonMapUtils::GetPrimitives(sourceFeature.Type()))
     {
-      const ADDON::DriverPrimitive& sourcePrimitive = sourceFeature.Primitive(primitiveIndex);
+      const kodi::addon::DriverPrimitive& sourcePrimitive = sourceFeature.Primitive(primitiveIndex);
 
       if (sourcePrimitive.Type() == JOYSTICK_DRIVER_PRIMITIVE_TYPE_UNKNOWN)
         continue;
 
-      ADDON::JoystickFeature targetFeature;
+      kodi::addon::JoystickFeature targetFeature;
       JOYSTICK_FEATURE_PRIMITIVE targetPrimitive;
 
       if (TranslatePrimitive(sourceFeature, primitiveIndex, targetFeature, targetPrimitive, featureMap, bSwap))
@@ -221,9 +221,9 @@ const FeatureMap& CControllerTransformer::GetFeatureMap(const FeatureMaps& featu
   return empty;
 }
 
-bool CControllerTransformer::TranslatePrimitive(const ADDON::JoystickFeature& sourceFeature,
+bool CControllerTransformer::TranslatePrimitive(const kodi::addon::JoystickFeature& sourceFeature,
                                                 JOYSTICK_FEATURE_PRIMITIVE sourcePrimitive,
-                                                ADDON::JoystickFeature& targetFeature,
+                                                kodi::addon::JoystickFeature& targetFeature,
                                                 JOYSTICK_FEATURE_PRIMITIVE& targetPrimitive,
                                                 const FeatureMap& featureMap,
                                                 bool bSwap)
@@ -256,19 +256,19 @@ bool CControllerTransformer::TranslatePrimitive(const ADDON::JoystickFeature& so
 }
 
 void CControllerTransformer::SetPrimitive(FeatureVector& features,
-                                          const ADDON::JoystickFeature& feature,
+                                          const kodi::addon::JoystickFeature& feature,
                                           JOYSTICK_FEATURE_PRIMITIVE index,
-                                          const ADDON::DriverPrimitive& primitive)
+                                          const kodi::addon::DriverPrimitive& primitive)
 {
   auto itFeature = std::find_if(features.begin(), features.end(),
-    [&feature](const ADDON::JoystickFeature& targetFeature)
+    [&feature](const kodi::addon::JoystickFeature& targetFeature)
     {
       return feature.Name() == targetFeature.Name();
     });
 
   if (itFeature == features.end())
   {
-    ADDON::JoystickFeature newFeature(feature.Name(), feature.Type());
+    kodi::addon::JoystickFeature newFeature(feature.Name(), feature.Type());
     newFeature.SetPrimitive(index, primitive);
     features.emplace_back(std::move(newFeature));
   }

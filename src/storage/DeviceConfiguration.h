@@ -47,12 +47,12 @@ namespace JOYSTICK
     const ButtonConfiguration&    Button(unsigned int index) const;
     PrimitiveVector               GetIgnoredPrimitives() const;
     void                          GetAxisConfigs(FeatureVector& features) const;
-    void                          GetAxisConfig(ADDON::DriverPrimitive& primitive) const;
+    void                          GetAxisConfig(kodi::addon::DriverPrimitive& primitive) const;
 
     void SetAxis(unsigned int index, const AxisConfiguration& config)     { m_axes[index] = config; }
     void SetButton(unsigned int index, const ButtonConfiguration& config) { m_buttons[index] = config; }
     void SetAxisConfigs(const FeatureVector& features);
-    void SetAxisConfig(const ADDON::DriverPrimitive& primitive);
+    void SetAxisConfig(const kodi::addon::DriverPrimitive& primitive);
     void SetIgnoredPrimitives(const PrimitiveVector& primitives);
 
   private:

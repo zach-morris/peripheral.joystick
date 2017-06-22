@@ -20,6 +20,7 @@
 #pragma once
 
 #include <string>
+#include <kodi/General.h>
 
 namespace JOYSTICK
 {
@@ -34,7 +35,7 @@ namespace JOYSTICK
     /*!
      * \brief Set the value of a setting. Called by the frontend.
      */
-    void SetSetting(const std::string& strName, const void* value);
+    void SetSetting(const std::string& strName, const kodi::CSettingValue& value);
 
     /*!
      * \brief Check if the settings have been initialized

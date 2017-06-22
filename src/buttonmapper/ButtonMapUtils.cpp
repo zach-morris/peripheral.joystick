@@ -20,14 +20,17 @@
 
 #include "ButtonMapUtils.h"
 
-#include "kodi_peripheral_utils.hpp"
+#include <kodi/addon-instance/PeripheralUtils.h>
+
+#include <array>
+#include <map>
 
 #include <array>
 #include <map>
 
 using namespace JOYSTICK;
 
-bool ButtonMapUtils::PrimitivesEqual(const ADDON::JoystickFeature& lhs, const ADDON::JoystickFeature& rhs)
+bool ButtonMapUtils::PrimitivesEqual(const kodi::addon::JoystickFeature& lhs, const kodi::addon::JoystickFeature& rhs)
 {
   if (lhs.Type() == rhs.Type())
   {
@@ -58,7 +61,7 @@ bool ButtonMapUtils::PrimitivesEqual(const ADDON::JoystickFeature& lhs, const AD
   return false;
 }
 
-bool ButtonMapUtils::PrimitivesConflict(const ADDON::DriverPrimitive& lhs, const ADDON::DriverPrimitive& rhs)
+bool ButtonMapUtils::PrimitivesConflict(const kodi::addon::DriverPrimitive& lhs, const kodi::addon::DriverPrimitive& rhs)
 {
   if (lhs.Type() != JOYSTICK_DRIVER_PRIMITIVE_TYPE_UNKNOWN &&
       lhs.Type() == rhs.Type() &&
@@ -90,7 +93,7 @@ bool ButtonMapUtils::PrimitivesConflict(const ADDON::DriverPrimitive& lhs, const
   return false;
 }
 
-bool ButtonMapUtils::SemiAxisIntersects(const ADDON::DriverPrimitive& semiaxis, float point)
+bool ButtonMapUtils::SemiAxisIntersects(const kodi::addon::DriverPrimitive& semiaxis, float point)
 {
   if (semiaxis.Type() == JOYSTICK_DRIVER_PRIMITIVE_TYPE_SEMIAXIS)
   {

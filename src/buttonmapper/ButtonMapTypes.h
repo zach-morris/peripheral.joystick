@@ -19,7 +19,7 @@
  */
 #pragma once
 
-#include "kodi_peripheral_utils.hpp"
+#include <kodi/addon-instance/PeripheralUtils.h>
 
 #include <map>
 #include <memory>
@@ -27,25 +27,28 @@
 #include <string>
 #include <vector>
 
-namespace ADDON
+namespace kodi
+{
+namespace addon
 {
   struct DriverPrimitive;
   class JoystickFeature;
-};
+}
+}
 
 namespace JOYSTICK
 {
   /*!
    * \brief A list of driver primitives
    */
-  typedef std::vector<ADDON::DriverPrimitive> PrimitiveVector;
+  typedef std::vector<kodi::addon::DriverPrimitive> PrimitiveVector;
 
   /*!
    * \brief A list of joystick features
    *
    * Each feature is connected to one or more driver primitives.
    */
-  typedef std::vector<ADDON::JoystickFeature> FeatureVector;
+  typedef std::vector<kodi::addon::JoystickFeature> FeatureVector;
 
   /*!
    * \brief Controller ID type
@@ -62,7 +65,7 @@ namespace JOYSTICK
    */
   struct FeaturePrimitive
   {
-    ADDON::JoystickFeature feature;
+    kodi::addon::JoystickFeature feature;
     JOYSTICK_FEATURE_PRIMITIVE primitive;
 
     bool operator<(const FeaturePrimitive& other) const
