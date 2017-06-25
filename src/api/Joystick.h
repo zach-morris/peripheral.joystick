@@ -21,14 +21,14 @@
 
 #include "JoystickTypes.h"
 
-#include "kodi_peripheral_utils.hpp"
+#include <kodi/addon-instance/PeripheralUtils.h>
 
 #include <string>
 #include <vector>
 
 namespace JOYSTICK
 {
-  class CJoystick : public ADDON::Joystick
+  class CJoystick : public kodi::addon::Joystick
   {
   public:
     CJoystick(EJoystickInterface interfaceType);
@@ -85,12 +85,12 @@ namespace JOYSTICK
     /*!
      * Get events that have occurred since the last call to GetEvents()
      */
-    virtual bool GetEvents(std::vector<ADDON::PeripheralEvent>& events);
+    virtual bool GetEvents(std::vector<kodi::addon::PeripheralEvent>& events);
 
     /*!
      * Send an event to a joystick
      */
-    virtual bool SendEvent(const ADDON::PeripheralEvent& event);
+    virtual bool SendEvent(const kodi::addon::PeripheralEvent& event);
 
     /*!
      * Process events sent to the joystick
@@ -118,9 +118,9 @@ namespace JOYSTICK
   private:
     void Activate();
 
-    void GetButtonEvents(std::vector<ADDON::PeripheralEvent>& events);
-    void GetHatEvents(std::vector<ADDON::PeripheralEvent>& events);
-    void GetAxisEvents(std::vector<ADDON::PeripheralEvent>& events);
+    void GetButtonEvents(std::vector<kodi::addon::PeripheralEvent>& events);
+    void GetHatEvents(std::vector<kodi::addon::PeripheralEvent>& events);
+    void GetAxisEvents(std::vector<kodi::addon::PeripheralEvent>& events);
 
     void UpdateTimers(void);
 

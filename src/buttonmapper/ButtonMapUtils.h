@@ -19,14 +19,15 @@
  */
 #pragma once
 
-#include "kodi_peripheral_types.h"
+#include <kodi/addon-instance/Peripheral.h>
 
-#include <vector>
-
-namespace ADDON
+namespace kodi
+{
+namespace addon
 {
   struct DriverPrimitive;
   class JoystickFeature;
+}
 }
 
 namespace JOYSTICK
@@ -37,18 +38,18 @@ namespace JOYSTICK
     /*!
      * \brief Check if two features having matching primitives
      */
-    static bool PrimitivesEqual(const ADDON::JoystickFeature& lhs, const ADDON::JoystickFeature& rhs);
+    static bool PrimitivesEqual(const kodi::addon::JoystickFeature& lhs, const kodi::addon::JoystickFeature& rhs);
 
     /*!
      * \brief Check if two primitives conflict with each other
      */
-    static bool PrimitivesConflict(const ADDON::DriverPrimitive& lhs, const ADDON::DriverPrimitive& rhs);
+    static bool PrimitivesConflict(const kodi::addon::DriverPrimitive& lhs, const kodi::addon::DriverPrimitive& rhs);
 
     /*!
      * \brief Check if a point intersects the range covered by a semiaxis,
      *        including its endpoints
      */
-    static bool SemiAxisIntersects(const ADDON::DriverPrimitive& semiaxis, float point);
+    static bool SemiAxisIntersects(const kodi::addon::DriverPrimitive& semiaxis, float point);
 
     /*!
      * \brief Get a list of all primitives belonging to this feature

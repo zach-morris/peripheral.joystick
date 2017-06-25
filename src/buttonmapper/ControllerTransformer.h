@@ -23,14 +23,17 @@
 #include "JoystickFamily.h"
 #include "storage/IDatabase.h"
 
-#include "kodi_peripheral_types.h"
+#include <kodi/addon-instance/Peripheral.h>
 
 #include <string>
 
-namespace ADDON
+namespace kodi
+{
+namespace addon
 {
   struct DriverPrimitive;
   class Joystick;
+}
 }
 
 namespace JOYSTICK
@@ -48,7 +51,7 @@ namespace JOYSTICK
     virtual void OnAdd(const DevicePtr& driverInfo, const ButtonMap& buttonMap) override;
     virtual DevicePtr CreateDevice(const CDevice& deviceInfo) override;
 
-    void TransformFeatures(const ADDON::Joystick& driverInfo,
+    void TransformFeatures(const kodi::addon::Joystick& driverInfo,
                            const std::string& fromController,
                            const std::string& toController,
                            const FeatureVector& features,
@@ -62,17 +65,17 @@ namespace JOYSTICK
 
     static const FeatureMap& GetFeatureMap(const FeatureMaps& featureMaps);
 
-    static bool TranslatePrimitive(const ADDON::JoystickFeature& sourceFeature,
+    static bool TranslatePrimitive(const kodi::addon::JoystickFeature& sourceFeature,
                                    JOYSTICK_FEATURE_PRIMITIVE sourcePrimitive,
-                                   ADDON::JoystickFeature& targetFeature,
+                                   kodi::addon::JoystickFeature& targetFeature,
                                    JOYSTICK_FEATURE_PRIMITIVE& targetPrimitive,
                                    const FeatureMap& featureMap,
                                    bool bSwap);
 
     static void SetPrimitive(FeatureVector& features,
-                             const ADDON::JoystickFeature& feature,
+                             const kodi::addon::JoystickFeature& feature,
                              JOYSTICK_FEATURE_PRIMITIVE index,
-                             const ADDON::DriverPrimitive& primitive);
+                             const kodi::addon::DriverPrimitive& primitive);
 
     ControllerMap           m_controllerMap;
     DeviceSet               m_observedDevices;

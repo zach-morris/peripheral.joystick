@@ -26,7 +26,7 @@
 #include "buttonmapper/ButtonMapUtils.h"
 #include "log/Log.h"
 
-#include "kodi_peripheral_utils.hpp"
+#include <kodi/addon-instance/PeripheralUtils.h>
 #include "p8-platform/util/timeutils.h"
 
 #include <algorithm>
@@ -82,7 +82,7 @@ void CButtonMap::MapFeatures(const std::string& controllerId, const FeatureVecto
   }
 
   std::sort(myFeatures.begin(), myFeatures.end(),
-    [](const ADDON::JoystickFeature& lhs, const ADDON::JoystickFeature& rhs)
+    [](const kodi::addon::JoystickFeature& lhs, const kodi::addon::JoystickFeature& rhs)
     {
       return lhs.Name() < rhs.Name();
     });
@@ -150,11 +150,11 @@ bool CButtonMap::Refresh(void)
   return true;
 }
 
-void CButtonMap::MergeFeature(const ADDON::JoystickFeature& feature, FeatureVector& features, const std::string& controllerId)
+void CButtonMap::MergeFeature(const kodi::addon::JoystickFeature& feature, FeatureVector& features, const std::string& controllerId)
 {
   // Find existing feature with the same name being updated
   auto itUpdating = std::find_if(features.begin(), features.end(),
-    [&feature](const ADDON::JoystickFeature& existingFeature)
+    [&feature](const kodi::addon::JoystickFeature& existingFeature)
     {
       return existingFeature.Name() == feature.Name();
     });
@@ -163,7 +163,7 @@ void CButtonMap::MergeFeature(const ADDON::JoystickFeature& feature, FeatureVect
   {
     // Find existing feature with the same primitives
     auto itConflicting = std::find_if(features.begin(), features.end(),
-      [&feature](const ADDON::JoystickFeature& existingFeature)
+      [&feature](const kodi::addon::JoystickFeature& existingFeature)
       {
         return ButtonMapUtils::PrimitivesEqual(existingFeature, feature);
       });
@@ -200,14 +200,14 @@ void CButtonMap::Sanitize(FeatureVector& features, const std::string& controller
       bool bFound = false;
 
       // Search for prior feature with the primitive
-      ADDON::JoystickFeature existingFeature;
+      kodi::addon::JoystickFeature existingFeature;
 
       for (unsigned int iExistingFeature = 0; iExistingFeature < iFeature; ++iExistingFeature)
       {
         const auto& existingPrimitives = features[iExistingFeature].Primitives();
 
         bFound = std::find_if(existingPrimitives.begin(), existingPrimitives.end(),
-          [&primitive](const ADDON::DriverPrimitive& existing)
+          [&primitive](const kodi::addon::DriverPrimitive& existing)
           {
             return ButtonMapUtils::PrimitivesConflict(primitive, existing);
           }) != existingPrimitives.end();
@@ -243,20 +243,20 @@ void CButtonMap::Sanitize(FeatureVector& features, const std::string& controller
             CStorageUtils::PrimitiveToString(primitive).c_str(),
             feature.Name().c_str());
 
-        primitive = ADDON::DriverPrimitive();
+        primitive = kodi::addon::DriverPrimitive();
       }
     }
   }
 
   // Erase invalid features
   features.erase(std::remove_if(features.begin(), features.end(),
-    [&controllerId](const ADDON::JoystickFeature& feature)
+    [&controllerId](const kodi::addon::JoystickFeature& feature)
     {
       auto& primitives = feature.Primitives();
 
       // Find valid primitive
       auto it = std::find_if(primitives.begin(), primitives.end(),
-        [](const ADDON::DriverPrimitive& primitive)
+        [](const kodi::addon::DriverPrimitive& primitive)
         {
           return primitive.Type() != JOYSTICK_DRIVER_PRIMITIVE_TYPE_UNKNOWN;
         });

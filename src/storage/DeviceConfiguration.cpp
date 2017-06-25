@@ -75,7 +75,7 @@ PrimitiveVector CDeviceConfiguration::GetIgnoredPrimitives() const
   for (const auto& buttonConfig : m_buttons)
   {
     if (buttonConfig.second.bIgnore)
-      primitives.emplace_back(ADDON::DriverPrimitive::CreateButton(buttonConfig.first));
+      primitives.emplace_back(kodi::addon::DriverPrimitive::CreateButton(buttonConfig.first));
   }
 
   return primitives;
@@ -90,7 +90,7 @@ void CDeviceConfiguration::GetAxisConfigs(FeatureVector& features) const
   }
 }
 
-void CDeviceConfiguration::GetAxisConfig(ADDON::DriverPrimitive& primitive) const
+void CDeviceConfiguration::GetAxisConfig(kodi::addon::DriverPrimitive& primitive) const
 {
   if (primitive.Type() == JOYSTICK_DRIVER_PRIMITIVE_TYPE_SEMIAXIS)
   {
@@ -98,7 +98,7 @@ void CDeviceConfiguration::GetAxisConfig(ADDON::DriverPrimitive& primitive) cons
     if (it != m_axes.end())
     {
       const AxisConfiguration& config = it->second;
-      primitive = ADDON::DriverPrimitive(primitive.DriverIndex(),
+      primitive = kodi::addon::DriverPrimitive(primitive.DriverIndex(),
                                          config.trigger.center,
                                          primitive.SemiAxisDirection(),
                                          config.trigger.range);
@@ -115,7 +115,7 @@ void CDeviceConfiguration::SetAxisConfigs(const FeatureVector& features)
   }
 }
 
-void CDeviceConfiguration::SetAxisConfig(const ADDON::DriverPrimitive& primitive)
+void CDeviceConfiguration::SetAxisConfig(const kodi::addon::DriverPrimitive& primitive)
 {
   if (primitive.Type() == JOYSTICK_DRIVER_PRIMITIVE_TYPE_SEMIAXIS)
   {

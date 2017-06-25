@@ -19,19 +19,8 @@
  */
 #pragma once
 
-#if defined(_WIN32)
-#  include <windows.h>
-#  include <tchar.h>
-#endif
-
-// This must be #defined before libXBMC_addon.h to fix compile
-#if !defined(_WIN32) && !defined(TARGET_DARWIN)
-  #include <sys/stat.h>
-  #define __stat64 stat64
-#endif
-
 #if defined(TARGET_DARWIN)
 #include "posix/os-types.h"
 #endif
 
-#include "libXBMC_addon.h"
+#include <kodi/AddonBase.h>

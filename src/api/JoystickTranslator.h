@@ -21,7 +21,7 @@
 
 #include "JoystickTypes.h"
 
-#include "kodi_peripheral_types.h"
+#include <kodi/addon-instance/Peripheral.h>
 
 #include <string>
 
