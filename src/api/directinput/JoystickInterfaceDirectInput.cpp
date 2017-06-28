@@ -144,7 +144,7 @@ BOOL CALLBACK CJoystickInterfaceDirectInput::EnumJoysticksCallback(const DIDEVIC
     return DIENUM_CONTINUE;
   }
 
-  const _TCHAR *strName = pdidInstance->tszProductName ? pdidInstance->tszProductName : _TEXT("");
+  const TCHAR *strName = pdidInstance->tszProductName ? pdidInstance->tszProductName : TEXT("");
 
   context->AddScanResult(JoystickPtr(new CJoystickDirectInput(pdidInstance->guidInstance, pJoystick, strName)));
 

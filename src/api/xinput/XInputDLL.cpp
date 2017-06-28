@@ -47,16 +47,16 @@ bool CXInputDLL::Load(void)
 
   m_strVersion = "1.4";
   dsyslog("Attempting to load XInput1_4.dll...");
-  m_dll = LoadLibrary(_TEXT("XInput1_4.dll"));  // 1.4 Ships with Windows 8
+  m_dll = LoadLibrary(TEXT("XInput1_4.dll"));  // 1.4 Ships with Windows 8
   if (!m_dll)
   {
     m_strVersion = "1.3";
     dsyslog("Attempting to load XInput1_3.dll...");
-    m_dll = LoadLibrary(_TEXT("XInput1_3.dll"));  // 1.3 Ships with Vista and Win7, can be installed as a redistributable component
+    m_dll = LoadLibrary(TEXT("XInput1_3.dll"));  // 1.3 Ships with Vista and Win7, can be installed as a redistributable component
     if (!m_dll)
     {
       dsyslog("Attempting to load bin\\XInput1_3.dll...");
-      m_dll = LoadLibrary(_TEXT("bin\\XInput1_3.dll"));
+      m_dll = LoadLibrary(TEXT("bin\\XInput1_3.dll"));
     }
   }
 
