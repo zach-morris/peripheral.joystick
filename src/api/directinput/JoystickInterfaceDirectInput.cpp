@@ -26,7 +26,7 @@
 #include "log/Log.h"
 #include "utils/CommonMacros.h"
 
-#include <kodi/peripheral/libKODI_peripheral.h>
+#include <kodi/addon-instance/Peripheral.h>
 
 #pragma comment(lib, "Dinput8.lib")
 #pragma comment(lib, "dxguid.lib")
@@ -144,7 +144,7 @@ BOOL CALLBACK CJoystickInterfaceDirectInput::EnumJoysticksCallback(const DIDEVIC
     return DIENUM_CONTINUE;
   }
 
-  const _TCHAR *strName = pdidInstance->tszProductName ? pdidInstance->tszProductName : _TEXT("");
+  const TCHAR *strName = pdidInstance->tszProductName ? pdidInstance->tszProductName : TEXT("");
 
   context->AddScanResult(JoystickPtr(new CJoystickDirectInput(pdidInstance->guidInstance, pJoystick, strName)));
 

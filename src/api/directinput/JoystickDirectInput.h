@@ -33,7 +33,7 @@ namespace JOYSTICK
   public:
     CJoystickDirectInput(GUID                           deviceGuid,
                          LPDIRECTINPUTDEVICE8           joystickDevice,
-                         const _TCHAR                   *strName);
+                         const TCHAR                    *strName);
 
     virtual ~CJoystickDirectInput(void);
 
