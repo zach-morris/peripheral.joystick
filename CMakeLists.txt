@@ -58,7 +58,8 @@ set(JOYSTICK_SOURCES src/addon.cpp
                      src/storage/xml/JoystickFamiliesXml.cpp
                      src/utils/StringUtils.cpp)
 
-set(JOYSTICK_HEADERS src/api/IJoystickInterface.h
+set(JOYSTICK_HEADERS src/addon.h
+                     src/api/IJoystickInterface.h
                      src/api/Joystick.h
                      src/api/JoystickInterfaceCallback.h
                      src/api/JoystickManager.h
