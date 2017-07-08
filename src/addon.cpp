@@ -53,7 +53,7 @@ ADDON_STATUS CPeripheralJoystick::Create()
   if (!CStorageManager::Get().Initialize(this))
     return ADDON_STATUS_PERMANENT_FAILURE;
 
-  return GetStatus();
+  return ADDON_STATUS_NEED_SETTINGS;
 }
 
 ADDON_STATUS CPeripheralJoystick::SetSetting(const std::string& settingName, const kodi::CSettingValue& settingValue)
