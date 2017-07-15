@@ -238,7 +238,7 @@ set(LINUX_SELECT_LINE "\
               <option label=\"30002\">2</option>
             </options>
           </constraints>
-          <control type=\"spinner\" format=\"string\"/>
+          <control type=\"list\" format=\"string\"/>
         </setting>")
 
 set(SDL_SELECT_LINE "\
@@ -252,7 +252,7 @@ set(SDL_SELECT_LINE "\
               <option label=\"30002\">3</option>
             </options>
           </constraints>
-          <control type=\"spinner\" format=\"string\"/>
+          <control type=\"list\" format=\"string\"/>
         </setting>")
 
 set(OSX_SELECT_LINE  "\
@@ -264,7 +264,7 @@ set(OSX_SELECT_LINE  "\
               <option label=\"30002\">1</option>
             </options>
           </constraints>
-          <control type=\"spinner\" format=\"string\"/>
+          <control type=\"list\" format=\"string\"/>
         </setting>")
 
 set(XINPUT_CHECK_LINE "\
