@@ -35,19 +35,21 @@ using namespace JOYSTICK;
 
 #define RESOURCE_LIFETIME_MS  2000 // 2 seconds
 
-CButtonMap::CButtonMap(const std::string& strResourcePath) :
+CButtonMap::CButtonMap(const std::string& strResourcePath, IControllerHelper *controllerHelper) :
   m_strResourcePath(strResourcePath),
   m_device(std::move(std::make_shared<CDevice>())),
   m_timestamp(-1),
-  m_bModified(false)
+  m_bModified(false),
+  m_controllerHelper(controllerHelper)
 {
 }
 
-CButtonMap::CButtonMap(const std::string& strResourcePath, const DevicePtr& device) :
+CButtonMap::CButtonMap(const std::string& strResourcePath, const DevicePtr& device, IControllerHelper *controllerHelper) :
   m_strResourcePath(strResourcePath),
   m_device(device),
   m_timestamp(-1),
-  m_bModified(false)
+  m_bModified(false),
+  m_controllerHelper(controllerHelper)
 {
 }
 

@@ -42,6 +42,7 @@ bool ButtonMapUtils::PrimitivesEqual(const kodi::addon::JoystickFeature& lhs, co
       return lhs.Primitive(JOYSTICK_SCALAR_PRIMITIVE) == rhs.Primitive(JOYSTICK_SCALAR_PRIMITIVE);
     }
     case JOYSTICK_FEATURE_TYPE_ANALOG_STICK:
+    case JOYSTICK_FEATURE_TYPE_RELPOINTER:
     {
       return lhs.Primitive(JOYSTICK_ANALOG_STICK_UP)    == rhs.Primitive(JOYSTICK_ANALOG_STICK_UP) &&
              lhs.Primitive(JOYSTICK_ANALOG_STICK_DOWN)  == rhs.Primitive(JOYSTICK_ANALOG_STICK_DOWN) &&
@@ -135,7 +136,15 @@ const std::vector<JOYSTICK_FEATURE_PRIMITIVE>& ButtonMapUtils::GetPrimitives(JOY
       JOYSTICK_FEATURE_TYPE_MOTOR, {
         JOYSTICK_MOTOR_PRIMITIVE,
       }
-    }
+    },
+    {
+      JOYSTICK_FEATURE_TYPE_RELPOINTER, {
+        JOYSTICK_ANALOG_STICK_UP,
+        JOYSTICK_ANALOG_STICK_DOWN,
+        JOYSTICK_ANALOG_STICK_RIGHT,
+        JOYSTICK_ANALOG_STICK_LEFT,
+      }
+    },
   };
 
   auto itPair = m_primitiveMap.find(featureType);

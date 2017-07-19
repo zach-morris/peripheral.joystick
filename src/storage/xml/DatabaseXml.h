@@ -28,15 +28,21 @@ class TiXmlElement;
 
 namespace JOYSTICK
 {
+  class IControllerHelper;
+
   class CDatabaseXml : public CJustABunchOfFiles
   {
   public:
-    CDatabaseXml(const std::string& strBasePath, bool bReadWrite, IDatabaseCallbacks* callbacks);
+    CDatabaseXml(const std::string& strBasePath, bool bReadWrite, IDatabaseCallbacks* callbacks, IControllerHelper *controllerHelper);
 
     virtual ~CDatabaseXml(void) { }
 
     // implementation of CJustABunchOfFiles
     virtual CButtonMap* CreateResource(const std::string& resourcePath) const override;
     virtual CButtonMap* CreateResource(const std::string& resourcePath, const DevicePtr& deviceInfo) const override;
+
+  private:
+    // Construction parameter
+    IControllerHelper *const m_controllerHelper;
   };
 }

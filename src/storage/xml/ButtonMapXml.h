@@ -38,12 +38,13 @@ namespace JOYSTICK
 {
   class CAnomalousTrigger;
   class CButtonMap;
+  class IControllerHelper;
 
   class CButtonMapXml : public CButtonMap
   {
   public:
-    CButtonMapXml(const std::string& strResourcePath);
-    CButtonMapXml(const std::string& strResourcePath, const DevicePtr& device);
+    CButtonMapXml(const std::string& strResourcePath, IControllerHelper *controllerHelper);
+    CButtonMapXml(const std::string& strResourcePath, const DevicePtr& device, IControllerHelper *controllerHelper);
 
     virtual ~CButtonMapXml(void) { }
 
@@ -55,8 +56,8 @@ namespace JOYSTICK
   private:
     bool SerializeButtonMaps(TiXmlElement* pElement) const;
 
-    static bool Serialize(const FeatureVector& features, TiXmlElement* pElement);
-    static bool Deserialize(const TiXmlElement* pElement, FeatureVector& features);
+    bool Serialize(const FeatureVector& features, TiXmlElement* pElement) const;
+    bool Deserialize(const TiXmlElement* pElement, FeatureVector& features, const std::string &controllerId) const;
 
     static bool IsValid(const kodi::addon::JoystickFeature& feature);
     static bool SerializeFeature(TiXmlElement* pElement, const kodi::addon::DriverPrimitive& primitive, const char* tagName);

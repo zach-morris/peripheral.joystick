@@ -23,6 +23,7 @@
 #include "DeviceXml.h"
 #include "buttonmapper/ButtonMapTranslator.h"
 #include "storage/Device.h"
+#include "storage/StorageManager.h"
 #include "log/Log.h"
 
 #include "tinyxml.h"
@@ -35,13 +36,13 @@
 
 using namespace JOYSTICK;
 
-CButtonMapXml::CButtonMapXml(const std::string& strResourcePath) :
-  CButtonMap(strResourcePath)
+CButtonMapXml::CButtonMapXml(const std::string& strResourcePath, IControllerHelper *controllerHelper) :
+  CButtonMap(strResourcePath, controllerHelper)
 {
 }
 
-CButtonMapXml::CButtonMapXml(const std::string& strResourcePath, const DevicePtr& device) :
-  CButtonMap(strResourcePath, device)
+CButtonMapXml::CButtonMapXml(const std::string& strResourcePath, const DevicePtr& device, IControllerHelper *controllerHelper) :
+  CButtonMap(strResourcePath, device, controllerHelper)
 {
 }
 
@@ -98,7 +99,7 @@ bool CButtonMapXml::Load(void)
     }
 
     FeatureVector features;
-    if (!Deserialize(pController, features))
+    if (!Deserialize(pController, features, id))
       return false;
 
     if (features.empty())
@@ -178,7 +179,7 @@ bool CButtonMapXml::SerializeButtonMaps(TiXmlElement* pElement) const
   return true;
 }
 
-bool CButtonMapXml::Serialize(const FeatureVector& features, TiXmlElement* pElement)
+bool CButtonMapXml::Serialize(const FeatureVector& features, TiXmlElement* pElement) const
 {
   if (pElement == NULL)
     return false;
@@ -210,6 +211,7 @@ bool CButtonMapXml::Serialize(const FeatureVector& features, TiXmlElement* pElem
         break;
       }
       case JOYSTICK_FEATURE_TYPE_ANALOG_STICK:
+      case JOYSTICK_FEATURE_TYPE_RELPOINTER:
       {
         if (!SerializePrimitiveTag(featureElem, feature.Primitive(JOYSTICK_ANALOG_STICK_UP), BUTTONMAP_XML_ELEM_UP))
           return false;
@@ -317,7 +319,7 @@ void CButtonMapXml::SerializePrimitive(TiXmlElement* pElement, const kodi::addon
   }
 }
 
-bool CButtonMapXml::Deserialize(const TiXmlElement* pElement, FeatureVector& features)
+bool CButtonMapXml::Deserialize(const TiXmlElement* pElement, FeatureVector& features, const std::string &controllerId) const
 {
   const TiXmlElement* pFeature = pElement->FirstChildElement(BUTTONMAP_XML_ELEM_FEATURE);
 
@@ -376,7 +378,7 @@ bool CButtonMapXml::Deserialize(const TiXmlElement* pElement, FeatureVector& fea
 
       if (pUp || pDown || pRight || pLeft)
       {
-        type = JOYSTICK_FEATURE_TYPE_ANALOG_STICK;
+        type = m_controllerHelper->FeatureType(controllerId, strName);
       }
       else
       {
@@ -407,6 +409,7 @@ bool CButtonMapXml::Deserialize(const TiXmlElement* pElement, FeatureVector& fea
         break;
       }
       case JOYSTICK_FEATURE_TYPE_ANALOG_STICK:
+      case JOYSTICK_FEATURE_TYPE_RELPOINTER:
       {
         kodi::addon::DriverPrimitive up;
         kodi::addon::DriverPrimitive down;
