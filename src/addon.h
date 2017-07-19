@@ -33,7 +33,7 @@ class DLL_PRIVATE CPeripheralJoystick
     public kodi::addon::CInstancePeripheral
 {
 public:
-  CPeripheralJoystick() {}
+  CPeripheralJoystick();
   virtual ~CPeripheralJoystick();
 
   virtual ADDON_STATUS Create() override;

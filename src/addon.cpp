@@ -38,6 +38,10 @@
 
 using namespace JOYSTICK;
 
+CPeripheralJoystick::CPeripheralJoystick() :
+  m_scanner(nullptr)
+{
+}
 
 ADDON_STATUS CPeripheralJoystick::Create()
 {
