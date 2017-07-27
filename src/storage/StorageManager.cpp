@@ -86,9 +86,9 @@ bool CStorageManager::Initialize(CPeripheralJoystick* peripheralLib)
   // Ensure button map path exists in user data
   CStorageUtils::EnsureDirectoryExists(strUserButtonMapPath);
 
-  m_databases.push_back(DatabasePtr(new CDatabaseXml(strUserButtonMapPath, true, m_buttonMapper->GetCallbacks())));
+  m_databases.push_back(DatabasePtr(new CDatabaseXml(strUserButtonMapPath, true, m_buttonMapper->GetCallbacks(), this)));
   //m_databases.push_back(DatabasePtr(new CDatabaseRetroArch(strUserButtonMapPath, true, &m_controllerMapper))); // TODO
-  m_databases.push_back(DatabasePtr(new CDatabaseXml(strAddonButtonMapPath, false, m_buttonMapper->GetCallbacks())));
+  m_databases.push_back(DatabasePtr(new CDatabaseXml(strAddonButtonMapPath, false, m_buttonMapper->GetCallbacks(), this)));
   //m_databases.push_back(DatabasePtr(new CDatabaseRetroArch(strAddonButtonMapPath, false))); // TODO
 
   m_databases.push_back(DatabasePtr(new CDatabaseJoystickAPI(m_buttonMapper->GetCallbacks())));
@@ -183,4 +183,12 @@ void CStorageManager::RefreshButtonMaps(const std::string& strDeviceName /* = ""
   // Request the frontend to refresh its button maps
   if (m_peripheralLib)
     m_peripheralLib->RefreshButtonMaps(strDeviceName);
+}
+
+JOYSTICK_FEATURE_TYPE CStorageManager::FeatureType(const std::string& strControllerId, const std::string &featureName)
+{
+  if (m_peripheralLib)
+    return m_peripheralLib->FeatureType(strControllerId, featureName);
+
+  return JOYSTICK_FEATURE_TYPE_UNKNOWN;
 }

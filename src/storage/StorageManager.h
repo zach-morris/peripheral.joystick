@@ -39,11 +39,30 @@ namespace addon
 
 namespace JOYSTICK
 {
+  /*!
+   * \brief Helper functions for dealing with controllers and controller features
+   */
+  class IControllerHelper
+  {
+  public:
+    virtual ~IControllerHelper() = default;
+
+    /*!
+     * \brief Return the type of the specified feature
+     *
+     * \param controllerId    The controller ID to check
+     * \param featureName     The feature to check
+     *
+     * \return The type of the feature, or JOYSTICK_FEATURE_TYPE_UNKNOWN if unknown
+     */
+    virtual JOYSTICK_FEATURE_TYPE FeatureType(const std::string& strControllerId, const std::string &featureName) = 0;
+  };
+
   class CButtonMapper;
   class CDevice;
   class IDatabase;
 
-  class CStorageManager
+  class CStorageManager : public IControllerHelper
   {
   private:
     CStorageManager(void);
@@ -148,6 +167,9 @@ namespace JOYSTICK
      * \param[optional] controllerId The controller ID to refresh, or empty for all controllers
      */
     void RefreshButtonMaps(const std::string& strDeviceName = "");
+
+    // implementation of IControllerHelper
+    virtual JOYSTICK_FEATURE_TYPE FeatureType(const std::string& strControllerId, const std::string &featureName) override;
 
   private:
     CPeripheralJoystick* m_peripheralLib;

@@ -28,11 +28,13 @@
 
 namespace JOYSTICK
 {
+  class IControllerHelper;
+
   class CButtonMap
   {
   public:
-    CButtonMap(const std::string& strResourcePath);
-    CButtonMap(const std::string& strResourcePath, const DevicePtr& device);
+    CButtonMap(const std::string& strResourcePath, IControllerHelper *controllerHelper);
+    CButtonMap(const std::string& strResourcePath, const DevicePtr& device, IControllerHelper *controllerHelper);
 
     virtual ~CButtonMap(void) { }
 
@@ -61,6 +63,9 @@ namespace JOYSTICK
     static void MergeFeature(const kodi::addon::JoystickFeature& feature, FeatureVector& features, const std::string& controllerId);
 
     static void Sanitize(FeatureVector& features, const std::string& controllerId);
+
+    // Construction parameter
+    IControllerHelper *const m_controllerHelper;
 
     const std::string m_strResourcePath;
     DevicePtr         m_device;

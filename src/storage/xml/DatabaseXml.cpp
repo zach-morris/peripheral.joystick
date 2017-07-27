@@ -24,17 +24,18 @@
 
 using namespace JOYSTICK;
 
-CDatabaseXml::CDatabaseXml(const std::string& strBasePath, bool bReadWrite, IDatabaseCallbacks* callbacks) :
-  CJustABunchOfFiles(strBasePath + "/" RESOURCE_XML_FOLDER, RESOURCE_XML_EXTENSION, bReadWrite, callbacks)
+CDatabaseXml::CDatabaseXml(const std::string& strBasePath, bool bReadWrite, IDatabaseCallbacks* callbacks, IControllerHelper *controllerHelper) :
+  CJustABunchOfFiles(strBasePath + "/" RESOURCE_XML_FOLDER, RESOURCE_XML_EXTENSION, bReadWrite, callbacks),
+  m_controllerHelper(controllerHelper)
 {
 }
 
 CButtonMap* CDatabaseXml::CreateResource(const std::string& resourcePath) const
 {
-  return new CButtonMapXml(resourcePath);
+  return new CButtonMapXml(resourcePath, m_controllerHelper);
 }
 
 CButtonMap* CDatabaseXml::CreateResource(const std::string& resourcePath, const DevicePtr& deviceInfo) const
 {
-  return new CButtonMapXml(resourcePath, deviceInfo);
+  return new CButtonMapXml(resourcePath, deviceInfo, m_controllerHelper);
 }
