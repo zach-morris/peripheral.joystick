@@ -56,3 +56,13 @@
 #ifndef MAX
   #define MAX(x, y)  ((y) > (x) ? (y) : (x))
 #endif
+
+#if defined _WIN32 || defined __CYGWIN__
+  #define DLL_PRIVATE
+#else
+  #if __GNUC__ >= 4
+    #define DLL_PRIVATE  __attribute__ ((visibility ("hidden")))
+  #else
+    #define DLL_PRIVATE
+  #endif
+#endif

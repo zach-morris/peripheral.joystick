@@ -20,12 +20,13 @@
 #pragma once
 
 #include "JoystickManager.h"
+#include "utils/CommonMacros.h"
 
 class CPeripheralJoystick;
 
 namespace JOYSTICK
 {
-  class CPeripheralScanner : public IScannerCallback
+  class DLL_PRIVATE CPeripheralScanner : public IScannerCallback
   {
   public:
     CPeripheralScanner(CPeripheralJoystick* peripheralLib);
