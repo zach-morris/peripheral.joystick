@@ -19,6 +19,8 @@
  *
  */
 
+#include "utils/CommonMacros.h"
+
 #include <kodi/addon-instance/Peripheral.h>
 
 namespace JOYSTICK
@@ -26,12 +28,12 @@ namespace JOYSTICK
   class CPeripheralScanner;
 }
 
-class CPeripheralJoystick
+class DLL_PRIVATE CPeripheralJoystick
   : public kodi::addon::CAddonBase,
     public kodi::addon::CInstancePeripheral
 {
 public:
-  CPeripheralJoystick() {}
+  CPeripheralJoystick();
   virtual ~CPeripheralJoystick();
 
   virtual ADDON_STATUS Create() override;

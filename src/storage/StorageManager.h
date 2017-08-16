@@ -22,6 +22,7 @@
 #include "StorageTypes.h"
 #include "buttonmapper/ButtonMapTypes.h"
 #include "buttonmapper/JoystickFamily.h"
+#include "utils/CommonMacros.h"
 
 #include <memory>
 #include <string>
@@ -62,7 +63,7 @@ namespace JOYSTICK
   class CDevice;
   class IDatabase;
 
-  class CStorageManager : public IControllerHelper
+  class DLL_PRIVATE CStorageManager : public IControllerHelper
   {
   private:
     CStorageManager(void);
