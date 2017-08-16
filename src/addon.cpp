@@ -143,7 +143,7 @@ bool CPeripheralJoystick::SendEvent(const PERIPHERAL_EVENT* event)
   bool bHandled = false;
 
   if (event != nullptr)
-    bHandled = CJoystickManager::Get().SendEvent(*event);
+    bHandled = CJoystickManager::Get().SendEvent(kodi::addon::PeripheralEvent(*event));
 
   return bHandled;
 }
