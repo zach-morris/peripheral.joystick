@@ -1,6 +1,10 @@
 <?xml version="1.0" ?>
 <buttonmap>
     <device name="Xbox 360 Wireless Receiver (XBOX)" provider="android" vid="045E" pid="0291" buttoncount="11" axiscount="4">
+        <configuration>
+            <axis index="2" center="-1" range="2" />
+            <axis index="3" center="-1" range="2" />
+        </configuration>
         <controller id="game.controller.default">
             <feature name="a" button="0" />
             <feature name="b" button="1" />
