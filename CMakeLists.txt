@@ -111,7 +111,7 @@ set(JOYSTICK_HEADERS src/addon.h
                      src/utils/CommonMacros.h
                      src/utils/StringUtils.h)
 
-if(CORE_SYSTEM_NAME STREQUAL windows)
+if(CORE_SYSTEM_NAME MATCHES windows)
   list(APPEND JOYSTICK_SOURCES src/utils/windows/CharsetConverter.cpp)
   list(APPEND JOYSTICK_HEADERS src/utils/windows/CharsetConverter.h)
 endif()
@@ -192,7 +192,7 @@ endif()
 
 # --- XInput -------------------------------------------------------------------
 
-if("${CORE_SYSTEM_NAME}" STREQUAL "windows")
+if("${CORE_SYSTEM_NAME}" MATCHES "windows")
   add_definitions(-DHAVE_XINPUT)
 
   list(APPEND JOYSTICK_SOURCES src/api/xinput/JoystickInterfaceXInput.cpp
@@ -280,9 +280,11 @@ set(DIRECTINPUT_CHECK_LINE "\
         </setting>")
 
 # Write settings.xml.include
-if(CORE_SYSTEM_NAME STREQUAL windows)
+if(CORE_SYSTEM_NAME MATCHES windows)
   set(XINPUT_CHECK "${XINPUT_CHECK_LINE}")
-  set(DIRECTINPUT_CHECK "${DIRECTINPUT_CHECK_LINE}")
+  if(CORE_SYSTEM_NAME STREQUAL windows)
+    set(DIRECTINPUT_CHECK "${DIRECTINPUT_CHECK_LINE}")
+  endif()
 elseif(CORE_SYSTEM_NAME STREQUAL osx)
   set(OSX_SELECT "${OSX_SELECT_LINE}")
 else()

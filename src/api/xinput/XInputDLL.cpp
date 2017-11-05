@@ -46,6 +46,7 @@ bool CXInputDLL::Load(void)
   CLockObject lock(m_mutex);
 
   m_strVersion = "1.4";
+#if !defined(WINAPI_FAMILY) || (WINAPI_FAMILY != WINAPI_FAMILY_APP)
   dsyslog("Attempting to load XInput1_4.dll...");
   m_dll = LoadLibrary(TEXT("XInput1_4.dll"));  // 1.4 Ships with Windows 8
   if (!m_dll)
@@ -65,11 +66,13 @@ bool CXInputDLL::Load(void)
     esyslog("Failed to load XInput DLL");
   }
   else
+#endif // ! WINAPI_FAMILY_APP
   {
     dsyslog("Loaded XInput DLL version %s", m_strVersion.c_str());
 
     // 100 is the ordinal for _XInputGetStateEx, which returns the same struct as
     // XinputGetState, but with extra data in wButtons for the guide button, we think...
+#if !defined(WINAPI_FAMILY) || (WINAPI_FAMILY != WINAPI_FAMILY_APP)
     if (HasGuideButton())
       m_getStateEx = (FnXInputGetStateEx)GetProcAddress(m_dll, reinterpret_cast<LPCSTR>(100));
     else
@@ -79,7 +82,12 @@ bool CXInputDLL::Load(void)
     m_getBatteryInfo = (FnXInputGetBatteryInformation)GetProcAddress(m_dll, "XInputGetBatteryInformation");
     if (SupportsPowerOff())
       m_powerOff = (FnXInputPowerOffController)GetProcAddress(m_dll, reinterpret_cast<LPCSTR>(103));
-
+#else
+    m_getState = XInputGetState;
+    m_setState = XInputSetState;
+    m_getCaps = XInputGetCapabilities;
+    m_getBatteryInfo = XInputGetBatteryInformation;
+#endif
     if ((m_getState || m_getStateEx) && m_setState && m_getCaps && m_getBatteryInfo)
     {
       dsyslog("Loaded XInput symbols (GetState=%p, GetStateEx=%p, SetState=%p, GetCaps=%p, GetBatteryInformation=%p, PowerOff=%p)",
@@ -101,8 +109,10 @@ void CXInputDLL::Unload(void)
 {
   CLockObject lock(m_mutex);
 
+#if !defined(WINAPI_FAMILY) || (WINAPI_FAMILY != WINAPI_FAMILY_APP)
   if (m_dll)
     FreeLibrary(m_dll);
+#endif
 
   m_strVersion.clear();
   m_getState = NULL;
