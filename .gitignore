@@ -59,3 +59,4 @@ peripheral.joystick/project/VS2010Express/Release
 peripheral.joystick/*.so
 peripheral.joystick/*.dll
 peripheral.joystick/addon.xml
+peripheral.joystick/resources/settings.xml
