@@ -55,6 +55,16 @@ bool ButtonMapUtils::PrimitivesEqual(const kodi::addon::JoystickFeature& lhs, co
              lhs.Primitive(JOYSTICK_ACCELEROMETER_POSITIVE_Y) == rhs.Primitive(JOYSTICK_ACCELEROMETER_POSITIVE_Y) &&
              lhs.Primitive(JOYSTICK_ACCELEROMETER_POSITIVE_Z) == rhs.Primitive(JOYSTICK_ACCELEROMETER_POSITIVE_Z);
     }
+    case JOYSTICK_FEATURE_TYPE_WHEEL:
+    {
+      return lhs.Primitive(JOYSTICK_WHEEL_RIGHT) == rhs.Primitive(JOYSTICK_WHEEL_RIGHT) &&
+             lhs.Primitive(JOYSTICK_WHEEL_LEFT)  == rhs.Primitive(JOYSTICK_WHEEL_LEFT);
+    }
+    case JOYSTICK_FEATURE_TYPE_THROTTLE:
+    {
+      return lhs.Primitive(JOYSTICK_THROTTLE_UP)    == rhs.Primitive(JOYSTICK_THROTTLE_UP) &&
+             lhs.Primitive(JOYSTICK_THROTTLE_DOWN)  == rhs.Primitive(JOYSTICK_THROTTLE_DOWN);
+    }
     default:
       break;
     }
@@ -143,6 +153,18 @@ const std::vector<JOYSTICK_FEATURE_PRIMITIVE>& ButtonMapUtils::GetPrimitives(JOY
         JOYSTICK_ANALOG_STICK_DOWN,
         JOYSTICK_ANALOG_STICK_RIGHT,
         JOYSTICK_ANALOG_STICK_LEFT,
+      }
+    },
+    {
+      JOYSTICK_FEATURE_TYPE_WHEEL, {
+        JOYSTICK_WHEEL_RIGHT,
+        JOYSTICK_WHEEL_LEFT,
+      }
+    },
+    {
+      JOYSTICK_FEATURE_TYPE_THROTTLE, {
+        JOYSTICK_THROTTLE_UP,
+        JOYSTICK_THROTTLE_DOWN,
       }
     },
   };

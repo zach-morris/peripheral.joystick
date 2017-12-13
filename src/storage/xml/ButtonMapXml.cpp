@@ -246,6 +246,26 @@ bool CButtonMapXml::Serialize(const FeatureVector& features, TiXmlElement* pElem
 
         break;
       }
+      case JOYSTICK_FEATURE_TYPE_WHEEL:
+      {
+        if (!SerializePrimitiveTag(featureElem, feature.Primitive(JOYSTICK_WHEEL_LEFT), BUTTONMAP_XML_ELEM_LEFT))
+          return false;
+
+        if (!SerializePrimitiveTag(featureElem, feature.Primitive(JOYSTICK_WHEEL_RIGHT), BUTTONMAP_XML_ELEM_RIGHT))
+          return false;
+
+        break;
+      }
+      case JOYSTICK_FEATURE_TYPE_THROTTLE:
+      {
+        if (!SerializePrimitiveTag(featureElem, feature.Primitive(JOYSTICK_THROTTLE_UP), BUTTONMAP_XML_ELEM_UP))
+          return false;
+
+        if (!SerializePrimitiveTag(featureElem, feature.Primitive(JOYSTICK_THROTTLE_DOWN), BUTTONMAP_XML_ELEM_DOWN))
+          return false;
+
+        break;
+      }
       default:
         break;
     }
@@ -484,6 +504,60 @@ bool CButtonMapXml::Deserialize(const TiXmlElement* pElement, FeatureVector& fea
         feature.SetPrimitive(JOYSTICK_ACCELEROMETER_POSITIVE_X, positiveX);
         feature.SetPrimitive(JOYSTICK_ACCELEROMETER_POSITIVE_Y, positiveY);
         feature.SetPrimitive(JOYSTICK_ACCELEROMETER_POSITIVE_Z, positiveZ);
+
+        break;
+      }
+      case JOYSTICK_FEATURE_TYPE_WHEEL:
+      {
+        kodi::addon::DriverPrimitive right;
+        kodi::addon::DriverPrimitive left;
+
+        bool bSuccess = true;
+
+        if (pRight && !DeserializePrimitive(pRight, right, strName))
+        {
+          esyslog("Feature \"%s\": <%s> tag is not a valid primitive", strName.c_str(), BUTTONMAP_XML_ELEM_RIGHT);
+          bSuccess = false;
+        }
+
+        if (pLeft && !DeserializePrimitive(pLeft, left, strName))
+        {
+          esyslog("Feature \"%s\": <%s> tag is not a valid primitive", strName.c_str(), BUTTONMAP_XML_ELEM_LEFT);
+          bSuccess = false;
+        }
+
+        if (!bSuccess)
+          return false;
+
+        feature.SetPrimitive(JOYSTICK_WHEEL_RIGHT, right);
+        feature.SetPrimitive(JOYSTICK_WHEEL_LEFT, left);
+
+        break;
+      }
+      case JOYSTICK_FEATURE_TYPE_THROTTLE:
+      {
+        kodi::addon::DriverPrimitive up;
+        kodi::addon::DriverPrimitive down;
+
+        bool bSuccess = true;
+
+        if (pUp && !DeserializePrimitive(pUp, up, strName))
+        {
+          esyslog("Feature \"%s\": <%s> tag is not a valid primitive", strName.c_str(), BUTTONMAP_XML_ELEM_UP);
+          bSuccess = false;
+        }
+
+        if (pDown && !DeserializePrimitive(pDown, down, strName))
+        {
+          esyslog("Feature \"%s\": <%s> tag is not a valid primitive", strName.c_str(), BUTTONMAP_XML_ELEM_DOWN);
+          bSuccess = false;
+        }
+
+        if (!bSuccess)
+          return false;
+
+        feature.SetPrimitive(JOYSTICK_THROTTLE_UP, up);
+        feature.SetPrimitive(JOYSTICK_THROTTLE_DOWN, down);
 
         break;
       }
