@@ -87,6 +87,12 @@ bool ButtonMapUtils::PrimitivesConflict(const kodi::addon::DriverPrimitive& lhs,
       }
       break;
     }
+    case JOYSTICK_DRIVER_PRIMITIVE_TYPE_KEY:
+    {
+      if (lhs.Keycode() == rhs.Keycode())
+        return true;
+      break;
+    }
     default:
       return true;
     }
@@ -156,6 +162,11 @@ const std::vector<JOYSTICK_FEATURE_PRIMITIVE>& ButtonMapUtils::GetPrimitives(JOY
       JOYSTICK_FEATURE_TYPE_THROTTLE, {
         JOYSTICK_THROTTLE_UP,
         JOYSTICK_THROTTLE_DOWN,
+      }
+    },
+    {
+      JOYSTICK_FEATURE_TYPE_KEY, {
+        JOYSTICK_KEY_PRIMITIVE,
       }
     },
   };
