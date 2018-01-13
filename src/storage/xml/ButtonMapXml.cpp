@@ -573,39 +573,19 @@ bool CButtonMapXml::Deserialize(const TiXmlElement* pElement, FeatureVector& fea
 
 bool CButtonMapXml::DeserializePrimitive(const TiXmlElement* pElement, kodi::addon::DriverPrimitive& primitive, const std::string& featureName)
 {
-  const char* button = pElement->Attribute(BUTTONMAP_XML_ATTR_FEATURE_BUTTON);
-  if (button)
+  std::vector<std::pair<const char*, JOYSTICK_DRIVER_PRIMITIVE_TYPE>> types = {
+    { BUTTONMAP_XML_ATTR_FEATURE_BUTTON, JOYSTICK_DRIVER_PRIMITIVE_TYPE_BUTTON },
+    { BUTTONMAP_XML_ATTR_FEATURE_HAT, JOYSTICK_DRIVER_PRIMITIVE_TYPE_HAT_DIRECTION },
+    { BUTTONMAP_XML_ATTR_FEATURE_AXIS, JOYSTICK_DRIVER_PRIMITIVE_TYPE_SEMIAXIS },
+    { BUTTONMAP_XML_ATTR_FEATURE_MOTOR, JOYSTICK_DRIVER_PRIMITIVE_TYPE_MOTOR },
+  };
+
+  for (const auto &it : types)
   {
-    primitive = ButtonMapTranslator::ToDriverPrimitive(button, JOYSTICK_DRIVER_PRIMITIVE_TYPE_BUTTON);
-  }
-  else
-  {
-    const char* hat = pElement->Attribute(BUTTONMAP_XML_ATTR_FEATURE_HAT);
-    if (hat)
-    {
-      primitive = ButtonMapTranslator::ToDriverPrimitive(hat, JOYSTICK_DRIVER_PRIMITIVE_TYPE_HAT_DIRECTION);
-    }
-    else
-    {
-      const char* axis = pElement->Attribute(BUTTONMAP_XML_ATTR_FEATURE_AXIS);
-      if (axis)
-      {
-        primitive = ButtonMapTranslator::ToDriverPrimitive(axis, JOYSTICK_DRIVER_PRIMITIVE_TYPE_SEMIAXIS);
-      }
-      else
-      {
-        const char* motor = pElement->Attribute(BUTTONMAP_XML_ATTR_FEATURE_MOTOR);
-        if (motor)
-        {
-          primitive = ButtonMapTranslator::ToDriverPrimitive(motor, JOYSTICK_DRIVER_PRIMITIVE_TYPE_MOTOR);
-        }
-        else
-        {
-          return false;
-        }
-      }
-    }
+    const char *attr = pElement->Attribute(it.first);
+    if (attr != nullptr)
+      primitive = ButtonMapTranslator::ToDriverPrimitive(attr, it.second);
   }
 
-  return true;
+  return primitive.Type() != JOYSTICK_DRIVER_PRIMITIVE_TYPE_UNKNOWN;
 }
