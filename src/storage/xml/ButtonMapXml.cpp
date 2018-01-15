@@ -507,6 +507,11 @@ bool CButtonMapXml::Deserialize(const TiXmlElement* pElement, FeatureVector& fea
 
         break;
       }
+      case JOYSTICK_FEATURE_TYPE_MOTOR:
+      {
+        feature.SetPrimitive(JOYSTICK_MOTOR_PRIMITIVE, primitive);
+        break;
+      }
       case JOYSTICK_FEATURE_TYPE_WHEEL:
       {
         kodi::addon::DriverPrimitive right;
