@@ -38,5 +38,8 @@ namespace JOYSTICK
 
     static JOYSTICK_DRIVER_SEMIAXIS_DIRECTION TranslateSemiAxisDir(char axisSign);
     static const char* TranslateSemiAxisDir(JOYSTICK_DRIVER_SEMIAXIS_DIRECTION dir);
+
+    static JOYSTICK_DRIVER_RELPOINTER_DIRECTION TranslateRelPointerDir(const std::string relPointerDir);
+    static const char* TranslateRelPointerDir(JOYSTICK_DRIVER_RELPOINTER_DIRECTION dir);
   };
 }

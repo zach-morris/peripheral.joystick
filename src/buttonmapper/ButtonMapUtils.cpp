@@ -93,6 +93,18 @@ bool ButtonMapUtils::PrimitivesConflict(const kodi::addon::DriverPrimitive& lhs,
         return true;
       break;
     }
+    case JOYSTICK_DRIVER_PRIMITIVE_TYPE_MOUSE_BUTTON:
+    {
+      if (lhs.MouseIndex() == rhs.MouseIndex())
+        return true;
+      break;
+    }
+    case JOYSTICK_DRIVER_PRIMITIVE_TYPE_RELPOINTER_DIRECTION:
+    {
+      if (lhs.RelPointerDirection() == rhs.RelPointerDirection())
+        return true;
+      break;
+    }
     default:
       return true;
     }
@@ -146,10 +158,10 @@ const std::vector<JOYSTICK_FEATURE_PRIMITIVE>& ButtonMapUtils::GetPrimitives(JOY
     },
     {
       JOYSTICK_FEATURE_TYPE_RELPOINTER, {
-        JOYSTICK_ANALOG_STICK_UP,
-        JOYSTICK_ANALOG_STICK_DOWN,
-        JOYSTICK_ANALOG_STICK_RIGHT,
-        JOYSTICK_ANALOG_STICK_LEFT,
+        JOYSTICK_RELPOINTER_UP,
+        JOYSTICK_RELPOINTER_DOWN,
+        JOYSTICK_RELPOINTER_RIGHT,
+        JOYSTICK_RELPOINTER_LEFT,
       }
     },
     {

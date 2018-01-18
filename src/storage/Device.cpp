@@ -22,6 +22,16 @@
 
 using namespace JOYSTICK;
 
+namespace JOYSTICK
+{
+  bool AreElementCountsKnown(const kodi::addon::Joystick &joystick)
+  {
+    return joystick.ButtonCount() != 0 ||
+           joystick.HatCount() != 0 ||
+           joystick.AxisCount() != 0;
+  }
+}
+
 CDevice::CDevice(const kodi::addon::Joystick& joystick) :
   kodi::addon::Joystick(joystick)
 {
@@ -94,7 +104,7 @@ bool CDevice::SimilarTo(const CDevice& other) const
     }
   }
 
-  if (AreElementCountsKnown() && other.AreElementCountsKnown())
+  if (AreElementCountsKnown(*this) && AreElementCountsKnown(other))
   {
     if (ButtonCount() != other.ButtonCount() ||
         HatCount() != other.HatCount() ||
@@ -127,7 +137,7 @@ void CDevice::MergeProperties(const CDevice& record)
     SetProductID(record.ProductID());
   }
 
-  if (record.AreElementCountsKnown())
+  if (AreElementCountsKnown(record))
   {
     SetButtonCount(record.ButtonCount());
     SetHatCount(record.HatCount());
