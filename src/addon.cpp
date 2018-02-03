@@ -106,7 +106,7 @@ PERIPHERAL_ERROR CPeripheralJoystick::PerformDeviceScan(unsigned int* peripheral
   for (JoystickVector::const_iterator it = joysticks.begin(); it != joysticks.end(); ++it)
     peripherals.push_back(it->get());
 
-  *peripheral_count = peripherals.size();
+  *peripheral_count = static_cast<unsigned int>(peripherals.size());
   kodi::addon::Peripherals::ToStructs(peripherals, scan_results);
 
   return PERIPHERAL_NO_ERROR;
@@ -127,7 +127,7 @@ PERIPHERAL_ERROR CPeripheralJoystick::GetEvents(unsigned int* event_count, PERIP
   std::vector<kodi::addon::PeripheralEvent> peripheralEvents;
   if (CJoystickManager::Get().GetEvents(peripheralEvents))
   {
-    *event_count = peripheralEvents.size();
+    *event_count = static_cast<unsigned int>(peripheralEvents.size());
     kodi::addon::PeripheralEvents::ToStructs(peripheralEvents, events);
     result = PERIPHERAL_NO_ERROR;
   }
@@ -184,7 +184,7 @@ PERIPHERAL_ERROR CPeripheralJoystick::GetFeatures(const JOYSTICK_INFO* joystick,
   FeatureVector featureVector;
   CStorageManager::Get().GetFeatures(kodi::addon::Joystick(*joystick), controller_id,  featureVector);
 
-  *feature_count = featureVector.size();
+  *feature_count = static_cast<unsigned int>(featureVector.size());
   kodi::addon::JoystickFeatures::ToStructs(featureVector, features);
 
   return PERIPHERAL_NO_ERROR;
@@ -217,7 +217,7 @@ PERIPHERAL_ERROR CPeripheralJoystick::GetIgnoredPrimitives(const JOYSTICK_INFO* 
   PrimitiveVector primitiveVector;
   CStorageManager::Get().GetIgnoredPrimitives(kodi::addon::Joystick(*joystick), primitiveVector);
 
-  *primitive_count = primitiveVector.size();
+  *primitive_count = static_cast<unsigned int>(primitiveVector.size());
   kodi::addon::DriverPrimitives::ToStructs(primitiveVector, primitives);
 
   return PERIPHERAL_NO_ERROR;

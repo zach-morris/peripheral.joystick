@@ -170,7 +170,7 @@ void CButtonMapper::DeriveFeatures(const kodi::addon::Joystick& joystick, const 
 
   for (auto it = buttonMap.begin(); it != buttonMap.end(); ++it)
   {
-    const unsigned int featureCount = it->second.size();
+    const unsigned int featureCount = static_cast<unsigned int>(it->second.size());
     if (featureCount > maxFeatures)
     {
       maxFeatures = featureCount;

@@ -108,7 +108,7 @@ bool CButtonMapXml::Load(void)
     }
     else
     {
-      totalFeatureCount += features.size();
+      totalFeatureCount += static_cast<unsigned int>(features.size());
       m_buttonMap[id] = std::move(features);
     }
 
