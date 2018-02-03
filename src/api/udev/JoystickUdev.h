@@ -45,6 +45,7 @@
 
 #include <array>
 #include <linux/input.h>
+#include <map>
 #include <sys/types.h>
 
 struct udev_device;

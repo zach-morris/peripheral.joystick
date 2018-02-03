@@ -81,7 +81,7 @@ bool CJoystickFamiliesXml::Deserialize(const TiXmlElement* pFamily, JoystickFami
     if (!DeserializeJoysticks(pJoystick, family))
       return false;
 
-    totalJoystickCount += family.size();
+    totalJoystickCount += static_cast<unsigned int>(family.size());
 
     pFamily = pFamily->NextSiblingElement(JOYSTICK_FAMILIES_XML_ELEM_FAMILY);
   }

@@ -58,6 +58,11 @@ std::string ButtonMapTranslator::ToString(const kodi::addon::DriverPrimitive& pr
       }
       break;
     }
+    case JOYSTICK_DRIVER_PRIMITIVE_TYPE_KEY:
+    {
+      strPrimitive << primitive.Keycode();
+      break;
+    }
     default:
       break;
   }
@@ -104,6 +109,11 @@ kodi::addon::DriverPrimitive ButtonMapTranslator::ToDriverPrimitive(const std::s
     {
       if (std::isdigit(strPrimitive[0]))
         primitive = kodi::addon::DriverPrimitive::CreateMotor(std::atoi(strPrimitive.c_str()));
+      break;
+    }
+    case JOYSTICK_DRIVER_PRIMITIVE_TYPE_KEY:
+    {
+      primitive = kodi::addon::DriverPrimitive(strPrimitive);
       break;
     }
     default:

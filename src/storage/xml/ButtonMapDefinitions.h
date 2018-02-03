@@ -53,8 +53,10 @@
 #define BUTTONMAP_XML_ATTR_FEATURE_HAT         "hat"
 #define BUTTONMAP_XML_ATTR_FEATURE_AXIS        "axis"
 #define BUTTONMAP_XML_ATTR_FEATURE_MOTOR       "motor"
+#define BUTTONMAP_XML_ATTR_FEATURE_KEY         "key"
 
 #define BUTTONMAP_XML_ATTR_DRIVER_INDEX        "index"
 #define BUTTONMAP_XML_ATTR_AXIS_CENTER         "center"
 #define BUTTONMAP_XML_ATTR_AXIS_RANGE          "range"
 #define BUTTONMAP_XML_ATTR_IGNORE              "ignore"
+#define BUTTONMAP_XML_ATTR_KEYCODE             "keycode"
