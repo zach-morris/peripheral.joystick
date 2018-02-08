@@ -54,6 +54,7 @@
 #define BUTTONMAP_XML_ATTR_FEATURE_AXIS        "axis"
 #define BUTTONMAP_XML_ATTR_FEATURE_MOTOR       "motor"
 #define BUTTONMAP_XML_ATTR_FEATURE_KEY         "key"
+#define BUTTONMAP_XML_ATTR_FEATURE_MOUSE       "mouse"
 
 #define BUTTONMAP_XML_ATTR_DRIVER_INDEX        "index"
 #define BUTTONMAP_XML_ATTR_AXIS_CENTER         "center"

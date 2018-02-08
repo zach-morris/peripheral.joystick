@@ -158,3 +158,29 @@ const char* JoystickTranslator::TranslateSemiAxisDir(JOYSTICK_DRIVER_SEMIAXIS_DI
   }
   return "";
 }
+
+
+JOYSTICK_DRIVER_RELPOINTER_DIRECTION JoystickTranslator::TranslateRelPointerDir(const std::string relPointerDir)
+{
+  if (relPointerDir == "+x") return JOYSTICK_DRIVER_RELPOINTER_RIGHT;
+  if (relPointerDir == "-x") return JOYSTICK_DRIVER_RELPOINTER_LEFT;
+  if (relPointerDir == "-y") return JOYSTICK_DRIVER_RELPOINTER_UP;
+  if (relPointerDir == "+y") return JOYSTICK_DRIVER_RELPOINTER_DOWN;
+
+  return JOYSTICK_DRIVER_RELPOINTER_UNKNOWN;
+}
+
+const char* JoystickTranslator::TranslateRelPointerDir(JOYSTICK_DRIVER_RELPOINTER_DIRECTION dir)
+{
+  switch (dir)
+  {
+  case JOYSTICK_DRIVER_RELPOINTER_RIGHT: return "+x";
+  case JOYSTICK_DRIVER_RELPOINTER_LEFT:  return "-x";
+  case JOYSTICK_DRIVER_RELPOINTER_UP:    return "-y";
+  case JOYSTICK_DRIVER_RELPOINTER_DOWN:  return "+y";
+  default:
+    break;
+  }
+
+  return "";
+}

@@ -49,6 +49,7 @@ set(JOYSTICK_SOURCES src/addon.cpp
                      src/storage/Device.cpp
                      src/storage/DeviceConfiguration.cpp
                      src/storage/JustABunchOfFiles.cpp
+                     src/storage/MouseTranslator.cpp
                      src/storage/StorageManager.cpp
                      src/storage/StorageUtils.cpp
                      src/storage/api/DatabaseJoystickAPI.cpp
@@ -95,6 +96,7 @@ set(JOYSTICK_HEADERS src/addon.h
                      src/storage/Device.h
                      src/storage/IDatabase.h
                      src/storage/JustABunchOfFiles.h
+                     src/storage/MouseTranslator.h
                      src/storage/PrimitiveConfiguration.h
                      src/storage/StorageDefinitions.h
                      src/storage/StorageManager.h

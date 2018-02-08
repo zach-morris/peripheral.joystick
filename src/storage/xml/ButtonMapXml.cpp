@@ -211,7 +211,6 @@ bool CButtonMapXml::Serialize(const FeatureVector& features, TiXmlElement* pElem
         break;
       }
       case JOYSTICK_FEATURE_TYPE_ANALOG_STICK:
-      case JOYSTICK_FEATURE_TYPE_RELPOINTER:
       {
         if (!SerializePrimitiveTag(featureElem, feature.Primitive(JOYSTICK_ANALOG_STICK_UP), BUTTONMAP_XML_ELEM_UP))
           return false;
@@ -223,6 +222,22 @@ bool CButtonMapXml::Serialize(const FeatureVector& features, TiXmlElement* pElem
           return false;
 
         if (!SerializePrimitiveTag(featureElem, feature.Primitive(JOYSTICK_ANALOG_STICK_LEFT), BUTTONMAP_XML_ELEM_LEFT))
+          return false;
+
+        break;
+      }
+      case JOYSTICK_FEATURE_TYPE_RELPOINTER:
+      {
+        if (!SerializePrimitiveTag(featureElem, feature.Primitive(JOYSTICK_RELPOINTER_UP), BUTTONMAP_XML_ELEM_UP))
+          return false;
+
+        if (!SerializePrimitiveTag(featureElem, feature.Primitive(JOYSTICK_RELPOINTER_DOWN), BUTTONMAP_XML_ELEM_DOWN))
+          return false;
+
+        if (!SerializePrimitiveTag(featureElem, feature.Primitive(JOYSTICK_RELPOINTER_RIGHT), BUTTONMAP_XML_ELEM_RIGHT))
+          return false;
+
+        if (!SerializePrimitiveTag(featureElem, feature.Primitive(JOYSTICK_RELPOINTER_LEFT), BUTTONMAP_XML_ELEM_LEFT))
           return false;
 
         break;
@@ -344,6 +359,16 @@ void CButtonMapXml::SerializePrimitive(TiXmlElement* pElement, const kodi::addon
         pElement->SetAttribute(BUTTONMAP_XML_ATTR_FEATURE_KEY, strPrimitive);
         break;
       }
+      case JOYSTICK_DRIVER_PRIMITIVE_TYPE_MOUSE_BUTTON:
+      {
+        pElement->SetAttribute(BUTTONMAP_XML_ATTR_FEATURE_MOUSE, strPrimitive);
+        break;
+      }
+      case JOYSTICK_DRIVER_PRIMITIVE_TYPE_RELPOINTER_DIRECTION:
+      {
+        pElement->SetAttribute(BUTTONMAP_XML_ATTR_FEATURE_AXIS, strPrimitive);
+        break;
+      }
       default:
         break;
     }
@@ -440,7 +465,6 @@ bool CButtonMapXml::Deserialize(const TiXmlElement* pElement, FeatureVector& fea
         break;
       }
       case JOYSTICK_FEATURE_TYPE_ANALOG_STICK:
-      case JOYSTICK_FEATURE_TYPE_RELPOINTER:
       {
         kodi::addon::DriverPrimitive up;
         kodi::addon::DriverPrimitive down;
@@ -480,6 +504,49 @@ bool CButtonMapXml::Deserialize(const TiXmlElement* pElement, FeatureVector& fea
         feature.SetPrimitive(JOYSTICK_ANALOG_STICK_DOWN, down);
         feature.SetPrimitive(JOYSTICK_ANALOG_STICK_RIGHT, right);
         feature.SetPrimitive(JOYSTICK_ANALOG_STICK_LEFT, left);
+
+        break;
+      }
+      case JOYSTICK_FEATURE_TYPE_RELPOINTER:
+      {
+        kodi::addon::DriverPrimitive up;
+        kodi::addon::DriverPrimitive down;
+        kodi::addon::DriverPrimitive right;
+        kodi::addon::DriverPrimitive left;
+
+        bool bSuccess = true;
+
+        if (pUp && !DeserializePrimitive(pUp, up, strName))
+        {
+          esyslog("Feature \"%s\": <%s> tag is not a valid primitive", strName.c_str(), BUTTONMAP_XML_ELEM_UP);
+          bSuccess = false;
+        }
+
+        if (pDown && !DeserializePrimitive(pDown, down, strName))
+        {
+          esyslog("Feature \"%s\": <%s> tag is not a valid primitive", strName.c_str(), BUTTONMAP_XML_ELEM_DOWN);
+          bSuccess = false;
+        }
+
+        if (pRight && !DeserializePrimitive(pRight, right, strName))
+        {
+          esyslog("Feature \"%s\": <%s> tag is not a valid primitive", strName.c_str(), BUTTONMAP_XML_ELEM_RIGHT);
+          bSuccess = false;
+        }
+
+        if (pLeft && !DeserializePrimitive(pLeft, left, strName))
+        {
+          esyslog("Feature \"%s\": <%s> tag is not a valid primitive", strName.c_str(), BUTTONMAP_XML_ELEM_LEFT);
+          bSuccess = false;
+        }
+
+        if (!bSuccess)
+          return false;
+
+        feature.SetPrimitive(JOYSTICK_RELPOINTER_UP, up);
+        feature.SetPrimitive(JOYSTICK_RELPOINTER_DOWN, down);
+        feature.SetPrimitive(JOYSTICK_RELPOINTER_RIGHT, right);
+        feature.SetPrimitive(JOYSTICK_RELPOINTER_LEFT, left);
 
         break;
       }
@@ -597,9 +664,10 @@ bool CButtonMapXml::DeserializePrimitive(const TiXmlElement* pElement, kodi::add
   std::vector<std::pair<const char*, JOYSTICK_DRIVER_PRIMITIVE_TYPE>> types = {
     { BUTTONMAP_XML_ATTR_FEATURE_BUTTON, JOYSTICK_DRIVER_PRIMITIVE_TYPE_BUTTON },
     { BUTTONMAP_XML_ATTR_FEATURE_HAT, JOYSTICK_DRIVER_PRIMITIVE_TYPE_HAT_DIRECTION },
-    { BUTTONMAP_XML_ATTR_FEATURE_AXIS, JOYSTICK_DRIVER_PRIMITIVE_TYPE_SEMIAXIS },
+    { BUTTONMAP_XML_ATTR_FEATURE_AXIS, JOYSTICK_DRIVER_PRIMITIVE_TYPE_SEMIAXIS }, // Overloaded for relative pointer
     { BUTTONMAP_XML_ATTR_FEATURE_MOTOR, JOYSTICK_DRIVER_PRIMITIVE_TYPE_MOTOR },
     { BUTTONMAP_XML_ATTR_FEATURE_KEY, JOYSTICK_DRIVER_PRIMITIVE_TYPE_KEY },
+    { BUTTONMAP_XML_ATTR_FEATURE_MOUSE, JOYSTICK_DRIVER_PRIMITIVE_TYPE_MOUSE_BUTTON },
   };
 
   for (const auto &it : types)
