@@ -109,13 +109,13 @@ std::string CStorageUtils::PrimitiveToString(const kodi::addon::DriverPrimitive&
     switch (primitive.HatDirection())
     {
     case JOYSTICK_DRIVER_HAT_UP:
-      return StringUtils::Format("hat up");
+      return "hat up";
     case JOYSTICK_DRIVER_HAT_RIGHT:
-      return StringUtils::Format("hat right");
+      return "hat right";
     case JOYSTICK_DRIVER_HAT_DOWN:
-      return StringUtils::Format("hat down");
+      return "hat down";
     case JOYSTICK_DRIVER_HAT_LEFT:
-      return StringUtils::Format("hat left");
+      return "hat left";
     default:
       break;
     }
@@ -126,6 +126,25 @@ std::string CStorageUtils::PrimitiveToString(const kodi::addon::DriverPrimitive&
         primitive.DriverIndex());
   case JOYSTICK_DRIVER_PRIMITIVE_TYPE_MOTOR:
     return StringUtils::Format("motor %u", primitive.DriverIndex());
+  case JOYSTICK_DRIVER_PRIMITIVE_TYPE_KEY:
+    return StringUtils::Format("key \"%s\"", primitive.Keycode().c_str());
+  case JOYSTICK_DRIVER_PRIMITIVE_TYPE_MOUSE_BUTTON:
+    return StringUtils::Format("mouse button %u", primitive.MouseIndex());
+  case JOYSTICK_DRIVER_PRIMITIVE_TYPE_RELPOINTER_DIRECTION:
+    switch (primitive.RelPointerDirection())
+    {
+    case JOYSTICK_DRIVER_RELPOINTER_UP:
+      return "pointer up";
+    case JOYSTICK_DRIVER_RELPOINTER_RIGHT:
+      return "pointer right";
+    case JOYSTICK_DRIVER_RELPOINTER_DOWN:
+      return "pointer down";
+    case JOYSTICK_DRIVER_RELPOINTER_LEFT:
+      return "pointer left";
+    default:
+      break;
+    }
+    break;
   default:
     break;
   }
